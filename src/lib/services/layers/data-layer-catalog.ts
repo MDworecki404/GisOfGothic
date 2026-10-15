@@ -1,4 +1,5 @@
 import { describeCategory } from '#lib/data/category-names.js';
+import { pickItemIcon, type MapIconId } from './map-icons.js';
 import {
 	parseCharacterProperties,
 	parseContainerProperties,
@@ -32,6 +33,7 @@ export interface IdentifiableFeature {
 	lat: number;
 	h: number;
 	quantity: number;
+	iconId: MapIconId;
 	identification: FeatureIdentification;
 }
 
@@ -117,6 +119,7 @@ function readPresentedFeatures<P>(
 	description: string,
 	parseProperties: (properties: Record<string, unknown>, description: string) => P,
 	present: (properties: P) => FeatureIdentification,
+	pickIcon: (properties: P) => MapIconId,
 	readQuantity: (properties: P) => number = () => 1
 ): IdentifiableFeature[] {
 	return parsePointFeatures(json, description, parseProperties).map((feature) => ({
@@ -124,6 +127,7 @@ function readPresentedFeatures<P>(
 		lat: feature.lat,
 		h: feature.h,
 		quantity: readQuantity(feature.properties),
+		iconId: pickIcon(feature.properties),
 		identification: present(feature.properties)
 	}));
 }
@@ -142,6 +146,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 				'items.geojson',
 				parseItemProperties,
 				presentItem,
+				(properties) => pickItemIcon(properties.category),
 				(properties) => properties.amount
 			)
 	},
@@ -153,7 +158,13 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		metadataCountKey: 'containers',
 		color: '#8aa3a0',
 		readFeatures: (json) =>
-			readPresentedFeatures(json, 'containers.geojson', parseContainerProperties, presentContainer)
+			readPresentedFeatures(
+				json,
+				'containers.geojson',
+				parseContainerProperties,
+				presentContainer,
+				() => 'chest'
+			)
 	},
 	{
 		id: 'characters',
@@ -167,7 +178,8 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 				json,
 				'characters.geojson',
 				parseCharacterProperties,
-				presentCharacter('Unikatowa postać')
+				presentCharacter('Unikatowa postać'),
+				() => 'person'
 			)
 	},
 	{
@@ -182,7 +194,8 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 				json,
 				'npcs.geojson',
 				parseCharacterProperties,
-				presentCharacter('NPC albo potwór')
+				presentCharacter('NPC albo potwór'),
+				() => 'person'
 			)
 	}
 ];

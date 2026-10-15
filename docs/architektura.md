@@ -142,7 +142,12 @@ wczytanie indeksu, a po wczytaniu modelu świata kamera leci do jego miejsc.
 `DATA_LAYERS` (`services/layers/data-layer-catalog.ts`) opisuje warstwy: przedmioty w świecie, skrzynie,
 unikatowe postacie, wszyscy NPC — plik GeoJSON, kolor, parser właściwości i opis obiektu do karty.
 `DataLayersCoordinator` pobiera plik dopiero przy pierwszym włączeniu warstwy i go zapamiętuje.
-`DataLayersRenderer` rysuje każdą warstwę jako kolekcję punktów, której identyfikatorem jest
+Każdy obiekt ma `iconId` (`services/layers/map-icons.ts`): ikona przedmiotu wynika z jego kategorii
+(rośliny, jedzenie, broń…), skrzynia i postać mają własne. Warstwa z ikonami jest rysowana jako
+`BillboardCollection` z SVG (kształty z Lucide, licencja ISC, w `services/map/map-icon-shapes.ts`,
+generowane z pakietu `@lucide/svelte`) w kolorze warstwy i z ciemną obwódką; warstwa bez ikon (np.
+„postacie o tej godzinie”) zostaje kolekcją punktów.
+`DataLayersRenderer` rysuje każdą warstwę jako kolekcję, której identyfikatorem jest
 `{ layerId, featureIndex }`; kliknięcie mapy (`MapViewObserver` → `onMapClicked`) wskazuje obiekt
 w danych bez dodatkowych map, a fasada publikuje `feature-identified`.
 
