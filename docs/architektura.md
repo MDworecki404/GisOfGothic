@@ -79,15 +79,20 @@ odpięcie mapy) jest pomijany, a niepotrzebny tileset niszczony.
 Lista w `src/lib/events/app-events.ts`. Zdarzenie to obiekt z polem `type` (unia dyskryminowana),
 więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez asercji.
 
-| Zdarzenie                   | Dane        | Kiedy                                         |
-| --------------------------- | ----------- | --------------------------------------------- |
-| `world-opened`              | `worldName` | fasada przełączyła świat                      |
-| `world-load-started`        | —           | start wczytywania modelu świata               |
-| `world-loaded`              | —           | tileset świata dodany do sceny                |
-| `world-load-failed`         | `message`   | brak tokenu ion albo błąd wczytywania         |
-| `search-index-load-started` | —           | start wczytywania indeksu                     |
-| `search-index-loaded`       | `counts`    | indeks wczytany; liczba przedmiotów i postaci |
-| `search-index-load-failed`  | `message`   | błąd pobrania lub walidacji indeksu           |
+| Zdarzenie                   | Dane                                      | Kiedy                                         |
+| --------------------------- | ----------------------------------------- | --------------------------------------------- |
+| `world-opened`              | `worldName`                               | fasada przełączyła świat                      |
+| `world-load-started`        | —                                         | start wczytywania modelu świata               |
+| `world-loaded`              | —                                         | tileset świata dodany do sceny                |
+| `world-load-failed`         | `message`                                 | brak tokenu ion albo błąd wczytywania         |
+| `search-index-load-started` | —                                         | start wczytywania indeksu                     |
+| `search-index-loaded`       | `counts`                                  | indeks wczytany; liczba przedmiotów i postaci |
+| `search-index-load-failed`  | `message`                                 | błąd pobrania lub walidacji indeksu           |
+| `tool-selected`             | `toolId` lub `null`                       | otwarto albo zamknięto narzędzie na szynie    |
+| `cursor-moved`              | `position` (E, N, H, lon, lat) lub `null` | kursor nad terenem (najwyżej raz na klatkę)   |
+| `camera-heading-changed`    | `headingDegrees`                          | obrót kamery — kompas                         |
+| `map-scale-changed`         | `metresPerPixel` lub `null`               | zmiana skali w środku ekranu — podziałka      |
+| `coordinate-system-changed` | `systemId`                                | zmiana układu współrzędnych w pasku przyrządu |
 
 ## Cesium a reaktywność Svelte
 
@@ -104,3 +109,9 @@ aplikacji w `AppState`.
 - **Obserwator** — `EventBus`: wyniki płyną od logiki do stanu bez wzajemnej znajomości.
 - **Korzeń kompozycji** — `composition-root.ts`: jedno miejsce tworzenia i łączenia obiektów;
   zależności przekazywane konstruktorem, co ułatwia testy.
+
+## Geodezja
+
+`WorldFrame` przelicza punkt sceny Cesium na pozycję w świecie: E/N/H w metrach od kotwicy oraz lon/lat.
+`CoordinateFormatter` pokazuje ją w jednym z układów: **Układ Khorinis 1992** (metry), **jednostki gry**
+(centymetry silnika: x = E, y = H, z = −N — te same co w komendzie Marvina `goto pos`) albo **WGS 84**.

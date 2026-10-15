@@ -1,4 +1,6 @@
 import {
+	BoundingSphere,
+	Cartesian2,
 	Cartesian3,
 	Cesium3DTileset,
 	Color,
@@ -6,16 +8,20 @@ import {
 	HeadingPitchRange,
 	Ion,
 	Math as CesiumMath,
-	Transforms,
 	Viewer
 } from 'cesium';
 import type { Anchor } from '#lib/data/types.js';
+import { WorldFrame } from '#lib/services/geodesy/world-frame.js';
+import { MapViewObserver, type MapViewListeners } from './map-view-observer.js';
 import { ViewerOptionsBuilder } from './viewer-options-builder.js';
 
 const BACKGROUND_COLOR = '#14110d';
 const LIGHT_DIRECTION_FROM_ABOVE = new Cartesian3(-1, 0.35, -0.25);
 const OVERVIEW_PITCH_DEGREES = -50;
 const OVERVIEW_RANGE_IN_WORLD_RADII = 2.2;
+const ZOOM_STEP_FRACTION = 0.35;
+const FALLBACK_ZOOM_DISTANCE_METRES = 400;
+const NORTH_RESET_DURATION_SECONDS = 0.6;
 
 /**
  * Serwis mapy 3D. Obiekty Cesium trzyma w zwykłych polach — nigdy w `$state`,
@@ -23,11 +29,13 @@ const OVERVIEW_RANGE_IN_WORLD_RADII = 2.2;
  */
 export class MapService {
 	private readonly viewer: Viewer;
+	private readonly viewObserver: MapViewObserver;
 	private worldTileset: Cesium3DTileset | null = null;
+	private worldFrame: WorldFrame | null = null;
 	private isDestroyed = false;
 	private latestTilesetRequest = 0;
 
-	constructor(container: HTMLElement, ionAccessToken?: string) {
+	constructor(container: HTMLElement, listeners: MapViewListeners, ionAccessToken?: string) {
 		if (ionAccessToken) Ion.defaultAccessToken = ionAccessToken;
 
 		const options = new ViewerOptionsBuilder()
@@ -38,6 +46,7 @@ export class MapService {
 			.build();
 		this.viewer = new Viewer(container, options);
 		this.configureSceneForWorldBelowSeaLevel();
+		this.viewObserver = new MapViewObserver(this.viewer, listeners, () => this.worldFrame);
 	}
 
 	/**
@@ -49,16 +58,16 @@ export class MapService {
 	async showWorldTileset(ionAssetId: number, anchor: Anchor): Promise<void> {
 		const request = ++this.latestTilesetRequest;
 		this.removeWorldTileset();
+		const frame = new WorldFrame(anchor);
 		const tileset = await Cesium3DTileset.fromIonAssetId(ionAssetId, {
-			modelMatrix: Transforms.eastNorthUpToFixedFrame(
-				Cartesian3.fromDegrees(anchor.lon, anchor.lat, anchor.h)
-			)
+			modelMatrix: frame.anchorToEcef
 		});
 		if (this.isDestroyed || request !== this.latestTilesetRequest) {
 			tileset.destroy();
 			return;
 		}
 		this.worldTileset = tileset;
+		this.worldFrame = frame;
 		this.viewer.scene.primitives.add(tileset);
 		this.showWholeWorld(0);
 	}
@@ -76,16 +85,54 @@ export class MapService {
 		});
 	}
 
+	zoomIn(): void {
+		this.viewer.camera.zoomIn(this.measureDistanceToScreenCentre() * ZOOM_STEP_FRACTION);
+	}
+
+	zoomOut(): void {
+		this.viewer.camera.zoomOut(this.measureDistanceToScreenCentre() * ZOOM_STEP_FRACTION);
+	}
+
+	/** Obraca kamerę na północ wokół punktu w środku ekranu, zachowując nachylenie i odległość. */
+	turnToNorth(): void {
+		const camera = this.viewer.camera;
+		const centre = this.pickPointAtScreenCentre();
+		if (!centre) {
+			camera.setView({ orientation: { heading: 0, pitch: camera.pitch, roll: 0 } });
+			return;
+		}
+		camera.flyToBoundingSphere(new BoundingSphere(centre, 0), {
+			duration: NORTH_RESET_DURATION_SECONDS,
+			offset: new HeadingPitchRange(0, camera.pitch, Cartesian3.distance(camera.position, centre))
+		});
+	}
+
 	removeWorldTileset(): void {
 		if (!this.worldTileset) return;
 		this.viewer.scene.primitives.remove(this.worldTileset);
 		this.worldTileset = null;
+		this.worldFrame = null;
 	}
 
 	destroy(): void {
 		this.isDestroyed = true;
+		this.viewObserver.destroy();
 		if (!this.viewer.isDestroyed()) this.viewer.destroy();
 		this.worldTileset = null;
+		this.worldFrame = null;
+	}
+
+	private pickPointAtScreenCentre(): Cartesian3 | null {
+		const canvas = this.viewer.scene.canvas;
+		return this.viewObserver.pickSceneCartesian(
+			new Cartesian2(canvas.clientWidth / 2, canvas.clientHeight / 2)
+		);
+	}
+
+	private measureDistanceToScreenCentre(): number {
+		const centre = this.pickPointAtScreenCentre();
+		if (!centre) return FALLBACK_ZOOM_DISTANCE_METRES;
+		return Cartesian3.distance(this.viewer.camera.position, centre);
 	}
 
 	/**
