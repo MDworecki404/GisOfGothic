@@ -53,6 +53,10 @@ test('wyszukiwarka znajduje przedmiot bez polskich znaków i zapisuje wpis w adr
 	await expect(page.getByRole('heading', { name: 'Szczaw królewski' })).toBeVisible();
 	await expect(page).toHaveURL(/wpis=item%3AITPL_PERM_HERB/);
 	await expect(page.getByText('sztuk w świecie')).toBeVisible();
+	await expect(page.getByRole('link', { name: /Pokaż model 3D/ })).toHaveAttribute(
+		'href',
+		/gisofgothicmodels\.dworecki\.dev\/g2nk\/khorinis\/models\/previews\/itpl_perm_herb\.glb$/
+	);
 });
 
 test('analiza „Najbliższe” pozwala wybrać przedmiot jako temat', async ({ page }) => {

@@ -52,6 +52,8 @@ export interface SearchEntry {
 	name: string;
 	/** Dane zawierają wpisy bez kategorii (np. ITFO_MUTTON), stąd `null`. */
 	category: string | null;
+	/** Przedmioty: plik modelu podglądu względem adresu modeli świata albo `null`. */
+	model?: string | null;
 	/** Przedmioty: liczba pewnych sztuk. */
 	total?: number;
 	/** Postacie: poziom. */

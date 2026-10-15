@@ -80,8 +80,22 @@ describe('SearchService', () => {
 describe('SearchEntryPresenter', () => {
 	const presenter = new SearchEntryPresenter();
 
+	it('składa adres modelu podglądu z adresu świata i pola model', () => {
+		const withModel = { ...createItem('X', 'Ziele', 'Rośliny', 1), model: 'previews/ziele.glb' };
+		expect(presenter.presentDetails(withModel, 'https://m.example/models').modelUrl).toBe(
+			'https://m.example/models/previews/ziele.glb'
+		);
+		expect(
+			presenter.presentDetails(createItem('Y', 'Łuk', 'Broń', 1), 'https://m.example/models')
+				.modelUrl
+		).toBeNull();
+	});
+
 	it('opisuje przedmiot: liczba sztuk i rozkład według miejsc', () => {
-		const details = presenter.presentDetails(createItem('X', 'Ziele lecznicze', 'Rośliny', 3));
+		const details = presenter.presentDetails(
+			createItem('X', 'Ziele lecznicze', 'Rośliny', 3),
+			'https://modele.example/models'
+		);
 		expect(details.facts).toEqual([
 			{ label: 'sztuk w świecie', value: '3' },
 			{ label: 'na ziemi', value: '1' },

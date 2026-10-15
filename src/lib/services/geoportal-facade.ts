@@ -81,6 +81,7 @@ export class GeoportalFacade {
 		this.bookmarksCoordinator.useWorld(world.gameId, world.id);
 		this.currentDataLoader = this.createDataLoader(world.dataBaseUrl);
 		this.eventBus.publish({ type: 'world-opened', worldName: world.name });
+		this.searchCoordinator.useModelsBaseUrl(world.modelsBaseUrl);
 		this.searchCoordinator.useIndex(null);
 		this.analysisCoordinator.resetForNewWorld();
 		this.dataLayersCoordinator.useWorld(this.currentDataLoader, {});

@@ -32,6 +32,7 @@ const KHORINIS: WorldDefinition = {
 	gameId: 'g2nk',
 	name: 'Khorinis', // nazwa w UI
 	dataBaseUrl: '/data/g2nk/khorinis', // lekkie dane
+	modelsBaseUrl: 'https://gisofgothicmodels.dworecki.dev/g2nk/khorinis/models', // modele przedmiotów
 	worldTilesetIonAssetId: 6033666 // model świata na Cesium ion
 };
 ```
@@ -58,3 +59,17 @@ pole i odrzucają błędne dane z komunikatem wskazującym wpis — bez asercji 
 Znane odstępstwa od kontraktu, które parser dopuszcza:
 
 - `category` bywa `null` (np. `ITFO_MUTTON`) — typ `string | null`.
+
+## Modele przedmiotów
+
+Wpis przedmiotu w `search_index.json` ma pole `model`: ścieżka pliku podglądu względem `modelsBaseUrl`
+świata (np. `previews/itpl_perm_herb.glb`) albo `null`, gdy przedmiot nie ma modelu (łuki i kusze `.mms`,
+brak wizualizacji w grze). Plik podglądu to **jedna kopia** przedmiotu, wyśrodkowana na początku układu, bez
+instancji (inaczej niż pliki `models/*.glb`, które zawierają wszystkie wystąpienia w świecie). Tekstury
+leżą w `models/textures/`, a pliki podglądu odwołują się do nich przez `../textures/`.
+
+Modele leżą w buckecie Cloudflare R2 (`gis-of-gothic-models`) pod własną domeną, poza repozytorium i poza
+Cesium ion — to małe pliki ładowane pojedynczo. Dostęp z przeglądarki ograniczony jest regułą CORS bucketa
+(`localhost` i domena aplikacji). Wgrywa je `node scripts/upload-models-to-r2.mjs <folder> <bucket> <prefiks>`
+(wymaga `npx wrangler login`). Karta przedmiotu pokazuje na razie link do pliku `.glb`; podgląd 3D w karcie
+jest do zrobienia.

@@ -174,6 +174,7 @@ function parseSearchEntry(value: unknown, position: number): SearchEntry {
 		code: requireString(record, 'code', description),
 		name: requireString(record, 'name', description),
 		category: readOptionalString(record, 'category') ?? null,
+		model: readOptionalString(record, 'model') ?? null,
 		total: readOptionalNumber(record, 'total'),
 		level: readOptionalNumber(record, 'level'),
 		codes: readStringList(record, 'codes'),

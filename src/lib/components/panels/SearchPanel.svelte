@@ -27,6 +27,17 @@
 			{entry.categoryLabel} · <span class="text-xs">{entry.code}</span>
 		</p>
 
+		{#if entry.modelUrl}
+			<a
+				class="mt-2 inline-block rounded-sm border border-border px-2.5 py-1 text-sm hover:border-primary/60"
+				href={entry.modelUrl}
+				target="_blank"
+				rel="external noopener noreferrer"
+			>
+				Pokaż model 3D (plik .glb)
+			</a>
+		{/if}
+
 		{#if entry.facts.length > 0}
 			<dl class="my-3 flex flex-wrap gap-x-5 gap-y-2 tabular-nums">
 				{#each entry.facts as fact (fact.label)}
