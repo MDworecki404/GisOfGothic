@@ -12,7 +12,7 @@ import {
 import type { MapClick, MapViewListeners } from './map/map-view-observer.js';
 import { SearchCoordinator } from './search/search-coordinator.js';
 import type { SearchTypeFilter } from './search/search-service.js';
-import { ROUTINE_LAYER_ID, TimeCoordinator } from './time/time-coordinator.js';
+import { ROUTINE_LAYER_ID, TimeCoordinator, type ShadowSettings } from './time/time-coordinator.js';
 import type { ToolId } from './tools/tool-id.js';
 
 export type DataLoaderFactory = (dataBaseUrl: string) => GeoportalDataLoader;
@@ -83,6 +83,10 @@ export class GeoportalFacade {
 
 	setTimeOfDay(minuteOfDay: number): void {
 		this.timeCoordinator.setMinuteOfDay(minuteOfDay);
+	}
+
+	setShadows(settings: ShadowSettings): void {
+		this.timeCoordinator.setShadows(settings);
 	}
 
 	toggleCharactersAtTimeOfDay(): void {

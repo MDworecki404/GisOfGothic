@@ -9,7 +9,7 @@ import type { SearchTypeFilter } from '#lib/services/search/search-service.js';
 import type { FeatureIdentification } from '#lib/services/layers/data-layer-catalog.js';
 import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator.js';
 import type { MeasurementView } from '#lib/services/measurement/measurement-coordinator.js';
-import type { RoutineLayerStatus } from '#lib/services/time/time-coordinator.js';
+import type { RoutineLayerStatus, ShadowSettings } from '#lib/services/time/time-coordinator.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 import { EventBus } from './event-bus.js';
 
@@ -42,6 +42,7 @@ export type AppEvent =
 			minuteOfDay: number;
 			routineLayerStatus: RoutineLayerStatus;
 			charactersOnMap: number | null;
+			shadows: ShadowSettings;
 	  };
 
 export type AppEventBus = EventBus<AppEvent>;

@@ -14,8 +14,14 @@ const ROUTINE_LAYER_COLOR = '#ffd27a';
 const ROUTINE_FILE_NAME = 'character_places.geojson';
 const NOON_MINUTE = 12 * 60;
 
+export interface ShadowSettings {
+	areEnabled: boolean;
+	areSoft: boolean;
+}
+
 export interface TimeOfDayDisplay extends DataLayersDisplay {
 	showTimeOfDay(minuteOfDay: number): void;
+	showShadows(settings: ShadowSettings): void;
 }
 
 export type RoutineLayerStatus = 'hidden' | 'loading' | 'visible' | 'error';
@@ -27,7 +33,7 @@ function describeError(error: unknown): string {
 }
 
 /**
- * Pora dnia w świecie: światło mapy i warstwa „gdzie są postacie o tej godzinie” z rutyn dnia.
+ * Pora dnia w świecie: światło i cienie mapy oraz warstwa „gdzie są postacie o tej godzinie” z rutyn dnia.
  * Pokazuje tylko rutyny domyślne — rutyny po zadaniach dotyczą innych etapów gry.
  */
 export class TimeCoordinator {
@@ -36,6 +42,7 @@ export class TimeCoordinator {
 	private schedule: DailySchedule<RoutinePlace> | null = null;
 	private placesOnMap: RoutinePlace[] = [];
 	private dataLoader: GeoportalDataLoader | null = null;
+	private shadows: ShadowSettings = { areEnabled: false, areSoft: true };
 
 	constructor(
 		private readonly eventBus: AppEventBus,
@@ -58,6 +65,12 @@ export class TimeCoordinator {
 		this.publish();
 	}
 
+	setShadows(settings: ShadowSettings): void {
+		this.shadows = settings;
+		this.getDisplay()?.showShadows(settings);
+		this.publish();
+	}
+
 	async toggleRoutineLayer(): Promise<void> {
 		if (this.status === 'loading') return;
 		if (this.status === 'visible') {
@@ -75,6 +88,7 @@ export class TimeCoordinator {
 
 	showOnMap(): void {
 		this.getDisplay()?.showTimeOfDay(this.minuteOfDay);
+		this.getDisplay()?.showShadows(this.shadows);
 		if (this.status === 'visible') this.showCharactersAtCurrentTime();
 	}
 
@@ -144,7 +158,8 @@ export class TimeCoordinator {
 			type: 'time-of-day-changed',
 			minuteOfDay: this.minuteOfDay,
 			routineLayerStatus: this.status,
-			charactersOnMap: this.status === 'visible' ? this.placesOnMap.length : null
+			charactersOnMap: this.status === 'visible' ? this.placesOnMap.length : null,
+			shadows: this.shadows
 		});
 	}
 }
