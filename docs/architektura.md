@@ -1,0 +1,106 @@
+# Architektura
+
+Aplikacja to statyczna strona (SvelteKit, `adapter-static`) działająca wyłącznie w przeglądarce.
+Kod dzieli się na warstwy, które znają się tylko w jednym kierunku: **UI nie zna logiki biznesowej,
+a logika nie zna UI**. Łączy je fasada (polecenia) i event bus (wyniki).
+
+## Warstwy
+
+```mermaid
+flowchart LR
+    subgraph UI["UI (Svelte)"]
+        R["routes/<br/>strony"]
+        C["components/<br/>komponenty"]
+    end
+    subgraph Logika
+        F["GeoportalFacade<br/>(fasada)"]
+        M["MapService<br/>(Cesium)"]
+        L["GeoportalDataLoader<br/>(dane)"]
+        K["WorldCatalog<br/>(gry i światy)"]
+    end
+    B(("EventBus"))
+    S["AppState<br/>(stan dla UI, runy)"]
+
+    R -- "openWorld()" --> F
+    C -- "attachMapTo() / detachMap()" --> F
+    F --> M
+    F --> L
+    R -- "findWorld()" --> K
+    F -- "publish()" --> B
+    B -- "subscribe()" --> S
+    S -- "odczyt reaktywny" --> C
+```
+
+| Warstwa    | Folder                                 | Odpowiedzialność                                              | Czego nie robi                                                                   |
+| ---------- | -------------------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Strony     | `src/routes/`                          | adresy, odczyt parametrów, wybór świata z katalogu            | nie wczytuje danych, nie dotyka Cesium                                           |
+| Komponenty | `src/lib/components/`                  | renderowanie stanu, zgłaszanie intencji użytkownika do fasady | nie importuje `cesium`, `minisearch`, `services/`, `data/` (pilnuje tego ESLint) |
+| Fasada     | `src/lib/services/geoportal-facade.ts` | jedyne wejście UI do logiki; koordynuje serwisy               | nie zwraca wyników bezpośrednio — publikuje zdarzenia                            |
+| Serwisy    | `src/lib/services/`                    | mapa 3D (`MapService`), budowniczy opcji Viewera              | nie znają Svelte                                                                 |
+| Dane       | `src/lib/data/`                        | typy, parsowanie i walidacja paczki danych, katalog światów   | nie znają Cesium ani UI                                                          |
+| Zdarzenia  | `src/lib/events/`                      | typowany event bus i lista zdarzeń aplikacji                  | —                                                                                |
+| Stan       | `src/lib/state/`                       | reaktywny stan dla UI, aktualizowany wyłącznie zdarzeniami    | nie trzyma obiektów Cesium                                                       |
+
+Zależności składa jedno miejsce: `src/lib/composition-root.ts`. Komponenty i strony importują stamtąd
+gotowe instancje (`geoportal`, `appState`, `worldCatalog`).
+
+## Przepływ: otwarcie świata
+
+```mermaid
+sequenceDiagram
+    participant P as Strona /[gameId]/[worldId]
+    participant V as MapView
+    participant F as GeoportalFacade
+    participant D as GeoportalDataLoader
+    participant M as MapService
+    participant B as EventBus
+    participant S as AppState
+
+    V->>F: attachMapTo(kontener)
+    F->>M: new MapService (Viewer)
+    P->>F: openWorld(świat)
+    F->>B: world-opened
+    F->>D: loadSearchIndex()
+    D-->>F: indeks
+    F->>B: search-index-loaded (liczby)
+    F->>D: loadMetadata() → kotwica
+    F->>M: showWorldTileset(asset ion, kotwica)
+    F->>B: world-loaded
+    B->>S: aktualizacja stanu
+    S-->>P: pasek statusu, nagłówek
+```
+
+Kolejność `attachMapTo` i `openWorld` nie ma znaczenia — fasada pokaże świat, gdy ma oba.
+Każde wczytanie świata dostaje numer pokolenia; wynik wyprzedzonego wczytania (szybka zmiana świata,
+odpięcie mapy) jest pomijany, a niepotrzebny tileset niszczony.
+
+## Zdarzenia
+
+Lista w `src/lib/events/app-events.ts`. Zdarzenie to obiekt z polem `type` (unia dyskryminowana),
+więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez asercji.
+
+| Zdarzenie                   | Dane        | Kiedy                                         |
+| --------------------------- | ----------- | --------------------------------------------- |
+| `world-opened`              | `worldName` | fasada przełączyła świat                      |
+| `world-load-started`        | —           | start wczytywania modelu świata               |
+| `world-loaded`              | —           | tileset świata dodany do sceny                |
+| `world-load-failed`         | `message`   | brak tokenu ion albo błąd wczytywania         |
+| `search-index-load-started` | —           | start wczytywania indeksu                     |
+| `search-index-loaded`       | `counts`    | indeks wczytany; liczba przedmiotów i postaci |
+| `search-index-load-failed`  | `message`   | błąd pobrania lub walidacji indeksu           |
+
+## Cesium a reaktywność Svelte
+
+Obiektów Cesium (`Viewer`, `Cesium3DTileset`, kolekcje) **nie trzymamy w `$state`** — proxy Svelte
+psuje ich wewnętrzne mechanizmy. Żyją w zwykłych polach `MapService`. Reaktywne są tylko dane
+aplikacji w `AppState`.
+
+## Wzorce
+
+- **Fasada** — `GeoportalFacade`: prosty interfejs (`openWorld`, `attachMapTo`, `detachMap`) zamiast
+  wielu serwisów.
+- **Budowniczy** — `ViewerOptionsBuilder`: czytelne składanie opcji Viewera
+  (`withoutIonBaseLayer().withoutToolbarWidgets()…`).
+- **Obserwator** — `EventBus`: wyniki płyną od logiki do stanu bez wzajemnej znajomości.
+- **Korzeń kompozycji** — `composition-root.ts`: jedno miejsce tworzenia i łączenia obiektów;
+  zależności przekazywane konstruktorem, co ułatwia testy.
