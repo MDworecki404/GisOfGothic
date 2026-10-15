@@ -25,9 +25,12 @@ Pierwszy raz: `npx playwright install chromium`.
 
 ## Dane
 
-Dane z gry są chronione prawem autorskim i **nie trafiają do repo** (`static/data/` w `.gitignore`).
-Skopiuj gotową paczkę (`dist/g2nk/khorinis/` z projektu ekstrakcji) do `static/data/khorinis/`.
-Kontrakt danych (pola, osie, kotwica) opisuje `static/data/khorinis/README.md`.
+- **Ciężkie warstwy** (model świata, modele 3D) są tilowane i hostowane na **Cesium ion** — nie ma ich
+  w plikach aplikacji. Skopiuj `.env.example` do `.env` i wpisz `PUBLIC_CESIUM_ION_TOKEN`.
+- **Lekkie dane** (`metadata.json`, `search_index.json`, warstwy GeoJSON) leżą w `static/data/khorinis/`.
+  Są chronione prawem autorskim i **nie trafiają do repo** (`static/data/` w `.gitignore`). Skopiuj je
+  z paczki `dist/g2nk/khorinis/` projektu ekstrakcji — bez `world.glb` i `models/`.
+  Kontrakt danych opisuje `static/data/khorinis/README.md`.
 
 ## Struktura
 
@@ -39,10 +42,10 @@ Zasady architektury i stylu: `CLAUDE.md`.
 - `src/lib/state/` — reaktywny stan dla UI (runy), aktualizowany zdarzeniami
 - `src/lib/components/` — komponenty UI (bez logiki domenowej); `ui/` to shadcn-svelte
 - `src/lib/composition-root.ts` — jedyne miejsce składania zależności
-- `src/env.ts` — zmienne środowiskowe (SvelteKit 3); opcjonalny `PUBLIC_CESIUM_ION_TOKEN` (patrz `.env.example`)
+- `src/env.ts` — zmienne środowiskowe (SvelteKit 3); wymagany `PUBLIC_CESIUM_ION_TOKEN` w `.env` (wzór: `.env.example`)
 
 ## Uwagi
 
 - Zasoby Cesium kopiuje `vite-plugin-static-copy` do `/cesiumStatic` (`vite-plugin-cesium` nie działa w SvelteKit).
-- Świat jest zakotwiczony w lon 0°, lat 0°, h 0 (z `metadata.json`); globus wyłączony, bez podkładu Ion.
+- Model świata to 3D Tiles na Cesium ion (asset ID w `src/lib/data/world-catalog.ts`); globus wyłączony, bez podkładu Ion.
 - Nie używaj `npm audit fix --force`.

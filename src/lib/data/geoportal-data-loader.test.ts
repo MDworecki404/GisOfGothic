@@ -84,8 +84,4 @@ describe('GeoportalDataLoader', () => {
 	it('zgłasza błąd HTTP', async () => {
 		await expect(createLoaderServing({}, 404).loadSearchIndex()).rejects.toThrow(/404/);
 	});
-
-	it('podaje adres modelu świata', () => {
-		expect(createLoaderServing({}).worldModelUrl).toBe('/data/test/world.glb');
-	});
 });

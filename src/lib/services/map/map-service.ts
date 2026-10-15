@@ -1,12 +1,11 @@
 import {
-	Axis,
 	Cartesian3,
+	Cesium3DTileset,
 	Color,
 	DirectionalLight,
 	HeadingPitchRange,
 	Ion,
 	Math as CesiumMath,
-	Model,
 	Transforms,
 	Viewer
 } from 'cesium';
@@ -18,18 +17,13 @@ const LIGHT_DIRECTION_FROM_ABOVE = new Cartesian3(-1, 0.35, -0.25);
 const OVERVIEW_PITCH_DEGREES = -50;
 const OVERVIEW_RANGE_IN_WORLD_RADII = 2.2;
 
-export interface WorldModelSource {
-	url: string;
-	anchor: Anchor;
-}
-
 /**
  * Serwis mapy 3D. Obiekty Cesium trzyma w zwykłych polach — nigdy w `$state`,
  * bo proxy Svelte psuje Cesium.
  */
 export class MapService {
 	private readonly viewer: Viewer;
-	private worldModel: Model | null = null;
+	private worldTileset: Cesium3DTileset | null = null;
 	private isDestroyed = false;
 
 	constructor(container: HTMLElement, ionAccessToken?: string) {
@@ -46,32 +40,28 @@ export class MapService {
 	}
 
 	/**
-	 * Wczytuje model świata z osiami glTF (Wschód, Góra, -Północ) w układzie ENU kotwicy
-	 * i ustawia kamerę na widok całego świata. Bez `forwardAxis: Axis.X` Cesium obróciłby model.
+	 * Tileset z ion nie jest georeferencjonowany: ion zamienia osie glTF (Wschód, Góra, -Północ)
+	 * na lokalne (Wschód, Północ, Góra) wokół środka Ziemi. Macierz ENU kotwicy stawia go
+	 * w punkcie kotwicy z poprawnymi kierunkami świata.
 	 */
-	async loadWorldModel({ url, anchor }: WorldModelSource): Promise<void> {
-		const modelMatrix = Transforms.eastNorthUpToFixedFrame(
-			Cartesian3.fromDegrees(anchor.lon, anchor.lat, anchor.h)
-		);
-		const model = await Model.fromGltfAsync({
-			url,
-			modelMatrix,
-			upAxis: Axis.Y,
-			forwardAxis: Axis.X
+	async loadWorldTileset(ionAssetId: number, anchor: Anchor): Promise<void> {
+		const tileset = await Cesium3DTileset.fromIonAssetId(ionAssetId, {
+			modelMatrix: Transforms.eastNorthUpToFixedFrame(
+				Cartesian3.fromDegrees(anchor.lon, anchor.lat, anchor.h)
+			)
 		});
 		if (this.isDestroyed) {
-			model.destroy();
+			tileset.destroy();
 			return;
 		}
-		this.worldModel = model;
-		this.viewer.scene.primitives.add(model);
-		await this.waitUntilModelIsReady(model);
-		if (!this.isDestroyed) this.showWholeWorld(0);
+		this.worldTileset = tileset;
+		this.viewer.scene.primitives.add(tileset);
+		this.showWholeWorld(0);
 	}
 
 	showWholeWorld(flightDurationSeconds = 1.5): void {
-		if (!this.worldModel) return;
-		const sphere = this.worldModel.boundingSphere;
+		if (!this.worldTileset) return;
+		const sphere = this.worldTileset.boundingSphere;
 		this.viewer.camera.flyToBoundingSphere(sphere, {
 			duration: flightDurationSeconds,
 			offset: new HeadingPitchRange(
@@ -85,7 +75,7 @@ export class MapService {
 	destroy(): void {
 		this.isDestroyed = true;
 		if (!this.viewer.isDestroyed()) this.viewer.destroy();
-		this.worldModel = null;
+		this.worldTileset = null;
 	}
 
 	/**
@@ -104,19 +94,6 @@ export class MapService {
 		scene.light = new DirectionalLight({
 			direction: Cartesian3.normalize(LIGHT_DIRECTION_FROM_ABOVE, new Cartesian3()),
 			intensity: 1
-		});
-	}
-
-	private waitUntilModelIsReady(model: Model): Promise<void> {
-		return new Promise((resolve, reject) => {
-			if (model.ready) {
-				resolve();
-				return;
-			}
-			model.readyEvent.addEventListener(() => resolve());
-			model.errorEvent.addEventListener((error) =>
-				reject(error instanceof Error ? error : new Error(String(error)))
-			);
 		});
 	}
 }

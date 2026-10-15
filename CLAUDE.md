@@ -18,7 +18,8 @@ Kontrakt danych: `static/data/khorinis/README.md`. UI po polsku.
   przez fasadę. Żadnych bezpośrednich wywołań serwisu z logiką domenową w komponencie.
 - Obiektów Cesium (Viewer, Model, kolekcje) **nie trzymamy w `$state`** — tylko w polach klas.
   Reaktywne są wyłącznie dane aplikacji; do Cesium przekazuje je warstwa łącząca w `$effect`.
-- Ciężkie warstwy (model świata, modele 3D) docelowo ładujemy z **Cesium ion**, nie z `static/`.
+- Ciężkie warstwy (model świata, modele 3D) są tilowane i ładowane z **Cesium ion** (3D Tiles), nigdy
+  z plików aplikacji. Asset ID trzymamy w katalogu światów (`src/lib/data/world-catalog.ts`).
 
 ### Struktura folderów (alias `#lib`)
 
