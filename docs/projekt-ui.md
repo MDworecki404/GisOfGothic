@@ -84,6 +84,9 @@ z ziarnem CSS.
 
 ## Narzędzia
 
+Stan na wersję v1: zrobione są Szukaj, Warstwy (dane i identyfikacja), Pomiary (odległość z profilem,
+współrzędne) i Czas (godzina dla rutyn). Analizy, Zakładki, podkłady, pole i wybór rozdziału — w kolejnych krokach.
+
 | Narzędzie           | Funkcje                                                                                                                                                                                     | Etap                       |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
 | **Szukaj**          | podpowiedzi z kategorią i liczbą sztuk; filtry rodzaju; karta szczegółów (fakty, lista miejsc z odległością, skrzynie z kluczem, rutyna postaci); „pokaż wszystkie na mapie”; link do wpisu | v1                         |

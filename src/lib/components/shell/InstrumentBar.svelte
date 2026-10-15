@@ -41,6 +41,17 @@
 		</div>
 	{/if}
 
+	<div class="{cell} hidden md:flex">
+		<span class="text-muted-foreground">Godzina</span>
+		<button
+			class="hover:text-primary"
+			title="Zmień porę dnia"
+			onclick={() => geoportal.selectTool('time')}
+		>
+			{appState.timeOfDayLabel}
+		</button>
+	</div>
+
 	<div
 		class="{cell} hidden flex-1 justify-end md:flex {appState.hasError
 			? 'text-destructive'
