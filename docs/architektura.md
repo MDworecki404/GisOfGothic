@@ -95,6 +95,9 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `coordinate-system-changed` | `systemId`                                | zmiana układu współrzędnych w pasku przyrządu                               |
 | `search-results-changed`    | `query`, `typeFilter`, `results`          | zmiana zapytania, filtra albo wczytanie indeksu                             |
 | `search-entry-selected`     | `details` lub `null`                      | wybrano wpis (karta szczegółów, znaczniki na mapie) albo wrócono do wyników |
+| `data-layers-changed`       | `layers` (nazwa, kolor, liczność, stan)   | włączenie, wczytywanie albo błąd warstwy danych                             |
+| `data-layer-load-failed`    | `layerName`, `message`                    | nie udało się pobrać lub sprawdzić pliku warstwy                            |
+| `feature-identified`        | `identification` lub `null`               | kliknięto punkt warstwy (karta informacji) albo puste miejsce               |
 
 ## Cesium a reaktywność Svelte
 
@@ -128,3 +131,12 @@ a `PlaceMarkersLayer` rysuje miejsca wybranego wpisu jako jedną kolekcję punkt
 
 Wybrany wpis jest w adresie: `/g2nk/khorinis?wpis=item:ITPL_PERM_HERB`. Wpis z linku czeka na
 wczytanie indeksu, a po wczytaniu modelu świata kamera leci do jego miejsc.
+
+## Warstwy danych i identyfikacja
+
+`DATA_LAYERS` (`services/layers/data-layer-catalog.ts`) opisuje warstwy: przedmioty w świecie, skrzynie,
+unikatowe postacie, wszyscy NPC — plik GeoJSON, kolor, parser właściwości i opis obiektu do karty.
+`DataLayersCoordinator` pobiera plik dopiero przy pierwszym włączeniu warstwy i go zapamiętuje.
+`DataLayersRenderer` rysuje każdą warstwę jako kolekcję punktów, której identyfikatorem jest
+`{ layerId, featureIndex }`; kliknięcie mapy (`MapViewObserver` → `onMapClicked`) wskazuje obiekt
+w danych bez dodatkowych map, a fasada publikuje `feature-identified`.

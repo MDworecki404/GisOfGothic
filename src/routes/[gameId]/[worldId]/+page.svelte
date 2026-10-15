@@ -1,5 +1,6 @@
 <script lang="ts">
 	import MapView from '#lib/components/MapView.svelte';
+	import IdentifyCard from '#lib/components/shell/IdentifyCard.svelte';
 	import InstrumentBar from '#lib/components/shell/InstrumentBar.svelte';
 	import MapControls from '#lib/components/shell/MapControls.svelte';
 	import ToolPanel from '#lib/components/shell/ToolPanel.svelte';
@@ -48,5 +49,6 @@
 	<ToolRail />
 	<ToolPanel />
 	<MapControls />
+	<IdentifyCard />
 	<InstrumentBar />
 </main>

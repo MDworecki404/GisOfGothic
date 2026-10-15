@@ -13,6 +13,8 @@ import type {
 	SearchResult
 } from '#lib/services/search/search-entry-presenter.js';
 import type { SearchTypeFilter } from '#lib/services/search/search-service.js';
+import type { FeatureIdentification } from '#lib/services/layers/data-layer-catalog.js';
+import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 
 const coordinateFormatter = new CoordinateFormatter();
@@ -36,12 +38,25 @@ export class AppState {
 	searchTypeFilter = $state<SearchTypeFilter>('all');
 	searchResults = $state.raw<SearchResult[]>([]);
 	selectedEntry = $state.raw<SearchEntryDetails | null>(null);
+	dataLayers = $state.raw<DataLayerView[]>([]);
+	dataLayerErrorMessage = $state<string | null>(null);
+	identifiedFeature = $state.raw<FeatureIdentification | null>(null);
 
 	constructor(eventBus: AppEventBus) {
 		eventBus.subscribe('search-results-changed', ({ query, typeFilter, results }) => {
 			this.searchQuery = query;
 			this.searchTypeFilter = typeFilter;
 			this.searchResults = results;
+		});
+		eventBus.subscribe('data-layers-changed', ({ layers }) => {
+			this.dataLayers = layers;
+			if (layers.every((layer) => layer.status !== 'error')) this.dataLayerErrorMessage = null;
+		});
+		eventBus.subscribe('data-layer-load-failed', ({ layerName, message }) => {
+			this.dataLayerErrorMessage = `Nie udało się wczytać warstwy „${layerName}”: ${message}`;
+		});
+		eventBus.subscribe('feature-identified', ({ identification }) => {
+			this.identifiedFeature = identification;
 		});
 		eventBus.subscribe('search-entry-selected', ({ details }) => {
 			this.selectedEntry = details;

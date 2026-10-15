@@ -7,9 +7,16 @@ import {
 	type Viewer
 } from 'cesium';
 import type { WorldFrame, WorldPosition } from '#lib/services/geodesy/world-frame.js';
+import { isFeaturePick, type FeaturePick } from './data-layers-renderer.js';
+
+export interface MapClick {
+	position: WorldPosition | null;
+	featurePick: FeaturePick | null;
+}
 
 export interface MapViewListeners {
 	onCursorMoved(position: WorldPosition | null): void;
+	onMapClicked(click: MapClick): void;
 	onHeadingChanged(headingDegrees: number): void;
 	onScaleChanged(metresPerPixel: number | null): void;
 }
@@ -41,6 +48,9 @@ export class MapViewObserver {
 		this.inputHandler.setInputAction((movement: ScreenSpaceEventHandler.MotionEvent) => {
 			this.pendingCursorPosition = Cartesian2.clone(movement.endPosition);
 		}, ScreenSpaceEventType.MOUSE_MOVE);
+		this.inputHandler.setInputAction((click: ScreenSpaceEventHandler.PositionedEvent) => {
+			this.listeners.onMapClicked(this.describeClick(click.position));
+		}, ScreenSpaceEventType.LEFT_CLICK);
 		viewer.scene.canvas.addEventListener('mouseleave', this.reportCursorLeftMap);
 
 		viewer.camera.percentageChanged = CAMERA_CHANGE_SENSITIVITY;
@@ -63,6 +73,16 @@ export class MapViewObserver {
 		const scene = this.viewer.scene;
 		if (!scene.pickPositionSupported) return null;
 		return scene.pickPosition(screenPosition) ?? null;
+	}
+
+	private describeClick(screenPosition: Cartesian2): MapClick {
+		const picked: unknown = this.viewer.scene.pick(screenPosition);
+		const pickedId =
+			typeof picked === 'object' && picked !== null && 'id' in picked ? picked.id : null;
+		return {
+			position: this.pickWorldPosition(screenPosition),
+			featurePick: isFeaturePick(pickedId) ? pickedId : null
+		};
 	}
 
 	destroy(): void {
