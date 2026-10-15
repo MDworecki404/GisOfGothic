@@ -13,6 +13,7 @@ import {
 import type { Anchor } from '#lib/data/types.js';
 import { WorldFrame } from '#lib/services/geodesy/world-frame.js';
 import { MapViewObserver, type MapViewListeners } from './map-view-observer.js';
+import { PlaceMarkersLayer, type PlaceMarker } from './place-markers-layer.js';
 import { ViewerOptionsBuilder } from './viewer-options-builder.js';
 
 const BACKGROUND_COLOR = '#14110d';
@@ -30,6 +31,7 @@ const NORTH_RESET_DURATION_SECONDS = 0.6;
 export class MapService {
 	private readonly viewer: Viewer;
 	private readonly viewObserver: MapViewObserver;
+	private readonly placeMarkers: PlaceMarkersLayer;
 	private worldTileset: Cesium3DTileset | null = null;
 	private worldFrame: WorldFrame | null = null;
 	private isDestroyed = false;
@@ -47,6 +49,7 @@ export class MapService {
 		this.viewer = new Viewer(container, options);
 		this.configureSceneForWorldBelowSeaLevel();
 		this.viewObserver = new MapViewObserver(this.viewer, listeners, () => this.worldFrame);
+		this.placeMarkers = new PlaceMarkersLayer(this.viewer);
 	}
 
 	/**
@@ -105,6 +108,19 @@ export class MapService {
 			duration: NORTH_RESET_DURATION_SECONDS,
 			offset: new HeadingPitchRange(0, camera.pitch, Cartesian3.distance(camera.position, centre))
 		});
+	}
+
+	showPlaceMarkers(markers: readonly PlaceMarker[], shouldFlyToMarkers: boolean): void {
+		this.placeMarkers.showMarkers(markers);
+		if (shouldFlyToMarkers) this.placeMarkers.flyToAllMarkers();
+	}
+
+	flyToPlaceMarker(index: number): void {
+		this.placeMarkers.flyToMarker(index);
+	}
+
+	clearPlaceMarkers(): void {
+		this.placeMarkers.clearMarkers();
 	}
 
 	removeWorldTileset(): void {

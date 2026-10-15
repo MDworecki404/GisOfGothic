@@ -15,6 +15,11 @@
 		if (appState.activeToolId !== 'search') geoportal.selectTool('search');
 	}
 
+	function selectFirstResultOnEnter(event: KeyboardEvent): void {
+		const firstResult = appState.searchResults.at(0);
+		if (event.key === 'Enter' && firstResult) geoportal.selectSearchEntry(firstResult.id);
+	}
+
 	function focusSearchOnShortcut(event: KeyboardEvent): void {
 		if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
 			event.preventDefault();
@@ -49,9 +54,13 @@
 		<SearchIcon class="size-4 shrink-0" />
 		<input
 			bind:this={searchInput}
-			class="min-w-0 flex-1 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
+			class="min-w-0 flex-1 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none"
 			placeholder="Szukaj przedmiotu lub postaci…"
 			aria-label="Szukaj przedmiotu lub postaci"
+			type="search"
+			value={appState.searchQuery}
+			oninput={(event) => geoportal.search(event.currentTarget.value)}
+			onkeydown={selectFirstResultOnEnter}
 			onfocus={openSearchPanel}
 		/>
 		<kbd class="hidden rounded-sm border border-border px-1.5 font-sans text-xs md:inline"

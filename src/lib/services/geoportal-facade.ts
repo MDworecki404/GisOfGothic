@@ -4,6 +4,8 @@ import type { AppEventBus } from '#lib/events/app-events.js';
 import { CoordinateFormatter, type CoordinateSystemId } from './geodesy/coordinate-formatter.js';
 import { MapService } from './map/map-service.js';
 import type { MapViewListeners } from './map/map-view-observer.js';
+import { SearchCoordinator } from './search/search-coordinator.js';
+import type { SearchTypeFilter } from './search/search-service.js';
 import type { ToolId } from './tools/tool-id.js';
 
 export type DataLoaderFactory = (dataBaseUrl: string) => GeoportalDataLoader;
@@ -27,18 +29,22 @@ export class GeoportalFacade {
 	private activeToolId: ToolId | null = 'search';
 	private coordinateSystemId: CoordinateSystemId = 'khorinis-1992';
 	private readonly coordinateFormatter = new CoordinateFormatter();
+	private readonly searchCoordinator: SearchCoordinator;
 
 	constructor(
 		private readonly eventBus: AppEventBus,
 		private readonly createDataLoader: DataLoaderFactory,
 		private readonly cesiumIonAccessToken?: string
-	) {}
+	) {
+		this.searchCoordinator = new SearchCoordinator(eventBus, () => this.mapService);
+	}
 
 	openWorld(world: WorldDefinition): void {
 		if (this.currentWorld?.id === world.id && this.currentWorld.gameId === world.gameId) return;
 		this.currentWorld = world;
 		this.currentDataLoader = this.createDataLoader(world.dataBaseUrl);
 		this.eventBus.publish({ type: 'world-opened', worldName: world.name });
+		this.searchCoordinator.useIndex(null);
 		void this.loadSearchIndexOfCurrentWorld();
 		void this.showCurrentWorldOnMap();
 	}
@@ -54,6 +60,27 @@ export class GeoportalFacade {
 			this.cesiumIonAccessToken
 		);
 		void this.showCurrentWorldOnMap();
+		this.searchCoordinator.showSelectedEntryOnMap(false);
+	}
+
+	search(query: string): void {
+		this.searchCoordinator.search(query);
+	}
+
+	filterSearchByType(typeFilter: SearchTypeFilter): void {
+		this.searchCoordinator.filterByType(typeFilter);
+	}
+
+	selectSearchEntry(entryId: string): void {
+		this.searchCoordinator.selectEntry(entryId);
+	}
+
+	clearSearchSelection(): void {
+		this.searchCoordinator.clearSelection();
+	}
+
+	flyToPlaceOfSelectedEntry(placeIndex: number): void {
+		this.searchCoordinator.flyToPlace(placeIndex);
 	}
 
 	selectTool(toolId: ToolId): void {
@@ -112,6 +139,7 @@ export class GeoportalFacade {
 		try {
 			const index = await dataLoader.loadSearchIndex();
 			if (dataLoader !== this.currentDataLoader) return;
+			this.searchCoordinator.useIndex(index);
 			this.eventBus.publish({
 				type: 'search-index-loaded',
 				counts: dataLoader.countEntriesByType(index)
@@ -140,7 +168,9 @@ export class GeoportalFacade {
 			const metadata = await dataLoader.loadMetadata();
 			if (!isStillCurrent()) return;
 			await mapService.showWorldTileset(world.worldTilesetIonAssetId, metadata.anchor);
-			if (isStillCurrent()) this.eventBus.publish({ type: 'world-loaded' });
+			if (!isStillCurrent()) return;
+			this.eventBus.publish({ type: 'world-loaded' });
+			this.searchCoordinator.showSelectedEntryOnMap(true);
 		} catch (error) {
 			if (!isStillCurrent()) return;
 			console.error(error);

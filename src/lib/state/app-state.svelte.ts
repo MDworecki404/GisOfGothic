@@ -8,6 +8,11 @@ import {
 } from '#lib/services/geodesy/coordinate-formatter.js';
 import { ScaleBarCalculator, type ScaleBar } from '#lib/services/geodesy/scale-bar-calculator.js';
 import type { WorldPosition } from '#lib/services/geodesy/world-frame.js';
+import type {
+	SearchEntryDetails,
+	SearchResult
+} from '#lib/services/search/search-entry-presenter.js';
+import type { SearchTypeFilter } from '#lib/services/search/search-service.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 
 const coordinateFormatter = new CoordinateFormatter();
@@ -27,8 +32,20 @@ export class AppState {
 	headingDegrees = $state(0);
 	metresPerPixel = $state<number | null>(null);
 	coordinateSystemId = $state<CoordinateSystemId>('khorinis-1992');
+	searchQuery = $state('');
+	searchTypeFilter = $state<SearchTypeFilter>('all');
+	searchResults = $state.raw<SearchResult[]>([]);
+	selectedEntry = $state.raw<SearchEntryDetails | null>(null);
 
 	constructor(eventBus: AppEventBus) {
+		eventBus.subscribe('search-results-changed', ({ query, typeFilter, results }) => {
+			this.searchQuery = query;
+			this.searchTypeFilter = typeFilter;
+			this.searchResults = results;
+		});
+		eventBus.subscribe('search-entry-selected', ({ details }) => {
+			this.selectedEntry = details;
+		});
 		eventBus.subscribe('tool-selected', ({ toolId }) => {
 			this.activeToolId = toolId;
 		});

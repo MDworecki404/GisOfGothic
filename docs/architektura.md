@@ -79,20 +79,22 @@ odpięcie mapy) jest pomijany, a niepotrzebny tileset niszczony.
 Lista w `src/lib/events/app-events.ts`. Zdarzenie to obiekt z polem `type` (unia dyskryminowana),
 więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez asercji.
 
-| Zdarzenie                   | Dane                                      | Kiedy                                         |
-| --------------------------- | ----------------------------------------- | --------------------------------------------- |
-| `world-opened`              | `worldName`                               | fasada przełączyła świat                      |
-| `world-load-started`        | —                                         | start wczytywania modelu świata               |
-| `world-loaded`              | —                                         | tileset świata dodany do sceny                |
-| `world-load-failed`         | `message`                                 | brak tokenu ion albo błąd wczytywania         |
-| `search-index-load-started` | —                                         | start wczytywania indeksu                     |
-| `search-index-loaded`       | `counts`                                  | indeks wczytany; liczba przedmiotów i postaci |
-| `search-index-load-failed`  | `message`                                 | błąd pobrania lub walidacji indeksu           |
-| `tool-selected`             | `toolId` lub `null`                       | otwarto albo zamknięto narzędzie na szynie    |
-| `cursor-moved`              | `position` (E, N, H, lon, lat) lub `null` | kursor nad terenem (najwyżej raz na klatkę)   |
-| `camera-heading-changed`    | `headingDegrees`                          | obrót kamery — kompas                         |
-| `map-scale-changed`         | `metresPerPixel` lub `null`               | zmiana skali w środku ekranu — podziałka      |
-| `coordinate-system-changed` | `systemId`                                | zmiana układu współrzędnych w pasku przyrządu |
+| Zdarzenie                   | Dane                                      | Kiedy                                                                       |
+| --------------------------- | ----------------------------------------- | --------------------------------------------------------------------------- |
+| `world-opened`              | `worldName`                               | fasada przełączyła świat                                                    |
+| `world-load-started`        | —                                         | start wczytywania modelu świata                                             |
+| `world-loaded`              | —                                         | tileset świata dodany do sceny                                              |
+| `world-load-failed`         | `message`                                 | brak tokenu ion albo błąd wczytywania                                       |
+| `search-index-load-started` | —                                         | start wczytywania indeksu                                                   |
+| `search-index-loaded`       | `counts`                                  | indeks wczytany; liczba przedmiotów i postaci                               |
+| `search-index-load-failed`  | `message`                                 | błąd pobrania lub walidacji indeksu                                         |
+| `tool-selected`             | `toolId` lub `null`                       | otwarto albo zamknięto narzędzie na szynie                                  |
+| `cursor-moved`              | `position` (E, N, H, lon, lat) lub `null` | kursor nad terenem (najwyżej raz na klatkę)                                 |
+| `camera-heading-changed`    | `headingDegrees`                          | obrót kamery — kompas                                                       |
+| `map-scale-changed`         | `metresPerPixel` lub `null`               | zmiana skali w środku ekranu — podziałka                                    |
+| `coordinate-system-changed` | `systemId`                                | zmiana układu współrzędnych w pasku przyrządu                               |
+| `search-results-changed`    | `query`, `typeFilter`, `results`          | zmiana zapytania, filtra albo wczytanie indeksu                             |
+| `search-entry-selected`     | `details` lub `null`                      | wybrano wpis (karta szczegółów, znaczniki na mapie) albo wrócono do wyników |
 
 ## Cesium a reaktywność Svelte
 
@@ -115,3 +117,14 @@ aplikacji w `AppState`.
 `WorldFrame` przelicza punkt sceny Cesium na pozycję w świecie: E/N/H w metrach od kotwicy oraz lon/lat.
 `CoordinateFormatter` pokazuje ją w jednym z układów: **Układ Khorinis 1992** (metry), **jednostki gry**
 (centymetry silnika: x = E, y = H, z = −N — te same co w komendzie Marvina `goto pos`) albo **WGS 84**.
+
+## Wyszukiwanie
+
+`SearchCoordinator` (wywoływany przez fasadę) trzyma zapytanie, filtr i wybrany wpis jednego świata.
+`SearchService` to indeks MiniSearch: pola nazwa, kategoria (z nazwą gildii zamiast kodu, np. VLK →
+Mieszczanin) i kod; wyszukiwanie po początku słowa, z tolerancją literówek w dłuższych słowach i bez
+polskich znaków (`normalizeSearchTerm`). `SearchEntryPresenter` zamienia wpisy na teksty dla UI,
+a `PlaceMarkersLayer` rysuje miejsca wybranego wpisu jako jedną kolekcję punktów Cesium.
+
+Wybrany wpis jest w adresie: `/g2nk/khorinis?wpis=item:ITPL_PERM_HERB`. Wpis z linku czeka na
+wczytanie indeksu, a po wczytaniu modelu świata kamera leci do jego miejsc.
