@@ -19,6 +19,7 @@ export interface MapViewListeners {
 	onMapClicked(click: MapClick): void;
 	onHeadingChanged(headingDegrees: number): void;
 	onScaleChanged(metresPerPixel: number | null): void;
+	onCameraSettled(): void;
 }
 
 const SCALE_SAMPLE_PIXELS = 100;
@@ -34,6 +35,7 @@ export class MapViewObserver {
 	private readonly inputHandler: ScreenSpaceEventHandler;
 	private readonly stopListeningToCamera: () => void;
 	private readonly stopListeningToRender: () => void;
+	private readonly stopListeningToCameraSettling: () => void;
 	private pendingCursorPosition: Cartesian2 | null = null;
 	private isCameraChanged = true;
 	private isScaleKnown = false;
@@ -57,6 +59,9 @@ export class MapViewObserver {
 		this.stopListeningToCamera = viewer.camera.changed.addEventListener(() => {
 			this.isCameraChanged = true;
 		});
+		this.stopListeningToCameraSettling = viewer.camera.moveEnd.addEventListener(() =>
+			this.listeners.onCameraSettled()
+		);
 		this.stopListeningToRender = viewer.scene.postRender.addEventListener(() =>
 			this.reportChangesAfterRender()
 		);
@@ -88,6 +93,7 @@ export class MapViewObserver {
 	destroy(): void {
 		this.viewer.scene.canvas.removeEventListener('mouseleave', this.reportCursorLeftMap);
 		this.stopListeningToCamera();
+		this.stopListeningToCameraSettling();
 		this.stopListeningToRender();
 		if (!this.inputHandler.isDestroyed()) this.inputHandler.destroy();
 	}

@@ -9,7 +9,9 @@
 >
 	{#each TOOL_DEFINITIONS as tool (tool.id)}
 		<button
-			class="tool-rail-button relative flex flex-1 flex-col items-center gap-0.5 rounded-sm py-2 text-[11.5px] text-muted-foreground hover:bg-secondary hover:text-foreground md:flex-none"
+			class="tool-rail-button relative flex flex-1 flex-col items-center gap-0.5 rounded-sm py-2 text-[11.5px] text-muted-foreground hover:bg-secondary hover:text-foreground md:flex-none {tool.isAtRailEnd
+				? 'md:mt-auto'
+				: ''}"
 			aria-pressed={appState.activeToolId === tool.id}
 			onclick={() => geoportal.selectTool(tool.id)}
 		>

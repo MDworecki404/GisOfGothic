@@ -21,6 +21,7 @@ export class SearchCoordinator {
 	private typeFilter: SearchTypeFilter = 'all';
 	private selectedEntry: SearchEntry | null = null;
 	private entryIdAwaitingIndex: string | null = null;
+	private shouldFlyToAwaitedEntry = true;
 
 	constructor(
 		private readonly eventBus: AppEventBus,
@@ -31,11 +32,17 @@ export class SearchCoordinator {
 		return this.searchService;
 	}
 
+	get selectedEntryReference(): { id: string; name: string } | null {
+		return this.selectedEntry ? { id: this.selectedEntry.id, name: this.selectedEntry.name } : null;
+	}
+
 	useIndex(index: SearchIndex | null): void {
 		this.searchService = index ? new SearchService(index) : null;
 		this.clearSelection();
 		this.publishResults();
-		if (this.entryIdAwaitingIndex) this.selectEntry(this.entryIdAwaitingIndex);
+		if (this.entryIdAwaitingIndex) {
+			this.selectEntry(this.entryIdAwaitingIndex, this.shouldFlyToAwaitedEntry);
+		}
 	}
 
 	search(query: string): void {
@@ -48,10 +55,11 @@ export class SearchCoordinator {
 		this.publishResults();
 	}
 
-	selectEntry(entryId: string): void {
+	selectEntry(entryId: string, shouldFlyToMarkers = true): void {
 		const entry = this.searchService?.findEntry(entryId);
 		if (!this.searchService) {
 			this.entryIdAwaitingIndex = entryId;
+			this.shouldFlyToAwaitedEntry = shouldFlyToMarkers;
 			return;
 		}
 		this.entryIdAwaitingIndex = null;
@@ -61,7 +69,7 @@ export class SearchCoordinator {
 			type: 'search-entry-selected',
 			details: this.presenter.presentDetails(entry)
 		});
-		this.showSelectedEntryOnMap(true);
+		this.showSelectedEntryOnMap(shouldFlyToMarkers);
 	}
 
 	clearSelection(): void {

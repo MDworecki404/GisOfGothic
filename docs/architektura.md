@@ -99,6 +99,8 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `data-layer-load-failed`    | `layerName`, `message`                                                  | nie udało się pobrać lub sprawdzić pliku warstwy                            |
 | `feature-identified`        | `identification` lub `null`                                             | kliknięto punkt warstwy (karta informacji) albo puste miejsce               |
 | `analysis-changed`          | `analysis` (tryb, temat, punkt odniesienia, wyniki)                     | zmiana tematu, punktu albo wyniku analizy w narzędziu Analizy               |
+| `camera-view-changed`       | `view` (E, N, H, kierunek, nachylenie) lub `null`                       | kamera się zatrzymała (`moveEnd`) albo odtworzono widok z linku             |
+| `bookmarks-changed`         | `bookmarks`, `hasStorageError`                                          | wczytano, dodano albo usunięto zakładkę (lista dotyczy otwartego świata)    |
 | `measurement-changed`       | `measurement` (tryb, wierzchołki, podsumowanie, profil, wskazany punkt) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie    |
 | `time-of-day-changed`       | `minuteOfDay`, `routineLayerStatus`, `charactersOnMap`                  | zmiana pory dnia albo warstwy postaci o tej godzinie                        |
 
@@ -173,6 +175,24 @@ kolor komórki wynika z legendy (równe przedziały, najwyżej pięć, ciepła s
 jasny żar). `AnalysisRenderer` rysuje komórki jako jeden prymityw z `depthFailAppearance`, żeby
 nie znikały pod terenem na zboczach; w tym trybie kliknięcie mapy nie ustawia punktu. Uzasadnienie podziału
 na czyste klasy i renderer: [ADR 0006](adr/0006-analizy-na-czystych-klasach-i-lokalnym-rzucie.md).
+
+## Widok w adresie i zakładki
+
+Stan widoku to trzy rzeczy: wybrany wpis, kamera i otwarte narzędzie. `ViewLinkCodec` zamienia je na
+parametry adresu i z powrotem: `?wpis=item:…&widok=E_N_H_kierunek_nachylenie&narzedzie=measure`
+(parametry domyślne są pomijane, zamknięty panel to `narzedzie=zamkniete`). Kamerę koduje
+`CameraViewCodec` w metrach od kotwicy i stopniach, więc link nie zależy od globusa Cesium; uszkodzony
+parametr jest ignorowany, a reszta widoku odtwarzana.
+
+Strona (`+page.svelte`) tylko przekazuje fasadzie surowe `location.search` (`openSharedView`) i po każdej
+zmianie `AppState.sharedViewQuery` podmienia adres (`replaceState`). `MapViewObserver` zgłasza zatrzymanie
+kamery (`camera.moveEnd`), fasada publikuje `camera-view-changed`. Widok z linku czeka na wczytanie modelu
+świata (kamera) i indeksu (wpis); gdy link ma kamerę, wpis nie przelatuje do swoich miejsc.
+
+`BookmarksCoordinator` trzyma zakładki otwartego świata, a `BookmarkStore` zapisuje je w `localStorage`
+(klucz `gisofgothic:bookmarks:v1`, lista JSON). Odczyt waliduje każdy wpis; niedostępna albo pełna pamięć
+nie przerywa działania — panel pokazuje ostrzeżenie. Zakładka zapamiętuje to samo co link, więc „Kopiuj
+link” składa adres z `linkQuery` zakładki. Decyzje: [ADR 0007](adr/0007-widok-w-adresie-i-zakladki-w-localstorage.md).
 
 ## Pora dnia
 

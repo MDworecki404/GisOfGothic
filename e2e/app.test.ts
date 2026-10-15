@@ -113,6 +113,29 @@ test('pomiar pola prosi o wierzchołki wielokąta', async ({ page }) => {
 	await expect(page.getByText(/Od trzeciego policzymy pole i obwód/)).toBeVisible();
 });
 
+test('zakładki zapisują widok, przeżywają odświeżenie i dają się usunąć', async ({ page }) => {
+	await page.goto('/g2nk/khorinis');
+	await page
+		.getByRole('navigation', { name: 'Narzędzia' })
+		.getByRole('button', { name: 'Zakładki' })
+		.click();
+	await page.getByLabel('Nazwa zakładki').fill('Widok testowy');
+	await page.getByRole('button', { name: 'Zapisz widok' }).click();
+	await expect(page.getByRole('list', { name: 'Zapisane widoki' })).toContainText('Widok testowy');
+
+	await page.reload();
+	await expect(page.getByRole('list', { name: 'Zapisane widoki' })).toContainText('Widok testowy');
+	await page.getByRole('button', { name: /Usuń zakładkę „Widok testowy”/ }).click();
+	await expect(page.getByText('Nic jeszcze nie zapisano.')).toBeVisible();
+});
+
+test('link z narzędziem otwiera panel, a uszkodzona kamera jest ignorowana', async ({ page }) => {
+	await page.goto('/g2nk/khorinis?widok=zepsute&narzedzie=measure');
+	await expect(page.getByRole('heading', { name: 'Pomiary' })).toBeVisible();
+	await expect(page).toHaveURL(/narzedzie=measure/);
+	await expect(page).not.toHaveURL(/widok=/);
+});
+
 test('link z wpisem otwiera kartę postaci', async ({ page }) => {
 	await page.goto('/g2nk/khorinis?wpis=character:VLK_412_HARAD');
 	await expect(page.getByRole('heading', { name: 'Harad' })).toBeVisible({ timeout: 30_000 });

@@ -1,4 +1,7 @@
 import type { IndexCounts } from '#lib/data/types.js';
+import type { BookmarkView } from '#lib/services/bookmarks/bookmarks-coordinator.js';
+import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
+import { ViewLinkCodec } from '#lib/services/bookmarks/view-link-codec.js';
 import type { AnalysisView } from '#lib/services/analysis/analysis-coordinator.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
 import {
@@ -29,6 +32,7 @@ export interface MeasurementReading {
 	value: string;
 }
 const scaleBarCalculator = new ScaleBarCalculator();
+const viewLinkCodec = new ViewLinkCodec();
 
 export type LoadStatus = 'loading' | 'ready' | 'error';
 
@@ -53,6 +57,9 @@ export class AppState {
 	identifiedFeature = $state.raw<FeatureIdentification | null>(null);
 	measurement = $state.raw<MeasurementView | null>(null);
 	analysis = $state.raw<AnalysisView | null>(null);
+	cameraView = $state.raw<CameraView | null>(null);
+	bookmarks = $state.raw<BookmarkView[]>([]);
+	bookmarkStorageFailed = $state(false);
 	minuteOfDay = $state(12 * 60);
 	routineLayerStatus = $state<RoutineLayerStatus>('hidden');
 	charactersAtTimeOfDay = $state<number | null>(null);
@@ -82,6 +89,13 @@ export class AppState {
 		);
 		eventBus.subscribe('measurement-changed', ({ measurement }) => {
 			this.measurement = measurement;
+		});
+		eventBus.subscribe('camera-view-changed', ({ view }) => {
+			this.cameraView = view;
+		});
+		eventBus.subscribe('bookmarks-changed', ({ bookmarks, hasStorageError }) => {
+			this.bookmarks = bookmarks;
+			this.bookmarkStorageFailed = hasStorageError;
 		});
 		eventBus.subscribe('analysis-changed', ({ analysis }) => {
 			this.analysis = analysis;
@@ -214,6 +228,15 @@ export class AppState {
 	get measuredPointMarvinCommand(): string | null {
 		const point = this.measurement?.pickedPoint;
 		return point ? coordinateFormatter.formatMarvinTeleportCommand(point) : null;
+	}
+
+	/** Parametry adresu odtwarzające bieżący widok: wpis, kamera i narzędzie. */
+	get sharedViewQuery(): string {
+		return viewLinkCodec.buildQuery({
+			entryId: this.selectedEntry?.id ?? null,
+			camera: this.cameraView,
+			toolId: this.activeToolId
+		});
 	}
 
 	formatLength(lengthMetres: number): string {
