@@ -26,10 +26,12 @@ export class WorldCatalog {
 		return this.games.flatMap((game) => game.worlds);
 	}
 
+	findGame(gameId: string): GameDefinition | undefined {
+		return this.games.find((game) => game.id === gameId);
+	}
+
 	findWorld(gameId: string, worldId: string): WorldDefinition | undefined {
-		return this.games
-			.find((game) => game.id === gameId)
-			?.worlds.find((world) => world.id === worldId);
+		return this.findGame(gameId)?.worlds.find((world) => world.id === worldId);
 	}
 
 	getDefaultWorld(): WorldDefinition {

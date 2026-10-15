@@ -1,7 +1,10 @@
 import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
 import type { WorldDefinition } from '#lib/data/world-catalog.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
+import { CoordinateFormatter, type CoordinateSystemId } from './geodesy/coordinate-formatter.js';
 import { MapService } from './map/map-service.js';
+import type { MapViewListeners } from './map/map-view-observer.js';
+import type { ToolId } from './tools/tool-id.js';
 
 export type DataLoaderFactory = (dataBaseUrl: string) => GeoportalDataLoader;
 
@@ -21,6 +24,9 @@ export class GeoportalFacade {
 	private currentWorld: WorldDefinition | null = null;
 	private currentDataLoader: GeoportalDataLoader | null = null;
 	private worldLoadGeneration = 0;
+	private activeToolId: ToolId | null = 'search';
+	private coordinateSystemId: CoordinateSystemId = 'khorinis-1992';
+	private readonly coordinateFormatter = new CoordinateFormatter();
 
 	constructor(
 		private readonly eventBus: AppEventBus,
@@ -42,14 +48,61 @@ export class GeoportalFacade {
 			this.eventBus.publish({ type: 'world-load-failed', message: MISSING_ION_TOKEN_MESSAGE });
 			return;
 		}
-		this.mapService = new MapService(container, this.cesiumIonAccessToken);
+		this.mapService = new MapService(
+			container,
+			this.createMapViewListeners(),
+			this.cesiumIonAccessToken
+		);
 		void this.showCurrentWorldOnMap();
+	}
+
+	selectTool(toolId: ToolId): void {
+		this.activeToolId = this.activeToolId === toolId ? null : toolId;
+		this.eventBus.publish({ type: 'tool-selected', toolId: this.activeToolId });
+	}
+
+	closeActiveTool(): void {
+		this.activeToolId = null;
+		this.eventBus.publish({ type: 'tool-selected', toolId: null });
+	}
+
+	switchToNextCoordinateSystem(): void {
+		this.coordinateSystemId = this.coordinateFormatter.findNextCoordinateSystem(
+			this.coordinateSystemId
+		).id;
+		this.eventBus.publish({ type: 'coordinate-system-changed', systemId: this.coordinateSystemId });
+	}
+
+	zoomIn(): void {
+		this.mapService?.zoomIn();
+	}
+
+	zoomOut(): void {
+		this.mapService?.zoomOut();
+	}
+
+	showWholeWorld(): void {
+		this.mapService?.showWholeWorld();
+	}
+
+	turnMapToNorth(): void {
+		this.mapService?.turnToNorth();
 	}
 
 	detachMap(): void {
 		this.worldLoadGeneration++;
 		this.mapService?.destroy();
 		this.mapService = null;
+	}
+
+	private createMapViewListeners(): MapViewListeners {
+		return {
+			onCursorMoved: (position) => this.eventBus.publish({ type: 'cursor-moved', position }),
+			onHeadingChanged: (headingDegrees) =>
+				this.eventBus.publish({ type: 'camera-heading-changed', headingDegrees }),
+			onScaleChanged: (metresPerPixel) =>
+				this.eventBus.publish({ type: 'map-scale-changed', metresPerPixel })
+		};
 	}
 
 	private async loadSearchIndexOfCurrentWorld(): Promise<void> {
