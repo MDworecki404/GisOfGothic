@@ -5,6 +5,10 @@ import { CoordinateFormatter, type CoordinateSystemId } from './geodesy/coordina
 import { DataLayersCoordinator } from './layers/data-layers-coordinator.js';
 import type { DataLayerId } from './layers/data-layer-catalog.js';
 import { MapService } from './map/map-service.js';
+import {
+	MeasurementCoordinator,
+	type MeasurementMode
+} from './measurement/measurement-coordinator.js';
 import type { MapClick, MapViewListeners } from './map/map-view-observer.js';
 import { SearchCoordinator } from './search/search-coordinator.js';
 import type { SearchTypeFilter } from './search/search-service.js';
@@ -33,6 +37,7 @@ export class GeoportalFacade {
 	private readonly coordinateFormatter = new CoordinateFormatter();
 	private readonly searchCoordinator: SearchCoordinator;
 	private readonly dataLayersCoordinator: DataLayersCoordinator;
+	private readonly measurementCoordinator: MeasurementCoordinator;
 
 	constructor(
 		private readonly eventBus: AppEventBus,
@@ -41,6 +46,7 @@ export class GeoportalFacade {
 	) {
 		this.searchCoordinator = new SearchCoordinator(eventBus, () => this.mapService);
 		this.dataLayersCoordinator = new DataLayersCoordinator(eventBus, () => this.mapService);
+		this.measurementCoordinator = new MeasurementCoordinator(eventBus, () => this.mapService);
 	}
 
 	openWorld(world: WorldDefinition): void {
@@ -50,6 +56,7 @@ export class GeoportalFacade {
 		this.eventBus.publish({ type: 'world-opened', worldName: world.name });
 		this.searchCoordinator.useIndex(null);
 		this.dataLayersCoordinator.useWorld(this.currentDataLoader, {});
+		this.measurementCoordinator.clear();
 		void this.loadSearchIndexOfCurrentWorld();
 		void this.showCurrentWorldOnMap();
 	}
@@ -98,13 +105,23 @@ export class GeoportalFacade {
 	}
 
 	selectTool(toolId: ToolId): void {
-		this.activeToolId = this.activeToolId === toolId ? null : toolId;
-		this.eventBus.publish({ type: 'tool-selected', toolId: this.activeToolId });
+		this.activateTool(this.activeToolId === toolId ? null : toolId);
 	}
 
 	closeActiveTool(): void {
-		this.activeToolId = null;
-		this.eventBus.publish({ type: 'tool-selected', toolId: null });
+		this.activateTool(null);
+	}
+
+	switchMeasurementMode(mode: MeasurementMode): void {
+		this.measurementCoordinator.switchMode(mode);
+	}
+
+	removeLastMeasurementPoint(): void {
+		this.measurementCoordinator.removeLastPoint();
+	}
+
+	clearMeasurement(): void {
+		this.measurementCoordinator.clear();
 	}
 
 	switchToNextCoordinateSystem(): void {
@@ -147,7 +164,18 @@ export class GeoportalFacade {
 		};
 	}
 
+	private activateTool(toolId: ToolId | null): void {
+		if (this.activeToolId === 'measure' && toolId !== 'measure')
+			this.measurementCoordinator.clear();
+		this.activeToolId = toolId;
+		this.eventBus.publish({ type: 'tool-selected', toolId });
+	}
+
 	private reactToMapClick(click: MapClick): void {
+		if (this.activeToolId === 'measure') {
+			if (click.position) this.measurementCoordinator.addPoint(click.position);
+			return;
+		}
 		if (click.featurePick) this.dataLayersCoordinator.identifyFeature(click.featurePick);
 		else this.closeFeatureIdentification();
 	}

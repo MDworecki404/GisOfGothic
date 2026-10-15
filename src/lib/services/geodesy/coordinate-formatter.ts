@@ -31,6 +31,10 @@ const metres = new Intl.NumberFormat('pl-PL', {
 	minimumFractionDigits: 1,
 	maximumFractionDigits: 1
 });
+const kilometres = new Intl.NumberFormat('pl-PL', {
+	minimumFractionDigits: 2,
+	maximumFractionDigits: 2
+});
 const centimetres = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 });
 const degrees = new Intl.NumberFormat('pl-PL', {
 	minimumFractionDigits: 6,
@@ -59,6 +63,16 @@ export class CoordinateFormatter {
 			{ axis: 'N', value: `${metres.format(position.north)} m` },
 			{ axis: 'H', value: `${metres.format(position.height)} m n.p.m.` }
 		];
+	}
+
+	formatLength(lengthMetres: number): string {
+		if (Math.abs(lengthMetres) >= 1000) return `${kilometres.format(lengthMetres / 1000)} km`;
+		return `${metres.format(lengthMetres)} m`;
+	}
+
+	formatHeightChange(changeMetres: number): string {
+		const sign = changeMetres > 0 ? '+' : changeMetres < 0 ? '−' : '';
+		return `${sign}${metres.format(Math.abs(changeMetres))} m`;
 	}
 
 	formatMarvinTeleportCommand(position: WorldPosition): string {

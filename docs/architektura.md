@@ -79,25 +79,26 @@ odpięcie mapy) jest pomijany, a niepotrzebny tileset niszczony.
 Lista w `src/lib/events/app-events.ts`. Zdarzenie to obiekt z polem `type` (unia dyskryminowana),
 więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez asercji.
 
-| Zdarzenie                   | Dane                                      | Kiedy                                                                       |
-| --------------------------- | ----------------------------------------- | --------------------------------------------------------------------------- |
-| `world-opened`              | `worldName`                               | fasada przełączyła świat                                                    |
-| `world-load-started`        | —                                         | start wczytywania modelu świata                                             |
-| `world-loaded`              | —                                         | tileset świata dodany do sceny                                              |
-| `world-load-failed`         | `message`                                 | brak tokenu ion albo błąd wczytywania                                       |
-| `search-index-load-started` | —                                         | start wczytywania indeksu                                                   |
-| `search-index-loaded`       | `counts`                                  | indeks wczytany; liczba przedmiotów i postaci                               |
-| `search-index-load-failed`  | `message`                                 | błąd pobrania lub walidacji indeksu                                         |
-| `tool-selected`             | `toolId` lub `null`                       | otwarto albo zamknięto narzędzie na szynie                                  |
-| `cursor-moved`              | `position` (E, N, H, lon, lat) lub `null` | kursor nad terenem (najwyżej raz na klatkę)                                 |
-| `camera-heading-changed`    | `headingDegrees`                          | obrót kamery — kompas                                                       |
-| `map-scale-changed`         | `metresPerPixel` lub `null`               | zmiana skali w środku ekranu — podziałka                                    |
-| `coordinate-system-changed` | `systemId`                                | zmiana układu współrzędnych w pasku przyrządu                               |
-| `search-results-changed`    | `query`, `typeFilter`, `results`          | zmiana zapytania, filtra albo wczytanie indeksu                             |
-| `search-entry-selected`     | `details` lub `null`                      | wybrano wpis (karta szczegółów, znaczniki na mapie) albo wrócono do wyników |
-| `data-layers-changed`       | `layers` (nazwa, kolor, liczność, stan)   | włączenie, wczytywanie albo błąd warstwy danych                             |
-| `data-layer-load-failed`    | `layerName`, `message`                    | nie udało się pobrać lub sprawdzić pliku warstwy                            |
-| `feature-identified`        | `identification` lub `null`               | kliknięto punkt warstwy (karta informacji) albo puste miejsce               |
+| Zdarzenie                   | Dane                                                                    | Kiedy                                                                       |
+| --------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `world-opened`              | `worldName`                                                             | fasada przełączyła świat                                                    |
+| `world-load-started`        | —                                                                       | start wczytywania modelu świata                                             |
+| `world-loaded`              | —                                                                       | tileset świata dodany do sceny                                              |
+| `world-load-failed`         | `message`                                                               | brak tokenu ion albo błąd wczytywania                                       |
+| `search-index-load-started` | —                                                                       | start wczytywania indeksu                                                   |
+| `search-index-loaded`       | `counts`                                                                | indeks wczytany; liczba przedmiotów i postaci                               |
+| `search-index-load-failed`  | `message`                                                               | błąd pobrania lub walidacji indeksu                                         |
+| `tool-selected`             | `toolId` lub `null`                                                     | otwarto albo zamknięto narzędzie na szynie                                  |
+| `cursor-moved`              | `position` (E, N, H, lon, lat) lub `null`                               | kursor nad terenem (najwyżej raz na klatkę)                                 |
+| `camera-heading-changed`    | `headingDegrees`                                                        | obrót kamery — kompas                                                       |
+| `map-scale-changed`         | `metresPerPixel` lub `null`                                             | zmiana skali w środku ekranu — podziałka                                    |
+| `coordinate-system-changed` | `systemId`                                                              | zmiana układu współrzędnych w pasku przyrządu                               |
+| `search-results-changed`    | `query`, `typeFilter`, `results`                                        | zmiana zapytania, filtra albo wczytanie indeksu                             |
+| `search-entry-selected`     | `details` lub `null`                                                    | wybrano wpis (karta szczegółów, znaczniki na mapie) albo wrócono do wyników |
+| `data-layers-changed`       | `layers` (nazwa, kolor, liczność, stan)                                 | włączenie, wczytywanie albo błąd warstwy danych                             |
+| `data-layer-load-failed`    | `layerName`, `message`                                                  | nie udało się pobrać lub sprawdzić pliku warstwy                            |
+| `feature-identified`        | `identification` lub `null`                                             | kliknięto punkt warstwy (karta informacji) albo puste miejsce               |
+| `measurement-changed`       | `measurement` (tryb, wierzchołki, podsumowanie, profil, wskazany punkt) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie    |
 
 ## Cesium a reaktywność Svelte
 
@@ -140,3 +141,13 @@ unikatowe postacie, wszyscy NPC — plik GeoJSON, kolor, parser właściwości i
 `DataLayersRenderer` rysuje każdą warstwę jako kolekcję punktów, której identyfikatorem jest
 `{ layerId, featureIndex }`; kliknięcie mapy (`MapViewObserver` → `onMapClicked`) wskazuje obiekt
 w danych bez dodatkowych map, a fasada publikuje `feature-identified`.
+
+## Pomiary
+
+Gdy aktywne jest narzędzie Pomiary, fasada kieruje kliknięcia mapy do `MeasurementCoordinator`
+zamiast do identyfikacji. Tryb **Odległość** zbiera wierzchołki łamanej; `MeasurementCalculator`
+liczy odległość w poziomie i w przestrzeni, a profil terenu powstaje z próbek co ~2 m rzutowanych
+na model świata (`MapService.sampleTerrainUnder` → `clampToHeightMostDetailed`). Model zawiera drzewa
+i dachy, więc przed liczeniem profilu wysokości przechodzą przez filtr medianowy
+(`removeNarrowObstacles`), który usuwa wąskie przeszkody; gęsty las nadal może podnieść profil.
+Tryb **Współrzędne** pokazuje wskazany punkt we wszystkich układach i komendę Marvina `goto pos`.
