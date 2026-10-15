@@ -194,6 +194,17 @@ kamery (`camera.moveEnd`), fasada publikuje `camera-view-changed`. Widok z linku
 nie przerywa działania — panel pokazuje ostrzeżenie. Zakładka zapamiętuje to samo co link, więc „Kopiuj
 link” składa adres z `linkQuery` zakładki. Decyzje: [ADR 0007](adr/0007-widok-w-adresie-i-zakladki-w-localstorage.md).
 
+## Kadrowanie kamery
+
+Panele zasłaniają część mapy, więc przeloty kamery nie mogą stawiać celu w środku całego płótna.
+`MapInsetsReporter` (komponent bez znaczników) mierzy elementy z `data-map-obstacle` — szynę i panel
+narzędzia — i zgłasza fasadzie `reserveMapSpace({ leftPixels, bottomPixels })`: na komputerze panel
+z lewej, na telefonie arkusz od dołu. `CameraFramer` przesuwa kamerę w bok i w górę, tak by cel wypadł
+w środku wolnego obszaru (`FreeAreaCalculator`), a przy dopasowaniu do wielu znaczników oddala ją
+proporcjonalnie do zasłoniętej części. Przez `CameraFramer` idą przeloty do znaczników i miejsc wpisu,
+do wyników analiz i do całego świata; widok z linku albo zakładki to dokładna pozycja kamery. Przy
+`prefers-reduced-motion` przeloty są natychmiastowe. Decyzja: [ADR 0008](adr/0008-kadrowanie-kamery-z-marginesem-na-panele.md).
+
 ## Pora dnia
 
 `TimeCoordinator` trzyma minutę doby (domyślnie 12:00). `MapService.showTimeOfDay` ustawia światło

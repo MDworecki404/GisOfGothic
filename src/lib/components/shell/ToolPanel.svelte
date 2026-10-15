@@ -22,6 +22,7 @@
 	<section
 		class="panel-stone fixed inset-x-0 bottom-15 z-20 flex h-[52dvh] flex-col overflow-hidden rounded-t-xl md:top-[calc(3.25rem+10px)] md:right-auto md:bottom-[calc(2.25rem+10px)] md:left-[calc(4rem+10px)] md:h-auto md:w-92 md:rounded-sm"
 		aria-label={activeTool.panelTitle}
+		data-map-obstacle
 	>
 		<div class="mx-auto mt-2 h-1 w-10 rounded-full bg-[var(--forged-edge)] md:hidden"></div>
 		<div class="flex items-center justify-between border-b border-border px-3.5 py-2.5">

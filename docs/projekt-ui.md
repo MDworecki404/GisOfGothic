@@ -125,4 +125,5 @@ Zgodnie z [architektura.md](architektura.md):
 - Panel narzędzia to komponent Svelte, który czyta stan (`AppState`) i wywołuje fasadę; wyniki pomiarów
   i analiz wracają zdarzeniami (`measurement-updated`, `search-results-changed`…).
 - Szyna, panele i arkusz mobilny to wspólne komponenty layoutu (`ToolRail`, `ToolPanel`, `MapControls`,
-  `InstrumentBar`) — nowe narzędzie to wpis w rejestrze, klasa i komponent panelu.
+  `InstrumentBar`) oraz `MapInsetsReporter`, który zgłasza, jakie brzegi mapy zasłaniają panele
+  (kadrowanie kamery: [ADR 0008](adr/0008-kadrowanie-kamery-z-marginesem-na-panele.md)) — nowe narzędzie to wpis w rejestrze, klasa i komponent panelu.

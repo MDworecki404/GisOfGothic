@@ -6,6 +6,7 @@
 <nav
 	class="panel-stone fixed inset-x-0 bottom-0 z-30 flex h-15 gap-0.5 border-x-0 border-b-0 px-1.5 py-1 md:top-13 md:right-auto md:bottom-9 md:h-auto md:w-16 md:flex-col md:border-t-0 md:border-r md:py-2"
 	aria-label="Narzędzia"
+	data-map-obstacle
 >
 	{#each TOOL_DEFINITIONS as tool (tool.id)}
 		<button
