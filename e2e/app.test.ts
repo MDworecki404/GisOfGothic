@@ -81,6 +81,27 @@ test('analiza „Zasięg” pokazuje promień i prosi o punkt na mapie', async (
 	await expect(page.getByText('Kliknij punkt na mapie.')).toBeVisible();
 });
 
+test('analiza „Zagęszczenie” rysuje siatkę i pokazuje legendę', async ({ page }) => {
+	await page.goto('/g2nk/khorinis');
+	await page
+		.getByRole('navigation', { name: 'Narzędzia' })
+		.getByRole('button', { name: 'Analizy' })
+		.click();
+	await page.getByRole('button', { name: /Zagęszczenie/ }).click();
+	await page.getByLabel('Temat analizy').fill('roslina lecznicza');
+	await page
+		.getByRole('button', { name: /Roślina lecznicza/ })
+		.first()
+		.click();
+	await expect(page.getByLabel('Legenda zagęszczenia')).toBeVisible();
+	await expect(page.getByText(/Komórek z wynikiem: \d+/)).toBeVisible();
+	await page.getByRole('button', { name: 'Kwadraty' }).click();
+	await expect(page.getByRole('button', { name: 'Kwadraty' })).toHaveAttribute(
+		'aria-pressed',
+		'true'
+	);
+});
+
 test('link z wpisem otwiera kartę postaci', async ({ page }) => {
 	await page.goto('/g2nk/khorinis?wpis=character:VLK_412_HARAD');
 	await expect(page.getByRole('heading', { name: 'Harad' })).toBeVisible({ timeout: 30_000 });

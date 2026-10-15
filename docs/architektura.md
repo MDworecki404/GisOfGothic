@@ -164,7 +164,11 @@ najbliższych po prostej w przestrzeni (z odległością w poziomie). `AnalysisR
 połączenia i numerowane wyniki; kliknięcie wiersza przelatuje kamerą do miejsca. **Zasięg**: punkt i promień (10–300 m); `BufferAnalyzer` zlicza w kole (w poziomie)
 przedmioty, skrzynie i wszystkich NPC z warstw danych (`DataLayersCoordinator.loadLayerFeatures` pobiera
 plik bez pokazywania warstwy) i grupuje je po nazwie; okrąg na mapie idzie po terenie (próbkowanie
-wysokości jak w profilu pomiaru). Uzasadnienie podziału
+wysokości jak w profilu pomiaru). **Zagęszczenie**: `DensityGridBuilder` dzieli miejsca tematu na siatkę sześciokątną (rozmiar =
+odległość między równoległymi bokami) albo kwadratową i zlicza sztuki w niepustych komórkach;
+kolor komórki wynika z legendy (równe przedziały, najwyżej pięć, ciepła skala rdza → żar → mosiądz →
+jasny żar). `AnalysisRenderer` rysuje komórki jako jeden prymityw z `depthFailAppearance`, żeby
+nie znikały pod terenem na zboczach; w tym trybie kliknięcie mapy nie ustawia punktu. Uzasadnienie podziału
 na czyste klasy i renderer: [ADR 0006](adr/0006-analizy-na-czystych-klasach-i-lokalnym-rzucie.md).
 
 ## Pora dnia

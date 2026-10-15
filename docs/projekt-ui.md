@@ -85,16 +85,16 @@ z ziarnem CSS.
 ## Narzędzia
 
 Stan na wersję v1: zrobione są Szukaj, Warstwy (dane i identyfikacja), Pomiary (odległość z profilem,
-współrzędne), Czas (godzina dla rutyn) i Analizy („Najbliższe”, „Zasięg”). Mapa zagęszczenia, Zakładki, podkłady, pole i wybór rozdziału — w kolejnych krokach.
+współrzędne), Czas (godzina dla rutyn) i Analizy („Najbliższe”, „Zasięg”, „Zagęszczenie”). Widoczność z punktu, Zakładki, podkłady, pole i wybór rozdziału — w kolejnych krokach.
 
-| Narzędzie           | Funkcje                                                                                                                                                                                     | Etap                       |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| **Szukaj**          | podpowiedzi z kategorią i liczbą sztuk; filtry rodzaju; karta szczegółów (fakty, lista miejsc z odległością, skrzynie z kluczem, rutyna postaci); „pokaż wszystkie na mapie”; link do wpisu | v1                         |
-| **Warstwy**         | podkład: Teren 3D / Poziomice / Pergamin; warstwy danych (przedmioty, skrzynie, unikatowe postacie, wszyscy NPC), podfiltry, liczności; siatka, waypointy; questy „wkrótce”                 | v1: dane; podkłady później |
-| **Pomiary**         | odległość (po terenie i w linii prostej, przewyższenie, przeliczenia: pieszo, biegiem, strzały z łuku); pole; profil terenu; współrzędne punktu i komenda Marvina `goto pos` do skopiowania | v1: odległość, współrzędne |
-| **Analizy**         | najbliższe wystąpienia od punktu; zasięg (bufor); mapa zagęszczenia; widoczność z punktu                                                                                                    | v2: najbliższe, zasięg     |
-| **Czas i rozdział** | suwak godziny (postacie tam, gdzie są o tej porze, światło jak w grze), wybór rozdziału I–VI                                                                                                | v1: godzina dla rutyn      |
-| **Zakładki**        | zapis widoku, link do udostępnienia                                                                                                                                                         | po v1                      |
+| Narzędzie           | Funkcje                                                                                                                                                                                     | Etap                                 |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| **Szukaj**          | podpowiedzi z kategorią i liczbą sztuk; filtry rodzaju; karta szczegółów (fakty, lista miejsc z odległością, skrzynie z kluczem, rutyna postaci); „pokaż wszystkie na mapie”; link do wpisu | v1                                   |
+| **Warstwy**         | podkład: Teren 3D / Poziomice / Pergamin; warstwy danych (przedmioty, skrzynie, unikatowe postacie, wszyscy NPC), podfiltry, liczności; siatka, waypointy; questy „wkrótce”                 | v1: dane; podkłady później           |
+| **Pomiary**         | odległość (po terenie i w linii prostej, przewyższenie, przeliczenia: pieszo, biegiem, strzały z łuku); pole; profil terenu; współrzędne punktu i komenda Marvina `goto pos` do skopiowania | v1: odległość, współrzędne           |
+| **Analizy**         | najbliższe wystąpienia od punktu; zasięg (bufor); mapa zagęszczenia; widoczność z punktu                                                                                                    | v2: najbliższe, zasięg, zagęszczenie |
+| **Czas i rozdział** | suwak godziny (postacie tam, gdzie są o tej porze, światło jak w grze), wybór rozdziału I–VI                                                                                                | v1: godzina dla rutyn                |
+| **Zakładki**        | zapis widoku, link do udostępnienia                                                                                                                                                         | po v1                                |
 
 Stan widoku (świat, wybrany wpis, narzędzie, kamera) trafia do adresu URL — każdy widok da się wysłać.
 
