@@ -10,3 +10,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0004](0004-tileset-w-kotwicy-enu.md)                         | Tileset świata ustawiany macierzą ENU kotwicy | przyjęta |
 | [0005](0005-swiat-w-adresie-i-katalog-swiatow.md)             | Świat w adresie URL i katalog światów         | przyjęta |
 | [0006](0006-analizy-na-czystych-klasach-i-lokalnym-rzucie.md) | Analizy na czystych klasach i lokalnym rzucie | przyjęta |
+| [0007](0007-widok-w-adresie-i-zakladki-w-localstorage.md)     | Widok w adresie URL i zakładki w localStorage | przyjęta |

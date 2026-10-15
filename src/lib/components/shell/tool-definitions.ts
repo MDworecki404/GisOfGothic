@@ -1,3 +1,4 @@
+import BookmarkIcon from '@lucide/svelte/icons/bookmark';
 import ClockIcon from '@lucide/svelte/icons/clock';
 import LayersIcon from '@lucide/svelte/icons/layers';
 import RadarIcon from '@lucide/svelte/icons/radar';
@@ -11,6 +12,7 @@ export interface ToolDefinition {
 	label: string;
 	panelTitle: string;
 	icon: Component;
+	isAtRailEnd?: boolean;
 }
 
 export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
@@ -18,5 +20,12 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 	{ id: 'layers', label: 'Warstwy', panelTitle: 'Warstwy', icon: LayersIcon },
 	{ id: 'measure', label: 'Pomiary', panelTitle: 'Pomiary', icon: RulerIcon },
 	{ id: 'analysis', label: 'Analizy', panelTitle: 'Analizy', icon: RadarIcon },
-	{ id: 'time', label: 'Czas', panelTitle: 'Czas i rozdział', icon: ClockIcon }
+	{ id: 'time', label: 'Czas', panelTitle: 'Czas i rozdział', icon: ClockIcon },
+	{
+		id: 'bookmarks',
+		label: 'Zakładki',
+		panelTitle: 'Zakładki',
+		icon: BookmarkIcon,
+		isAtRailEnd: true
+	}
 ];

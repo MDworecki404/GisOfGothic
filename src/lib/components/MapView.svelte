@@ -12,6 +12,9 @@
 
 <div
 	bind:this={container}
-	class="absolute inset-0 {appState.activeToolId === 'measure' ? 'cursor-crosshair' : ''}"
+	class="absolute inset-0 {appState.activeToolId === 'measure' ||
+	appState.activeToolId === 'analysis'
+		? 'cursor-crosshair'
+		: ''}"
 	data-testid="map"
 ></div>

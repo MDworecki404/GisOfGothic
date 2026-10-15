@@ -15,23 +15,17 @@
 
 	let { data }: PageProps = $props();
 
-	const ENTRY_PARAMETER = 'wpis';
-
 	$effect(() => {
 		geoportal.openWorld(data.world);
-		const entryIdFromLink = untrack(() => page.url.searchParams.get(ENTRY_PARAMETER));
-		if (entryIdFromLink) geoportal.selectSearchEntry(entryIdFromLink);
+		geoportal.openSharedView(untrack(() => page.url.search));
 	});
 
 	$effect(() => {
-		const selectedEntryId = appState.selectedEntry?.id ?? null;
-		const currentEntryId = untrack(() => page.url.searchParams.get(ENTRY_PARAMETER));
-		if (currentEntryId === selectedEntryId) return;
-		const query = selectedEntryId
-			? `?${new URLSearchParams({ [ENTRY_PARAMETER]: selectedEntryId })}`
-			: '';
+		const viewQuery = appState.sharedViewQuery;
+		if (untrack(() => page.url.search) === viewQuery) return;
 		replaceState(
-			resolve('/[gameId]/[worldId]', { gameId: data.world.gameId, worldId: data.world.id }) + query,
+			resolve('/[gameId]/[worldId]', { gameId: data.world.gameId, worldId: data.world.id }) +
+				viewQuery,
 			{}
 		);
 	});

@@ -1,6 +1,10 @@
 import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
 import type { WorldDefinition } from '#lib/data/world-catalog.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
+import type { BookmarkStore } from './bookmarks/bookmark-store.js';
+import { BookmarksCoordinator } from './bookmarks/bookmarks-coordinator.js';
+import type { CameraView } from './bookmarks/camera-view-codec.js';
+import { ViewLinkCodec, type SharedViewState } from './bookmarks/view-link-codec.js';
 import { AnalysisCoordinator, type AnalysisMode } from './analysis/analysis-coordinator.js';
 import type { GridShape } from './analysis/density-grid-builder.js';
 import { CoordinateFormatter, type CoordinateSystemId } from './geodesy/coordinate-formatter.js';
@@ -40,6 +44,10 @@ export class GeoportalFacade {
 	private readonly coordinateFormatter = new CoordinateFormatter();
 	private readonly searchCoordinator: SearchCoordinator;
 	private readonly analysisCoordinator: AnalysisCoordinator;
+	private readonly bookmarksCoordinator: BookmarksCoordinator;
+	private readonly viewLinkCodec = new ViewLinkCodec();
+	private pendingCameraView: CameraView | null = null;
+	private isWorldShownOnMap = false;
 	private readonly dataLayersCoordinator: DataLayersCoordinator;
 	private readonly measurementCoordinator: MeasurementCoordinator;
 	private readonly timeCoordinator: TimeCoordinator;
@@ -47,8 +55,10 @@ export class GeoportalFacade {
 	constructor(
 		private readonly eventBus: AppEventBus,
 		private readonly createDataLoader: DataLoaderFactory,
+		bookmarkStore: BookmarkStore,
 		private readonly cesiumIonAccessToken?: string
 	) {
+		this.bookmarksCoordinator = new BookmarksCoordinator(eventBus, bookmarkStore);
 		this.searchCoordinator = new SearchCoordinator(eventBus, () => this.mapService);
 		this.analysisCoordinator = new AnalysisCoordinator(
 			eventBus,
@@ -64,6 +74,9 @@ export class GeoportalFacade {
 	openWorld(world: WorldDefinition): void {
 		if (this.currentWorld?.id === world.id && this.currentWorld.gameId === world.gameId) return;
 		this.currentWorld = world;
+		this.isWorldShownOnMap = false;
+		this.pendingCameraView = null;
+		this.bookmarksCoordinator.useWorld(world.gameId, world.id);
 		this.currentDataLoader = this.createDataLoader(world.dataBaseUrl);
 		this.eventBus.publish({ type: 'world-opened', worldName: world.name });
 		this.searchCoordinator.useIndex(null);
@@ -80,6 +93,7 @@ export class GeoportalFacade {
 			this.eventBus.publish({ type: 'world-load-failed', message: MISSING_ION_TOKEN_MESSAGE });
 			return;
 		}
+		this.isWorldShownOnMap = false;
 		this.mapService = new MapService(
 			container,
 			this.createMapViewListeners(),
@@ -90,6 +104,38 @@ export class GeoportalFacade {
 		this.dataLayersCoordinator.showVisibleLayersOnMap();
 		this.timeCoordinator.showOnMap();
 		if (this.activeToolId === 'analysis') this.analysisCoordinator.activate();
+	}
+
+	/**
+	 * Odtwarza widok z adresu strony (`?wpis=…&widok=…&narzedzie=…`). Kamera czeka na wczytanie
+	 * modelu świata, a wpis na wczytanie indeksu; przy kamerze z linku kamera nie leci do miejsc wpisu.
+	 */
+	openSharedView(query: string): void {
+		this.applyViewState(this.viewLinkCodec.parseQuery(query), false);
+	}
+
+	saveBookmark(name: string): void {
+		const viewState = this.captureViewState();
+		this.bookmarksCoordinator.addBookmark({
+			name,
+			entryId: viewState.entryId,
+			entryName: this.searchCoordinator.selectedEntryReference?.name ?? null,
+			toolId: viewState.toolId,
+			camera: viewState.camera
+		});
+	}
+
+	restoreBookmark(bookmarkId: string): void {
+		const bookmark = this.bookmarksCoordinator.findBookmark(bookmarkId);
+		if (!bookmark) return;
+		this.applyViewState(
+			{ entryId: bookmark.entryId, camera: bookmark.camera, toolId: bookmark.toolId },
+			true
+		);
+	}
+
+	deleteBookmark(bookmarkId: string): void {
+		this.bookmarksCoordinator.removeBookmark(bookmarkId);
 	}
 
 	setTimeOfDay(minuteOfDay: number): void {
@@ -209,6 +255,7 @@ export class GeoportalFacade {
 
 	detachMap(): void {
 		this.worldLoadGeneration++;
+		this.isWorldShownOnMap = false;
 		this.mapService?.destroy();
 		this.mapService = null;
 	}
@@ -220,8 +267,38 @@ export class GeoportalFacade {
 			onHeadingChanged: (headingDegrees) =>
 				this.eventBus.publish({ type: 'camera-heading-changed', headingDegrees }),
 			onScaleChanged: (metresPerPixel) =>
-				this.eventBus.publish({ type: 'map-scale-changed', metresPerPixel })
+				this.eventBus.publish({ type: 'map-scale-changed', metresPerPixel }),
+			onCameraSettled: () => this.publishCameraView()
 		};
+	}
+
+	private captureViewState(): SharedViewState {
+		return {
+			entryId: this.searchCoordinator.selectedEntryReference?.id ?? null,
+			camera: this.mapService?.readCameraView() ?? null,
+			toolId: this.activeToolId
+		};
+	}
+
+	private applyViewState(state: SharedViewState, isCameraAnimated: boolean): void {
+		this.activateTool(state.toolId);
+		if (state.entryId) this.searchCoordinator.selectEntry(state.entryId, state.camera === null);
+		else this.searchCoordinator.clearSelection();
+		const camera = state.camera;
+		if (!camera) return;
+		if (this.isWorldShownOnMap) {
+			this.mapService?.moveCameraToView(camera, isCameraAnimated ? 1.5 : 0);
+			this.publishCameraView();
+		} else {
+			this.pendingCameraView = camera;
+		}
+	}
+
+	private publishCameraView(): void {
+		this.eventBus.publish({
+			type: 'camera-view-changed',
+			view: this.mapService?.readCameraView() ?? null
+		});
 	}
 
 	private activateTool(toolId: ToolId | null): void {
@@ -290,8 +367,13 @@ export class GeoportalFacade {
 			this.analysisCoordinator.useAnchor(metadata.anchor);
 			await mapService.showWorldTileset(world.worldTilesetIonAssetId, metadata.anchor);
 			if (!isStillCurrent()) return;
+			this.isWorldShownOnMap = true;
+			const cameraFromLink = this.pendingCameraView;
+			this.pendingCameraView = null;
+			if (cameraFromLink) mapService.moveCameraToView(cameraFromLink, 0);
 			this.eventBus.publish({ type: 'world-loaded' });
-			this.searchCoordinator.showSelectedEntryOnMap(true);
+			this.searchCoordinator.showSelectedEntryOnMap(cameraFromLink === null);
+			if (cameraFromLink) this.publishCameraView();
 		} catch (error) {
 			if (!isStillCurrent()) return;
 			console.error(error);

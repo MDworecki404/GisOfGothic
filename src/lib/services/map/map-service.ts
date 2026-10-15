@@ -13,6 +13,7 @@ import {
 } from 'cesium';
 import type { Anchor } from '#lib/data/types.js';
 import { WorldFrame } from '#lib/services/geodesy/world-frame.js';
+import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
 import type { DensityCell } from '#lib/services/analysis/density-grid-builder.js';
 import type { LocalPoint } from '#lib/services/measurement/measurement-calculator.js';
 import type { ShadowSettings } from '#lib/services/time/time-coordinator.js';
@@ -97,6 +98,38 @@ export class MapService {
 		this.viewer.scene.primitives.add(tileset);
 		if (this.minuteOfDay !== null) this.showTimeOfDay(this.minuteOfDay);
 		this.showWholeWorld(0);
+	}
+
+	/** Pozycja i kierunek kamery w ramie świata; `null`, zanim model świata się wczyta. */
+	readCameraView(): CameraView | null {
+		const frame = this.worldFrame;
+		if (!frame) return null;
+		const camera = this.viewer.camera;
+		const position = frame.toWorldPosition(camera.positionWC);
+		return {
+			east: position.east,
+			north: position.north,
+			height: position.height,
+			headingDegrees: CesiumMath.toDegrees(camera.heading),
+			pitchDegrees: CesiumMath.toDegrees(camera.pitch)
+		};
+	}
+
+	/** Ustawia kamerę w zapisanym widoku; czas 0 oznacza przeskok bez animacji. */
+	moveCameraToView(view: CameraView, flightDurationSeconds: number): void {
+		const frame = this.worldFrame;
+		if (!frame) return;
+		const destination = frame.toSceneCartesian(view.east, view.north, view.height);
+		const orientation = {
+			heading: CesiumMath.toRadians(view.headingDegrees),
+			pitch: CesiumMath.toRadians(view.pitchDegrees),
+			roll: 0
+		};
+		if (flightDurationSeconds <= 0) {
+			this.viewer.camera.setView({ destination, orientation });
+			return;
+		}
+		this.viewer.camera.flyTo({ destination, orientation, duration: flightDurationSeconds });
 	}
 
 	showWholeWorld(flightDurationSeconds = 1.5): void {

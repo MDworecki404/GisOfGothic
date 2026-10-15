@@ -7,6 +7,8 @@ import type {
 } from '#lib/services/search/search-entry-presenter.js';
 import type { SearchTypeFilter } from '#lib/services/search/search-service.js';
 import type { AnalysisView } from '#lib/services/analysis/analysis-coordinator.js';
+import type { BookmarkView } from '#lib/services/bookmarks/bookmarks-coordinator.js';
+import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
 import type { FeatureIdentification } from '#lib/services/layers/data-layer-catalog.js';
 import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator.js';
 import type { MeasurementView } from '#lib/services/measurement/measurement-coordinator.js';
@@ -39,6 +41,8 @@ export type AppEvent =
 	| { type: 'feature-identified'; identification: FeatureIdentification | null }
 	| { type: 'measurement-changed'; measurement: MeasurementView }
 	| { type: 'analysis-changed'; analysis: AnalysisView }
+	| { type: 'camera-view-changed'; view: CameraView | null }
+	| { type: 'bookmarks-changed'; bookmarks: BookmarkView[]; hasStorageError: boolean }
 	| {
 			type: 'time-of-day-changed';
 			minuteOfDay: number;

@@ -2,6 +2,7 @@
 	import XIcon from '@lucide/svelte/icons/x';
 	import { appState, geoportal } from '#lib/composition-root.js';
 	import AnalysisPanel from '#lib/components/panels/AnalysisPanel.svelte';
+	import BookmarksPanel from '#lib/components/panels/BookmarksPanel.svelte';
 	import LayersPanel from '#lib/components/panels/LayersPanel.svelte';
 	import MeasurePanel from '#lib/components/panels/MeasurePanel.svelte';
 	import SearchPanel from '#lib/components/panels/SearchPanel.svelte';
@@ -42,6 +43,8 @@
 				<MeasurePanel />
 			{:else if activeTool.id === 'analysis'}
 				<AnalysisPanel />
+			{:else if activeTool.id === 'bookmarks'}
+				<BookmarksPanel />
 			{:else}
 				<TimePanel />
 			{/if}
