@@ -12,6 +12,7 @@ import {
 } from 'cesium';
 import type { Anchor } from '#lib/data/types.js';
 import { WorldFrame } from '#lib/services/geodesy/world-frame.js';
+import { DataLayersRenderer, type DataLayerPoint } from './data-layers-renderer.js';
 import { MapViewObserver, type MapViewListeners } from './map-view-observer.js';
 import { PlaceMarkersLayer, type PlaceMarker } from './place-markers-layer.js';
 import { ViewerOptionsBuilder } from './viewer-options-builder.js';
@@ -32,6 +33,7 @@ export class MapService {
 	private readonly viewer: Viewer;
 	private readonly viewObserver: MapViewObserver;
 	private readonly placeMarkers: PlaceMarkersLayer;
+	private readonly dataLayers: DataLayersRenderer;
 	private worldTileset: Cesium3DTileset | null = null;
 	private worldFrame: WorldFrame | null = null;
 	private isDestroyed = false;
@@ -49,6 +51,7 @@ export class MapService {
 		this.viewer = new Viewer(container, options);
 		this.configureSceneForWorldBelowSeaLevel();
 		this.viewObserver = new MapViewObserver(this.viewer, listeners, () => this.worldFrame);
+		this.dataLayers = new DataLayersRenderer(this.viewer);
 		this.placeMarkers = new PlaceMarkersLayer(this.viewer);
 	}
 
@@ -121,6 +124,14 @@ export class MapService {
 
 	clearPlaceMarkers(): void {
 		this.placeMarkers.clearMarkers();
+	}
+
+	showDataLayer(layerId: string, points: readonly DataLayerPoint[], cssColor: string): void {
+		this.dataLayers.showLayer(layerId, points, cssColor);
+	}
+
+	hideDataLayer(layerId: string): void {
+		this.dataLayers.hideLayer(layerId);
 	}
 
 	removeWorldTileset(): void {

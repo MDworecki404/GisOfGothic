@@ -17,6 +17,10 @@ export class GeoportalDataLoader {
 		return parseSearchIndex(await this.fetchJson('search_index.json'));
 	}
 
+	async loadLayerFile(fileName: string): Promise<unknown> {
+		return this.fetchJson(fileName);
+	}
+
 	countEntriesByType(index: SearchIndex): IndexCounts {
 		let items = 0;
 		let characters = 0;

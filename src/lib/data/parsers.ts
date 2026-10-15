@@ -18,7 +18,7 @@ const PLACE_KINDS: readonly PlaceKind[] = [
 ];
 const ENTRY_TYPES: readonly SearchEntryType[] = ['item', 'character'];
 
-function isRecord(value: unknown): value is Record<string, unknown> {
+export function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
@@ -30,39 +30,56 @@ function isSearchEntryType(value: unknown): value is SearchEntryType {
 	return ENTRY_TYPES.some((type) => type === value);
 }
 
-function requireRecord(value: unknown, description: string): Record<string, unknown> {
+export function requireRecord(value: unknown, description: string): Record<string, unknown> {
 	if (!isRecord(value)) throw new Error(`${description}: oczekiwano obiektu`);
 	return value;
 }
 
-function requireString(record: Record<string, unknown>, key: string, description: string): string {
+export function requireString(
+	record: Record<string, unknown>,
+	key: string,
+	description: string
+): string {
 	const value = record[key];
 	if (typeof value !== 'string') throw new Error(`${description}: pole "${key}" musi być tekstem`);
 	return value;
 }
 
-function requireNumber(record: Record<string, unknown>, key: string, description: string): number {
+export function requireNumber(
+	record: Record<string, unknown>,
+	key: string,
+	description: string
+): number {
 	const value = record[key];
 	if (typeof value !== 'number') throw new Error(`${description}: pole "${key}" musi być liczbą`);
 	return value;
 }
 
-function readOptionalString(record: Record<string, unknown>, key: string): string | undefined {
+export function readOptionalString(
+	record: Record<string, unknown>,
+	key: string
+): string | undefined {
 	const value = record[key];
 	return typeof value === 'string' ? value : undefined;
 }
 
-function readOptionalNumber(record: Record<string, unknown>, key: string): number | undefined {
+export function readOptionalNumber(
+	record: Record<string, unknown>,
+	key: string
+): number | undefined {
 	const value = record[key];
 	return typeof value === 'number' ? value : undefined;
 }
 
-function readOptionalBoolean(record: Record<string, unknown>, key: string): boolean | undefined {
+export function readOptionalBoolean(
+	record: Record<string, unknown>,
+	key: string
+): boolean | undefined {
 	const value = record[key];
 	return typeof value === 'boolean' ? value : undefined;
 }
 
-function readStringList(record: Record<string, unknown>, key: string): string[] | undefined {
+export function readStringList(record: Record<string, unknown>, key: string): string[] | undefined {
 	const value = record[key];
 	if (!Array.isArray(value)) return undefined;
 	return value.filter((item) => typeof item === 'string');

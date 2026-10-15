@@ -2,8 +2,10 @@ import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
 import type { WorldDefinition } from '#lib/data/world-catalog.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
 import { CoordinateFormatter, type CoordinateSystemId } from './geodesy/coordinate-formatter.js';
+import { DataLayersCoordinator } from './layers/data-layers-coordinator.js';
+import type { DataLayerId } from './layers/data-layer-catalog.js';
 import { MapService } from './map/map-service.js';
-import type { MapViewListeners } from './map/map-view-observer.js';
+import type { MapClick, MapViewListeners } from './map/map-view-observer.js';
 import { SearchCoordinator } from './search/search-coordinator.js';
 import type { SearchTypeFilter } from './search/search-service.js';
 import type { ToolId } from './tools/tool-id.js';
@@ -30,6 +32,7 @@ export class GeoportalFacade {
 	private coordinateSystemId: CoordinateSystemId = 'khorinis-1992';
 	private readonly coordinateFormatter = new CoordinateFormatter();
 	private readonly searchCoordinator: SearchCoordinator;
+	private readonly dataLayersCoordinator: DataLayersCoordinator;
 
 	constructor(
 		private readonly eventBus: AppEventBus,
@@ -37,6 +40,7 @@ export class GeoportalFacade {
 		private readonly cesiumIonAccessToken?: string
 	) {
 		this.searchCoordinator = new SearchCoordinator(eventBus, () => this.mapService);
+		this.dataLayersCoordinator = new DataLayersCoordinator(eventBus, () => this.mapService);
 	}
 
 	openWorld(world: WorldDefinition): void {
@@ -45,6 +49,7 @@ export class GeoportalFacade {
 		this.currentDataLoader = this.createDataLoader(world.dataBaseUrl);
 		this.eventBus.publish({ type: 'world-opened', worldName: world.name });
 		this.searchCoordinator.useIndex(null);
+		this.dataLayersCoordinator.useWorld(this.currentDataLoader, {});
 		void this.loadSearchIndexOfCurrentWorld();
 		void this.showCurrentWorldOnMap();
 	}
@@ -61,6 +66,15 @@ export class GeoportalFacade {
 		);
 		void this.showCurrentWorldOnMap();
 		this.searchCoordinator.showSelectedEntryOnMap(false);
+		this.dataLayersCoordinator.showVisibleLayersOnMap();
+	}
+
+	toggleDataLayer(layerId: DataLayerId): void {
+		void this.dataLayersCoordinator.toggleLayer(layerId);
+	}
+
+	closeFeatureIdentification(): void {
+		this.eventBus.publish({ type: 'feature-identified', identification: null });
 	}
 
 	search(query: string): void {
@@ -125,11 +139,17 @@ export class GeoportalFacade {
 	private createMapViewListeners(): MapViewListeners {
 		return {
 			onCursorMoved: (position) => this.eventBus.publish({ type: 'cursor-moved', position }),
+			onMapClicked: (click) => this.reactToMapClick(click),
 			onHeadingChanged: (headingDegrees) =>
 				this.eventBus.publish({ type: 'camera-heading-changed', headingDegrees }),
 			onScaleChanged: (metresPerPixel) =>
 				this.eventBus.publish({ type: 'map-scale-changed', metresPerPixel })
 		};
+	}
+
+	private reactToMapClick(click: MapClick): void {
+		if (click.featurePick) this.dataLayersCoordinator.identifyFeature(click.featurePick);
+		else this.closeFeatureIdentification();
 	}
 
 	private async loadSearchIndexOfCurrentWorld(): Promise<void> {
@@ -167,6 +187,7 @@ export class GeoportalFacade {
 		try {
 			const metadata = await dataLoader.loadMetadata();
 			if (!isStillCurrent()) return;
+			this.dataLayersCoordinator.updateFeatureCounts(metadata.package.counts);
 			await mapService.showWorldTileset(world.worldTilesetIonAssetId, metadata.anchor);
 			if (!isStillCurrent()) return;
 			this.eventBus.publish({ type: 'world-loaded' });
