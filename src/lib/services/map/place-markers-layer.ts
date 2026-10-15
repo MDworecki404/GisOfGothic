@@ -2,11 +2,11 @@ import {
 	BoundingSphere,
 	Cartesian3,
 	Color,
-	HeadingPitchRange,
 	Math as CesiumMath,
 	PointPrimitiveCollection,
 	type Viewer
 } from 'cesium';
+import type { CameraFramer } from './camera-framer.js';
 
 export interface PlaceMarker {
 	lon: number;
@@ -31,7 +31,10 @@ export class PlaceMarkersLayer {
 	private readonly points = new PointPrimitiveCollection();
 	private positions: Cartesian3[] = [];
 
-	constructor(private readonly viewer: Viewer) {
+	constructor(
+		private readonly viewer: Viewer,
+		private readonly cameraFramer: CameraFramer
+	) {
 		viewer.scene.primitives.add(this.points);
 	}
 
@@ -64,13 +67,13 @@ export class PlaceMarkersLayer {
 	flyToAllMarkers(): void {
 		if (this.positions.length === 0) return;
 		const sphere = BoundingSphere.fromPoints(this.positions);
-		this.viewer.camera.flyToBoundingSphere(sphere, {
-			duration: 1.2,
-			offset: new HeadingPitchRange(
-				this.viewer.camera.heading,
-				CesiumMath.toRadians(OVERVIEW_PITCH_DEGREES),
+		this.cameraFramer.flyToPoint(sphere.center, {
+			headingRadians: this.viewer.camera.heading,
+			pitchRadians: CesiumMath.toRadians(OVERVIEW_PITCH_DEGREES),
+			rangeMetres: this.cameraFramer.scaleRangeToFreeArea(
 				Math.max(sphere.radius * 2.6, MINIMUM_OVERVIEW_RANGE_METRES)
-			)
+			),
+			flightSeconds: 1.2
 		});
 	}
 
@@ -78,13 +81,11 @@ export class PlaceMarkersLayer {
 		const position = this.positions.at(index);
 		if (!position) return;
 		this.highlightMarker(index);
-		this.viewer.camera.flyToBoundingSphere(new BoundingSphere(position, 0), {
-			duration: 1,
-			offset: new HeadingPitchRange(
-				this.viewer.camera.heading,
-				CesiumMath.toRadians(OVERVIEW_PITCH_DEGREES),
-				PLACE_CLOSE_UP_RANGE_METRES
-			)
+		this.cameraFramer.flyToPoint(position, {
+			headingRadians: this.viewer.camera.heading,
+			pitchRadians: CesiumMath.toRadians(OVERVIEW_PITCH_DEGREES),
+			rangeMetres: PLACE_CLOSE_UP_RANGE_METRES,
+			flightSeconds: 1
 		});
 	}
 

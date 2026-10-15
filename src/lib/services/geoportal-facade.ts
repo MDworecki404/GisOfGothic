@@ -5,6 +5,7 @@ import type { BookmarkStore } from './bookmarks/bookmark-store.js';
 import { BookmarksCoordinator } from './bookmarks/bookmarks-coordinator.js';
 import type { CameraView } from './bookmarks/camera-view-codec.js';
 import { ViewLinkCodec, type SharedViewState } from './bookmarks/view-link-codec.js';
+import type { MapViewInsets } from './map/free-area-calculator.js';
 import { AnalysisCoordinator, type AnalysisMode } from './analysis/analysis-coordinator.js';
 import type { GridShape } from './analysis/density-grid-builder.js';
 import { CoordinateFormatter, type CoordinateSystemId } from './geodesy/coordinate-formatter.js';
@@ -48,6 +49,7 @@ export class GeoportalFacade {
 	private readonly viewLinkCodec = new ViewLinkCodec();
 	private pendingCameraView: CameraView | null = null;
 	private isWorldShownOnMap = false;
+	private mapViewInsets: MapViewInsets = { leftPixels: 0, bottomPixels: 0 };
 	private readonly dataLayersCoordinator: DataLayersCoordinator;
 	private readonly measurementCoordinator: MeasurementCoordinator;
 	private readonly timeCoordinator: TimeCoordinator;
@@ -99,6 +101,7 @@ export class GeoportalFacade {
 			this.createMapViewListeners(),
 			this.cesiumIonAccessToken
 		);
+		this.mapService.setViewInsets(this.mapViewInsets);
 		void this.showCurrentWorldOnMap();
 		this.searchCoordinator.showSelectedEntryOnMap(false);
 		this.dataLayersCoordinator.showVisibleLayersOnMap();
@@ -136,6 +139,15 @@ export class GeoportalFacade {
 
 	deleteBookmark(bookmarkId: string): void {
 		this.bookmarksCoordinator.removeBookmark(bookmarkId);
+	}
+
+	/**
+	 * UI zgłasza, ile pikseli mapy od lewej i od dołu zasłaniają panele. Przeloty kamery
+	 * (do znaczników, miejsc, całego świata) kadrują cel w pozostałym, wolnym obszarze.
+	 */
+	reserveMapSpace(insets: MapViewInsets): void {
+		this.mapViewInsets = insets;
+		this.mapService?.setViewInsets(insets);
 	}
 
 	setTimeOfDay(minuteOfDay: number): void {

@@ -2,6 +2,7 @@
 	import MapView from '#lib/components/MapView.svelte';
 	import IdentifyCard from '#lib/components/shell/IdentifyCard.svelte';
 	import InstrumentBar from '#lib/components/shell/InstrumentBar.svelte';
+	import MapInsetsReporter from '#lib/components/shell/MapInsetsReporter.svelte';
 	import MapControls from '#lib/components/shell/MapControls.svelte';
 	import ToolPanel from '#lib/components/shell/ToolPanel.svelte';
 	import ToolRail from '#lib/components/shell/ToolRail.svelte';
@@ -42,6 +43,7 @@
 	<TopBar gameName={data.game.name} worldName={data.world.name} />
 	<ToolRail />
 	<ToolPanel />
+	<MapInsetsReporter />
 	<MapControls />
 	<IdentifyCard />
 	<InstrumentBar />

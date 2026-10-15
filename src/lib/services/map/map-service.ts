@@ -18,6 +18,8 @@ import type { DensityCell } from '#lib/services/analysis/density-grid-builder.js
 import type { LocalPoint } from '#lib/services/measurement/measurement-calculator.js';
 import type { ShadowSettings } from '#lib/services/time/time-coordinator.js';
 import { AnalysisRenderer } from './analysis-renderer.js';
+import { CameraFramer } from './camera-framer.js';
+import type { MapViewInsets } from './free-area-calculator.js';
 import { DataLayersRenderer, type DataLayerPoint } from './data-layers-renderer.js';
 import { MapViewObserver, type MapViewListeners } from './map-view-observer.js';
 import { MeasurementRenderer } from './measurement-renderer.js';
@@ -52,6 +54,7 @@ export class MapService {
 	private readonly dataLayers: DataLayersRenderer;
 	private readonly measurement: MeasurementRenderer;
 	private readonly analysis: AnalysisRenderer;
+	private readonly cameraFramer: CameraFramer;
 	private worldTileset: Cesium3DTileset | null = null;
 	private worldFrame: WorldFrame | null = null;
 	private isDestroyed = false;
@@ -73,7 +76,8 @@ export class MapService {
 		this.dataLayers = new DataLayersRenderer(this.viewer);
 		this.measurement = new MeasurementRenderer(this.viewer);
 		this.analysis = new AnalysisRenderer(this.viewer);
-		this.placeMarkers = new PlaceMarkersLayer(this.viewer);
+		this.cameraFramer = new CameraFramer(this.viewer);
+		this.placeMarkers = new PlaceMarkersLayer(this.viewer, this.cameraFramer);
 	}
 
 	/**
@@ -98,6 +102,11 @@ export class MapService {
 		this.viewer.scene.primitives.add(tileset);
 		if (this.minuteOfDay !== null) this.showTimeOfDay(this.minuteOfDay);
 		this.showWholeWorld(0);
+	}
+
+	/** Zapamiętuje, które brzegi mapy zasłaniają panele; kolejne przeloty kadrują cel w wolnym obszarze. */
+	setViewInsets(insets: MapViewInsets): void {
+		this.cameraFramer.setInsets(insets);
 	}
 
 	/** Pozycja i kierunek kamery w ramie świata; `null`, zanim model świata się wczyta. */
@@ -135,13 +144,13 @@ export class MapService {
 	showWholeWorld(flightDurationSeconds = 1.5): void {
 		if (!this.worldTileset) return;
 		const sphere = this.worldTileset.boundingSphere;
-		this.viewer.camera.flyToBoundingSphere(sphere, {
-			duration: flightDurationSeconds,
-			offset: new HeadingPitchRange(
-				0,
-				CesiumMath.toRadians(OVERVIEW_PITCH_DEGREES),
+		this.cameraFramer.flyToPoint(sphere.center, {
+			headingRadians: 0,
+			pitchRadians: CesiumMath.toRadians(OVERVIEW_PITCH_DEGREES),
+			rangeMetres: this.cameraFramer.scaleRangeToFreeArea(
 				sphere.radius * OVERVIEW_RANGE_IN_WORLD_RADII
-			)
+			),
+			flightSeconds: flightDurationSeconds
 		});
 	}
 
@@ -282,17 +291,12 @@ export class MapService {
 	flyToLocalPoint(point: LocalPoint, rangeMetres: number): void {
 		const frame = this.worldFrame;
 		if (!frame) return;
-		this.viewer.camera.flyToBoundingSphere(
-			new BoundingSphere(frame.toSceneCartesian(point.east, point.north, point.height), 0),
-			{
-				duration: 1,
-				offset: new HeadingPitchRange(
-					this.viewer.camera.heading,
-					CesiumMath.toRadians(CLOSE_UP_PITCH_DEGREES),
-					rangeMetres
-				)
-			}
-		);
+		this.cameraFramer.flyToPoint(frame.toSceneCartesian(point.east, point.north, point.height), {
+			headingRadians: this.viewer.camera.heading,
+			pitchRadians: CesiumMath.toRadians(CLOSE_UP_PITCH_DEGREES),
+			rangeMetres,
+			flightSeconds: 1
+		});
 	}
 
 	/**
