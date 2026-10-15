@@ -13,6 +13,7 @@ import {
 } from 'cesium';
 import type { Anchor } from '#lib/data/types.js';
 import { WorldFrame } from '#lib/services/geodesy/world-frame.js';
+import type { DensityCell } from '#lib/services/analysis/density-grid-builder.js';
 import type { LocalPoint } from '#lib/services/measurement/measurement-calculator.js';
 import type { ShadowSettings } from '#lib/services/time/time-coordinator.js';
 import { AnalysisRenderer } from './analysis-renderer.js';
@@ -31,6 +32,7 @@ const ZOOM_STEP_FRACTION = 0.35;
 const FALLBACK_ZOOM_DISTANCE_METRES = 400;
 const NORTH_RESET_DURATION_SECONDS = 0.6;
 const MEASUREMENT_LINE_LIFT_METRES = 0.4;
+const DENSITY_CELL_LIFT_METRES = 0.6;
 const DAY_LIGHT_COLOR = new Color(1, 0.96, 0.88);
 const NIGHT_LIGHT_COLOR = new Color(0.62, 0.7, 1);
 const MINIMUM_SUN_ELEVATION = 0.25;
@@ -221,6 +223,23 @@ export class MapService {
 		const toScene = (point: LocalPoint): Cartesian3 =>
 			frame.toSceneCartesian(point.east, point.north, point.height);
 		this.analysis.showBuffer(toScene(origin), ring.map(toScene));
+	}
+
+	showDensityCells(cells: readonly DensityCell[]): void {
+		const frame = this.worldFrame;
+		if (!frame) return;
+		this.analysis.showDensityCells(
+			cells.map((cell) => ({
+				cssColor: cell.color,
+				corners: cell.vertices.map((vertex) =>
+					frame.toSceneCartesian(
+						vertex.east,
+						vertex.north,
+						cell.meanHeight + DENSITY_CELL_LIFT_METRES
+					)
+				)
+			}))
+		);
 	}
 
 	clearAnalysis(): void {

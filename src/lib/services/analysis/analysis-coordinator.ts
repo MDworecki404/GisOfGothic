@@ -17,14 +17,21 @@ import {
 } from '#lib/services/search/search-entry-presenter.js';
 import type { SearchService } from '#lib/services/search/search-service.js';
 import { BufferAnalyzer, type BufferCandidate, type BufferGroup } from './buffer-analyzer.js';
+import {
+	DensityGridBuilder,
+	type DensityCell,
+	type DensityGrid,
+	type GridShape
+} from './density-grid-builder.js';
 import { LocalProjector } from './local-projector.js';
 import { NearestPlacesFinder, type NearestMatch } from './nearest-places-finder.js';
 
-export type AnalysisMode = 'nearest' | 'buffer';
+export type AnalysisMode = 'nearest' | 'buffer' | 'density';
 
 export interface AnalysisDisplay {
 	showNearestPlaces(origin: LocalPoint, targets: readonly LocalPoint[]): void;
 	showBuffer(origin: LocalPoint, ring: readonly LocalPoint[]): void;
+	showDensityCells(cells: readonly DensityCell[]): void;
 	sampleTerrainUnder(points: readonly LocalPoint[]): Promise<LocalPoint[]>;
 	flyToLocalPoint(point: LocalPoint, rangeMetres: number): void;
 	clearAnalysis(): void;
@@ -54,6 +61,18 @@ export interface BufferGroupView {
 	hiddenLineCount: number;
 }
 
+export interface DensityLegendStepView {
+	label: string;
+	color: string;
+}
+
+export interface DensityView {
+	cellCount: number;
+	totalCount: number;
+	maximumCount: number;
+	legend: DensityLegendStepView[];
+}
+
 export interface AnalysisView {
 	mode: AnalysisMode;
 	subjectQuery: string;
@@ -63,6 +82,9 @@ export interface AnalysisView {
 	nearestPlaces: NearestPlaceView[];
 	radiusMetres: number;
 	bufferGroups: BufferGroupView[];
+	cellShape: GridShape;
+	cellSizeMetres: number;
+	density: DensityView | null;
 	isLoading: boolean;
 }
 
@@ -72,6 +94,7 @@ interface LocatedPlace extends LocalPoint {
 	place: Place;
 }
 
+const DEFAULT_CELL_SIZE_METRES = 25;
 const NEAREST_PLACE_COUNT = 5;
 const SUGGESTION_COUNT = 6;
 const PLACE_CLOSE_UP_RANGE_METRES = 45;
@@ -95,6 +118,7 @@ export class AnalysisCoordinator {
 	private readonly presenter = new SearchEntryPresenter();
 	private readonly nearestPlacesFinder = new NearestPlacesFinder();
 	private readonly bufferAnalyzer = new BufferAnalyzer();
+	private readonly densityGridBuilder = new DensityGridBuilder();
 	private readonly measurementCalculator = new MeasurementCalculator();
 	private projector: LocalProjector | null = null;
 	private mode: AnalysisMode = 'nearest';
@@ -105,6 +129,9 @@ export class AnalysisCoordinator {
 	private nearestMatches: NearestMatch<LocatedPlace>[] = [];
 	private bufferGroups: BufferGroup[] = [];
 	private bufferCandidates: BufferCandidate[] | null = null;
+	private cellShape: GridShape = 'hex';
+	private cellSizeMetres = DEFAULT_CELL_SIZE_METRES;
+	private densityGrid: DensityGrid | null = null;
 	private isLoading = false;
 	private isToolActive = false;
 	private refreshRequest = 0;
@@ -125,6 +152,7 @@ export class AnalysisCoordinator {
 		this.nearestMatches = [];
 		this.bufferGroups = [];
 		this.bufferCandidates = null;
+		this.densityGrid = null;
 		this.isLoading = false;
 		this.getDisplay()?.clearAnalysis();
 		this.publish();
@@ -154,6 +182,20 @@ export class AnalysisCoordinator {
 
 	setRadius(radiusMetres: number): void {
 		this.radiusMetres = radiusMetres;
+		void this.refresh();
+	}
+
+	get usesMapClicks(): boolean {
+		return this.mode !== 'density';
+	}
+
+	setCellShape(cellShape: GridShape): void {
+		this.cellShape = cellShape;
+		void this.refresh();
+	}
+
+	setCellSize(cellSizeMetres: number): void {
+		this.cellSizeMetres = cellSizeMetres;
 		void this.refresh();
 	}
 
@@ -189,6 +231,7 @@ export class AnalysisCoordinator {
 		const request = ++this.refreshRequest;
 		this.getDisplay()?.clearAnalysis();
 		if (this.mode === 'nearest') this.refreshNearest();
+		else if (this.mode === 'density') this.refreshDensity();
 		else await this.refreshBuffer(request);
 	}
 
@@ -201,6 +244,15 @@ export class AnalysisCoordinator {
 				this.origin,
 				this.nearestMatches.map((match) => match.candidate)
 			);
+		}
+		this.publish();
+	}
+
+	private refreshDensity(): void {
+		this.isLoading = false;
+		this.densityGrid = this.buildDensityGrid();
+		if (this.isToolActive && this.densityGrid) {
+			this.getDisplay()?.showDensityCells(this.densityGrid.cells);
 		}
 		this.publish();
 	}
@@ -266,6 +318,16 @@ export class AnalysisCoordinator {
 		return this.bufferCandidates;
 	}
 
+	private buildDensityGrid(): DensityGrid | null {
+		const projector = this.projector;
+		if (!projector || !this.subject) return null;
+		const points = this.subject.places.map((place) => ({
+			...projector.projectToLocalPoint(place.lon, place.lat, place.h),
+			weight: place.amount ?? 1
+		}));
+		return this.densityGridBuilder.build(points, this.cellShape, this.cellSizeMetres);
+	}
+
 	private findNearestMatches(): NearestMatch<LocatedPlace>[] {
 		const projector = this.projector;
 		if (!projector || !this.subject || !this.origin) return [];
@@ -305,9 +367,26 @@ export class AnalysisCoordinator {
 				}),
 				radiusMetres: this.radiusMetres,
 				bufferGroups: this.presentBufferGroups(),
+				cellShape: this.cellShape,
+				cellSizeMetres: this.cellSizeMetres,
+				density: this.presentDensity(),
 				isLoading: this.isLoading
 			}
 		});
+	}
+
+	private presentDensity(): DensityView | null {
+		const grid = this.densityGrid;
+		if (!grid) return null;
+		return {
+			cellCount: grid.cells.length,
+			totalCount: grid.totalCount,
+			maximumCount: grid.maximumCount,
+			legend: grid.legend.map((step) => ({
+				label: step.from === step.to ? `${step.from}` : `${step.from}–${step.to}`,
+				color: step.color
+			}))
+		};
 	}
 
 	private presentBufferGroups(): BufferGroupView[] {

@@ -2,6 +2,7 @@ import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
 import type { WorldDefinition } from '#lib/data/world-catalog.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
 import { AnalysisCoordinator, type AnalysisMode } from './analysis/analysis-coordinator.js';
+import type { GridShape } from './analysis/density-grid-builder.js';
 import { CoordinateFormatter, type CoordinateSystemId } from './geodesy/coordinate-formatter.js';
 import { DataLayersCoordinator } from './layers/data-layers-coordinator.js';
 import type { DataLayerId } from './layers/data-layer-catalog.js';
@@ -159,6 +160,14 @@ export class GeoportalFacade {
 		this.analysisCoordinator.setRadius(radiusMetres);
 	}
 
+	setAnalysisCellShape(cellShape: GridShape): void {
+		this.analysisCoordinator.setCellShape(cellShape);
+	}
+
+	setAnalysisCellSize(cellSizeMetres: number): void {
+		this.analysisCoordinator.setCellSize(cellSizeMetres);
+	}
+
 	setAnalysisSubjectQuery(query: string): void {
 		this.analysisCoordinator.setSubjectQuery(query);
 	}
@@ -231,7 +240,7 @@ export class GeoportalFacade {
 			if (click.position) this.measurementCoordinator.addPoint(click.position);
 			return;
 		}
-		if (this.activeToolId === 'analysis') {
+		if (this.activeToolId === 'analysis' && this.analysisCoordinator.usesMapClicks) {
 			if (click.position) this.analysisCoordinator.setOrigin(click.position);
 			return;
 		}
