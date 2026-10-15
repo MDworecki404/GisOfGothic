@@ -1,6 +1,8 @@
 # GIS of Gothic — wytyczne dla Claude
 
-Geoportal 3D świata Gothic 2 (SvelteKit 5 + CesiumJS). Stack i uruchomienie: `README.md`.
+Trójwymiarowa wikipedia światów Gothic (SvelteKit 5 + CesiumJS). Stack i uruchomienie: `README.md`.
+**Wizja i założenia produktu: `docs/wizja.md`** — czytaj przed projektowaniem nowych funkcji
+(wiele gier i światów, rodzaje danych, wydajność, mobile, PWA).
 Kontrakt danych: `static/data/khorinis/README.md`. UI po polsku.
 
 ## Architektura
