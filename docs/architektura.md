@@ -99,6 +99,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `data-layer-load-failed`    | `layerName`, `message`                                                  | nie udało się pobrać lub sprawdzić pliku warstwy                            |
 | `feature-identified`        | `identification` lub `null`                                             | kliknięto punkt warstwy (karta informacji) albo puste miejsce               |
 | `measurement-changed`       | `measurement` (tryb, wierzchołki, podsumowanie, profil, wskazany punkt) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie    |
+| `time-of-day-changed`       | `minuteOfDay`, `routineLayerStatus`, `charactersOnMap`                  | zmiana pory dnia albo warstwy postaci o tej godzinie                        |
 
 ## Cesium a reaktywność Svelte
 
@@ -151,3 +152,11 @@ na model świata (`MapService.sampleTerrainUnder` → `clampToHeightMostDetailed
 i dachy, więc przed liczeniem profilu wysokości przechodzą przez filtr medianowy
 (`removeNarrowObstacles`), który usuwa wąskie przeszkody; gęsty las nadal może podnieść profil.
 Tryb **Współrzędne** pokazuje wskazany punkt we wszystkich układach i komendę Marvina `goto pos`.
+
+## Pora dnia
+
+`TimeCoordinator` trzyma minutę doby (domyślnie 12:00). `MapService.showTimeOfDay` ustawia światło
+kierunkowe: słońce od wschodu (6:00) przez południe do zachodu (18:00), nocą słabsze, chłodne światło.
+Warstwa „postacie o tej godzinie” czyta `character_places.geojson` przy pierwszym włączeniu, bierze
+tylko rutyny domyślne i przez `DailySchedule` wybiera miejsca, których przedział godzin obejmuje
+wybraną minutę (przedziały przez północ, np. „22:00–07:00”, są obsługiwane).

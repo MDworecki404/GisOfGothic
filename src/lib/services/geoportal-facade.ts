@@ -12,6 +12,7 @@ import {
 import type { MapClick, MapViewListeners } from './map/map-view-observer.js';
 import { SearchCoordinator } from './search/search-coordinator.js';
 import type { SearchTypeFilter } from './search/search-service.js';
+import { ROUTINE_LAYER_ID, TimeCoordinator } from './time/time-coordinator.js';
 import type { ToolId } from './tools/tool-id.js';
 
 export type DataLoaderFactory = (dataBaseUrl: string) => GeoportalDataLoader;
@@ -38,6 +39,7 @@ export class GeoportalFacade {
 	private readonly searchCoordinator: SearchCoordinator;
 	private readonly dataLayersCoordinator: DataLayersCoordinator;
 	private readonly measurementCoordinator: MeasurementCoordinator;
+	private readonly timeCoordinator: TimeCoordinator;
 
 	constructor(
 		private readonly eventBus: AppEventBus,
@@ -47,6 +49,7 @@ export class GeoportalFacade {
 		this.searchCoordinator = new SearchCoordinator(eventBus, () => this.mapService);
 		this.dataLayersCoordinator = new DataLayersCoordinator(eventBus, () => this.mapService);
 		this.measurementCoordinator = new MeasurementCoordinator(eventBus, () => this.mapService);
+		this.timeCoordinator = new TimeCoordinator(eventBus, () => this.mapService);
 	}
 
 	openWorld(world: WorldDefinition): void {
@@ -57,6 +60,7 @@ export class GeoportalFacade {
 		this.searchCoordinator.useIndex(null);
 		this.dataLayersCoordinator.useWorld(this.currentDataLoader, {});
 		this.measurementCoordinator.clear();
+		this.timeCoordinator.useWorld(this.currentDataLoader);
 		void this.loadSearchIndexOfCurrentWorld();
 		void this.showCurrentWorldOnMap();
 	}
@@ -74,6 +78,15 @@ export class GeoportalFacade {
 		void this.showCurrentWorldOnMap();
 		this.searchCoordinator.showSelectedEntryOnMap(false);
 		this.dataLayersCoordinator.showVisibleLayersOnMap();
+		this.timeCoordinator.showOnMap();
+	}
+
+	setTimeOfDay(minuteOfDay: number): void {
+		this.timeCoordinator.setMinuteOfDay(minuteOfDay);
+	}
+
+	toggleCharactersAtTimeOfDay(): void {
+		void this.timeCoordinator.toggleRoutineLayer();
 	}
 
 	toggleDataLayer(layerId: DataLayerId): void {
@@ -176,8 +189,11 @@ export class GeoportalFacade {
 			if (click.position) this.measurementCoordinator.addPoint(click.position);
 			return;
 		}
-		if (click.featurePick) this.dataLayersCoordinator.identifyFeature(click.featurePick);
-		else this.closeFeatureIdentification();
+		const pick = click.featurePick;
+		if (!pick) this.closeFeatureIdentification();
+		else if (pick.layerId === ROUTINE_LAYER_ID)
+			this.timeCoordinator.identifyCharacter(pick.featureIndex);
+		else this.dataLayersCoordinator.identifyFeature(pick);
 	}
 
 	private async loadSearchIndexOfCurrentWorld(): Promise<void> {

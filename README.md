@@ -6,7 +6,9 @@ na modelu 3D świata gry, gdzie leży, kto go ma i gdzie ktoś przebywa o danej 
 Na start: Gothic 2: Noc Kruka, świat Khorinis. Docelowo Gothic 1, kolejne światy i questy —
 zobacz [wizję projektu](docs/wizja.md).
 
-> Projekt w budowie: działa mapa 3D świata i wczytywanie danych; wyszukiwarka jest w przygotowaniu.
+> Projekt w budowie. Działa: mapa 3D świata, wyszukiwarka przedmiotów i postaci z linkami do wpisów,
+> warstwy danych z identyfikacją obiektów, pomiar odległości z profilem terenu, współrzędne z komendą
+> Marvina i pora dnia z rutynami postaci.
 
 ## Szybki start
 

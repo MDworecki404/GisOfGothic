@@ -8,6 +8,7 @@ import {
 	HeadingPitchRange,
 	Ion,
 	Math as CesiumMath,
+	Matrix4,
 	Viewer
 } from 'cesium';
 import type { Anchor } from '#lib/data/types.js';
@@ -27,6 +28,9 @@ const ZOOM_STEP_FRACTION = 0.35;
 const FALLBACK_ZOOM_DISTANCE_METRES = 400;
 const NORTH_RESET_DURATION_SECONDS = 0.6;
 const MEASUREMENT_LINE_LIFT_METRES = 0.4;
+const DAY_LIGHT_COLOR = new Color(1, 0.96, 0.88);
+const NIGHT_LIGHT_COLOR = new Color(0.62, 0.7, 1);
+const MINIMUM_SUN_ELEVATION = 0.25;
 
 /**
  * Serwis mapy 3D. Obiekty Cesium trzyma w zwykłych polach — nigdy w `$state`,
@@ -42,6 +46,7 @@ export class MapService {
 	private worldFrame: WorldFrame | null = null;
 	private isDestroyed = false;
 	private latestTilesetRequest = 0;
+	private minuteOfDay: number | null = null;
 
 	constructor(container: HTMLElement, listeners: MapViewListeners, ionAccessToken?: string) {
 		if (ionAccessToken) Ion.defaultAccessToken = ionAccessToken;
@@ -80,6 +85,7 @@ export class MapService {
 		this.worldTileset = tileset;
 		this.worldFrame = frame;
 		this.viewer.scene.primitives.add(tileset);
+		if (this.minuteOfDay !== null) this.showTimeOfDay(this.minuteOfDay);
 		this.showWholeWorld(0);
 	}
 
@@ -137,6 +143,36 @@ export class MapService {
 
 	hideDataLayer(layerId: string): void {
 		this.dataLayers.hideLayer(layerId);
+	}
+
+	/**
+	 * Słońce wschodzi o 6:00 na wschodzie, w południe świeci z południa z góry, zachodzi o 18:00
+	 * na zachodzie. Nocą świeci słabsze, chłodne światło „księżyca” z przeciwnej strony nieba.
+	 * Kierunek liczony jest w ramie świata (Wschód, Północ, Góra) i przenoszony do sceny.
+	 */
+	showTimeOfDay(minuteOfDay: number): void {
+		this.minuteOfDay = minuteOfDay;
+		const frame = this.worldFrame;
+		if (!frame) return;
+		const sunAngle = ((minuteOfDay - 6 * 60) / (12 * 60)) * Math.PI;
+		const sunElevation = Math.sin(sunAngle);
+		const isDay = sunElevation > 0;
+		const sign = isDay ? 1 : -1;
+		const towardsLightSource = new Cartesian3(
+			sign * Math.cos(sunAngle),
+			-0.45,
+			Math.max(Math.abs(sunElevation), MINIMUM_SUN_ELEVATION)
+		);
+		const sceneDirection = Matrix4.multiplyByPointAsVector(
+			frame.anchorToEcef,
+			Cartesian3.negate(towardsLightSource, new Cartesian3()),
+			new Cartesian3()
+		);
+		this.viewer.scene.light = new DirectionalLight({
+			direction: Cartesian3.normalize(sceneDirection, new Cartesian3()),
+			color: isDay ? DAY_LIGHT_COLOR : NIGHT_LIGHT_COLOR,
+			intensity: isDay ? 0.55 + 0.6 * sunElevation : 0.4
+		});
 	}
 
 	showMeasurement(vertices: readonly LocalPoint[], linePath: readonly LocalPoint[]): void {

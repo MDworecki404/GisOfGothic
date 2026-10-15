@@ -17,6 +17,8 @@ import type { SearchTypeFilter } from '#lib/services/search/search-service.js';
 import type { FeatureIdentification } from '#lib/services/layers/data-layer-catalog.js';
 import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator.js';
 import type { MeasurementView } from '#lib/services/measurement/measurement-coordinator.js';
+import { formatMinuteOfDay } from '#lib/services/time/daily-schedule.js';
+import type { RoutineLayerStatus } from '#lib/services/time/time-coordinator.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 
 const coordinateFormatter = new CoordinateFormatter();
@@ -49,6 +51,9 @@ export class AppState {
 	dataLayerErrorMessage = $state<string | null>(null);
 	identifiedFeature = $state.raw<FeatureIdentification | null>(null);
 	measurement = $state.raw<MeasurementView | null>(null);
+	minuteOfDay = $state(12 * 60);
+	routineLayerStatus = $state<RoutineLayerStatus>('hidden');
+	charactersAtTimeOfDay = $state<number | null>(null);
 
 	constructor(eventBus: AppEventBus) {
 		eventBus.subscribe('search-results-changed', ({ query, typeFilter, results }) => {
@@ -63,6 +68,14 @@ export class AppState {
 		eventBus.subscribe('data-layer-load-failed', ({ layerName, message }) => {
 			this.dataLayerErrorMessage = `Nie udało się wczytać warstwy „${layerName}”: ${message}`;
 		});
+		eventBus.subscribe(
+			'time-of-day-changed',
+			({ minuteOfDay, routineLayerStatus, charactersOnMap }) => {
+				this.minuteOfDay = minuteOfDay;
+				this.routineLayerStatus = routineLayerStatus;
+				this.charactersAtTimeOfDay = charactersOnMap;
+			}
+		);
 		eventBus.subscribe('measurement-changed', ({ measurement }) => {
 			this.measurement = measurement;
 		});
@@ -180,6 +193,10 @@ export class AppState {
 	get measuredPointMarvinCommand(): string | null {
 		const point = this.measurement?.pickedPoint;
 		return point ? coordinateFormatter.formatMarvinTeleportCommand(point) : null;
+	}
+
+	get timeOfDayLabel(): string {
+		return formatMinuteOfDay(this.minuteOfDay);
 	}
 
 	get scaleBar(): ScaleBar | null {
