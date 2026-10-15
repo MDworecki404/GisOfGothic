@@ -9,8 +9,13 @@ export class AppState {
 	searchIndexStatus = $state<LoadStatus>('loading');
 	searchIndexErrorMessage = $state<string | null>(null);
 	indexCounts = $state<IndexCounts | null>(null);
+	openedWorldName = $state<string | null>(null);
 
 	constructor(eventBus: AppEventBus) {
+		eventBus.subscribe('world-opened', ({ worldName }) => {
+			this.openedWorldName = worldName;
+			this.indexCounts = null;
+		});
 		eventBus.subscribe('world-load-started', () => {
 			this.worldStatus = 'loading';
 			this.worldErrorMessage = null;

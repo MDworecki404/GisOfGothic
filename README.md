@@ -27,10 +27,10 @@ Pierwszy raz: `npx playwright install chromium`.
 
 - **Ciężkie warstwy** (model świata, modele 3D) są tilowane i hostowane na **Cesium ion** — nie ma ich
   w plikach aplikacji. Skopiuj `.env.example` do `.env` i wpisz `PUBLIC_CESIUM_ION_TOKEN`.
-- **Lekkie dane** (`metadata.json`, `search_index.json`, warstwy GeoJSON) leżą w `static/data/khorinis/`.
+- **Lekkie dane** (`metadata.json`, `search_index.json`, warstwy GeoJSON) leżą w `static/data/g2nk/khorinis/`.
   Są chronione prawem autorskim i **nie trafiają do repo** (`static/data/` w `.gitignore`). Skopiuj je
   z paczki `dist/g2nk/khorinis/` projektu ekstrakcji — bez `world.glb` i `models/`.
-  Kontrakt danych opisuje `static/data/khorinis/README.md`.
+  Kontrakt danych opisuje `static/data/g2nk/khorinis/README.md`.
 
 ## Struktura
 
@@ -47,5 +47,5 @@ Zasady architektury i stylu: `CLAUDE.md`.
 ## Uwagi
 
 - Zasoby Cesium kopiuje `vite-plugin-static-copy` do `/cesiumStatic` (`vite-plugin-cesium` nie działa w SvelteKit).
-- Model świata to 3D Tiles na Cesium ion (asset ID w `src/lib/data/world-catalog.ts`); globus wyłączony, bez podkładu Ion.
+- Gry i światy (adres `/<gra>/<świat>`, np. `/g2nk/khorinis`, asset ID na ion, katalog danych) opisuje `src/lib/data/world-catalog.ts`. Model świata to 3D Tiles na Cesium ion; globus wyłączony, bez podkładu Ion.
 - Nie używaj `npm audit fix --force`.

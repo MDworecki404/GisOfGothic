@@ -5,8 +5,6 @@
 	let { children }: LayoutProps = $props();
 </script>
 
-<svelte:head>
-	<title>GIS of Gothic — Khorinis</title>
-</svelte:head>
+<svelte:head></svelte:head>
 
 {@render children()}
