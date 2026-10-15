@@ -1,0 +1,15 @@
+{
+	"header": "# Changelog\n\nWszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).\n",
+	"types": [
+		{ "type": "feat", "section": "Nowe funkcje" },
+		{ "type": "fix", "section": "Poprawki błędów" },
+		{ "type": "perf", "section": "Wydajność" },
+		{ "type": "refactor", "section": "Refaktoryzacja" },
+		{ "type": "docs", "section": "Dokumentacja", "hidden": false },
+		{ "type": "build", "section": "Budowanie", "hidden": false },
+		{ "type": "style", "hidden": true },
+		{ "type": "test", "hidden": true },
+		{ "type": "ci", "hidden": true },
+		{ "type": "chore", "hidden": true }
+	]
+}
