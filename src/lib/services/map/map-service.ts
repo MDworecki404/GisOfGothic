@@ -215,6 +215,14 @@ export class MapService {
 		this.analysis.showNearestPlaces(toScene(origin), targets.map(toScene));
 	}
 
+	showBuffer(origin: LocalPoint, ring: readonly LocalPoint[]): void {
+		const frame = this.worldFrame;
+		if (!frame) return;
+		const toScene = (point: LocalPoint): Cartesian3 =>
+			frame.toSceneCartesian(point.east, point.north, point.height);
+		this.analysis.showBuffer(toScene(origin), ring.map(toScene));
+	}
+
 	clearAnalysis(): void {
 		this.analysis.clear();
 	}

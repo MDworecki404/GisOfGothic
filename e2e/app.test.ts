@@ -68,6 +68,19 @@ test('analiza „Najbliższe” pozwala wybrać przedmiot jako temat', async ({ 
 	await expect(page.getByText('Kliknij punkt na mapie.')).toBeVisible();
 });
 
+test('analiza „Zasięg” pokazuje promień i prosi o punkt na mapie', async ({ page }) => {
+	await page.goto('/g2nk/khorinis');
+	await page
+		.getByRole('navigation', { name: 'Narzędzia' })
+		.getByRole('button', { name: 'Analizy' })
+		.click();
+	await page.getByRole('button', { name: /Zasięg/ }).click();
+	await expect(page.getByLabel('Promień zasięgu w metrach')).toBeVisible();
+	await page.getByLabel('Promień zasięgu w metrach').fill('200');
+	await expect(page.getByText('200 m', { exact: true })).toBeVisible();
+	await expect(page.getByText('Kliknij punkt na mapie.')).toBeVisible();
+});
+
 test('link z wpisem otwiera kartę postaci', async ({ page }) => {
 	await page.goto('/g2nk/khorinis?wpis=character:VLK_412_HARAD');
 	await expect(page.getByRole('heading', { name: 'Harad' })).toBeVisible({ timeout: 30_000 });

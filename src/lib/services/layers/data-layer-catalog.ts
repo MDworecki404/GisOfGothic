@@ -31,6 +31,7 @@ export interface IdentifiableFeature {
 	lon: number;
 	lat: number;
 	h: number;
+	quantity: number;
 	identification: FeatureIdentification;
 }
 
@@ -115,12 +116,14 @@ function readPresentedFeatures<P>(
 	json: unknown,
 	description: string,
 	parseProperties: (properties: Record<string, unknown>, description: string) => P,
-	present: (properties: P) => FeatureIdentification
+	present: (properties: P) => FeatureIdentification,
+	readQuantity: (properties: P) => number = () => 1
 ): IdentifiableFeature[] {
 	return parsePointFeatures(json, description, parseProperties).map((feature) => ({
 		lon: feature.lon,
 		lat: feature.lat,
 		h: feature.h,
+		quantity: readQuantity(feature.properties),
 		identification: present(feature.properties)
 	}));
 }
@@ -134,7 +137,13 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		metadataCountKey: 'items',
 		color: '#e0662f',
 		readFeatures: (json) =>
-			readPresentedFeatures(json, 'items.geojson', parseItemProperties, presentItem)
+			readPresentedFeatures(
+				json,
+				'items.geojson',
+				parseItemProperties,
+				presentItem,
+				(properties) => properties.amount
+			)
 	},
 	{
 		id: 'containers',
