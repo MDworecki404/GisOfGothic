@@ -6,6 +6,7 @@ const khorinis: WorldDefinition = {
 	gameId: 'g2nk',
 	name: 'Khorinis',
 	dataBaseUrl: '/data/g2nk/khorinis',
+	modelsBaseUrl: 'https://modele.example/g2nk/khorinis/models',
 	worldTilesetIonAssetId: 1
 };
 const oldCamp: WorldDefinition = { ...khorinis, id: 'colony', gameId: 'g1', name: 'Kolonia' };

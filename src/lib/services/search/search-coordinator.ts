@@ -22,6 +22,7 @@ export class SearchCoordinator {
 	private selectedEntry: SearchEntry | null = null;
 	private entryIdAwaitingIndex: string | null = null;
 	private shouldFlyToAwaitedEntry = true;
+	private modelsBaseUrl = '';
 
 	constructor(
 		private readonly eventBus: AppEventBus,
@@ -34,6 +35,10 @@ export class SearchCoordinator {
 
 	get selectedEntryReference(): { id: string; name: string } | null {
 		return this.selectedEntry ? { id: this.selectedEntry.id, name: this.selectedEntry.name } : null;
+	}
+
+	useModelsBaseUrl(modelsBaseUrl: string): void {
+		this.modelsBaseUrl = modelsBaseUrl;
 	}
 
 	useIndex(index: SearchIndex | null): void {
@@ -67,7 +72,7 @@ export class SearchCoordinator {
 		this.selectedEntry = entry;
 		this.eventBus.publish({
 			type: 'search-entry-selected',
-			details: this.presenter.presentDetails(entry)
+			details: this.presenter.presentDetails(entry, this.modelsBaseUrl)
 		});
 		this.showSelectedEntryOnMap(shouldFlyToMarkers);
 	}

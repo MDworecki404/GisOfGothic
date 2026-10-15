@@ -44,6 +44,7 @@ export interface SearchEntryDetails {
 	name: string;
 	code: string;
 	categoryLabel: string;
+	modelUrl: string | null;
 	facts: EntryFact[];
 	places: PlaceSummary[];
 }
@@ -69,13 +70,14 @@ export class SearchEntryPresenter {
 		};
 	}
 
-	presentDetails(entry: SearchEntry): SearchEntryDetails {
+	presentDetails(entry: SearchEntry, modelsBaseUrl: string): SearchEntryDetails {
 		return {
 			id: entry.id,
 			type: entry.type,
 			name: entry.name,
 			code: entry.code,
 			categoryLabel: describeCategory(entry.category),
+			modelUrl: entry.model ? `${modelsBaseUrl}/${entry.model}` : null,
 			facts: entry.type === 'item' ? this.listItemFacts(entry) : this.listCharacterFacts(entry),
 			places: entry.places.map((place, index) => this.presentPlace(place, index))
 		};
