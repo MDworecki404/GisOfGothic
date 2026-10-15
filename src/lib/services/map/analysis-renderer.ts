@@ -18,6 +18,7 @@ const LABEL_FONT = '600 15px "Alegreya Sans", sans-serif';
 const ORIGIN_PIXEL_SIZE = 12;
 const TARGET_PIXEL_SIZE = 14;
 const LINE_WIDTH_PIXELS = 2;
+const RING_WIDTH_PIXELS = 3;
 const LABEL_OFFSET = new Cartesian2(0, -20);
 
 /** Rysuje wynik analiz na mapie: punkt wskazany, połączenia i numerowane wyniki. */
@@ -56,6 +57,15 @@ export class AnalysisRenderer {
 				pixelOffset: LABEL_OFFSET,
 				disableDepthTestDistance: Number.POSITIVE_INFINITY
 			});
+		});
+	}
+
+	showBuffer(origin: Cartesian3, ring: readonly Cartesian3[]): void {
+		this.addPoint(origin, ORIGIN_COLOR, ORIGIN_PIXEL_SIZE);
+		this.lines.add({
+			positions: [...ring],
+			width: RING_WIDTH_PIXELS,
+			material: Material.fromType('Color', { color: ORIGIN_COLOR })
 		});
 	}
 

@@ -1,7 +1,7 @@
 import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
 import type { WorldDefinition } from '#lib/data/world-catalog.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
-import { AnalysisCoordinator } from './analysis/analysis-coordinator.js';
+import { AnalysisCoordinator, type AnalysisMode } from './analysis/analysis-coordinator.js';
 import { CoordinateFormatter, type CoordinateSystemId } from './geodesy/coordinate-formatter.js';
 import { DataLayersCoordinator } from './layers/data-layers-coordinator.js';
 import type { DataLayerId } from './layers/data-layer-catalog.js';
@@ -52,7 +52,8 @@ export class GeoportalFacade {
 		this.analysisCoordinator = new AnalysisCoordinator(
 			eventBus,
 			() => this.searchCoordinator.currentSearchService,
-			() => this.mapService
+			() => this.mapService,
+			(layerId) => this.dataLayersCoordinator.loadLayerFeatures(layerId)
 		);
 		this.dataLayersCoordinator = new DataLayersCoordinator(eventBus, () => this.mapService);
 		this.measurementCoordinator = new MeasurementCoordinator(eventBus, () => this.mapService);
@@ -148,6 +149,14 @@ export class GeoportalFacade {
 
 	clearMeasurement(): void {
 		this.measurementCoordinator.clear();
+	}
+
+	switchAnalysisMode(mode: AnalysisMode): void {
+		this.analysisCoordinator.switchMode(mode);
+	}
+
+	setAnalysisRadius(radiusMetres: number): void {
+		this.analysisCoordinator.setRadius(radiusMetres);
 	}
 
 	setAnalysisSubjectQuery(query: string): void {

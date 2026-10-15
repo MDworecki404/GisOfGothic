@@ -35,6 +35,7 @@ function describeError(error: unknown): string {
 export class DataLayersCoordinator {
 	private readonly loadedFeatures = new Map<DataLayerId, IdentifiableFeature[]>();
 	private readonly statuses = new Map<DataLayerId, DataLayerStatus>();
+	private readonly pendingLoads = new Map<DataLayerId, Promise<IdentifiableFeature[] | null>>();
 	private featureCounts: Record<string, number> = {};
 	private dataLoader: GeoportalDataLoader | null = null;
 
@@ -48,6 +49,7 @@ export class DataLayersCoordinator {
 		this.dataLoader = dataLoader;
 		this.featureCounts = featureCounts;
 		this.loadedFeatures.clear();
+		this.pendingLoads.clear();
 		this.statuses.clear();
 		this.publishLayers();
 	}
@@ -79,6 +81,22 @@ export class DataLayersCoordinator {
 		}
 	}
 
+	/**
+	 * Zwraca obiekty warstwy, pobierając plik, jeśli jeszcze go nie ma — bez pokazywania warstwy
+	 * na mapie. Zwraca `null`, gdy pobranie się nie powiodło albo świat zmienił się w trakcie.
+	 */
+	loadLayerFeatures(layerId: DataLayerId): Promise<IdentifiableFeature[] | null> {
+		const loaded = this.loadedFeatures.get(layerId);
+		if (loaded) return Promise.resolve(loaded);
+		const pending = this.pendingLoads.get(layerId);
+		if (pending) return pending;
+		const layer = DATA_LAYERS.find((definition) => definition.id === layerId);
+		if (!layer) return Promise.resolve(null);
+		const load = this.fetchFeatures(layer).finally(() => this.pendingLoads.delete(layerId));
+		this.pendingLoads.set(layerId, load);
+		return load;
+	}
+
 	identifyFeature(pick: FeaturePick): void {
 		const layer = DATA_LAYERS.find((definition) => definition.id === pick.layerId);
 		const feature = layer ? this.loadedFeatures.get(layer.id)?.at(pick.featureIndex) : undefined;
@@ -89,29 +107,38 @@ export class DataLayersCoordinator {
 	}
 
 	private async showLayer(layer: DataLayerDefinition): Promise<void> {
-		const dataLoader = this.dataLoader;
-		if (!dataLoader) return;
-		let features = this.loadedFeatures.get(layer.id);
+		const alreadyLoaded = this.loadedFeatures.get(layer.id);
+		if (!alreadyLoaded) this.setStatus(layer.id, 'loading');
+		const features = alreadyLoaded ?? (await this.loadLayerFeatures(layer.id));
 		if (!features) {
-			this.setStatus(layer.id, 'loading');
-			try {
-				features = layer.readFeatures(await dataLoader.loadLayerFile(layer.fileName));
-			} catch (error) {
-				if (dataLoader !== this.dataLoader) return;
-				console.error(error);
+			if (!alreadyLoaded && this.dataLoader && this.statuses.get(layer.id) === 'loading') {
 				this.setStatus(layer.id, 'error');
-				this.eventBus.publish({
-					type: 'data-layer-load-failed',
-					layerName: layer.name,
-					message: describeError(error)
-				});
-				return;
 			}
-			if (dataLoader !== this.dataLoader) return;
-			this.loadedFeatures.set(layer.id, features);
+			return;
 		}
 		this.getDisplay()?.showDataLayer(layer.id, features, layer.color);
 		this.setStatus(layer.id, 'visible');
+	}
+
+	private async fetchFeatures(layer: DataLayerDefinition): Promise<IdentifiableFeature[] | null> {
+		const dataLoader = this.dataLoader;
+		if (!dataLoader) return null;
+		try {
+			const features = layer.readFeatures(await dataLoader.loadLayerFile(layer.fileName));
+			if (dataLoader !== this.dataLoader) return null;
+			this.loadedFeatures.set(layer.id, features);
+			this.publishLayers();
+			return features;
+		} catch (error) {
+			if (dataLoader !== this.dataLoader) return null;
+			console.error(error);
+			this.eventBus.publish({
+				type: 'data-layer-load-failed',
+				layerName: layer.name,
+				message: describeError(error)
+			});
+			return null;
+		}
 	}
 
 	private setStatus(layerId: DataLayerId, status: DataLayerStatus): void {
