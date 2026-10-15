@@ -1,6 +1,11 @@
 import type { IndexCounts } from '#lib/data/types.js';
 import type { CoordinateSystemId } from '#lib/services/geodesy/coordinate-formatter.js';
 import type { WorldPosition } from '#lib/services/geodesy/world-frame.js';
+import type {
+	SearchEntryDetails,
+	SearchResult
+} from '#lib/services/search/search-entry-presenter.js';
+import type { SearchTypeFilter } from '#lib/services/search/search-service.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 import { EventBus } from './event-bus.js';
 
@@ -16,6 +21,13 @@ export type AppEvent =
 	| { type: 'camera-heading-changed'; headingDegrees: number }
 	| { type: 'map-scale-changed'; metresPerPixel: number | null }
 	| { type: 'tool-selected'; toolId: ToolId | null }
-	| { type: 'coordinate-system-changed'; systemId: CoordinateSystemId };
+	| { type: 'coordinate-system-changed'; systemId: CoordinateSystemId }
+	| {
+			type: 'search-results-changed';
+			query: string;
+			typeFilter: SearchTypeFilter;
+			results: SearchResult[];
+	  }
+	| { type: 'search-entry-selected'; details: SearchEntryDetails | null };
 
 export type AppEventBus = EventBus<AppEvent>;

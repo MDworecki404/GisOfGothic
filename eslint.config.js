@@ -28,7 +28,8 @@ export default ts.config(
 		rules: {
 			'@typescript-eslint/no-explicit-any': 'error',
 			'@typescript-eslint/no-non-null-assertion': 'error',
-			'@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'never' }]
+			'@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'never' }],
+			'svelte/no-navigation-without-resolve': ['error', { ignoreReplaceState: true }]
 		}
 	},
 	{

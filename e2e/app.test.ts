@@ -43,3 +43,21 @@ test('szyna narzędzi przełącza i zamyka panele', async ({ page }) => {
 	await page.keyboard.press('Control+k');
 	await expect(page.getByRole('heading', { name: 'Wyszukiwarka' })).toBeVisible();
 });
+
+test('wyszukiwarka znajduje przedmiot bez polskich znaków i zapisuje wpis w adresie', async ({
+	page
+}) => {
+	await page.goto('/g2nk/khorinis');
+	await page.getByRole('searchbox').fill('szczaw krolewski');
+	await page.getByRole('button', { name: /Szczaw królewski/ }).click();
+	await expect(page.getByRole('heading', { name: 'Szczaw królewski' })).toBeVisible();
+	await expect(page).toHaveURL(/wpis=item%3AITPL_PERM_HERB/);
+	await expect(page.getByText('sztuk w świecie')).toBeVisible();
+});
+
+test('link z wpisem otwiera kartę postaci', async ({ page }) => {
+	await page.goto('/g2nk/khorinis?wpis=character:VLK_412_HARAD');
+	await expect(page.getByRole('heading', { name: 'Harad' })).toBeVisible({ timeout: 30_000 });
+	await expect(page.getByText('Mieszczanin')).toBeVisible();
+	await expect(page).toHaveTitle('Harad · Khorinis — GIS of Gothic');
+});
