@@ -152,6 +152,9 @@ liczy odległość w poziomie i w przestrzeni, a profil terenu powstaje z próbe
 na model świata (`MapService.sampleTerrainUnder` → `clampToHeightMostDetailed`). Model zawiera drzewa
 i dachy, więc przed liczeniem profilu wysokości przechodzą przez filtr medianowy
 (`removeNarrowObstacles`), który usuwa wąskie przeszkody; gęsty las nadal może podnieść profil.
+Tryb **Pole** zbiera wierzchołki wielokąta; od trzech `MeasurementCalculator.summarizePolygon` liczy pole
+w rzucie na płaszczyznę poziomą (wzór Gaussa, wynik w m² i ha) oraz obwód, a obrys domyka się i idzie
+po terenie jak linia odległości.
 Tryb **Współrzędne** pokazuje wskazany punkt we wszystkich układach i komendę Marvina `goto pos`.
 
 ## Analizy

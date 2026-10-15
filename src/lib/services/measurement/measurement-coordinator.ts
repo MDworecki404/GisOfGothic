@@ -4,16 +4,18 @@ import {
 	MeasurementCalculator,
 	type LocalPoint,
 	type PathSummary,
+	type PolygonSummary,
 	type TerrainProfile
 } from './measurement-calculator.js';
 
-export type MeasurementMode = 'distance' | 'point';
+export type MeasurementMode = 'distance' | 'area' | 'point';
 
 export interface MeasurementView {
 	mode: MeasurementMode;
 	pointCount: number;
 	summary: PathSummary | null;
 	profile: TerrainProfile | null;
+	polygon: PolygonSummary | null;
 	isProfileLoading: boolean;
 	pickedPoint: WorldPosition | null;
 }
@@ -29,8 +31,8 @@ const MAXIMUM_PROFILE_SAMPLES = 400;
 const OBSTACLE_FILTER_WINDOW = 7;
 
 /**
- * Narzędzie Pomiary. Kliknięcia mapy dodają wierzchołki łamanej (tryb odległości) albo wskazują
- * punkt (tryb współrzędnych). Profil terenu liczy się asynchronicznie; wynik starszego żądania
+ * Narzędzie Pomiary. Kliknięcia mapy dodają wierzchołki łamanej (tryb odległości), wielokąta
+ * (tryb pola) albo wskazują punkt (tryb współrzędnych). Profil terenu liczy się asynchronicznie; wynik starszego żądania
  * jest pomijany, gdy w międzyczasie dodano punkt.
  */
 export class MeasurementCoordinator {
@@ -60,12 +62,12 @@ export class MeasurementCoordinator {
 			return;
 		}
 		this.vertices = [...this.vertices, position];
-		void this.refreshDistance();
+		void this.refreshPath();
 	}
 
 	removeLastPoint(): void {
 		this.vertices = this.vertices.slice(0, -1);
-		void this.refreshDistance();
+		void this.refreshPath();
 	}
 
 	clear(): void {
@@ -76,6 +78,36 @@ export class MeasurementCoordinator {
 		this.isProfileLoading = false;
 		this.getDisplay()?.clearMeasurement();
 		this.publish();
+	}
+
+	private refreshPath(): Promise<void> {
+		return this.mode === 'area' ? this.refreshArea() : this.refreshDistance();
+	}
+
+	/**
+	 * Od trzech wierzchołków wielokąt się domyka; obrys idzie po terenie tak samo jak łamana
+	 * odległości, a pole liczone jest w rzucie na płaszczyznę poziomą.
+	 */
+	private async refreshArea(): Promise<void> {
+		const request = ++this.profileRequest;
+		const display = this.getDisplay();
+		const outline =
+			this.vertices.length >= 3 ? [...this.vertices, this.vertices[0]] : this.vertices;
+		this.profile = null;
+		this.isProfileLoading = false;
+		display?.showMeasurement(this.vertices, outline);
+		this.publish();
+		if (!display || outline.length < 2) return;
+
+		const surfacePoints = await display.sampleTerrainUnder(
+			this.calculator.interpolateAlongPath(outline, this.chooseSampleSpacing(outline))
+		);
+		if (request !== this.profileRequest) return;
+		const terrainPoints = this.calculator.removeNarrowObstacles(
+			surfacePoints,
+			OBSTACLE_FILTER_WINDOW
+		);
+		display.showMeasurement(this.vertices, terrainPoints.length >= 2 ? terrainPoints : outline);
 	}
 
 	private async refreshDistance(): Promise<void> {
@@ -119,6 +151,7 @@ export class MeasurementCoordinator {
 				pointCount: this.vertices.length,
 				summary: this.vertices.length >= 2 ? this.calculator.summarizePath(this.vertices) : null,
 				profile: this.profile,
+				polygon: this.mode === 'area' ? this.calculator.summarizePolygon(this.vertices) : null,
 				isProfileLoading: this.isProfileLoading,
 				pickedPoint: this.pickedPoint
 			}

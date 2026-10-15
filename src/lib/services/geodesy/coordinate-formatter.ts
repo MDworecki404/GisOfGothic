@@ -35,6 +35,11 @@ const kilometres = new Intl.NumberFormat('pl-PL', {
 	minimumFractionDigits: 2,
 	maximumFractionDigits: 2
 });
+const squareMetres = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 });
+const hectares = new Intl.NumberFormat('pl-PL', {
+	minimumFractionDigits: 2,
+	maximumFractionDigits: 3
+});
 const centimetres = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 });
 const degrees = new Intl.NumberFormat('pl-PL', {
 	minimumFractionDigits: 6,
@@ -68,6 +73,14 @@ export class CoordinateFormatter {
 	formatLength(lengthMetres: number): string {
 		if (Math.abs(lengthMetres) >= 1000) return `${kilometres.format(lengthMetres / 1000)} km`;
 		return `${metres.format(lengthMetres)} m`;
+	}
+
+	formatArea(areaSquareMetres: number): string {
+		return `${squareMetres.format(areaSquareMetres)} m²`;
+	}
+
+	formatHectares(areaSquareMetres: number): string {
+		return `${hectares.format(areaSquareMetres / 10000)} ha`;
 	}
 
 	formatHeightChange(changeMetres: number): string {
