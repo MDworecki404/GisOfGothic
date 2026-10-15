@@ -18,7 +18,7 @@ import type { FeatureIdentification } from '#lib/services/layers/data-layer-cata
 import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator.js';
 import type { MeasurementView } from '#lib/services/measurement/measurement-coordinator.js';
 import { formatMinuteOfDay } from '#lib/services/time/daily-schedule.js';
-import type { RoutineLayerStatus } from '#lib/services/time/time-coordinator.js';
+import type { RoutineLayerStatus, ShadowSettings } from '#lib/services/time/time-coordinator.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 
 const coordinateFormatter = new CoordinateFormatter();
@@ -54,6 +54,7 @@ export class AppState {
 	minuteOfDay = $state(12 * 60);
 	routineLayerStatus = $state<RoutineLayerStatus>('hidden');
 	charactersAtTimeOfDay = $state<number | null>(null);
+	shadows = $state.raw<ShadowSettings>({ areEnabled: false, areSoft: true });
 
 	constructor(eventBus: AppEventBus) {
 		eventBus.subscribe('search-results-changed', ({ query, typeFilter, results }) => {
@@ -70,7 +71,8 @@ export class AppState {
 		});
 		eventBus.subscribe(
 			'time-of-day-changed',
-			({ minuteOfDay, routineLayerStatus, charactersOnMap }) => {
+			({ minuteOfDay, routineLayerStatus, charactersOnMap, shadows }) => {
+				this.shadows = shadows;
 				this.minuteOfDay = minuteOfDay;
 				this.routineLayerStatus = routineLayerStatus;
 				this.charactersAtTimeOfDay = charactersOnMap;

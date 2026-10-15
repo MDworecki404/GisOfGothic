@@ -14,6 +14,7 @@ import {
 import type { Anchor } from '#lib/data/types.js';
 import { WorldFrame } from '#lib/services/geodesy/world-frame.js';
 import type { LocalPoint } from '#lib/services/measurement/measurement-calculator.js';
+import type { ShadowSettings } from '#lib/services/time/time-coordinator.js';
 import { DataLayersRenderer, type DataLayerPoint } from './data-layers-renderer.js';
 import { MapViewObserver, type MapViewListeners } from './map-view-observer.js';
 import { MeasurementRenderer } from './measurement-renderer.js';
@@ -31,6 +32,9 @@ const MEASUREMENT_LINE_LIFT_METRES = 0.4;
 const DAY_LIGHT_COLOR = new Color(1, 0.96, 0.88);
 const NIGHT_LIGHT_COLOR = new Color(0.62, 0.7, 1);
 const MINIMUM_SUN_ELEVATION = 0.25;
+const SHADOW_DARKNESS = 0.45;
+const SHARP_SHADOW_MAP_SIZE = 2048;
+const SOFT_SHADOW_MAP_SIZE = 4096;
 
 /**
  * Serwis mapy 3D. Obiekty Cesium trzyma w zwykłych polach — nigdy w `$state`,
@@ -173,6 +177,15 @@ export class MapService {
 			color: isDay ? DAY_LIGHT_COLOR : NIGHT_LIGHT_COLOR,
 			intensity: isDay ? 0.55 + 0.6 * sunElevation : 0.4
 		});
+	}
+
+	/** Cienie rzuca światło sceny, więc podążają za porą dnia. Gładkie cienie kosztują więcej GPU. */
+	showShadows({ areEnabled, areSoft }: ShadowSettings): void {
+		this.viewer.shadows = areEnabled;
+		const shadowMap = this.viewer.scene.shadowMap;
+		shadowMap.softShadows = areSoft;
+		shadowMap.size = areSoft ? SOFT_SHADOW_MAP_SIZE : SHARP_SHADOW_MAP_SIZE;
+		shadowMap.darkness = SHADOW_DARKNESS;
 	}
 
 	showMeasurement(vertices: readonly LocalPoint[], linePath: readonly LocalPoint[]): void {

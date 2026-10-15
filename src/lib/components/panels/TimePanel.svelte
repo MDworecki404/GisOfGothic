@@ -65,6 +65,43 @@
 	<p class="mt-2 text-sm text-destructive" role="alert">{appState.dataLayerErrorMessage}</p>
 {/if}
 
+<h3 class="mt-5 mb-1 text-sm font-medium text-muted-foreground">Światło</h3>
+<label class="flex cursor-pointer items-start gap-2.5 border-t border-border/60 pt-3">
+	<input
+		type="checkbox"
+		class="mt-1 size-4 accent-[var(--primary)]"
+		checked={appState.shadows.areEnabled}
+		onchange={(event) =>
+			geoportal.setShadows({ ...appState.shadows, areEnabled: event.currentTarget.checked })}
+	/>
+	<span>
+		Cienie
+		<span class="block text-[13px] text-muted-foreground">
+			Budynki i skały rzucają cień zgodny z porą dnia. Obciąża kartę graficzną.
+		</span>
+	</span>
+</label>
+<label
+	class="mt-2 flex items-start gap-2.5 pl-6.5 {appState.shadows.areEnabled
+		? 'cursor-pointer'
+		: 'opacity-50'}"
+>
+	<input
+		type="checkbox"
+		class="mt-1 size-4 accent-[var(--primary)]"
+		checked={appState.shadows.areSoft}
+		disabled={!appState.shadows.areEnabled}
+		onchange={(event) =>
+			geoportal.setShadows({ ...appState.shadows, areSoft: event.currentTarget.checked })}
+	/>
+	<span>
+		Gładkie cienie
+		<span class="block text-[13px] text-muted-foreground"
+			>Miękkie krawędzie, większa mapa cieni.</span
+		>
+	</span>
+</label>
+
 <p class="mt-5 text-[13px] text-muted-foreground">
 	Światło mapy podąża za porą dnia. Wybór rozdziału — wkrótce.
 </p>
