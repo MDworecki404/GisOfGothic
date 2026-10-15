@@ -102,6 +102,17 @@ test('analiza „Zagęszczenie” rysuje siatkę i pokazuje legendę', async ({ 
 	);
 });
 
+test('pomiar pola prosi o wierzchołki wielokąta', async ({ page }) => {
+	await page.goto('/g2nk/khorinis');
+	await page
+		.getByRole('navigation', { name: 'Narzędzia' })
+		.getByRole('button', { name: 'Pomiary' })
+		.click();
+	await page.getByRole('button', { name: /^Pole/ }).click();
+	await expect(page.getByRole('button', { name: /^Pole/ })).toHaveAttribute('aria-pressed', 'true');
+	await expect(page.getByText(/Od trzeciego policzymy pole i obwód/)).toBeVisible();
+});
+
 test('link z wpisem otwiera kartę postaci', async ({ page }) => {
 	await page.goto('/g2nk/khorinis?wpis=character:VLK_412_HARAD');
 	await expect(page.getByRole('heading', { name: 'Harad' })).toBeVisible({ timeout: 30_000 });

@@ -35,3 +35,11 @@ describe('współrzędne', () => {
 		expect(formatter.findNextCoordinateSystem('wgs84').id).toBe('khorinis-1992');
 	});
 });
+
+describe('pole powierzchni', () => {
+	it('podaje pole w metrach kwadratowych i hektarach', () => {
+		expect(withoutNonBreakingSpaces(formatter.formatArea(12345.6))).toBe('12 346 m²');
+		expect(withoutNonBreakingSpaces(formatter.formatHectares(12345.6))).toBe('1,235 ha');
+		expect(withoutNonBreakingSpaces(formatter.formatHectares(5000))).toBe('0,50 ha');
+	});
+});

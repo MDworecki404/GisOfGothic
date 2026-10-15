@@ -188,6 +188,20 @@ export class AppState {
 		);
 	}
 
+	get areaHeadline(): string | null {
+		const polygon = this.measurement?.polygon;
+		return polygon ? coordinateFormatter.formatArea(polygon.areaSquareMetres) : null;
+	}
+
+	get areaReadings(): MeasurementReading[] {
+		const polygon = this.measurement?.polygon;
+		if (!polygon) return [];
+		return [
+			{ label: 'W hektarach', value: coordinateFormatter.formatHectares(polygon.areaSquareMetres) },
+			{ label: 'Obwód', value: coordinateFormatter.formatLength(polygon.perimeterMetres) }
+		];
+	}
+
 	get measuredPointReadings(): { systemName: string; readings: CoordinateReading[] }[] {
 		const point = this.measurement?.pickedPoint;
 		if (!point) return [];

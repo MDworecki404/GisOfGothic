@@ -10,6 +10,11 @@ export interface PathSummary {
 	heightDifferenceMetres: number;
 }
 
+export interface PolygonSummary {
+	areaSquareMetres: number;
+	perimeterMetres: number;
+}
+
 export interface ProfileSample {
 	distanceMetres: number;
 	height: number;
@@ -46,6 +51,26 @@ export class MeasurementCalculator {
 			straightMetres: segments.reduce((sum, [a, b]) => sum + measureSpatialDistance(a, b), 0),
 			heightDifferenceMetres: first && last ? last.height - first.height : 0
 		};
+	}
+
+	/**
+	 * Pole wielokąta rzutowanego na płaszczyznę poziomą (wzór Gaussa) i jego obwód. Współrzędne liczone
+	 * względem pierwszego wierzchołka, żeby duże wartości E/N nie psuły dokładności. Dla wielokąta
+	 * samoprzecinającego się wynik to pole algebraiczne, więc pętle odejmują się od siebie.
+	 */
+	summarizePolygon(vertices: readonly LocalPoint[]): PolygonSummary | null {
+		const first = vertices.at(0);
+		if (!first || vertices.length < 3) return null;
+		const ring = [...vertices, first];
+		let doubledArea = 0;
+		let perimeterMetres = 0;
+		for (const [from, to] of pairConsecutive(ring)) {
+			doubledArea +=
+				(from.east - first.east) * (to.north - first.north) -
+				(to.east - first.east) * (from.north - first.north);
+			perimeterMetres += measureHorizontalDistance(from, to);
+		}
+		return { areaSquareMetres: Math.abs(doubledArea) / 2, perimeterMetres };
 	}
 
 	/**

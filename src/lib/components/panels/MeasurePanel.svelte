@@ -4,6 +4,7 @@
 
 	const MODES = [
 		{ value: 'distance', label: 'Odległość', hint: 'łamana po kliknięciach' },
+		{ value: 'area', label: 'Pole', hint: 'wielokąt, pole i obwód' },
 		{ value: 'point', label: 'Współrzędne', hint: 'punkt i komenda Marvina' }
 	] as const;
 
@@ -17,22 +18,60 @@
 	}
 </script>
 
-<div class="grid grid-cols-2 gap-2" role="group" aria-label="Rodzaj pomiaru">
+<div class="grid grid-cols-3 gap-2" role="group" aria-label="Rodzaj pomiaru">
 	{#each MODES as option (option.value)}
 		<button
-			class="flex flex-col rounded-sm border p-2.5 text-left {mode === option.value
+			class="flex flex-col rounded-sm border p-2 text-left {mode === option.value
 				? 'border-primary bg-secondary'
 				: 'border-border hover:border-primary/50'}"
 			aria-pressed={mode === option.value}
 			onclick={() => geoportal.switchMeasurementMode(option.value)}
 		>
-			<span class="font-medium">{option.label}</span>
-			<span class="text-xs text-muted-foreground">{option.hint}</span>
+			<span class="text-[14px] font-medium">{option.label}</span>
+			<span class="text-[11.5px] leading-tight text-muted-foreground">{option.hint}</span>
 		</button>
 	{/each}
 </div>
 
-{#if mode === 'distance'}
+{#if mode === 'area'}
+	{#if pointCount < 3}
+		<p class="mt-4 text-sm text-muted-foreground">
+			{pointCount === 0
+				? 'Klikaj kolejne wierzchołki wielokąta na mapie. Od trzeciego policzymy pole i obwód.'
+				: 'Kliknij kolejne wierzchołki — wielokąt potrzebuje co najmniej trzech.'}
+		</p>
+	{:else}
+		<div class="mt-4 border-l-2 border-primary bg-background/50 px-3.5 py-3 tabular-nums">
+			<p class="text-sm text-muted-foreground">Pole (w rzucie poziomym)</p>
+			<p class="text-[26px] leading-tight text-primary">{appState.areaHeadline}</p>
+			<dl class="mt-2 text-sm">
+				{#each appState.areaReadings as reading (reading.label)}
+					<div class="flex justify-between py-0.5">
+						<dt class="text-muted-foreground">{reading.label}</dt>
+						<dd>{reading.value}</dd>
+					</div>
+				{/each}
+			</dl>
+		</div>
+	{/if}
+
+	{#if pointCount > 0}
+		<div class="mt-3 flex gap-2">
+			<button
+				class="rounded-sm border border-border px-3 py-1.5 text-sm hover:border-primary/60"
+				onclick={() => geoportal.removeLastMeasurementPoint()}
+			>
+				Cofnij punkt
+			</button>
+			<button
+				class="rounded-sm border border-border px-3 py-1.5 text-sm hover:border-primary/60"
+				onclick={() => geoportal.clearMeasurement()}
+			>
+				Wyczyść pomiar
+			</button>
+		</div>
+	{/if}
+{:else if mode === 'distance'}
 	{#if pointCount < 2}
 		<p class="mt-4 text-sm text-muted-foreground">
 			{pointCount === 0
