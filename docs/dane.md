@@ -71,5 +71,6 @@ leżą w `models/textures/`, a pliki podglądu odwołują się do nich przez `..
 Modele leżą w buckecie Cloudflare R2 (`gis-of-gothic-models`) pod własną domeną, poza repozytorium i poza
 Cesium ion — to małe pliki ładowane pojedynczo. Dostęp z przeglądarki ograniczony jest regułą CORS bucketa
 (`localhost` i domena aplikacji). Wgrywa je `node scripts/upload-models-to-r2.mjs <folder> <bucket> <prefiks>`
-(wymaga `npx wrangler login`). Karta przedmiotu nie linkuje do pliku `.glb` (nie zachęcamy do pobierania); podgląd 3D w karcie
-jest do zrobienia, a adres modelu jest już w `SearchEntryDetails.modelUrl`.
+(wymaga `npx wrangler login`). Karta przedmiotu nie linkuje do pliku `.glb` (nie zachęcamy do pobierania), ale pokazuje podgląd 3D
+(`ModelPreview`, osobny `CesiumWidget` bez globusa), który ładuje model z `SearchEntryDetails.modelUrl`.
+Przeglądarka musi pobrać plik, żeby go narysować, więc adres widać w narzędziach deweloperskich.

@@ -6,6 +6,7 @@ import { BookmarksCoordinator } from './bookmarks/bookmarks-coordinator.js';
 import type { CameraView } from './bookmarks/camera-view-codec.js';
 import { ViewLinkCodec, type SharedViewState } from './bookmarks/view-link-codec.js';
 import type { MapViewInsets } from './map/free-area-calculator.js';
+import { ModelPreview } from './map/model-preview.js';
 import { AnalysisCoordinator, type AnalysisMode } from './analysis/analysis-coordinator.js';
 import type { GridShape } from './analysis/density-grid-builder.js';
 import { CoordinateFormatter, type CoordinateSystemId } from './geodesy/coordinate-formatter.js';
@@ -264,6 +265,13 @@ export class GeoportalFacade {
 
 	turnMapToNorth(): void {
 		this.mapService?.turnToNorth();
+	}
+
+	/** Pokazuje podgląd 3D jednego modelu w podanym kontenerze; zwraca funkcję sprzątającą. */
+	showModelPreview(container: HTMLElement, modelUrl: string): () => void {
+		const preview = new ModelPreview(container);
+		preview.showModel(modelUrl).catch((error: unknown) => console.error(error));
+		return () => preview.destroy();
 	}
 
 	detachMap(): void {
