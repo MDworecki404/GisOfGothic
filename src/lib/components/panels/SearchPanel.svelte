@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+	import type { Attachment } from 'svelte/attachments';
 	import { appState, geoportal } from '#lib/composition-root.js';
 
 	const TYPE_FILTERS = [
@@ -9,6 +10,10 @@
 	] as const;
 
 	const hasQuery = $derived(appState.searchQuery.trim().length > 0);
+
+	function showPreview(modelUrl: string): Attachment<HTMLElement> {
+		return (container) => geoportal.showModelPreview(container, modelUrl);
+	}
 </script>
 
 {#if appState.selectedEntry}
@@ -26,6 +31,15 @@
 		<p class="text-sm text-muted-foreground">
 			{entry.categoryLabel} · <span class="text-xs">{entry.code}</span>
 		</p>
+
+		{#if entry.modelUrl}
+			<div
+				class="my-3 h-48 overflow-hidden rounded-sm border border-border"
+				aria-label="Podgląd 3D: {entry.name}"
+				role="img"
+				{@attach showPreview(entry.modelUrl)}
+			></div>
+		{/if}
 
 		{#if entry.facts.length > 0}
 			<dl class="my-3 flex flex-wrap gap-x-5 gap-y-2 tabular-nums">

@@ -205,6 +205,13 @@ proporcjonalnie do zasłoniętej części. Przez `CameraFramer` idą przeloty do
 do wyników analiz i do całego świata; widok z linku albo zakładki to dokładna pozycja kamery. Przy
 `prefers-reduced-motion` przeloty są natychmiastowe. Decyzja: [ADR 0008](adr/0008-kadrowanie-kamery-z-marginesem-na-panele.md).
 
+## Podgląd modelu przedmiotu
+
+Karta wpisu przedmiotu z modelem pokazuje mały podgląd 3D. Komponent tylko oznacza kontener (`{@attach}`)
+i wywołuje `GeoportalFacade.showModelPreview`, a `ModelPreview` (`services/map/`) tworzy osobny
+`CesiumWidget` bez globusa i nieba, ładuje plik podglądu w osiach modeli świata i ustawia kamerę wokół
+jego `boundingSphere`. Obracanie i zoom myszą lub palcem; zamknięcie karty niszczy widget.
+
 ## Pora dnia
 
 `TimeCoordinator` trzyma minutę doby (domyślnie 12:00). `MapService.showTimeOfDay` ustawia światło
