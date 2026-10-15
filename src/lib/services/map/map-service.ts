@@ -12,8 +12,10 @@ import {
 } from 'cesium';
 import type { Anchor } from '#lib/data/types.js';
 import { WorldFrame } from '#lib/services/geodesy/world-frame.js';
+import type { LocalPoint } from '#lib/services/measurement/measurement-calculator.js';
 import { DataLayersRenderer, type DataLayerPoint } from './data-layers-renderer.js';
 import { MapViewObserver, type MapViewListeners } from './map-view-observer.js';
+import { MeasurementRenderer } from './measurement-renderer.js';
 import { PlaceMarkersLayer, type PlaceMarker } from './place-markers-layer.js';
 import { ViewerOptionsBuilder } from './viewer-options-builder.js';
 
@@ -24,6 +26,7 @@ const OVERVIEW_RANGE_IN_WORLD_RADII = 2.2;
 const ZOOM_STEP_FRACTION = 0.35;
 const FALLBACK_ZOOM_DISTANCE_METRES = 400;
 const NORTH_RESET_DURATION_SECONDS = 0.6;
+const MEASUREMENT_LINE_LIFT_METRES = 0.4;
 
 /**
  * Serwis mapy 3D. Obiekty Cesium trzyma w zwykłych polach — nigdy w `$state`,
@@ -34,6 +37,7 @@ export class MapService {
 	private readonly viewObserver: MapViewObserver;
 	private readonly placeMarkers: PlaceMarkersLayer;
 	private readonly dataLayers: DataLayersRenderer;
+	private readonly measurement: MeasurementRenderer;
 	private worldTileset: Cesium3DTileset | null = null;
 	private worldFrame: WorldFrame | null = null;
 	private isDestroyed = false;
@@ -52,6 +56,7 @@ export class MapService {
 		this.configureSceneForWorldBelowSeaLevel();
 		this.viewObserver = new MapViewObserver(this.viewer, listeners, () => this.worldFrame);
 		this.dataLayers = new DataLayersRenderer(this.viewer);
+		this.measurement = new MeasurementRenderer(this.viewer);
 		this.placeMarkers = new PlaceMarkersLayer(this.viewer);
 	}
 
@@ -132,6 +137,40 @@ export class MapService {
 
 	hideDataLayer(layerId: string): void {
 		this.dataLayers.hideLayer(layerId);
+	}
+
+	showMeasurement(vertices: readonly LocalPoint[], linePath: readonly LocalPoint[]): void {
+		const frame = this.worldFrame;
+		if (!frame) return;
+		this.measurement.showMeasurement(
+			vertices.map((vertex) => frame.toSceneCartesian(vertex.east, vertex.north, vertex.height)),
+			linePath.map((point) =>
+				frame.toSceneCartesian(point.east, point.north, point.height + MEASUREMENT_LINE_LIFT_METRES)
+			)
+		);
+	}
+
+	clearMeasurement(): void {
+		this.measurement.clearMeasurement();
+	}
+
+	/**
+	 * Odczytuje wysokość modelu świata pod podanymi punktami (rzut wzdłuż pionu). Punkty, pod
+	 * którymi nie ma terenu albo kafle nie są jeszcze wczytane, są pomijane.
+	 */
+	async sampleTerrainUnder(points: readonly LocalPoint[]): Promise<LocalPoint[]> {
+		const frame = this.worldFrame;
+		const scene = this.viewer.scene;
+		if (!frame || !scene.sampleHeightSupported) return [];
+		const probes = points.map((point) =>
+			frame.toSceneCartesian(point.east, point.north, point.height)
+		);
+		const clamped: (Cartesian3 | undefined)[] = await scene.clampToHeightMostDetailed(
+			probes,
+			this.measurement.primitivesToIgnoreWhenSampling
+		);
+		if (this.isDestroyed) return [];
+		return clamped.flatMap((position) => (position ? [frame.toWorldPosition(position)] : []));
 	}
 
 	removeWorldTileset(): void {

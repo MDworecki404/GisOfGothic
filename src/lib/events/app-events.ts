@@ -8,6 +8,7 @@ import type {
 import type { SearchTypeFilter } from '#lib/services/search/search-service.js';
 import type { FeatureIdentification } from '#lib/services/layers/data-layer-catalog.js';
 import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator.js';
+import type { MeasurementView } from '#lib/services/measurement/measurement-coordinator.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 import { EventBus } from './event-bus.js';
 
@@ -33,6 +34,7 @@ export type AppEvent =
 	| { type: 'search-entry-selected'; details: SearchEntryDetails | null }
 	| { type: 'data-layers-changed'; layers: DataLayerView[] }
 	| { type: 'data-layer-load-failed'; layerName: string; message: string }
-	| { type: 'feature-identified'; identification: FeatureIdentification | null };
+	| { type: 'feature-identified'; identification: FeatureIdentification | null }
+	| { type: 'measurement-changed'; measurement: MeasurementView };
 
 export type AppEventBus = EventBus<AppEvent>;
