@@ -2,6 +2,7 @@ import type { IndexCounts } from '#lib/data/types.js';
 import { EventBus } from './event-bus.js';
 
 export type AppEvent =
+	| { type: 'world-opened'; worldName: string }
 	| { type: 'world-load-started' }
 	| { type: 'world-loaded' }
 	| { type: 'world-load-failed'; message: string }

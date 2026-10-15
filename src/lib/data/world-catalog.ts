@@ -6,10 +6,50 @@ export interface WorldDefinition {
 	worldTilesetIonAssetId: number;
 }
 
-export const KHORINIS: WorldDefinition = {
+export interface GameDefinition {
+	id: string;
+	name: string;
+	worlds: WorldDefinition[];
+}
+
+export class WorldCatalog {
+	constructor(
+		private readonly games: readonly GameDefinition[],
+		private readonly defaultWorld: WorldDefinition
+	) {}
+
+	listGames(): readonly GameDefinition[] {
+		return this.games;
+	}
+
+	listAllWorlds(): WorldDefinition[] {
+		return this.games.flatMap((game) => game.worlds);
+	}
+
+	findWorld(gameId: string, worldId: string): WorldDefinition | undefined {
+		return this.games
+			.find((game) => game.id === gameId)
+			?.worlds.find((world) => world.id === worldId);
+	}
+
+	getDefaultWorld(): WorldDefinition {
+		return this.defaultWorld;
+	}
+
+	buildWorldPath(world: WorldDefinition): string {
+		return `/${world.gameId}/${world.id}`;
+	}
+}
+
+const KHORINIS: WorldDefinition = {
 	id: 'khorinis',
 	gameId: 'g2nk',
 	name: 'Khorinis',
-	dataBaseUrl: '/data/khorinis',
+	dataBaseUrl: '/data/g2nk/khorinis',
 	worldTilesetIonAssetId: 6033666
 };
+
+export const worldCatalog = new WorldCatalog(
+	[{ id: 'g2nk', name: 'Gothic 2: Noc Kruka', worlds: [KHORINIS] }],
+	KHORINIS
+);

@@ -25,6 +25,7 @@ export class MapService {
 	private readonly viewer: Viewer;
 	private worldTileset: Cesium3DTileset | null = null;
 	private isDestroyed = false;
+	private latestTilesetRequest = 0;
 
 	constructor(container: HTMLElement, ionAccessToken?: string) {
 		if (ionAccessToken) Ion.defaultAccessToken = ionAccessToken;
@@ -42,15 +43,18 @@ export class MapService {
 	/**
 	 * Tileset z ion nie jest georeferencjonowany: ion zamienia osie glTF (Wschód, Góra, -Północ)
 	 * na lokalne (Wschód, Północ, Góra) wokół środka Ziemi. Macierz ENU kotwicy stawia go
-	 * w punkcie kotwicy z poprawnymi kierunkami świata.
+	 * w punkcie kotwicy z poprawnymi kierunkami świata. Tileset z wcześniejszego, wyprzedzonego
+	 * wywołania jest niszczony zamiast pokazany.
 	 */
-	async loadWorldTileset(ionAssetId: number, anchor: Anchor): Promise<void> {
+	async showWorldTileset(ionAssetId: number, anchor: Anchor): Promise<void> {
+		const request = ++this.latestTilesetRequest;
+		this.removeWorldTileset();
 		const tileset = await Cesium3DTileset.fromIonAssetId(ionAssetId, {
 			modelMatrix: Transforms.eastNorthUpToFixedFrame(
 				Cartesian3.fromDegrees(anchor.lon, anchor.lat, anchor.h)
 			)
 		});
-		if (this.isDestroyed) {
+		if (this.isDestroyed || request !== this.latestTilesetRequest) {
 			tileset.destroy();
 			return;
 		}
@@ -70,6 +74,12 @@ export class MapService {
 				sphere.radius * OVERVIEW_RANGE_IN_WORLD_RADII
 			)
 		});
+	}
+
+	removeWorldTileset(): void {
+		if (!this.worldTileset) return;
+		this.viewer.scene.primitives.remove(this.worldTileset);
+		this.worldTileset = null;
 	}
 
 	destroy(): void {

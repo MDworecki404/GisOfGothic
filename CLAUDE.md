@@ -3,7 +3,7 @@
 Trójwymiarowa wikipedia światów Gothic (SvelteKit 5 + CesiumJS). Stack i uruchomienie: `README.md`.
 **Wizja i założenia produktu: `docs/wizja.md`** — czytaj przed projektowaniem nowych funkcji
 (wiele gier i światów, rodzaje danych, wydajność, mobile, PWA).
-Kontrakt danych: `static/data/khorinis/README.md`. UI po polsku.
+Kontrakt danych: `static/data/g2nk/khorinis/README.md`. UI po polsku.
 
 ## Architektura
 

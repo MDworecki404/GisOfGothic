@@ -5,8 +5,8 @@
 	let container: HTMLDivElement;
 
 	onMount(() => {
-		void geoportal.showWorldIn(container);
-		return () => geoportal.hideWorld();
+		geoportal.attachMapTo(container);
+		return () => geoportal.detachMap();
 	});
 </script>
 
