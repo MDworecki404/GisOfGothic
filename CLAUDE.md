@@ -73,7 +73,8 @@ Format:
   nad domyślną atrybucją.
 - Commity służą do wersjonowania aplikacji i generowania **CHANGELOG.md** — jeden commit = jedna logiczna
   zmiana, nagłówek opisuje efekt dla użytkownika/rozwoju. Zmiany łamiące: `!` po typie i opis w treści.
-- Commituj tylko na prośbę użytkownika.
+- Commituj samodzielnie po każdej ukończonej i zweryfikowanej nowej rzeczy (funkcja, poprawka, dokument),
+  żeby trafiła do changeloga. Wypychaj po zakończeniu większej partii pracy.
 
 ## Narzędzia i skille
 
