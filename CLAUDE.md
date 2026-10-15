@@ -5,6 +5,18 @@ Trójwymiarowa wikipedia światów Gothic (SvelteKit 5 + CesiumJS). Stack i uruc
 (wiele gier i światów, rodzaje danych, wydajność, mobile, PWA).
 Kontrakt danych: `static/data/g2nk/khorinis/README.md`. UI po polsku.
 
+## Dokumentacja
+
+Repozytorium będzie publiczne, więc dokumentację programistyczną (po polsku) piszemy na bieżąco:
+`docs/architektura.md`, `docs/dane.md`, `docs/rozwoj.md`, decyzje w `docs/adr/`.
+
+- Zmiana architektury, zdarzeń, danych, katalogu światów, konfiguracji albo skryptów **aktualizuje
+  odpowiedni dokument w tym samym commicie**.
+- Ważna decyzja (wybór biblioteki, obejście pułapki, zmiana kontraktu) dostaje nowy ADR w `docs/adr/`
+  i wpis w `docs/adr/README.md`. ADR-ów się nie przepisuje — nową decyzją zastępuje się starą.
+- Dokumentacja opisuje stan faktyczny: przed oddaniem sprawdź, czy nazwy klas, plików i zdarzeń
+  w `docs/` zgadzają się z kodem.
+
 ## Architektura
 
 - Aplikacja ma charakter **klasowy**: logika biznesowa żyje w klasach (serwisy, fasady, budowniczowie),

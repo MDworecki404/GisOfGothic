@@ -1,51 +1,42 @@
 # GIS of Gothic
 
-Geoportal 3D świata Gothic 2: Noc Kruka (na start: Khorinis). Docelowo: wyszukujesz przedmiot albo
-unikatową postać i widzisz na mapie 3D, gdzie są. **Ten krok to baza**: szkielet, motyw, mapa 3D
-z modelem świata, wczytanie danych i pusty panel wyszukiwania.
+Trójwymiarowa wikipedia świata Gothic. Wyszukujesz przedmiot albo unikatową postać i widzisz
+na modelu 3D świata gry, gdzie leży, kto go ma i gdzie ktoś przebywa o danej porze.
 
-## Stack
+Na start: Gothic 2: Noc Kruka, świat Khorinis. Docelowo Gothic 1, kolejne światy i questy —
+zobacz [wizję projektu](docs/wizja.md).
 
-SvelteKit (Svelte 5, runy) + TypeScript, `adapter-static` (`fallback: 'index.html'`), Tailwind CSS 4,
-shadcn-svelte (Bits UI), CesiumJS, MiniSearch (jeszcze nieużyty), Vitest, Playwright. UI po polsku.
+> Projekt w budowie: działa mapa 3D świata i wczytywanie danych; wyszukiwarka jest w przygotowaniu.
 
-## Uruchomienie
+## Szybki start
 
 ```bash
 npm install
-npm run dev          # http://localhost:5173
-npm run check        # svelte-check
-npm run lint
-npm run test         # Vitest
-npm run test:e2e     # Playwright (buduje i serwuje build; wymaga danych)
-npm run build        # statyczna strona w build/
+cp .env.example .env    # wpisz PUBLIC_CESIUM_ION_TOKEN
+npm run dev             # http://localhost:5173 → /g2nk/khorinis
 ```
 
-Pierwszy raz: `npx playwright install chromium`.
+Potrzebne są też dane świata z projektu ekstrakcji — patrz [docs/dane.md](docs/dane.md).
 
-## Dane
+## Stack
 
-- **Ciężkie warstwy** (model świata, modele 3D) są tilowane i hostowane na **Cesium ion** — nie ma ich
-  w plikach aplikacji. Skopiuj `.env.example` do `.env` i wpisz `PUBLIC_CESIUM_ION_TOKEN`.
-- **Lekkie dane** (`metadata.json`, `search_index.json`, warstwy GeoJSON) leżą w `static/data/g2nk/khorinis/`.
-  Są chronione prawem autorskim i **nie trafiają do repo** (`static/data/` w `.gitignore`). Skopiuj je
-  z paczki `dist/g2nk/khorinis/` projektu ekstrakcji — bez `world.glb` i `models/`.
-  Kontrakt danych opisuje `static/data/g2nk/khorinis/README.md`.
+SvelteKit (Svelte 5, runy) + TypeScript jako statyczna strona (`adapter-static`), Tailwind CSS 4,
+shadcn-svelte (Bits UI), CesiumJS z modelem świata na Cesium ion, MiniSearch, Vitest, Playwright.
+UI po polsku.
 
-## Struktura
+## Dokumentacja
 
-Zasady architektury i stylu: `CLAUDE.md`.
+| Dokument                                     | Treść                                                    |
+| -------------------------------------------- | -------------------------------------------------------- |
+| [docs/wizja.md](docs/wizja.md)               | koncepcja i założenia produktu                           |
+| [docs/architektura.md](docs/architektura.md) | warstwy, fasada, event bus, przepływ danych              |
+| [docs/dane.md](docs/dane.md)                 | dane świata, układ współrzędnych, jak dodać nowy świat   |
+| [docs/rozwoj.md](docs/rozwoj.md)             | środowisko, skrypty, testy, konwencje, commity i wydania |
+| [docs/adr/](docs/adr/)                       | zapisy decyzji architektonicznych                        |
+| [CHANGELOG.md](CHANGELOG.md)                 | historia wersji (po pierwszym wydaniu)                   |
 
-- `src/lib/services/` — logika biznesowa: fasada `GeoportalFacade`, `MapService` (Cesium), budowniczy opcji Viewera
-- `src/lib/events/` — typowany event bus i zdarzenia aplikacji
-- `src/lib/data/` — typy, parsery i `GeoportalDataLoader`
-- `src/lib/state/` — reaktywny stan dla UI (runy), aktualizowany zdarzeniami
-- `src/lib/components/` — komponenty UI (bez logiki domenowej); `ui/` to shadcn-svelte
-- `src/lib/composition-root.ts` — jedyne miejsce składania zależności
-- `src/env.ts` — zmienne środowiskowe (SvelteKit 3); wymagany `PUBLIC_CESIUM_ION_TOKEN` w `.env` (wzór: `.env.example`)
+## Prawa
 
-## Uwagi
-
-- Zasoby Cesium kopiuje `vite-plugin-static-copy` do `/cesiumStatic` (`vite-plugin-cesium` nie działa w SvelteKit).
-- Gry i światy (adres `/<gra>/<świat>`, np. `/g2nk/khorinis`, asset ID na ion, katalog danych) opisuje `src/lib/data/world-catalog.ts`. Model świata to 3D Tiles na Cesium ion; globus wyłączony, bez podkładu Ion.
-- Nie używaj `npm audit fix --force`.
+Gothic jest znakiem towarowym THQ Nordic; świat gry, jego model i dane należą do ich właścicieli
+(Piranha Bytes, THQ Nordic). Repozytorium nie zawiera zasobów z gry. Projekt fanowski, niekomercyjny,
+bez logo i grafik z gry.
