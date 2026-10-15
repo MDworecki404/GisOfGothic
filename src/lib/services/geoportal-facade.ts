@@ -1,4 +1,5 @@
 import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
+import type { WorldDefinition } from '#lib/data/world-catalog.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
 import { MapService } from './map/map-service.js';
 
@@ -16,6 +17,7 @@ export class GeoportalFacade {
 	constructor(
 		private readonly eventBus: AppEventBus,
 		private readonly dataLoader: GeoportalDataLoader,
+		private readonly world: WorldDefinition,
 		private readonly cesiumIonAccessToken?: string
 	) {}
 
@@ -35,15 +37,19 @@ export class GeoportalFacade {
 
 	async showWorldIn(container: HTMLElement): Promise<void> {
 		this.eventBus.publish({ type: 'world-load-started' });
+		if (!this.cesiumIonAccessToken) {
+			this.eventBus.publish({
+				type: 'world-load-failed',
+				message: 'brak tokenu Cesium ion (PUBLIC_CESIUM_ION_TOKEN w pliku .env)'
+			});
+			return;
+		}
 		let mapService: MapService | null = null;
 		try {
 			const metadata = await this.dataLoader.loadMetadata();
 			mapService = new MapService(container, this.cesiumIonAccessToken);
 			this.mapService = mapService;
-			await mapService.loadWorldModel({
-				url: this.dataLoader.worldModelUrl,
-				anchor: metadata.anchor
-			});
+			await mapService.loadWorldTileset(this.world.worldTilesetIonAssetId, metadata.anchor);
 			if (this.mapService === mapService) this.eventBus.publish({ type: 'world-loaded' });
 		} catch (error) {
 			if (mapService && this.mapService !== mapService) return;

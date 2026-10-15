@@ -9,10 +9,6 @@ export class GeoportalDataLoader {
 		private readonly fetchResource: ResourceFetcher = (url) => fetch(url)
 	) {}
 
-	get worldModelUrl(): string {
-		return `${this.baseUrl}/world.glb`;
-	}
-
 	async loadMetadata(): Promise<Metadata> {
 		return parseMetadata(await this.fetchJson('metadata.json'));
 	}
