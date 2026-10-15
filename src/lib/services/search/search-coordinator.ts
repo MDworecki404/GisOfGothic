@@ -27,6 +27,10 @@ export class SearchCoordinator {
 		private readonly getMarkersDisplay: () => PlaceMarkersDisplay | null
 	) {}
 
+	get currentSearchService(): SearchService | null {
+		return this.searchService;
+	}
+
 	useIndex(index: SearchIndex | null): void {
 		this.searchService = index ? new SearchService(index) : null;
 		this.clearSelection();

@@ -1,6 +1,7 @@
 import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
 import type { WorldDefinition } from '#lib/data/world-catalog.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
+import { AnalysisCoordinator } from './analysis/analysis-coordinator.js';
 import { CoordinateFormatter, type CoordinateSystemId } from './geodesy/coordinate-formatter.js';
 import { DataLayersCoordinator } from './layers/data-layers-coordinator.js';
 import type { DataLayerId } from './layers/data-layer-catalog.js';
@@ -37,6 +38,7 @@ export class GeoportalFacade {
 	private coordinateSystemId: CoordinateSystemId = 'khorinis-1992';
 	private readonly coordinateFormatter = new CoordinateFormatter();
 	private readonly searchCoordinator: SearchCoordinator;
+	private readonly analysisCoordinator: AnalysisCoordinator;
 	private readonly dataLayersCoordinator: DataLayersCoordinator;
 	private readonly measurementCoordinator: MeasurementCoordinator;
 	private readonly timeCoordinator: TimeCoordinator;
@@ -47,6 +49,11 @@ export class GeoportalFacade {
 		private readonly cesiumIonAccessToken?: string
 	) {
 		this.searchCoordinator = new SearchCoordinator(eventBus, () => this.mapService);
+		this.analysisCoordinator = new AnalysisCoordinator(
+			eventBus,
+			() => this.searchCoordinator.currentSearchService,
+			() => this.mapService
+		);
 		this.dataLayersCoordinator = new DataLayersCoordinator(eventBus, () => this.mapService);
 		this.measurementCoordinator = new MeasurementCoordinator(eventBus, () => this.mapService);
 		this.timeCoordinator = new TimeCoordinator(eventBus, () => this.mapService);
@@ -58,6 +65,7 @@ export class GeoportalFacade {
 		this.currentDataLoader = this.createDataLoader(world.dataBaseUrl);
 		this.eventBus.publish({ type: 'world-opened', worldName: world.name });
 		this.searchCoordinator.useIndex(null);
+		this.analysisCoordinator.resetForNewWorld();
 		this.dataLayersCoordinator.useWorld(this.currentDataLoader, {});
 		this.measurementCoordinator.clear();
 		this.timeCoordinator.useWorld(this.currentDataLoader);
@@ -79,6 +87,7 @@ export class GeoportalFacade {
 		this.searchCoordinator.showSelectedEntryOnMap(false);
 		this.dataLayersCoordinator.showVisibleLayersOnMap();
 		this.timeCoordinator.showOnMap();
+		if (this.activeToolId === 'analysis') this.analysisCoordinator.activate();
 	}
 
 	setTimeOfDay(minuteOfDay: number): void {
@@ -141,6 +150,22 @@ export class GeoportalFacade {
 		this.measurementCoordinator.clear();
 	}
 
+	setAnalysisSubjectQuery(query: string): void {
+		this.analysisCoordinator.setSubjectQuery(query);
+	}
+
+	selectAnalysisSubject(entryId: string): void {
+		this.analysisCoordinator.selectSubject(entryId);
+	}
+
+	clearAnalysisSubject(): void {
+		this.analysisCoordinator.clearSubject();
+	}
+
+	flyToNearestPlace(index: number): void {
+		this.analysisCoordinator.flyToNearestPlace(index);
+	}
+
 	switchToNextCoordinateSystem(): void {
 		this.coordinateSystemId = this.coordinateFormatter.findNextCoordinateSystem(
 			this.coordinateSystemId
@@ -184,6 +209,10 @@ export class GeoportalFacade {
 	private activateTool(toolId: ToolId | null): void {
 		if (this.activeToolId === 'measure' && toolId !== 'measure')
 			this.measurementCoordinator.clear();
+		if (this.activeToolId === 'analysis' && toolId !== 'analysis')
+			this.analysisCoordinator.deactivate();
+		if (toolId === 'analysis' && this.activeToolId !== 'analysis')
+			this.analysisCoordinator.activate();
 		this.activeToolId = toolId;
 		this.eventBus.publish({ type: 'tool-selected', toolId });
 	}
@@ -191,6 +220,10 @@ export class GeoportalFacade {
 	private reactToMapClick(click: MapClick): void {
 		if (this.activeToolId === 'measure') {
 			if (click.position) this.measurementCoordinator.addPoint(click.position);
+			return;
+		}
+		if (this.activeToolId === 'analysis') {
+			if (click.position) this.analysisCoordinator.setOrigin(click.position);
 			return;
 		}
 		const pick = click.featurePick;
@@ -236,6 +269,7 @@ export class GeoportalFacade {
 			const metadata = await dataLoader.loadMetadata();
 			if (!isStillCurrent()) return;
 			this.dataLayersCoordinator.updateFeatureCounts(metadata.package.counts);
+			this.analysisCoordinator.useAnchor(metadata.anchor);
 			await mapService.showWorldTileset(world.worldTilesetIonAssetId, metadata.anchor);
 			if (!isStillCurrent()) return;
 			this.eventBus.publish({ type: 'world-loaded' });

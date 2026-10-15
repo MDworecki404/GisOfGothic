@@ -55,6 +55,19 @@ test('wyszukiwarka znajduje przedmiot bez polskich znaków i zapisuje wpis w adr
 	await expect(page.getByText('sztuk w świecie')).toBeVisible();
 });
 
+test('analiza „Najbliższe” pozwala wybrać przedmiot jako temat', async ({ page }) => {
+	await page.goto('/g2nk/khorinis');
+	await page
+		.getByRole('navigation', { name: 'Narzędzia' })
+		.getByRole('button', { name: 'Analizy' })
+		.click();
+	await expect(page.getByRole('heading', { name: 'Analizy' })).toBeVisible();
+	await page.getByLabel('Temat analizy').fill('szczaw krolewski');
+	await page.getByRole('button', { name: /Szczaw królewski/ }).click();
+	await expect(page.getByText('miejsc w świecie')).toBeVisible();
+	await expect(page.getByText('Kliknij punkt na mapie.')).toBeVisible();
+});
+
 test('link z wpisem otwiera kartę postaci', async ({ page }) => {
 	await page.goto('/g2nk/khorinis?wpis=character:VLK_412_HARAD');
 	await expect(page.getByRole('heading', { name: 'Harad' })).toBeVisible({ timeout: 30_000 });

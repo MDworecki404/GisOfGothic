@@ -15,6 +15,7 @@ import type { Anchor } from '#lib/data/types.js';
 import { WorldFrame } from '#lib/services/geodesy/world-frame.js';
 import type { LocalPoint } from '#lib/services/measurement/measurement-calculator.js';
 import type { ShadowSettings } from '#lib/services/time/time-coordinator.js';
+import { AnalysisRenderer } from './analysis-renderer.js';
 import { DataLayersRenderer, type DataLayerPoint } from './data-layers-renderer.js';
 import { MapViewObserver, type MapViewListeners } from './map-view-observer.js';
 import { MeasurementRenderer } from './measurement-renderer.js';
@@ -24,6 +25,7 @@ import { ViewerOptionsBuilder } from './viewer-options-builder.js';
 const BACKGROUND_COLOR = '#14110d';
 const LIGHT_DIRECTION_FROM_ABOVE = new Cartesian3(-1, 0.35, -0.25);
 const OVERVIEW_PITCH_DEGREES = -50;
+const CLOSE_UP_PITCH_DEGREES = -55;
 const OVERVIEW_RANGE_IN_WORLD_RADII = 2.2;
 const ZOOM_STEP_FRACTION = 0.35;
 const FALLBACK_ZOOM_DISTANCE_METRES = 400;
@@ -46,6 +48,7 @@ export class MapService {
 	private readonly placeMarkers: PlaceMarkersLayer;
 	private readonly dataLayers: DataLayersRenderer;
 	private readonly measurement: MeasurementRenderer;
+	private readonly analysis: AnalysisRenderer;
 	private worldTileset: Cesium3DTileset | null = null;
 	private worldFrame: WorldFrame | null = null;
 	private isDestroyed = false;
@@ -66,6 +69,7 @@ export class MapService {
 		this.viewObserver = new MapViewObserver(this.viewer, listeners, () => this.worldFrame);
 		this.dataLayers = new DataLayersRenderer(this.viewer);
 		this.measurement = new MeasurementRenderer(this.viewer);
+		this.analysis = new AnalysisRenderer(this.viewer);
 		this.placeMarkers = new PlaceMarkersLayer(this.viewer);
 	}
 
@@ -203,6 +207,34 @@ export class MapService {
 		this.measurement.clearMeasurement();
 	}
 
+	showNearestPlaces(origin: LocalPoint, targets: readonly LocalPoint[]): void {
+		const frame = this.worldFrame;
+		if (!frame) return;
+		const toScene = (point: LocalPoint): Cartesian3 =>
+			frame.toSceneCartesian(point.east, point.north, point.height);
+		this.analysis.showNearestPlaces(toScene(origin), targets.map(toScene));
+	}
+
+	clearAnalysis(): void {
+		this.analysis.clear();
+	}
+
+	flyToLocalPoint(point: LocalPoint, rangeMetres: number): void {
+		const frame = this.worldFrame;
+		if (!frame) return;
+		this.viewer.camera.flyToBoundingSphere(
+			new BoundingSphere(frame.toSceneCartesian(point.east, point.north, point.height), 0),
+			{
+				duration: 1,
+				offset: new HeadingPitchRange(
+					this.viewer.camera.heading,
+					CesiumMath.toRadians(CLOSE_UP_PITCH_DEGREES),
+					rangeMetres
+				)
+			}
+		);
+	}
+
 	/**
 	 * Odczytuje wysokość modelu świata pod podanymi punktami (rzut wzdłuż pionu). Punkty, pod
 	 * którymi nie ma terenu albo kafle nie są jeszcze wczytane, są pomijane.
@@ -214,10 +246,10 @@ export class MapService {
 		const probes = points.map((point) =>
 			frame.toSceneCartesian(point.east, point.north, point.height)
 		);
-		const clamped: (Cartesian3 | undefined)[] = await scene.clampToHeightMostDetailed(
-			probes,
-			this.measurement.primitivesToIgnoreWhenSampling
-		);
+		const clamped: (Cartesian3 | undefined)[] = await scene.clampToHeightMostDetailed(probes, [
+			...this.measurement.primitivesToIgnoreWhenSampling,
+			...this.analysis.primitivesToIgnoreWhenSampling
+		]);
 		if (this.isDestroyed) return [];
 		return clamped.flatMap((position) => (position ? [frame.toWorldPosition(position)] : []));
 	}
