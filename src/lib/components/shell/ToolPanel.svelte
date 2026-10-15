@@ -1,6 +1,7 @@
 <script lang="ts">
 	import XIcon from '@lucide/svelte/icons/x';
 	import { appState, geoportal } from '#lib/composition-root.js';
+	import AnalysisPanel from '#lib/components/panels/AnalysisPanel.svelte';
 	import LayersPanel from '#lib/components/panels/LayersPanel.svelte';
 	import MeasurePanel from '#lib/components/panels/MeasurePanel.svelte';
 	import SearchPanel from '#lib/components/panels/SearchPanel.svelte';
@@ -39,6 +40,8 @@
 				<LayersPanel />
 			{:else if activeTool.id === 'measure'}
 				<MeasurePanel />
+			{:else if activeTool.id === 'analysis'}
+				<AnalysisPanel />
 			{:else}
 				<TimePanel />
 			{/if}

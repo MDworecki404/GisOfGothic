@@ -6,6 +6,7 @@ import type {
 	SearchResult
 } from '#lib/services/search/search-entry-presenter.js';
 import type { SearchTypeFilter } from '#lib/services/search/search-service.js';
+import type { AnalysisView } from '#lib/services/analysis/analysis-coordinator.js';
 import type { FeatureIdentification } from '#lib/services/layers/data-layer-catalog.js';
 import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator.js';
 import type { MeasurementView } from '#lib/services/measurement/measurement-coordinator.js';
@@ -37,6 +38,7 @@ export type AppEvent =
 	| { type: 'data-layer-load-failed'; layerName: string; message: string }
 	| { type: 'feature-identified'; identification: FeatureIdentification | null }
 	| { type: 'measurement-changed'; measurement: MeasurementView }
+	| { type: 'analysis-changed'; analysis: AnalysisView }
 	| {
 			type: 'time-of-day-changed';
 			minuteOfDay: number;

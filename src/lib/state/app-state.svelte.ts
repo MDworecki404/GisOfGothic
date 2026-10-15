@@ -1,4 +1,5 @@
 import type { IndexCounts } from '#lib/data/types.js';
+import type { AnalysisView } from '#lib/services/analysis/analysis-coordinator.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
 import {
 	COORDINATE_SYSTEMS,
@@ -51,6 +52,7 @@ export class AppState {
 	dataLayerErrorMessage = $state<string | null>(null);
 	identifiedFeature = $state.raw<FeatureIdentification | null>(null);
 	measurement = $state.raw<MeasurementView | null>(null);
+	analysis = $state.raw<AnalysisView | null>(null);
 	minuteOfDay = $state(12 * 60);
 	routineLayerStatus = $state<RoutineLayerStatus>('hidden');
 	charactersAtTimeOfDay = $state<number | null>(null);
@@ -80,6 +82,9 @@ export class AppState {
 		);
 		eventBus.subscribe('measurement-changed', ({ measurement }) => {
 			this.measurement = measurement;
+		});
+		eventBus.subscribe('analysis-changed', ({ analysis }) => {
+			this.analysis = analysis;
 		});
 		eventBus.subscribe('feature-identified', ({ identification }) => {
 			this.identifiedFeature = identification;
@@ -195,6 +200,10 @@ export class AppState {
 	get measuredPointMarvinCommand(): string | null {
 		const point = this.measurement?.pickedPoint;
 		return point ? coordinateFormatter.formatMarvinTeleportCommand(point) : null;
+	}
+
+	formatLength(lengthMetres: number): string {
+		return coordinateFormatter.formatLength(lengthMetres);
 	}
 
 	get timeOfDayLabel(): string {

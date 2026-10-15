@@ -98,6 +98,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `data-layers-changed`       | `layers` (nazwa, kolor, liczność, stan)                                 | włączenie, wczytywanie albo błąd warstwy danych                             |
 | `data-layer-load-failed`    | `layerName`, `message`                                                  | nie udało się pobrać lub sprawdzić pliku warstwy                            |
 | `feature-identified`        | `identification` lub `null`                                             | kliknięto punkt warstwy (karta informacji) albo puste miejsce               |
+| `analysis-changed`          | `analysis` (tryb, temat, punkt odniesienia, wyniki)                     | zmiana tematu, punktu albo wyniku analizy w narzędziu Analizy               |
 | `measurement-changed`       | `measurement` (tryb, wierzchołki, podsumowanie, profil, wskazany punkt) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie    |
 | `time-of-day-changed`       | `minuteOfDay`, `routineLayerStatus`, `charactersOnMap`                  | zmiana pory dnia albo warstwy postaci o tej godzinie                        |
 
@@ -152,6 +153,16 @@ na model świata (`MapService.sampleTerrainUnder` → `clampToHeightMostDetailed
 i dachy, więc przed liczeniem profilu wysokości przechodzą przez filtr medianowy
 (`removeNarrowObstacles`), który usuwa wąskie przeszkody; gęsty las nadal może podnieść profil.
 Tryb **Współrzędne** pokazuje wskazany punkt we wszystkich układach i komendę Marvina `goto pos`.
+
+## Analizy
+
+Gdy aktywne jest narzędzie Analizy, kliknięcie mapy ustawia punkt odniesienia w `AnalysisCoordinator`
+(zamiast identyfikować obiekt). Temat analizy (przedmiot albo postać) wybiera się spośród wpisów
+indeksu — koordynator korzysta z tego samego `SearchService` co wyszukiwarka. **Najbliższe**: miejsca
+tematu rzutuje `LocalProjector` na ramę świata (E, N, H), a `NearestPlacesFinder` wybiera pięć
+najbliższych po prostej w przestrzeni (z odległością w poziomie). `AnalysisRenderer` rysuje punkt,
+połączenia i numerowane wyniki; kliknięcie wiersza przelatuje kamerą do miejsca. Uzasadnienie podziału
+na czyste klasy i renderer: [ADR 0006](adr/0006-analizy-na-czystych-klasach-i-lokalnym-rzucie.md).
 
 ## Pora dnia
 
