@@ -17,7 +17,7 @@
 		"format:check": "prettier --check .",
 		"release": "commit-and-tag-version",
 		"deploy": "node scripts/deploy-release.mjs",
-		"deploy:preview": "npm run build && node scripts/remove-private-files-from-build.mjs && wrangler pages deploy build --project-name gis-of-gothic --branch podglad",
+		"deploy:preview": "node scripts/check-deploy-environment.mjs && npm run build && node scripts/remove-private-files-from-build.mjs && wrangler pages deploy build --project-name gis-of-gothic --branch podglad",
 		"deploy:gate": "cd workers/model-gate && wrangler deploy"
 	},
 	"devDependencies": {
