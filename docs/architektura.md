@@ -235,6 +235,17 @@ i wywołuje `GeoportalFacade.showModelPreview`, a `ModelPreview` (`services/map/
 `CesiumWidget` bez globusa i nieba, ładuje plik podglądu w osiach modeli świata i ustawia kamerę wokół
 jego `boundingSphere`. Obracanie i zoom myszą lub palcem; zamknięcie karty niszczy widget.
 
+Przedmioty w grze leżą na ziemi, więc pliki podglądu są płaskie. Fasada pobiera wymiary modelu
+(`bounds_m`) ze spisu `previews/index.json` przez `ItemModelCatalog` (`services/models/`, spis każdego
+katalogu raz), a `PreviewOrientationChooser` dobiera ułożenie:
+
+- naturalne proporcje (rośliny, mikstury) — bez zmian;
+- płaski i długi (broń, łuki, pochodnie) — obrót o 90°, oś długości pionowo, głowica (strona −x)
+  u góry, kamera prawie z boku i dalej, żeby wysoki przedmiot mieścił się w kadrze;
+- płaski, ale szeroki (pancerze złożone w kupkę, amulety, zwoje) — leży, kamera patrzy z góry.
+
+Brak spisu albo wymiarów oznacza podgląd bez obrotu.
+
 ## Pora dnia
 
 `TimeCoordinator` trzyma minutę doby (domyślnie 12:00). `MapService.showTimeOfDay` ustawia światło
