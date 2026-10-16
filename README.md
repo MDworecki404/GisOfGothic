@@ -33,7 +33,6 @@ UI po polsku.
 | Dokument                                     | Treść                                                    |
 | -------------------------------------------- | -------------------------------------------------------- |
 | [docs/wizja.md](docs/wizja.md)               | koncepcja i założenia produktu                           |
-| [docs/projekt-ui.md](docs/projekt-ui.md)     | projekt interfejsu, narzędzia, makieta                   |
 | [docs/architektura.md](docs/architektura.md) | warstwy, fasada, event bus, przepływ danych              |
 | [docs/dane.md](docs/dane.md)                 | dane świata, układ współrzędnych, jak dodać nowy świat   |
 | [docs/rozwoj.md](docs/rozwoj.md)             | środowisko, skrypty, testy, konwencje, commity i wydania |
