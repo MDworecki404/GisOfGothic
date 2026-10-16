@@ -30,7 +30,9 @@ describe('CachingPolicy', () => {
 			'network-only'
 		);
 		expect(
-			strategyFor('https://gisofgothicmodels.dworecki.dev/g2nk/khorinis/models/previews/a.glb')
+			strategyFor(
+				'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g2nk/khorinis/items/a.bin'
+			)
 		).toBe('network-only');
 		expect(strategyFor('/_app/version.json')).toBe('network-only');
 		expect(strategyFor('/data/g2nk/khorinis/metadata.json', 'cors', 'POST')).toBe('network-only');

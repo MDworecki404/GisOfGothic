@@ -16,7 +16,7 @@
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"release": "commit-and-tag-version",
-		"deploy": "npm run build && wrangler pages deploy build --project-name gis-of-gothic --branch main"
+		"deploy": "npm run build && node scripts/remove-private-files-from-build.mjs && wrangler pages deploy build --project-name gis-of-gothic --branch main"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^21.2.3",
