@@ -2,6 +2,7 @@
 	import DownloadIcon from '@lucide/svelte/icons/download';
 	import SearchIcon from '@lucide/svelte/icons/search';
 	import { appState, geoportal, installApp } from '#lib/composition-root.js';
+	import AboutDialog from './AboutDialog.svelte';
 	import BrandMark from './BrandMark.svelte';
 	import WorldSwitcher, { type WorldSwitcherGame } from './WorldSwitcher.svelte';
 
@@ -76,4 +77,6 @@
 			<span class="sr-only md:hidden">Zainstaluj aplikację</span>
 		</button>
 	{/if}
+
+	<AboutDialog />
 </header>
