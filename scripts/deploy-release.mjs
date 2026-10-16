@@ -3,6 +3,7 @@
  * - w katalogu roboczym są niezacommitowane zmiany,
  * - bieżący commit nie jest oznaczony tagiem wydania `vX.Y.Z` (z `npm run release`),
  * - commit albo tag nie są wypchnięte na GitHuba (produkcja = to, co jest w repozytorium),
+ * - w `.env` brakuje wartości trafiających do strony (`PUBLIC_MODEL_KEY`),
  * - którykolwiek z testów nie przejdzie (check, lint, Vitest, Playwright).
  * Dopiero potem buduje stronę, usuwa niepubliczne pliki danych i wysyła ją na Cloudflare Pages.
  *
@@ -70,6 +71,7 @@ class ReleaseDeployment {
 		this.ensurePublished(tag, commit);
 		console.log(`Wdrażam wydanie ${tag} (${commit.slice(0, 7)}) po pełnych testach.`);
 
+		this.runStep('Wartości w .env', 'node', ['scripts/check-deploy-environment.mjs']);
 		this.runStep('Sprawdzenie typów', 'npm', ['run', 'check']);
 		this.runStep('Lint', 'npm', ['run', 'lint']);
 		this.runStep('Testy jednostkowe', 'npm', ['run', 'test']);
