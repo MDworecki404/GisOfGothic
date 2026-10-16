@@ -7,6 +7,7 @@ import type {
 	SearchEntryType,
 	SearchIndex
 } from './types.js';
+import { stonePlateNameResolver } from './stone-plate-names.js';
 
 const PLACE_KINDS: readonly PlaceKind[] = [
 	'ground',
@@ -168,11 +169,15 @@ function parseSearchEntry(value: unknown, position: number): SearchEntry {
 	const type = record.type;
 	if (!isSearchEntryType(type)) throw new Error(`${description}: nieznany typ wpisu`);
 	if (!Array.isArray(record.places)) throw new Error(`${description}: brak listy miejsc`);
+	const code = requireString(record, 'code', description);
 	return {
 		id: requireString(record, 'id', description),
 		type,
-		code: requireString(record, 'code', description),
-		name: requireString(record, 'name', description),
+		code,
+		name: stonePlateNameResolver.resolveDisplayName(
+			code,
+			requireString(record, 'name', description)
+		),
 		category: readOptionalString(record, 'category') ?? null,
 		model: readOptionalString(record, 'model') ?? null,
 		total: readOptionalNumber(record, 'total'),

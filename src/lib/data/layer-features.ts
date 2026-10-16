@@ -6,6 +6,7 @@ import {
 	requireRecord,
 	requireString
 } from './parsers.js';
+import { stonePlateNameResolver } from './stone-plate-names.js';
 
 export interface PointFeature<P> {
 	lon: number;
@@ -51,8 +52,9 @@ function parseInventoryLine(value: unknown): InventoryLine | null {
 	if (!isRecord(value)) return null;
 	const name = readOptionalString(value, 'name');
 	if (!name) return null;
+	const code = readOptionalString(value, 'code');
 	return {
-		name,
+		name: code ? stonePlateNameResolver.resolveDisplayName(code, name) : name,
 		category: readOptionalString(value, 'category') ?? null,
 		amount: readOptionalNumber(value, 'amount') ?? 1
 	};
@@ -103,10 +105,14 @@ export function parseItemProperties(
 	properties: Record<string, unknown>,
 	description: string
 ): ItemProperties {
+	const code = requireString(properties, 'code', description);
 	return {
 		id: requireString(properties, 'id', description),
-		code: requireString(properties, 'code', description),
-		name: requireString(properties, 'name', description),
+		code,
+		name: stonePlateNameResolver.resolveDisplayName(
+			code,
+			requireString(properties, 'name', description)
+		),
 		category: readOptionalString(properties, 'category') ?? null,
 		amount: readOptionalNumber(properties, 'amount') ?? 1,
 		isInsertedByScript: readOptionalString(properties, 'source') === 'script'
