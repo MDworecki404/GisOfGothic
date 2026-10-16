@@ -8,7 +8,9 @@ zobacz [wizję projektu](docs/wizja.md).
 
 > Projekt w budowie. Działa: mapa 3D świata, wyszukiwarka przedmiotów i postaci z podglądem 3D,
 > warstwy z identyfikacją obiektów, pomiary, analizy GIS, pora dnia z rutynami postaci, zakładki
-> oraz instalacja jako aplikacja (PWA) z pracą bez sieci.**Wersja na żywo: https://gisofgothic.dworecki.dev**
+> oraz instalacja jako aplikacja (PWA) z pracą bez sieci.
+
+**Wersja na żywo: https://gisofgothic.dworecki.dev**
 
 ## Szybki start
 
