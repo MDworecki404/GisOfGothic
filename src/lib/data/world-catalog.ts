@@ -80,7 +80,22 @@ const GORNICZA_DOLINA: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045072/tileset.json'
 };
 
+const JARKENDAR: WorldDefinition = {
+	id: 'jarkendar',
+	gameId: 'g2nk',
+	name: 'Jarkendar',
+	localCoordinateSystemName: 'Układ Jarkendaru 1992',
+	dataBaseUrl: '/data/g2nk/jarkendar',
+	modelNamespace: 'g2nk/jarkendar',
+	protectedModelsUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g2nk/jarkendar/items',
+	worldTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045115/tileset.json',
+	staticObjectsTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045113/tileset.json'
+};
+
 export const worldCatalog = new WorldCatalog(
-	[{ id: 'g2nk', name: 'Gothic 2: Noc Kruka', worlds: [KHORINIS, GORNICZA_DOLINA] }],
+	[{ id: 'g2nk', name: 'Gothic 2: Noc Kruka', worlds: [KHORINIS, GORNICZA_DOLINA, JARKENDAR] }],
 	KHORINIS
 );
