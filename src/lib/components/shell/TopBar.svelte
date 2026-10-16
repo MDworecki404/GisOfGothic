@@ -34,7 +34,7 @@
 <svelte:window onkeydown={focusSearchOnShortcut} />
 
 <header
-	class="panel-stone fixed inset-x-0 top-0 z-20 flex h-14 items-center gap-2 border-x-0 border-t-0 px-3 md:h-13 md:gap-4 md:px-4"
+	class="panel-stone fixed inset-x-0 top-0 z-40 flex h-14 items-center gap-2 border-x-0 border-t-0 px-3 md:h-13 md:gap-4 md:px-4"
 >
 	<div class="flex shrink-0 items-center gap-2.5">
 		<BrandMark />
