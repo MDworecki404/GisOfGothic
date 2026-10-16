@@ -23,16 +23,19 @@ import {
 	type DensityGrid,
 	type GridShape
 } from './density-grid-builder.js';
+import { ViewshedCalculator, type ViewshedCell } from './viewshed-calculator.js';
 import { LocalProjector } from './local-projector.js';
 import { NearestPlacesFinder, type NearestMatch } from './nearest-places-finder.js';
 
-export type AnalysisMode = 'nearest' | 'buffer' | 'density';
+export type AnalysisMode = 'nearest' | 'buffer' | 'density' | 'visibility';
 
 export interface AnalysisDisplay {
 	showNearestPlaces(origin: LocalPoint, targets: readonly LocalPoint[]): void;
 	showBuffer(origin: LocalPoint, ring: readonly LocalPoint[]): void;
 	showDensityCells(cells: readonly DensityCell[]): void;
+	showViewshed(origin: LocalPoint, cells: readonly ViewshedCell[]): void;
 	sampleTerrainUnder(points: readonly LocalPoint[]): Promise<LocalPoint[]>;
+	sampleTerrainUnderKeepingOrder(points: readonly LocalPoint[]): Promise<(LocalPoint | null)[]>;
 	flyToLocalPoint(point: LocalPoint, rangeMetres: number): void;
 	clearAnalysis(): void;
 }
@@ -73,6 +76,14 @@ export interface DensityView {
 	legend: DensityLegendStepView[];
 }
 
+export interface ViewshedView {
+	radiusMetres: number;
+	eyeHeightMetres: number;
+	visiblePercent: number;
+	unknownCellCount: number;
+	hasCells: boolean;
+}
+
 export interface AnalysisView {
 	mode: AnalysisMode;
 	subjectQuery: string;
@@ -85,6 +96,7 @@ export interface AnalysisView {
 	cellShape: GridShape;
 	cellSizeMetres: number;
 	density: DensityView | null;
+	viewshed: ViewshedView | null;
 	isLoading: boolean;
 }
 
@@ -99,6 +111,7 @@ const NEAREST_PLACE_COUNT = 5;
 const SUGGESTION_COUNT = 6;
 const PLACE_CLOSE_UP_RANGE_METRES = 45;
 const DEFAULT_RADIUS_METRES = 100;
+const VIEWSHED_EYE_HEIGHT_METRES = 1.7;
 const BUFFER_LAYER_IDS: readonly DataLayerId[] = ['items', 'containers', 'npcs'];
 const MAXIMUM_LINES_PER_GROUP = 25;
 const RING_LIFT_METRES = 0.4;
@@ -119,6 +132,7 @@ export class AnalysisCoordinator {
 	private readonly nearestPlacesFinder = new NearestPlacesFinder();
 	private readonly bufferAnalyzer = new BufferAnalyzer();
 	private readonly densityGridBuilder = new DensityGridBuilder();
+	private readonly viewshedCalculator = new ViewshedCalculator();
 	private readonly measurementCalculator = new MeasurementCalculator();
 	private projector: LocalProjector | null = null;
 	private mode: AnalysisMode = 'nearest';
@@ -132,6 +146,7 @@ export class AnalysisCoordinator {
 	private cellShape: GridShape = 'hex';
 	private cellSizeMetres = DEFAULT_CELL_SIZE_METRES;
 	private densityGrid: DensityGrid | null = null;
+	private viewshed: ViewshedView | null = null;
 	private isLoading = false;
 	private isToolActive = false;
 	private refreshRequest = 0;
@@ -153,6 +168,7 @@ export class AnalysisCoordinator {
 		this.bufferGroups = [];
 		this.bufferCandidates = null;
 		this.densityGrid = null;
+		this.viewshed = null;
 		this.isLoading = false;
 		this.getDisplay()?.clearAnalysis();
 		this.publish();
@@ -232,6 +248,7 @@ export class AnalysisCoordinator {
 		this.getDisplay()?.clearAnalysis();
 		if (this.mode === 'nearest') this.refreshNearest();
 		else if (this.mode === 'density') this.refreshDensity();
+		else if (this.mode === 'visibility') await this.refreshViewshed(request);
 		else await this.refreshBuffer(request);
 	}
 
@@ -254,6 +271,36 @@ export class AnalysisCoordinator {
 		if (this.isToolActive && this.densityGrid) {
 			this.getDisplay()?.showDensityCells(this.densityGrid.cells);
 		}
+		this.publish();
+	}
+
+	private async refreshViewshed(request: number): Promise<void> {
+		const origin = this.origin;
+		const display = this.getDisplay();
+		this.viewshed = null;
+		if (!origin || !display) {
+			this.isLoading = false;
+			this.publish();
+			return;
+		}
+		this.isLoading = true;
+		this.publish();
+		const radiusMetres = this.radiusMetres;
+		const terrain = await display.sampleTerrainUnderKeepingOrder(
+			this.viewshedCalculator.buildSamplePoints(origin, radiusMetres)
+		);
+		if (request !== this.refreshRequest) return;
+		this.isLoading = false;
+		const settings = { radiusMetres, eyeHeightMetres: VIEWSHED_EYE_HEIGHT_METRES };
+		const result = this.viewshedCalculator.calculate(origin, settings, terrain);
+		this.viewshed = {
+			radiusMetres,
+			eyeHeightMetres: settings.eyeHeightMetres,
+			visiblePercent: Math.round(result.visibleAreaFraction * 100),
+			unknownCellCount: result.unknownCellCount,
+			hasCells: result.cells.length > 0
+		};
+		if (this.isToolActive) display.showViewshed(origin, result.cells);
 		this.publish();
 	}
 
@@ -370,6 +417,7 @@ export class AnalysisCoordinator {
 				cellShape: this.cellShape,
 				cellSizeMetres: this.cellSizeMetres,
 				density: this.presentDensity(),
+				viewshed: this.viewshed,
 				isLoading: this.isLoading
 			}
 		});

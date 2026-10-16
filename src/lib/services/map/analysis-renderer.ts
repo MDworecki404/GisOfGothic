@@ -121,6 +121,11 @@ export class AnalysisRenderer {
 		);
 	}
 
+	showViewshed(origin: Cartesian3, cells: readonly DensityCellPolygon[]): void {
+		this.addPoint(origin, ORIGIN_COLOR, ORIGIN_PIXEL_SIZE);
+		this.showDensityCells(cells);
+	}
+
 	clear(): void {
 		this.clearDensityCells();
 		this.lines.removeAll();
