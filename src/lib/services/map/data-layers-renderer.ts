@@ -6,8 +6,8 @@ import {
 	PointPrimitiveCollection,
 	type Viewer
 } from 'cesium';
-import type { MapIconId } from '#lib/services/layers/map-icons.js';
-import { MAP_ICON_SHAPES } from './map-icon-shapes.js';
+import { MAP_ICON_NODES } from '#lib/services/layers/map-icon-shapes.js';
+import type { MapIconId, MapIconNode } from '#lib/services/layers/map-icons.js';
 
 export interface DataLayerPoint {
 	lon: number;
@@ -104,11 +104,22 @@ export class DataLayersRenderer {
 		this.collections.set(layerId, collection);
 	}
 
+	private renderNodes(nodes: readonly MapIconNode[]): string {
+		return nodes
+			.map(([tag, attributes]) => {
+				const serialised = Object.entries(attributes)
+					.map(([name, value]) => `${name}="${value}"`)
+					.join(' ');
+				return `<${tag} ${serialised}/>`;
+			})
+			.join('');
+	}
+
 	private buildIconImage(iconId: MapIconId, cssColor: string): string {
 		const key = `${iconId}:${cssColor}`;
 		const cached = this.iconImages.get(key);
 		if (cached) return cached;
-		const shape = MAP_ICON_SHAPES[iconId];
+		const shape = this.renderNodes(MAP_ICON_NODES[iconId]);
 		const svg =
 			`<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">` +
 			`<g stroke="${ICON_OUTLINE_COLOR}" stroke-width="5">${shape}</g>` +

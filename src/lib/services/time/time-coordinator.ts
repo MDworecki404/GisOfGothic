@@ -150,7 +150,11 @@ export class TimeCoordinator {
 		this.placesOnMap = (this.schedule?.findActiveAt(this.minuteOfDay) ?? []).map(
 			(active) => active.value
 		);
-		this.getDisplay()?.showDataLayer(ROUTINE_LAYER_ID, this.placesOnMap, ROUTINE_LAYER_COLOR);
+		this.getDisplay()?.showDataLayer(
+			ROUTINE_LAYER_ID,
+			this.placesOnMap.map(({ lon, lat, h }) => ({ lon, lat, h, iconId: 'person' })),
+			ROUTINE_LAYER_COLOR
+		);
 	}
 
 	private publish(): void {

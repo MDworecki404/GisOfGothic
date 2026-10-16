@@ -17,10 +17,10 @@
 <ul>
 	{#each appState.dataLayers as layer (layer.id)}
 		<li class="border-t border-border/60">
-			<label class="grid cursor-pointer grid-cols-[18px_1fr_auto] items-center gap-2.5 py-2">
+			<label class="grid cursor-pointer grid-cols-[18px_1fr_auto] items-start gap-2.5 py-2">
 				<input
 					type="checkbox"
-					class="size-4 accent-[var(--primary)]"
+					class="mt-0.5 size-4 accent-[var(--primary)]"
 					checked={layer.status === 'visible' || layer.status === 'loading'}
 					disabled={layer.status === 'loading'}
 					onchange={() => geoportal.toggleDataLayer(layer.id)}
@@ -31,6 +31,27 @@
 						{layer.name}
 					</span>
 					<span class="block text-[13px] text-muted-foreground">{layer.description}</span>
+					<span class="mt-1 flex flex-wrap gap-x-3 gap-y-1" aria-label="Ikony: {layer.name}">
+						{#each layer.legend as entry (entry.label)}
+							<span class="flex items-center gap-1 text-xs text-muted-foreground">
+								<svg
+									class="size-4"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke={layer.color}
+									stroke-width="2.2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+								>
+									{#each entry.nodes as [tag, attributes], index (index)}
+										<svelte:element this={tag} {...attributes} />
+									{/each}
+								</svg>
+								{entry.label}
+							</span>
+						{/each}
+					</span>
 				</span>
 				<span
 					class="text-[13px] tabular-nums {layer.status === 'error'

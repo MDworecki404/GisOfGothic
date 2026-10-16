@@ -1,5 +1,10 @@
 import { describeCategory } from '#lib/data/category-names.js';
-import { pickItemIcon, type MapIconId } from './map-icons.js';
+import {
+	ITEM_ICON_LEGEND,
+	pickItemIcon,
+	type IconLegendEntry,
+	type MapIconId
+} from './map-icons.js';
 import {
 	parseCharacterProperties,
 	parseContainerProperties,
@@ -44,6 +49,7 @@ export interface DataLayerDefinition {
 	fileName: string;
 	metadataCountKey: string;
 	color: string;
+	legend: readonly IconLegendEntry[];
 	readFeatures(json: unknown): IdentifiableFeature[];
 }
 
@@ -140,6 +146,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		fileName: 'items.geojson',
 		metadataCountKey: 'items',
 		color: '#e0662f',
+		legend: ITEM_ICON_LEGEND,
 		readFeatures: (json) =>
 			readPresentedFeatures(
 				json,
@@ -157,6 +164,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		fileName: 'containers.geojson',
 		metadataCountKey: 'containers',
 		color: '#8aa3a0',
+		legend: [{ label: 'Skrzynia', iconId: 'chest' }],
 		readFeatures: (json) =>
 			readPresentedFeatures(
 				json,
@@ -173,6 +181,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		fileName: 'characters.geojson',
 		metadataCountKey: 'search_characters',
 		color: '#c9a24a',
+		legend: [{ label: 'Postać', iconId: 'person' }],
 		readFeatures: (json) =>
 			readPresentedFeatures(
 				json,
@@ -189,6 +198,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		fileName: 'npcs.geojson',
 		metadataCountKey: 'npcs',
 		color: '#b07ad0',
+		legend: [{ label: 'Postać lub potwór', iconId: 'person' }],
 		readFeatures: (json) =>
 			readPresentedFeatures(
 				json,
