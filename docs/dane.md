@@ -32,7 +32,9 @@ const KHORINIS: WorldDefinition = {
 	gameId: 'g2nk',
 	name: 'Khorinis', // nazwa w UI
 	dataBaseUrl: '/data/g2nk/khorinis', // lekkie dane
-	modelsBaseUrl: 'https://gisofgothicmodels.dworecki.dev/g2nk/khorinis/models', // modele przedmiotów
+	modelNamespace: 'g2nk/khorinis', // przestrzeń nazw chronionych modeli
+	protectedModelsUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g2nk/khorinis/items', // bramka modeli (ADR 0012)
 	worldTilesetIonAssetId: 6033666 // model świata na Cesium ion
 };
 ```
