@@ -9,6 +9,8 @@ export interface WorldDefinition {
 	protectedModelsUrl: string;
 	/** Adres `tileset.json` modelu świata w bramce zasobów (kafle z Cesium ion, ADR 0013). */
 	worldTilesetUrl: string;
+	/** Adres `tileset.json` statycznych obiektów świata (voby) w bramce zasobów. */
+	staticObjectsTilesetUrl: string;
 }
 
 export interface GameDefinition {
@@ -58,7 +60,9 @@ const KHORINIS: WorldDefinition = {
 	protectedModelsUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g2nk/khorinis/items',
 	worldTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6033666/tileset.json'
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6033666/tileset.json',
+	staticObjectsTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045068/tileset.json'
 };
 
 const GORNICZA_DOLINA: WorldDefinition = {
@@ -71,7 +75,9 @@ const GORNICZA_DOLINA: WorldDefinition = {
 	protectedModelsUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g2nk/gornicza-dolina/items',
 	worldTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6044750/tileset.json'
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6044750/tileset.json',
+	staticObjectsTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045072/tileset.json'
 };
 
 export const worldCatalog = new WorldCatalog(

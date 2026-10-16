@@ -13,6 +13,7 @@ import { AnalysisCoordinator, type AnalysisMode } from './analysis/analysis-coor
 import { ChapterFilter, type ChapterNumber } from './chapters/chapter-filter.js';
 import type { GridShape } from './analysis/density-grid-builder.js';
 import { CoordinateFormatter, type CoordinateSystemId } from './geodesy/coordinate-formatter.js';
+import { StaticObjectsCoordinator } from './layers/static-objects-coordinator.js';
 import { DataLayersCoordinator } from './layers/data-layers-coordinator.js';
 import type { DataLayerId } from './layers/data-layer-catalog.js';
 import { MapService } from './map/map-service.js';
@@ -62,6 +63,7 @@ export class GeoportalFacade {
 	private isWorldShownOnMap = false;
 	private mapViewInsets: MapViewInsets = { leftPixels: 0, bottomPixels: 0 };
 	private readonly dataLayersCoordinator: DataLayersCoordinator;
+	private readonly staticObjectsCoordinator: StaticObjectsCoordinator;
 	private readonly measurementCoordinator: MeasurementCoordinator;
 	private readonly timeCoordinator: TimeCoordinator;
 
@@ -80,6 +82,7 @@ export class GeoportalFacade {
 			(layerId) => this.dataLayersCoordinator.loadLayerFeatures(layerId)
 		);
 		this.dataLayersCoordinator = new DataLayersCoordinator(eventBus, () => this.mapService);
+		this.staticObjectsCoordinator = new StaticObjectsCoordinator(eventBus, () => this.mapService);
 		this.measurementCoordinator = new MeasurementCoordinator(eventBus, () => this.mapService);
 		this.timeCoordinator = new TimeCoordinator(eventBus, () => this.mapService);
 	}
@@ -97,6 +100,7 @@ export class GeoportalFacade {
 			localCoordinateSystemName: world.localCoordinateSystemName
 		});
 		this.searchCoordinator.useModelNamespace(world.modelNamespace);
+		this.staticObjectsCoordinator.useWorld(world.staticObjectsTilesetUrl);
 		this.searchCoordinator.useIndex(null);
 		this.analysisCoordinator.resetForNewWorld();
 		this.dataLayersCoordinator.useWorld(this.currentDataLoader, {});
@@ -184,6 +188,10 @@ export class GeoportalFacade {
 
 	toggleCharactersAtTimeOfDay(): void {
 		void this.timeCoordinator.toggleRoutineLayer();
+	}
+
+	toggleStaticObjects(): void {
+		void this.staticObjectsCoordinator.toggle();
 	}
 
 	toggleDataLayer(layerId: DataLayerId): void {
@@ -434,6 +442,7 @@ export class GeoportalFacade {
 			this.pendingCameraView = null;
 			if (cameraFromLink) mapService.moveCameraToView(cameraFromLink, 0);
 			this.eventBus.publish({ type: 'world-loaded' });
+			this.staticObjectsCoordinator.restoreOnMap();
 			this.searchCoordinator.showSelectedEntryOnMap(cameraFromLink === null);
 			if (cameraFromLink) this.publishCameraView();
 		} catch (error) {

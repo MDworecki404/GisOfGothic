@@ -14,6 +14,7 @@ import type { FeatureIdentification } from '#lib/services/layers/data-layer-cata
 import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator.js';
 import type { MeasurementView } from '#lib/services/measurement/measurement-coordinator.js';
 import type { RoutineLayerStatus, ShadowSettings } from '#lib/services/time/time-coordinator.js';
+import type { StaticObjectsStatus } from '#lib/services/layers/static-objects-coordinator.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 import { EventBus } from './event-bus.js';
 
@@ -52,6 +53,7 @@ export type AppEvent =
 			charactersOnMap: number | null;
 			shadows: ShadowSettings;
 	  }
-	| { type: 'app-installability-changed'; canInstall: boolean };
+	| { type: 'app-installability-changed'; canInstall: boolean }
+	| { type: 'static-objects-changed'; status: StaticObjectsStatus; errorMessage: string | null };
 
 export type AppEventBus = EventBus<AppEvent>;

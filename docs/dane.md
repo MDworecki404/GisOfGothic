@@ -56,7 +56,9 @@ Tak dodano Górniczą Dolinę (`/g2nk/gornicza-dolina`, asset ion 6044750).
 4. **Skopiuj lekkie dane** do `static/data/<gra>/<świat>/` — bez `world.glb` i `models/`.
 5. **Zaszyfruj i wgraj podglądy przedmiotów** z przestrzenią `<gra>/<świat>` (docs/rozwoj.md, „Modele przedmiotów”).
 6. **Dodaj wpis** do `WorldCatalog` w `world-catalog.ts`: `id`, `name`, `localCoordinateSystemName`,
-   `dataBaseUrl`, `modelNamespace`, `protectedModelsUrl`, `worldTilesetUrl` (bramka `/ion/<asset>/tileset.json`).
+   `dataBaseUrl`, `modelNamespace`, `protectedModelsUrl`, `worldTilesetUrl` i `staticObjectsTilesetUrl`
+   (bramka `/ion/<asset>/tileset.json`; drugi adres to `vobs.glb` świata wgrany na ion jako osobny asset,
+   oba assety trzeba dopuścić w `ALLOWED_ION_ASSETS`).
    Przełącznik światów w pasku górnym pokaże go sam.
 7. **Sprawdź** `npm run deploy:preview` → `https://podglad.gis-of-gothic.pages.dev/<gra>/<świat>`: model
    poprawnie ustawiony, znaczniki na terenie, podglądy przedmiotów, brak błędów w konsoli. Na produkcję

@@ -28,6 +28,7 @@ import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator
 import type { MeasurementView } from '#lib/services/measurement/measurement-coordinator.js';
 import { formatMinuteOfDay } from '#lib/services/time/daily-schedule.js';
 import type { RoutineLayerStatus, ShadowSettings } from '#lib/services/time/time-coordinator.js';
+import type { StaticObjectsStatus } from '#lib/services/layers/static-objects-coordinator.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 
 const coordinateFormatter = new CoordinateFormatter();
@@ -73,8 +74,14 @@ export class AppState {
 	shadows = $state.raw<ShadowSettings>({ areEnabled: false, areSoft: true });
 
 	canInstallApp = $state(false);
+	staticObjectsStatus = $state<StaticObjectsStatus>('hidden');
+	staticObjectsErrorMessage = $state<string | null>(null);
 
 	constructor(eventBus: AppEventBus) {
+		eventBus.subscribe('static-objects-changed', ({ status, errorMessage }) => {
+			this.staticObjectsStatus = status;
+			this.staticObjectsErrorMessage = errorMessage;
+		});
 		eventBus.subscribe('app-installability-changed', ({ canInstall }) => {
 			this.canInstallApp = canInstall;
 		});

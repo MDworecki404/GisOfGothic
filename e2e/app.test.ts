@@ -199,3 +199,21 @@ test('przełącznik światów przenosi do Górniczej Doliny z jej danymi', async
 	await expect(page).toHaveTitle('Górnicza Dolina — GIS of Gothic');
 	await expect(page.getByText(/214 przedmiotów/)).toBeVisible({ timeout: 30_000 });
 });
+
+test('warstwa obiektów świata wczytuje tileset voba z bramki', async ({ page }) => {
+	const tilesetRequests: string[] = [];
+	page.on('request', (request) => {
+		if (/\/ion\/6045068\/tileset\.json/.test(request.url())) tilesetRequests.push(request.url());
+	});
+	await page.goto('/g2nk/khorinis');
+	await expect(page.getByText(/312 przedmiotów/)).toBeVisible({ timeout: 30_000 });
+	await page
+		.getByRole('navigation', { name: 'Narzędzia' })
+		.getByRole('button', { name: 'Warstwy' })
+		.click();
+	const checkbox = page.getByRole('checkbox', { name: /Obiekty świata/ });
+	await expect(checkbox).not.toBeChecked();
+	await checkbox.check();
+	await expect(checkbox).toBeChecked({ timeout: 60_000 });
+	expect(tilesetRequests.length).toBeGreaterThan(0);
+});

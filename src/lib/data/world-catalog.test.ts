@@ -9,7 +9,8 @@ const khorinis: WorldDefinition = {
 	dataBaseUrl: '/data/g2nk/khorinis',
 	modelNamespace: 'g2nk/khorinis',
 	protectedModelsUrl: 'https://modele.example/g2nk/khorinis/items',
-	worldTilesetUrl: 'https://bramka.example/ion/1/tileset.json'
+	worldTilesetUrl: 'https://bramka.example/ion/1/tileset.json',
+	staticObjectsTilesetUrl: 'https://bramka.example/ion/2/tileset.json'
 };
 const oldCamp: WorldDefinition = { ...khorinis, id: 'colony', gameId: 'g1', name: 'Kolonia' };
 
