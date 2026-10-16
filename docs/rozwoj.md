@@ -20,17 +20,18 @@ Token ion trafia do zbudowanej strony, więc jest publiczny. Na ion ustaw mu tyl
 
 ## Skrypty
 
-| Komenda            | Co robi                                                                       |
-| ------------------ | ----------------------------------------------------------------------------- |
-| `npm run dev`      | serwer deweloperski                                                           |
-| `npm run check`    | `svelte-check` (typy TS i Svelte)                                             |
-| `npm run lint`     | ESLint (w tym zakaz `any`, `!`, `as` i granice warstw)                        |
-| `npm run format`   | Prettier                                                                      |
-| `npm run test`     | testy jednostkowe Vitest (`src/**/*.test.ts`)                                 |
-| `npm run test:e2e` | Playwright: buduje, serwuje i testuje w przeglądarce (wymaga danych i tokenu) |
-| `npm run build`    | statyczna strona w `build/`                                                   |
-| `npm run deploy`   | buduje stronę i wysyła ją na Cloudflare Pages (projekt `gis-of-gothic`)       |
-| `npm run release`  | nowa wersja: podbija `package.json`, dopisuje `CHANGELOG.md`, tworzy tag      |
+| Komenda                               | Co robi                                                                                   |
+| ------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `npm run dev`                         | serwer deweloperski                                                                       |
+| `npm run check`                       | `svelte-check` (typy TS i Svelte) oraz typy service workera (`tsc -p src/service-worker`) |
+| `npm run lint`                        | ESLint (w tym zakaz `any`, `!`, `as` i granice warstw)                                    |
+| `npm run format`                      | Prettier                                                                                  |
+| `npm run test`                        | testy jednostkowe Vitest (`src/**/*.test.ts`)                                             |
+| `npm run test:e2e`                    | Playwright: buduje, serwuje i testuje w przeglądarce (wymaga danych i tokenu)             |
+| `npm run build`                       | statyczna strona w `build/`                                                               |
+| `node scripts/generate-pwa-icons.mjs` | ikony PWA w `static/icons/` z `static/favicon.svg` (po zmianie ikony)                     |
+| `npm run deploy`                      | buduje stronę i wysyła ją na Cloudflare Pages (projekt `gis-of-gothic`)                   |
+| `npm run release`                     | nowa wersja: podbija `package.json`, dopisuje `CHANGELOG.md`, tworzy tag                  |
 
 ## Konwencje kodu
 

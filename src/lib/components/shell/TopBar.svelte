@@ -1,6 +1,7 @@
 <script lang="ts">
+	import DownloadIcon from '@lucide/svelte/icons/download';
 	import SearchIcon from '@lucide/svelte/icons/search';
-	import { appState, geoportal } from '#lib/composition-root.js';
+	import { appState, geoportal, installApp } from '#lib/composition-root.js';
 	import BrandMark from './BrandMark.svelte';
 
 	interface Props {
@@ -67,4 +68,16 @@
 			>Ctrl K</kbd
 		>
 	</label>
+
+	{#if appState.canInstallApp}
+		<button
+			class="flex shrink-0 items-center gap-1.5 rounded-sm border border-border px-2.5 py-1.5 text-sm text-muted-foreground hover:border-primary/60 hover:text-foreground"
+			title="Zainstaluj GIS of Gothic jako aplikację na tym urządzeniu"
+			onclick={() => void installApp()}
+		>
+			<DownloadIcon class="size-4" />
+			<span class="hidden md:inline">Zainstaluj</span>
+			<span class="sr-only md:hidden">Zainstaluj aplikację</span>
+		</button>
+	{/if}
 </header>

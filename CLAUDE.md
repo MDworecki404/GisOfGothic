@@ -86,6 +86,10 @@ Korzystaj z pluginów i skilli: `superpowers` (planowanie, TDD, weryfikacja, rev
 
 - Cesium działa tylko w przeglądarce (`ssr = false`). Zasoby Cesium kopiuje `vite-plugin-static-copy`.
 - Konfiguracja SvelteKit jest w `vite.config.ts`; zmienne środowiskowe w `src/env.ts` (SvelteKit 3).
+- Moduły SvelteKit 3: `$app/env` (`browser`, `dev`, `version`), `$app/manifest`, `$app/service-worker`.
+  Kod uruchamiany przy imporcie, który dotyka `window`, osłaniaj `browser` — build analizuje moduły na serwerze.
+- Service worker to katalog `src/service-worker/` z własnym `tsconfig.json`; `paths.relative: false`
+  jest wymagane, bo zapisana powłoka jest podawana pod każdym adresem (ADR 0011).
 - Dane z gry (`static/data/`) nie trafiają do repo. Nie używamy `npm audit fix --force`.
 - Motyw: ciemny „Gothic” (zmienne shadcn w `src/app.css`); bez logo, czcionek i grafik z gry.
 
