@@ -7,6 +7,8 @@ import type { CameraView } from './bookmarks/camera-view-codec.js';
 import { ViewLinkCodec, type SharedViewState } from './bookmarks/view-link-codec.js';
 import type { MapViewInsets } from './map/free-area-calculator.js';
 import { ModelPreview } from './map/model-preview.js';
+import { ItemModelCatalog } from './models/item-model-catalog.js';
+import { PreviewOrientationChooser } from './models/preview-orientation.js';
 import { AnalysisCoordinator, type AnalysisMode } from './analysis/analysis-coordinator.js';
 import { ChapterFilter, type ChapterNumber } from './chapters/chapter-filter.js';
 import type { GridShape } from './analysis/density-grid-builder.js';
@@ -47,6 +49,8 @@ export class GeoportalFacade {
 	private coordinateSystemId: CoordinateSystemId = 'khorinis-1992';
 	private readonly coordinateFormatter = new CoordinateFormatter();
 	private readonly searchCoordinator: SearchCoordinator;
+	private readonly itemModelCatalog = new ItemModelCatalog();
+	private readonly previewOrientationChooser = new PreviewOrientationChooser();
 	private readonly analysisCoordinator: AnalysisCoordinator;
 	private readonly bookmarksCoordinator: BookmarksCoordinator;
 	private readonly viewLinkCodec = new ViewLinkCodec();
@@ -285,10 +289,18 @@ export class GeoportalFacade {
 		this.mapService?.turnToNorth();
 	}
 
-	/** Pokazuje podgląd 3D jednego modelu w podanym kontenerze; zwraca funkcję sprzątającą. */
+	/**
+	 * Pokazuje podgląd 3D jednego modelu w podanym kontenerze; zwraca funkcję sprzątającą.
+	 * Płaskie przedmioty (broń, pancerze) są stawiane pionowo według wymiarów ze spisu modeli.
+	 */
 	showModelPreview(container: HTMLElement, modelUrl: string): () => void {
 		const preview = new ModelPreview(container);
-		preview.showModel(modelUrl).catch((error: unknown) => console.error(error));
+		this.itemModelCatalog
+			.findBounds(modelUrl)
+			.then((bounds) =>
+				preview.showModel(modelUrl, this.previewOrientationChooser.chooseOrientation(bounds))
+			)
+			.catch((error: unknown) => console.error(error));
 		return () => preview.destroy();
 	}
 
