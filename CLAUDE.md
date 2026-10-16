@@ -75,6 +75,9 @@ Format:
   zmiana, nagłówek opisuje efekt dla użytkownika/rozwoju. Zmiany łamiące: `!` po typie i opis w treści.
 - Commituj samodzielnie po każdej ukończonej i zweryfikowanej nowej rzeczy (funkcja, poprawka, dokument),
   żeby trafiła do changeloga. Wypychaj po zakończeniu większej partii pracy.
+- **Nie wdrażaj na produkcję po zmianach.** Produkcja zmienia się tylko przy wydaniu (ADR 0014):
+  do sprawdzenia zmian używaj `npm run deploy:preview`; `npm run release` i `npm run deploy` tylko
+  na wyraźną prośbę użytkownika.
 
 ## Narzędzia i skille
 

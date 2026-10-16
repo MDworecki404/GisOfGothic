@@ -1,6 +1,6 @@
 # 0010. Hosting na Cloudflare Pages z wgrywaniem z komputera
 
-- Status: przyjęta
+- Status: przyjęta; proces wdrażania zmieniony w [0014](0014-produkcja-tylko-z-wydan.md)
 - Data: 2026-10-16
 
 ## Kontekst
