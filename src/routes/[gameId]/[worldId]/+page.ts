@@ -9,5 +9,5 @@ export const load: PageLoad = ({ params }) => {
 	const game = worldCatalog.findGame(params.gameId);
 	const world = worldCatalog.findWorld(params.gameId, params.worldId);
 	if (!game || !world) error(404, 'Nie ma takiego świata');
-	return { game, world };
+	return { game, world, games: worldCatalog.listGames() };
 };

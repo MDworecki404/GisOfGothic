@@ -40,7 +40,7 @@
 
 <main class="relative h-dvh w-screen overflow-hidden bg-background">
 	<MapView />
-	<TopBar gameName={data.game.name} worldName={data.world.name} />
+	<TopBar games={data.games} currentGameId={data.game.id} currentWorldId={data.world.id} />
 	<ToolRail />
 	<ToolPanel />
 	<MapInsetsReporter />
