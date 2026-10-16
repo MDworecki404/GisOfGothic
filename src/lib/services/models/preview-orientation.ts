@@ -11,12 +11,15 @@ export type PreviewOrientation =
 
 const FLAT_LENGTH_TO_HEIGHT_RATIO = 2.5;
 const ELONGATED_LENGTH_TO_WIDTH_RATIO = 1.8;
+const ELONGATED_WEAPON_LENGTH_TO_WIDTH_RATIO = 1.2;
+const WEAPON_MODEL_FILE = /(^|\/)it(mw|rw)_[^/]*$/i;
 
 /**
  * Przedmioty w grze leżą na ziemi, więc w pliku są płaskie. Długie przedmioty (broń, łuki,
  * pochodnie) stawiamy pionowo jak na stojaku; płaskie, ale szerokie (pancerze złożone w kupkę,
  * amulety, zwoje) pokazujemy leżące z góry. Przedmioty o naturalnych proporcjach (rośliny,
- * mikstury) zostają bez zmian.
+ * mikstury) zostają bez zmian. Broń (pliki `itmw_*`, `itrw_*`) stoi już przy niewielkim
+ * wydłużeniu, bo szerokie ostrze topora daje proporcje podobne do futra czy księgi.
  */
 export class PreviewOrientationChooser {
 	constructor(
@@ -24,12 +27,15 @@ export class PreviewOrientationChooser {
 		private readonly elongatedRatio = ELONGATED_LENGTH_TO_WIDTH_RATIO
 	) {}
 
-	chooseOrientation(bounds: ModelBounds | null): PreviewOrientation {
+	chooseOrientation(bounds: ModelBounds | null, modelPath = ''): PreviewOrientation {
 		if (!bounds) return 'as-saved';
 		const length = Math.max(bounds.x, bounds.z);
 		const width = Math.min(bounds.x, bounds.z);
 		if (length <= bounds.y * this.flatRatio) return 'as-saved';
-		if (length <= width * this.elongatedRatio) return 'view-from-above';
+		const elongatedRatio = WEAPON_MODEL_FILE.test(modelPath)
+			? ELONGATED_WEAPON_LENGTH_TO_WIDTH_RATIO
+			: this.elongatedRatio;
+		if (length <= width * elongatedRatio) return 'view-from-above';
 		return bounds.x >= bounds.z ? 'stand-on-east-axis' : 'stand-on-north-axis';
 	}
 }

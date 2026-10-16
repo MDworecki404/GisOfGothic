@@ -11,6 +11,16 @@ describe('PreviewOrientationChooser', () => {
 		expect(chooser.chooseOrientation({ x: 0.1, y: 0.05, z: 0.9 })).toBe('stand-on-north-axis');
 	});
 
+	it('broń z szerokim ostrzem stoi, a futro o podobnych proporcjach leży', () => {
+		const orcAxe = { x: 1.144, y: 0.07, z: 0.656 };
+		expect(chooser.chooseOrientation(orcAxe, 'g2nk/khorinis/previews/itmw_2h_orcaxe_01.glb')).toBe(
+			'stand-on-east-axis'
+		);
+		expect(chooser.chooseOrientation(orcAxe, 'g2nk/khorinis/previews/itat_wolffur.glb')).toBe(
+			'view-from-above'
+		);
+	});
+
 	it('płaski, ale szeroki przedmiot (pancerz, amulet) pokazuje leżący z góry', () => {
 		expect(chooser.chooseOrientation({ x: 0.9862, y: 0.1941, z: 1.1606 })).toBe('view-from-above');
 		expect(chooser.chooseOrientation({ x: 0.1834, y: 0.027, z: 0.1515 })).toBe('view-from-above');

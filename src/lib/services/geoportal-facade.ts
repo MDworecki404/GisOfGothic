@@ -311,7 +311,7 @@ export class GeoportalFacade {
 					preview.showModel(
 						model.glb,
 						model.fileId,
-						this.previewOrientationChooser.chooseOrientation(model.bounds)
+						this.previewOrientationChooser.chooseOrientation(model.bounds, modelPath)
 					)
 				)
 				.catch((error: unknown) => console.error(error));
