@@ -2,6 +2,22 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.2.1](https://github.com/MDworecki404/GisOfGothic/compare/v0.2.0...v0.2.1) (2026-10-16)
+
+### Nowe funkcje
+
+* okienko o projekcie z linkami do repozytorium i autora ([74b0371](https://github.com/MDworecki404/GisOfGothic/commit/74b0371d07cd36801352bbc8df915d931281321e))
+* przełącznik światów w pasku górnym ([a8bb64d](https://github.com/MDworecki404/GisOfGothic/commit/a8bb64d0598c6f80ffd8955b64d7570c82a4a073))
+* świat Górnicza Dolina ([aebb2b5](https://github.com/MDworecki404/GisOfGothic/commit/aebb2b5ea4be800a41681331b8ec45ee0893321a))
+* świat Jarkendar ([937aacf](https://github.com/MDworecki404/GisOfGothic/commit/937aacfd35e9808f8c4f57e76e3737af86897932))
+* warstwa obiektów świata (voby statyczne) ([5a2edf5](https://github.com/MDworecki404/GisOfGothic/commit/5a2edf50b39ecfa9074aed672587f63eb3d2b694))
+* wskaźnik wczytywania kafli 3D Tiles ([bd6559e](https://github.com/MDworecki404/GisOfGothic/commit/bd6559e0ccdb5a1a17931db6d51f06776f7dd642))
+
+### Poprawki błędów
+
+* lista światów nad panelem narzędzia ([90b988a](https://github.com/MDworecki404/GisOfGothic/commit/90b988acdd62a8407fe3376e7404b04d24878fdd))
+* wdrożenie produkcyjne na Windows przekazuje opis wydania w całości ([525a176](https://github.com/MDworecki404/GisOfGothic/commit/525a176f01d5024f558977bac813ec63ebe987bb))
+
 ## [0.2.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.1.0...v0.2.0) (2026-10-16)
 
 ### Nowe funkcje
