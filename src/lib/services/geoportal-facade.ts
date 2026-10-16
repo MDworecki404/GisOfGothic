@@ -8,6 +8,7 @@ import { ViewLinkCodec, type SharedViewState } from './bookmarks/view-link-codec
 import type { MapViewInsets } from './map/free-area-calculator.js';
 import { ModelPreview } from './map/model-preview.js';
 import { AnalysisCoordinator, type AnalysisMode } from './analysis/analysis-coordinator.js';
+import { ChapterFilter, type ChapterNumber } from './chapters/chapter-filter.js';
 import type { GridShape } from './analysis/density-grid-builder.js';
 import { CoordinateFormatter, type CoordinateSystemId } from './geodesy/coordinate-formatter.js';
 import { DataLayersCoordinator } from './layers/data-layers-coordinator.js';
@@ -42,6 +43,7 @@ export class GeoportalFacade {
 	private currentDataLoader: GeoportalDataLoader | null = null;
 	private worldLoadGeneration = 0;
 	private activeToolId: ToolId | null = 'search';
+	private selectedChapter: ChapterNumber | null = null;
 	private coordinateSystemId: CoordinateSystemId = 'khorinis-1992';
 	private readonly coordinateFormatter = new CoordinateFormatter();
 	private readonly searchCoordinator: SearchCoordinator;
@@ -88,6 +90,7 @@ export class GeoportalFacade {
 		this.dataLayersCoordinator.useWorld(this.currentDataLoader, {});
 		this.measurementCoordinator.clear();
 		this.timeCoordinator.useWorld(this.currentDataLoader);
+		this.selectChapter(null);
 		void this.loadSearchIndexOfCurrentWorld();
 		void this.showCurrentWorldOnMap();
 	}
@@ -112,7 +115,7 @@ export class GeoportalFacade {
 	}
 
 	/**
-	 * Odtwarza widok z adresu strony (`?wpis=…&widok=…&narzedzie=…`). Kamera czeka na wczytanie
+	 * Odtwarza widok z adresu strony (`?wpis=…&widok=…&narzedzie=…&rozdzial=…`). Kamera czeka na wczytanie
 	 * modelu świata, a wpis na wczytanie indeksu; przy kamerze z linku kamera nie leci do miejsc wpisu.
 	 */
 	openSharedView(query: string): void {
@@ -126,7 +129,8 @@ export class GeoportalFacade {
 			entryId: viewState.entryId,
 			entryName: this.searchCoordinator.selectedEntryReference?.name ?? null,
 			toolId: viewState.toolId,
-			camera: viewState.camera
+			camera: viewState.camera,
+			chapter: viewState.chapter
 		});
 	}
 
@@ -134,7 +138,12 @@ export class GeoportalFacade {
 		const bookmark = this.bookmarksCoordinator.findBookmark(bookmarkId);
 		if (!bookmark) return;
 		this.applyViewState(
-			{ entryId: bookmark.entryId, camera: bookmark.camera, toolId: bookmark.toolId },
+			{
+				entryId: bookmark.entryId,
+				camera: bookmark.camera,
+				toolId: bookmark.toolId,
+				chapter: bookmark.chapter
+			},
 			true
 		);
 	}
@@ -154,6 +163,15 @@ export class GeoportalFacade {
 
 	setTimeOfDay(minuteOfDay: number): void {
 		this.timeCoordinator.setMinuteOfDay(minuteOfDay);
+	}
+
+	/** Wybiera rozdział I–VI dla postaci na mapie; `null` pokazuje wszystkie rozdziały. */
+	selectChapter(chapter: ChapterNumber | null): void {
+		this.selectedChapter = chapter;
+		const chapterFilter = new ChapterFilter(chapter);
+		this.dataLayersCoordinator.useChapterFilter(chapterFilter);
+		this.timeCoordinator.useChapterFilter(chapterFilter);
+		this.eventBus.publish({ type: 'chapter-changed', chapter });
 	}
 
 	setShadows(settings: ShadowSettings): void {
@@ -297,12 +315,14 @@ export class GeoportalFacade {
 		return {
 			entryId: this.searchCoordinator.selectedEntryReference?.id ?? null,
 			camera: this.mapService?.readCameraView() ?? null,
-			toolId: this.activeToolId
+			toolId: this.activeToolId,
+			chapter: this.selectedChapter
 		};
 	}
 
 	private applyViewState(state: SharedViewState, isCameraAnimated: boolean): void {
 		this.activateTool(state.toolId);
+		this.selectChapter(state.chapter);
 		if (state.entryId) this.searchCoordinator.selectEntry(state.entryId, state.camera === null);
 		else this.searchCoordinator.clearSelection();
 		const camera = state.camera;

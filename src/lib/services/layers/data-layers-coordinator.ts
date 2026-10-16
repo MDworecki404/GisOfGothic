@@ -1,5 +1,6 @@
 import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
+import { ChapterFilter } from '#lib/services/chapters/chapter-filter.js';
 import { MAP_ICON_NODES } from './map-icon-shapes.js';
 import type { MapIconNode } from './map-icons.js';
 import type { DataLayerPoint, FeaturePick } from '#lib/services/map/data-layers-renderer.js';
@@ -44,7 +45,9 @@ export class DataLayersCoordinator {
 	private readonly loadedFeatures = new Map<DataLayerId, IdentifiableFeature[]>();
 	private readonly statuses = new Map<DataLayerId, DataLayerStatus>();
 	private readonly pendingLoads = new Map<DataLayerId, Promise<IdentifiableFeature[] | null>>();
+	private readonly shownFeatures = new Map<DataLayerId, IdentifiableFeature[]>();
 	private featureCounts: Record<string, number> = {};
+	private chapterFilter = new ChapterFilter(null);
 	private dataLoader: GeoportalDataLoader | null = null;
 
 	constructor(
@@ -57,6 +60,7 @@ export class DataLayersCoordinator {
 		this.dataLoader = dataLoader;
 		this.featureCounts = featureCounts;
 		this.loadedFeatures.clear();
+		this.shownFeatures.clear();
 		this.pendingLoads.clear();
 		this.statuses.clear();
 		this.publishLayers();
@@ -67,6 +71,13 @@ export class DataLayersCoordinator {
 		this.publishLayers();
 	}
 
+	/** Pokazuje na warstwach postaci tylko te, które pojawiają się w wybranym rozdziale. */
+	useChapterFilter(chapterFilter: ChapterFilter): void {
+		this.chapterFilter = chapterFilter;
+		this.showVisibleLayersOnMap();
+		this.publishLayers();
+	}
+
 	async toggleLayer(layerId: DataLayerId): Promise<void> {
 		const layer = DATA_LAYERS.find((definition) => definition.id === layerId);
 		if (!layer) return;
@@ -74,6 +85,7 @@ export class DataLayersCoordinator {
 		if (status === 'loading') return;
 		if (status === 'visible') {
 			this.getDisplay()?.hideDataLayer(layerId);
+			this.shownFeatures.delete(layerId);
 			this.setStatus(layerId, 'hidden');
 			return;
 		}
@@ -84,7 +96,7 @@ export class DataLayersCoordinator {
 		for (const layer of DATA_LAYERS) {
 			const features = this.loadedFeatures.get(layer.id);
 			if (features && this.statuses.get(layer.id) === 'visible') {
-				this.getDisplay()?.showDataLayer(layer.id, features, layer.color);
+				this.showFeaturesOnMap(layer, features);
 			}
 		}
 	}
@@ -107,7 +119,7 @@ export class DataLayersCoordinator {
 
 	identifyFeature(pick: FeaturePick): void {
 		const layer = DATA_LAYERS.find((definition) => definition.id === pick.layerId);
-		const feature = layer ? this.loadedFeatures.get(layer.id)?.at(pick.featureIndex) : undefined;
+		const feature = layer ? this.shownFeatures.get(layer.id)?.at(pick.featureIndex) : undefined;
 		this.eventBus.publish({
 			type: 'feature-identified',
 			identification: feature ? feature.identification : null
@@ -124,8 +136,22 @@ export class DataLayersCoordinator {
 			}
 			return;
 		}
-		this.getDisplay()?.showDataLayer(layer.id, features, layer.color);
+		this.showFeaturesOnMap(layer, features);
 		this.setStatus(layer.id, 'visible');
+	}
+
+	private showFeaturesOnMap(layer: DataLayerDefinition, features: IdentifiableFeature[]): void {
+		const featuresToShow = this.filterByChapter(layer, features);
+		this.shownFeatures.set(layer.id, featuresToShow);
+		this.getDisplay()?.showDataLayer(layer.id, featuresToShow, layer.color);
+	}
+
+	private filterByChapter(
+		layer: DataLayerDefinition,
+		features: IdentifiableFeature[]
+	): IdentifiableFeature[] {
+		if (!layer.isFilteredByChapter) return features;
+		return features.filter((feature) => this.chapterFilter.isSpawnVisible(feature.spawnChapter));
 	}
 
 	private async fetchFeatures(layer: DataLayerDefinition): Promise<IdentifiableFeature[] | null> {
@@ -163,12 +189,15 @@ export class DataLayersCoordinator {
 				description: layer.description,
 				color: layer.color,
 				legend: layer.legend.map(({ label, iconId }) => ({ label, nodes: MAP_ICON_NODES[iconId] })),
-				featureCount:
-					this.loadedFeatures.get(layer.id)?.length ??
-					this.featureCounts[layer.metadataCountKey] ??
-					null,
+				featureCount: this.countFeatures(layer),
 				status: this.statuses.get(layer.id) ?? 'hidden'
 			}))
 		});
+	}
+
+	private countFeatures(layer: DataLayerDefinition): number | null {
+		const loaded = this.loadedFeatures.get(layer.id);
+		if (loaded) return this.filterByChapter(layer, loaded).length;
+		return this.featureCounts[layer.metadataCountKey] ?? null;
 	}
 }

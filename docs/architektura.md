@@ -102,6 +102,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `camera-view-changed`       | `view` (E, N, H, kierunek, nachylenie) lub `null`                       | kamera się zatrzymała (`moveEnd`) albo odtworzono widok z linku             |
 | `bookmarks-changed`         | `bookmarks`, `hasStorageError`                                          | wczytano, dodano albo usunięto zakładkę (lista dotyczy otwartego świata)    |
 | `measurement-changed`       | `measurement` (tryb, wierzchołki, podsumowanie, profil, wskazany punkt) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie    |
+| `chapter-changed`           | `chapter` (1–6) lub `null`                                              | wybór rozdziału w panelu Czas albo odtworzenie go z linku lub zakładki      |
 | `time-of-day-changed`       | `minuteOfDay`, `routineLayerStatus`, `charactersOnMap`                  | zmiana pory dnia albo warstwy postaci o tej godzinie                        |
 
 ## Cesium a reaktywność Svelte
@@ -185,8 +186,8 @@ na czyste klasy i renderer: [ADR 0006](adr/0006-analizy-na-czystych-klasach-i-lo
 
 ## Widok w adresie i zakładki
 
-Stan widoku to trzy rzeczy: wybrany wpis, kamera i otwarte narzędzie. `ViewLinkCodec` zamienia je na
-parametry adresu i z powrotem: `?wpis=item:…&widok=E_N_H_kierunek_nachylenie&narzedzie=measure`
+Stan widoku to cztery rzeczy: wybrany wpis, kamera, otwarte narzędzie i rozdział. `ViewLinkCodec` zamienia je na
+parametry adresu i z powrotem: `?wpis=item:…&widok=E_N_H_kierunek_nachylenie&narzedzie=measure&rozdzial=3`
 (parametry domyślne są pomijane, zamknięty panel to `narzedzie=zamkniete`). Kamerę koduje
 `CameraViewCodec` w metrach od kotwicy i stopniach, więc link nie zależy od globusa Cesium; uszkodzony
 parametr jest ignorowany, a reszta widoku odtwarzana.
@@ -228,3 +229,14 @@ sceny, więc cienie podążają za porą dnia. Gładkie cienie to `softShadows` 
 Warstwa „postacie o tej godzinie” czyta `character_places.geojson` przy pierwszym włączeniu, bierze
 tylko rutyny domyślne i przez `DailySchedule` wybiera miejsca, których przedział godzin obejmuje
 wybraną minutę (przedziały przez północ, np. „22:00–07:00”, są obsługiwane).
+
+## Rozdział
+
+`GeoportalFacade.selectChapter` zapamiętuje wybrany rozdział I–VI (`null` = wszystkie, domyślnie) i podaje
+`ChapterFilter` (`services/chapters/`) koordynatorom `DataLayersCoordinator` i `TimeCoordinator`; publikuje
+`chapter-changed`. Semantyka: wstawienie postaci ma `chapter` (numer rozdziału funkcji skryptu) albo `null`
+(start świata lub dialog). W rozdziale N widać postacie z `chapter` ≤ N lub `null`, bo dane nie mówią o
+znikaniu postaci. Filtr dotyczy warstw „Unikatowe postacie” i „Wszyscy NPC” (`isFilteredByChapter` w
+`DATA_LAYERS`) oraz warstwy „postacie o tej godzinie”: rutyny nie mają rozdziału, więc `SpawnChapterIndex`
+(z `npcs.geojson`, pobieranego razem z rutynami) daje im najwcześniejszy rozdział wstawienia postaci o tym
+`npc_code`. Rozdział trafia do adresu (`rozdzial=1…6`) i do zakładek (`SavedView.chapter`).

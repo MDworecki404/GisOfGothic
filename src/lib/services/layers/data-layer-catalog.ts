@@ -39,6 +39,7 @@ export interface IdentifiableFeature {
 	h: number;
 	quantity: number;
 	iconId: MapIconId;
+	spawnChapter: number | null;
 	identification: FeatureIdentification;
 }
 
@@ -50,6 +51,7 @@ export interface DataLayerDefinition {
 	metadataCountKey: string;
 	color: string;
 	legend: readonly IconLegendEntry[];
+	isFilteredByChapter: boolean;
 	readFeatures(json: unknown): IdentifiableFeature[];
 }
 
@@ -126,7 +128,8 @@ function readPresentedFeatures<P>(
 	parseProperties: (properties: Record<string, unknown>, description: string) => P,
 	present: (properties: P) => FeatureIdentification,
 	pickIcon: (properties: P) => MapIconId,
-	readQuantity: (properties: P) => number = () => 1
+	readQuantity: (properties: P) => number = () => 1,
+	readSpawnChapter: (properties: P) => number | null = () => null
 ): IdentifiableFeature[] {
 	return parsePointFeatures(json, description, parseProperties).map((feature) => ({
 		lon: feature.lon,
@@ -134,6 +137,7 @@ function readPresentedFeatures<P>(
 		h: feature.h,
 		quantity: readQuantity(feature.properties),
 		iconId: pickIcon(feature.properties),
+		spawnChapter: readSpawnChapter(feature.properties),
 		identification: present(feature.properties)
 	}));
 }
@@ -147,6 +151,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		metadataCountKey: 'items',
 		color: '#e0662f',
 		legend: ITEM_ICON_LEGEND,
+		isFilteredByChapter: false,
 		readFeatures: (json) =>
 			readPresentedFeatures(
 				json,
@@ -165,6 +170,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		metadataCountKey: 'containers',
 		color: '#8aa3a0',
 		legend: [{ label: 'Skrzynia', iconId: 'chest' }],
+		isFilteredByChapter: false,
 		readFeatures: (json) =>
 			readPresentedFeatures(
 				json,
@@ -182,13 +188,16 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		metadataCountKey: 'search_characters',
 		color: '#c9a24a',
 		legend: [{ label: 'Postać', iconId: 'person' }],
+		isFilteredByChapter: true,
 		readFeatures: (json) =>
 			readPresentedFeatures(
 				json,
 				'characters.geojson',
 				parseCharacterProperties,
 				presentCharacter('Unikatowa postać'),
-				() => 'person'
+				() => 'person',
+				() => 1,
+				(properties) => properties.chapter
 			)
 	},
 	{
@@ -199,13 +208,16 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		metadataCountKey: 'npcs',
 		color: '#b07ad0',
 		legend: [{ label: 'Postać lub potwór', iconId: 'person' }],
+		isFilteredByChapter: true,
 		readFeatures: (json) =>
 			readPresentedFeatures(
 				json,
 				'npcs.geojson',
 				parseCharacterProperties,
 				presentCharacter('NPC albo potwór'),
-				() => 'person'
+				() => 'person',
+				() => 1,
+				(properties) => properties.chapter
 			)
 	}
 ];

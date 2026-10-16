@@ -1,5 +1,9 @@
 import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
-import { parsePointFeatures, type PointFeature } from '#lib/data/layer-features.js';
+import {
+	parseCharacterProperties,
+	parsePointFeatures,
+	type PointFeature
+} from '#lib/data/layer-features.js';
 import {
 	describeRoutineAction,
 	parseRoutinePlaceProperties,
@@ -7,11 +11,13 @@ import {
 } from '#lib/data/routine-places.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
 import type { DataLayersDisplay } from '#lib/services/layers/data-layers-coordinator.js';
+import { ChapterFilter, SpawnChapterIndex } from '#lib/services/chapters/chapter-filter.js';
 import { DailySchedule, isMinuteWithinInterval, parseTimeInterval } from './daily-schedule.js';
 
 export const ROUTINE_LAYER_ID = 'routines';
 const ROUTINE_LAYER_COLOR = '#ffd27a';
 const ROUTINE_FILE_NAME = 'character_places.geojson';
+const SPAWN_FILE_NAME = 'npcs.geojson';
 const NOON_MINUTE = 12 * 60;
 
 export interface ShadowSettings {
@@ -34,12 +40,15 @@ function describeError(error: unknown): string {
 
 /**
  * Pora dnia w świecie: światło i cienie mapy oraz warstwa „gdzie są postacie o tej godzinie” z rutyn dnia.
- * Pokazuje tylko rutyny domyślne — rutyny po zadaniach dotyczą innych etapów gry.
+ * Pokazuje tylko rutyny domyślne — rutyny po zadaniach dotyczą innych etapów gry. Wybrany rozdział
+ * ukrywa postacie, które skrypt wstawia do świata dopiero w późniejszym rozdziale.
  */
 export class TimeCoordinator {
 	private minuteOfDay = NOON_MINUTE;
 	private status: RoutineLayerStatus = 'hidden';
 	private schedule: DailySchedule<RoutinePlace> | null = null;
+	private spawnChapters: SpawnChapterIndex | null = null;
+	private chapterFilter = new ChapterFilter(null);
 	private placesOnMap: RoutinePlace[] = [];
 	private dataLoader: GeoportalDataLoader | null = null;
 	private shadows: ShadowSettings = { areEnabled: false, areSoft: true };
@@ -53,8 +62,15 @@ export class TimeCoordinator {
 		this.getDisplay()?.hideDataLayer(ROUTINE_LAYER_ID);
 		this.dataLoader = dataLoader;
 		this.schedule = null;
+		this.spawnChapters = null;
 		this.placesOnMap = [];
 		this.status = 'hidden';
+		this.publish();
+	}
+
+	useChapterFilter(chapterFilter: ChapterFilter): void {
+		this.chapterFilter = chapterFilter;
+		if (this.status === 'visible') this.showCharactersAtCurrentTime();
 		this.publish();
 	}
 
@@ -124,12 +140,20 @@ export class TimeCoordinator {
 		this.status = 'loading';
 		this.publish();
 		try {
+			const [routineJson, spawnJson] = await Promise.all([
+				dataLoader.loadLayerFile(ROUTINE_FILE_NAME),
+				dataLoader.loadLayerFile(SPAWN_FILE_NAME)
+			]);
 			const places = parsePointFeatures(
-				await dataLoader.loadLayerFile(ROUTINE_FILE_NAME),
+				routineJson,
 				ROUTINE_FILE_NAME,
 				parseRoutinePlaceProperties
 			).filter((place) => place.properties.isDefaultRoutine);
+			const spawns = parsePointFeatures(spawnJson, SPAWN_FILE_NAME, parseCharacterProperties);
 			if (dataLoader !== this.dataLoader) return false;
+			this.spawnChapters = new SpawnChapterIndex(
+				spawns.map(({ properties }) => ({ code: properties.code, chapter: properties.chapter }))
+			);
 			this.schedule = new DailySchedule(places, (place) => place.properties.timeRanges);
 			return true;
 		} catch (error) {
@@ -147,9 +171,14 @@ export class TimeCoordinator {
 	}
 
 	private showCharactersAtCurrentTime(): void {
-		this.placesOnMap = (this.schedule?.findActiveAt(this.minuteOfDay) ?? []).map(
-			(active) => active.value
-		);
+		const spawnChapters = this.spawnChapters;
+		this.placesOnMap = (this.schedule?.findActiveAt(this.minuteOfDay) ?? [])
+			.map((active) => active.value)
+			.filter((place) =>
+				this.chapterFilter.isSpawnVisible(
+					spawnChapters?.findEarliestSpawnChapter(place.properties.characterCode) ?? null
+				)
+			);
 		this.getDisplay()?.showDataLayer(
 			ROUTINE_LAYER_ID,
 			this.placesOnMap.map(({ lon, lat, h }) => ({ lon, lat, h, iconId: 'person' })),

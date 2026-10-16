@@ -22,7 +22,8 @@ const view: SavedView = {
 	entryId: 'item:ITPL_PERM_HERB',
 	entryName: 'Szczaw królewski',
 	toolId: 'measure',
-	camera: { east: 1, north: 2, height: 3, headingDegrees: 4, pitchDegrees: -5 }
+	camera: { east: 1, north: 2, height: 3, headingDegrees: 4, pitchDegrees: -5 },
+	chapter: 2
 };
 
 describe('BookmarkStore', () => {
@@ -50,7 +51,7 @@ describe('BookmarkStore', () => {
 		);
 		const [loaded, ...rest] = new BookmarkStore(storage).loadAll();
 		expect(rest).toEqual([]);
-		expect(loaded).toMatchObject({ id: 'a1', toolId: null, camera: null });
+		expect(loaded).toMatchObject({ id: 'a1', toolId: null, camera: null, chapter: 2 });
 	});
 
 	it('bez pamięci przeglądarki nic nie zapisuje i nie rzuca', () => {

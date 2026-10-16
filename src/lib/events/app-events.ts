@@ -1,4 +1,5 @@
 import type { IndexCounts } from '#lib/data/types.js';
+import type { ChapterNumber } from '#lib/services/chapters/chapter-filter.js';
 import type { CoordinateSystemId } from '#lib/services/geodesy/coordinate-formatter.js';
 import type { WorldPosition } from '#lib/services/geodesy/world-frame.js';
 import type {
@@ -42,6 +43,7 @@ export type AppEvent =
 	| { type: 'measurement-changed'; measurement: MeasurementView }
 	| { type: 'analysis-changed'; analysis: AnalysisView }
 	| { type: 'camera-view-changed'; view: CameraView | null }
+	| { type: 'chapter-changed'; chapter: ChapterNumber | null }
 	| { type: 'bookmarks-changed'; bookmarks: BookmarkView[]; hasStorageError: boolean }
 	| {
 			type: 'time-of-day-changed';
