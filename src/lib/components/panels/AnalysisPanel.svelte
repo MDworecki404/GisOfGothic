@@ -4,7 +4,8 @@
 	const MODES = [
 		{ value: 'nearest', label: 'Najbliższe', hint: 'pięć najbliższych miejsc' },
 		{ value: 'buffer', label: 'Zasięg', hint: 'co leży w promieniu' },
-		{ value: 'density', label: 'Zagęszczenie', hint: 'mapa komórek' }
+		{ value: 'density', label: 'Zagęszczenie', hint: 'mapa komórek' },
+		{ value: 'visibility', label: 'Widoczność', hint: 'co widać z punktu' }
 	] as const;
 
 	const CELL_SHAPES = [
@@ -83,7 +84,7 @@
 {/snippet}
 
 {#if analysis}
-	<div class="grid grid-cols-3 gap-2" role="group" aria-label="Rodzaj analizy">
+	<div class="grid grid-cols-2 gap-2" role="group" aria-label="Rodzaj analizy">
 		{#each MODES as option (option.value)}
 			<button
 				class="flex flex-col rounded-sm border p-2 text-left {analysis.mode === option.value
@@ -195,6 +196,61 @@
 					{/if}
 				</section>
 			{/each}
+		{/if}
+	{:else if analysis.mode === 'visibility'}
+		<p class="mt-3 text-[13px] text-muted-foreground">
+			Wskaż punkt na mapie — zaznaczymy teren, który widać z wysokości oczu stojącego człowieka.
+		</p>
+		<label class="mt-4 block">
+			<span class="flex items-baseline justify-between text-sm font-medium text-muted-foreground">
+				Promień widoczności
+				<span class="text-base text-primary tabular-nums">{analysis.radiusMetres} m</span>
+			</span>
+			<input
+				type="range"
+				class="mt-1 w-full accent-[var(--primary)]"
+				min="30"
+				max="300"
+				step="10"
+				value={analysis.radiusMetres}
+				aria-label="Promień widoczności w metrach"
+				oninput={(event) => geoportal.setAnalysisRadius(Number(event.currentTarget.value))}
+			/>
+		</label>
+		{@render originReading()}
+
+		{#if analysis.origin}
+			<h3 class="mt-4 mb-1 text-sm font-medium text-muted-foreground">Wynik</h3>
+			{#if analysis.isLoading}
+				<p class="text-sm text-muted-foreground">Liczę widoczność…</p>
+			{:else if analysis.viewshed && analysis.viewshed.hasCells}
+				<p class="text-sm">
+					Z tego miejsca widać
+					<span class="text-primary tabular-nums">{analysis.viewshed.visiblePercent}%</span>
+					terenu w promieniu {analysis.viewshed.radiusMetres} m (oczy na wysokości {analysis.viewshed.eyeHeightMetres
+						.toString()
+						.replace('.', ',')} m).
+				</p>
+				<ul class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm" aria-label="Legenda widoczności">
+					<li class="flex items-center gap-1.5">
+						<span class="size-3.5 rounded-sm bg-[#6fae5a]"></span>
+						widać
+					</li>
+					<li class="flex items-center gap-1.5">
+						<span class="size-3.5 rounded-sm bg-[#8b3a2b]"></span>
+						zasłonięte
+					</li>
+				</ul>
+				{#if analysis.viewshed.unknownCellCount > 0}
+					<p class="mt-2 text-[13px] text-muted-foreground">
+						Pominięto {analysis.viewshed.unknownCellCount} pól bez terenu albo jeszcze niewczytanych.
+					</p>
+				{/if}
+			{:else if analysis.viewshed}
+				<p class="text-sm text-muted-foreground">
+					Nie udało się odczytać terenu wokół tego punktu. Przybliż mapę i spróbuj ponownie.
+				</p>
+			{/if}
 		{/if}
 	{:else}
 		<p class="mt-3 text-[13px] text-muted-foreground">

@@ -179,3 +179,10 @@ test('arkusz mobilny zmienia stan z klawiatury, a Esc zamyka panel', async ({ pa
 	await page.keyboard.press('Escape');
 	await expect(handle).toHaveCount(0);
 });
+
+test('analiza „Widoczność” prosi o punkt na mapie i ma suwak promienia', async ({ page }) => {
+	await page.goto('/g2nk/khorinis?narzedzie=analysis');
+	await page.getByRole('button', { name: /^Widoczność/ }).click();
+	await expect(page.getByText('Kliknij punkt na mapie.')).toBeVisible();
+	await expect(page.getByLabel('Promień widoczności w metrach')).toBeVisible();
+});

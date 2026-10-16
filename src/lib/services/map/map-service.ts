@@ -14,6 +14,7 @@ import {
 import type { Anchor } from '#lib/data/types.js';
 import { WorldFrame } from '#lib/services/geodesy/world-frame.js';
 import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
+import type { ViewshedCell } from '#lib/services/analysis/viewshed-calculator.js';
 import type { DensityCell } from '#lib/services/analysis/density-grid-builder.js';
 import type { LocalPoint } from '#lib/services/measurement/measurement-calculator.js';
 import type { ShadowSettings } from '#lib/services/time/time-coordinator.js';
@@ -36,6 +37,8 @@ const FALLBACK_ZOOM_DISTANCE_METRES = 400;
 const NORTH_RESET_DURATION_SECONDS = 0.6;
 const MEASUREMENT_LINE_LIFT_METRES = 0.4;
 const DENSITY_CELL_LIFT_METRES = 0.6;
+const VISIBLE_TERRAIN_COLOR = '#6fae5a';
+const HIDDEN_TERRAIN_COLOR = '#8b3a2b';
 const DAY_LIGHT_COLOR = new Color(1, 0.96, 0.88);
 const NIGHT_LIGHT_COLOR = new Color(0.62, 0.7, 1);
 const MINIMUM_SUN_ELEVATION = 0.25;
@@ -284,6 +287,24 @@ export class MapService {
 		);
 	}
 
+	showViewshed(origin: LocalPoint, cells: readonly ViewshedCell[]): void {
+		const frame = this.worldFrame;
+		if (!frame) return;
+		this.analysis.showViewshed(
+			frame.toSceneCartesian(origin.east, origin.north, origin.height),
+			cells.map((cell) => ({
+				cssColor: cell.isVisible ? VISIBLE_TERRAIN_COLOR : HIDDEN_TERRAIN_COLOR,
+				corners: cell.corners.map((corner) =>
+					frame.toSceneCartesian(
+						corner.east,
+						corner.north,
+						cell.heightMetres + DENSITY_CELL_LIFT_METRES
+					)
+				)
+			}))
+		);
+	}
+
 	clearAnalysis(): void {
 		this.analysis.clear();
 	}
@@ -304,6 +325,14 @@ export class MapService {
 	 * którymi nie ma terenu albo kafle nie są jeszcze wczytane, są pomijane.
 	 */
 	async sampleTerrainUnder(points: readonly LocalPoint[]): Promise<LocalPoint[]> {
+		const samples = await this.sampleTerrainUnderKeepingOrder(points);
+		return samples.flatMap((sample) => (sample ? [sample] : []));
+	}
+
+	/** Jak `sampleTerrainUnder`, ale wynik ma tyle elementów co wejście; brak odczytu to `null`. */
+	async sampleTerrainUnderKeepingOrder(
+		points: readonly LocalPoint[]
+	): Promise<(LocalPoint | null)[]> {
 		const frame = this.worldFrame;
 		const scene = this.viewer.scene;
 		if (!frame || !scene.sampleHeightSupported) return [];
@@ -315,7 +344,7 @@ export class MapService {
 			...this.analysis.primitivesToIgnoreWhenSampling
 		]);
 		if (this.isDestroyed) return [];
-		return clamped.flatMap((position) => (position ? [frame.toWorldPosition(position)] : []));
+		return clamped.map((position) => (position ? frame.toWorldPosition(position) : null));
 	}
 
 	removeWorldTileset(): void {

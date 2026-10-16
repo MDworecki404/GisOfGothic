@@ -181,7 +181,13 @@ wysokości jak w profilu pomiaru). **Zagęszczenie**: `DensityGridBuilder` dziel
 odległość między równoległymi bokami) albo kwadratową i zlicza sztuki w niepustych komórkach;
 kolor komórki wynika z legendy (równe przedziały, najwyżej pięć, ciepła skala rdza → żar → mosiądz →
 jasny żar). `AnalysisRenderer` rysuje komórki jako jeden prymityw z `depthFailAppearance`, żeby
-nie znikały pod terenem na zboczach; w tym trybie kliknięcie mapy nie ustawia punktu. Uzasadnienie podziału
+nie znikały pod terenem na zboczach; w tym trybie kliknięcie mapy nie ustawia punktu.
+**Widoczność**: punkt i promień (30–300 m); `ViewshedCalculator` buduje siatkę biegunową (promienie co 3°,
+pierścienie co ok. 6 m), koordynator odczytuje wysokość modelu pod próbkami
+(`MapService.sampleTerrainUnderKeepingOrder`), a kalkulator metodą horyzontu (kąt wzniesienia z oka
+obserwatora na wysokości 1,7 m ponad klikniętym punktem) oznacza każdą komórkę jako widoczną albo
+zasłoniętą. Wynik rysuje `AnalysisRenderer.showViewshed` (zielone i rdzawe komórki), a panel podaje udział
+widocznego pola. Próbkowany jest model świata razem z budynkami i drzewami, więc one też zasłaniają. Uzasadnienie podziału
 na czyste klasy i renderer: [ADR 0006](adr/0006-analizy-na-czystych-klasach-i-lokalnym-rzucie.md).
 
 ## Widok w adresie i zakładki
