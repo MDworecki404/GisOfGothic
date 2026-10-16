@@ -78,7 +78,9 @@ z ziarnem CSS.
 
 - Pasek górny: ikona, przełącznik świata, wyszukiwarka.
 - Szyna narzędzi zmienia się w **dolną nawigację** (6 przycisków).
-- Panel narzędzia to **arkusz od dołu** (`drawer`) z uchwytem: zwinięty / połowa ekranu / pełny.
+- Panel narzędzia to **arkusz od dołu** z uchwytem: zwinięty (tylko uchwyt) / połowa ekranu / pełny. Uchwyt
+  przeciąga się palcem, działa też z klawiatury (strzałki, `Home`, `End`, `Enter`), `Esc` zamyka panel;
+  mapa pod arkuszem zostaje aktywna ([ADR 0009](adr/0009-wlasny-arkusz-mobilny-zamiast-drawera.md)).
 - Pasek przyrządu skraca się do E/N w pigułce nad arkuszem; reszta w panelu Pomiary.
 - Kontrolki mapy zostają po prawej, mapa przeglądowa znika.
 

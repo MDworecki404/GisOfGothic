@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import { appState, geoportal } from '#lib/composition-root.js';
+	import { appState, geoportal, mobileSheet } from '#lib/composition-root.js';
 
 	const PHONE_PANEL_WIDTH_FRACTION = 0.6;
 	const BREATHING_SPACE_PIXELS = 12;
@@ -23,11 +23,20 @@
 
 	$effect(() => {
 		void appState.activeToolId;
-		void tick().then(reportCoveredMapEdges);
+		void mobileSheet.detent;
+		if (!mobileSheet.isDragging) void tick().then(reportCoveredMapEdges);
 	});
+
+	function reportCoveredMapEdgesAfterSheetTransition(event: TransitionEvent): void {
+		if (event.propertyName === 'height') reportCoveredMapEdges();
+	}
 
 	onMount(() => {
 		window.addEventListener('resize', reportCoveredMapEdges);
-		return () => window.removeEventListener('resize', reportCoveredMapEdges);
+		window.addEventListener('transitionend', reportCoveredMapEdgesAfterSheetTransition);
+		return () => {
+			window.removeEventListener('resize', reportCoveredMapEdges);
+			window.removeEventListener('transitionend', reportCoveredMapEdgesAfterSheetTransition);
+		};
 	});
 </script>

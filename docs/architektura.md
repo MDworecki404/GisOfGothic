@@ -213,6 +213,15 @@ proporcjonalnie do zasłoniętej części. Przez `CameraFramer` idą przeloty do
 do wyników analiz i do całego świata; widok z linku albo zakładki to dokładna pozycja kamery. Przy
 `prefers-reduced-motion` przeloty są natychmiastowe. Decyzja: [ADR 0008](adr/0008-kadrowanie-kamery-z-marginesem-na-panele.md).
 
+## Arkusz mobilny
+
+Na telefonie panel narzędzia (`ToolPanel`) jest arkuszem z uchwytem i trzema stanami: zwinięty, połowa,
+pełny. Stan i trwające przeciąganie trzyma `MobileSheetState` (`mobileSheet` w `composition-root.ts`) —
+to stan interfejsu, który nie trafia do fasady; wybór narzędzia (`tool-selected`) otwiera arkusz do połowy.
+Wysokości i wybór stanu po puszczeniu uchwytu liczy czysta klasa `SheetHeightResolver`. `MapInsetsReporter`
+mierzy rzeczywistą wysokość arkusza, więc po każdej zmianie stanu (i po animacji wysokości) kadrowanie kamery
+widzi aktualny zasłonięty dół. Decyzja: [ADR 0009](adr/0009-wlasny-arkusz-mobilny-zamiast-drawera.md).
+
 ## Podgląd modelu przedmiotu
 
 Karta wpisu przedmiotu z modelem pokazuje mały podgląd 3D. Komponent tylko oznacza kontener (`{@attach}`)

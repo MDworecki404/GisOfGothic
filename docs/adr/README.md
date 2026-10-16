@@ -12,3 +12,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0006](0006-analizy-na-czystych-klasach-i-lokalnym-rzucie.md) | Analizy na czystych klasach i lokalnym rzucie | przyjęta |
 | [0007](0007-widok-w-adresie-i-zakladki-w-localstorage.md)     | Widok w adresie URL i zakładki w localStorage | przyjęta |
 | [0008](0008-kadrowanie-kamery-z-marginesem-na-panele.md)      | Kadrowanie kamery z marginesem na panele      | przyjęta |
+| [0009](0009-wlasny-arkusz-mobilny-zamiast-drawera.md)         | Własny arkusz mobilny zamiast drawera         | przyjęta |
