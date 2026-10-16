@@ -12,6 +12,7 @@ import {
 	Transforms
 } from 'cesium';
 import type { PreviewOrientation } from '#lib/services/models/preview-orientation.js';
+import { InMemoryModelResource } from './in-memory-model-resource.js';
 
 const BACKGROUND_COLOR = '#1d1812';
 const PREVIEW_PITCH_DEGREES = -30;
@@ -52,12 +53,16 @@ export class ModelPreview {
 		scene.screenSpaceCameraController.enableLook = false;
 	}
 
-	async showModel(modelUrl: string, orientation: PreviewOrientation): Promise<void> {
+	async showModel(
+		glb: Uint8Array<ArrayBuffer>,
+		cacheKey: string,
+		orientation: PreviewOrientation
+	): Promise<void> {
 		const request = ++this.latestRequest;
 		this.removeModel();
 		this.orientation = orientation;
 		const model = await Model.fromGltfAsync({
-			url: modelUrl,
+			url: new InMemoryModelResource(glb, cacheKey),
 			modelMatrix: this.buildModelMatrix(orientation),
 			upAxis: Axis.Y,
 			forwardAxis: Axis.X

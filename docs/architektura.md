@@ -233,19 +233,24 @@ widzi aktualny zasłonięty dół. Decyzja: [ADR 0009](adr/0009-wlasny-arkusz-mo
 
 Karta wpisu przedmiotu z modelem pokazuje mały podgląd 3D. Komponent tylko oznacza kontener (`{@attach}`)
 i wywołuje `GeoportalFacade.showModelPreview`, a `ModelPreview` (`services/map/`) tworzy osobny
-`CesiumWidget` bez globusa i nieba, ładuje plik podglądu w osiach modeli świata i ustawia kamerę wokół
+`CesiumWidget` bez globusa i nieba, ładuje model w osiach modeli świata i ustawia kamerę wokół
 jego `boundingSphere`. Obracanie i zoom myszą lub palcem; zamknięcie karty niszczy widget.
 
-Przedmioty w grze leżą na ziemi, więc pliki podglądu są płaskie. Fasada pobiera wymiary modelu
-(`bounds_m`) ze spisu `previews/index.json` przez `ItemModelCatalog` (`services/models/`, spis każdego
-katalogu raz), a `PreviewOrientationChooser` dobiera ułożenie:
+Modele są chronione przed pobraniem ([ADR 0012](adr/0012-ochrona-modeli-przedmiotow.md)). Karta zna
+tylko logiczną ścieżkę modelu (`modelPath`, np. `g2nk/khorinis/previews/x.glb`). `ProtectedModelLoader`
+(`services/models/`) liczy z niej nazwę pliku (HMAC), pobiera zaszyfrowany plik z bramki modeli
+(adres `protectedModelsUrl` w katalogu światów) i odszyfrowuje go w pamięci (`ProtectedModelCodec`);
+`ModelPreview` podaje bajty do Cesium przez `InMemoryModelResource`, bez żadnego adresu pliku.
+
+Przedmioty w grze leżą na ziemi, więc modele są płaskie. Wymiary zapisane w chronionym pliku
+trafiają do `PreviewOrientationChooser`, który dobiera ułożenie:
 
 - naturalne proporcje (rośliny, mikstury) — bez zmian;
 - płaski i długi (broń, łuki, pochodnie) — obrót o 90°, oś długości pionowo, głowica (strona −x)
   u góry, kamera prawie z boku i dalej, żeby wysoki przedmiot mieścił się w kadrze;
 - płaski, ale szeroki (pancerze złożone w kupkę, amulety, zwoje) — leży, kamera patrzy z góry.
 
-Brak spisu albo wymiarów oznacza podgląd bez obrotu.
+Brak wymiarów oznacza podgląd bez obrotu.
 
 ## Pora dnia
 

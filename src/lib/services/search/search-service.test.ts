@@ -80,21 +80,20 @@ describe('SearchService', () => {
 describe('SearchEntryPresenter', () => {
 	const presenter = new SearchEntryPresenter();
 
-	it('składa adres modelu podglądu z adresu świata i pola model', () => {
+	it('składa logiczną ścieżkę podglądu z przestrzeni świata i pola model', () => {
 		const withModel = { ...createItem('X', 'Ziele', 'Rośliny', 1), model: 'previews/ziele.glb' };
-		expect(presenter.presentDetails(withModel, 'https://m.example/models').modelUrl).toBe(
-			'https://m.example/models/previews/ziele.glb'
+		expect(presenter.presentDetails(withModel, 'g2nk/khorinis').modelPath).toBe(
+			'g2nk/khorinis/previews/ziele.glb'
 		);
 		expect(
-			presenter.presentDetails(createItem('Y', 'Łuk', 'Broń', 1), 'https://m.example/models')
-				.modelUrl
+			presenter.presentDetails(createItem('Y', 'Łuk', 'Broń', 1), 'g2nk/khorinis').modelPath
 		).toBeNull();
 	});
 
 	it('opisuje przedmiot: liczba sztuk i rozkład według miejsc', () => {
 		const details = presenter.presentDetails(
 			createItem('X', 'Ziele lecznicze', 'Rośliny', 3),
-			'https://modele.example/models'
+			'g2nk/khorinis'
 		);
 		expect(details.facts).toEqual([
 			{ label: 'sztuk w świecie', value: '3' },

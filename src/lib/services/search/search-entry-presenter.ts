@@ -44,7 +44,8 @@ export interface SearchEntryDetails {
 	name: string;
 	code: string;
 	categoryLabel: string;
-	modelUrl: string | null;
+	/** Logiczna ścieżka podglądu 3D (np. `g2nk/khorinis/previews/x.glb`), nie adres pliku. */
+	modelPath: string | null;
 	facts: EntryFact[];
 	places: PlaceSummary[];
 }
@@ -70,14 +71,14 @@ export class SearchEntryPresenter {
 		};
 	}
 
-	presentDetails(entry: SearchEntry, modelsBaseUrl: string): SearchEntryDetails {
+	presentDetails(entry: SearchEntry, modelNamespace: string): SearchEntryDetails {
 		return {
 			id: entry.id,
 			type: entry.type,
 			name: entry.name,
 			code: entry.code,
 			categoryLabel: describeCategory(entry.category),
-			modelUrl: entry.model ? `${modelsBaseUrl}/${entry.model}` : null,
+			modelPath: entry.model ? `${modelNamespace}/${entry.model}` : null,
 			facts: entry.type === 'item' ? this.listItemFacts(entry) : this.listCharacterFacts(entry),
 			places: entry.places.map((place, index) => this.presentPlace(place, index))
 		};
