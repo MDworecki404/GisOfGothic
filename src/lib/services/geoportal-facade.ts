@@ -7,7 +7,7 @@ import type { CameraView } from './bookmarks/camera-view-codec.js';
 import { ViewLinkCodec, type SharedViewState } from './bookmarks/view-link-codec.js';
 import type { MapViewInsets } from './map/free-area-calculator.js';
 import { ModelPreview } from './map/model-preview.js';
-import { ItemModelCatalog } from './models/item-model-catalog.js';
+import type { ProtectedModelLoader } from './models/protected-model-loader.js';
 import { PreviewOrientationChooser } from './models/preview-orientation.js';
 import { AnalysisCoordinator, type AnalysisMode } from './analysis/analysis-coordinator.js';
 import { ChapterFilter, type ChapterNumber } from './chapters/chapter-filter.js';
@@ -55,7 +55,6 @@ export class GeoportalFacade {
 	private coordinateSystemId: CoordinateSystemId = 'khorinis-1992';
 	private readonly coordinateFormatter = new CoordinateFormatter();
 	private readonly searchCoordinator: SearchCoordinator;
-	private readonly itemModelCatalog = new ItemModelCatalog();
 	private readonly previewOrientationChooser = new PreviewOrientationChooser();
 	private readonly analysisCoordinator: AnalysisCoordinator;
 	private readonly bookmarksCoordinator: BookmarksCoordinator;
@@ -71,6 +70,7 @@ export class GeoportalFacade {
 		private readonly eventBus: AppEventBus,
 		private readonly createDataLoader: DataLoaderFactory,
 		bookmarkStore: BookmarkStore,
+		private readonly protectedModelLoader: ProtectedModelLoader | null,
 		private readonly cesiumIonAccessToken?: string
 	) {
 		this.bookmarksCoordinator = new BookmarksCoordinator(eventBus, bookmarkStore);
@@ -94,7 +94,7 @@ export class GeoportalFacade {
 		this.bookmarksCoordinator.useWorld(world.gameId, world.id);
 		this.currentDataLoader = this.createDataLoader(world.dataBaseUrl);
 		this.eventBus.publish({ type: 'world-opened', worldName: world.name });
-		this.searchCoordinator.useModelsBaseUrl(world.modelsBaseUrl);
+		this.searchCoordinator.useModelNamespace(world.modelNamespace);
 		this.searchCoordinator.useIndex(null);
 		this.analysisCoordinator.resetForNewWorld();
 		this.dataLayersCoordinator.useWorld(this.currentDataLoader, {});
@@ -296,17 +296,26 @@ export class GeoportalFacade {
 	}
 
 	/**
-	 * Pokazuje podgląd 3D jednego modelu w podanym kontenerze; zwraca funkcję sprzątającą.
-	 * Płaskie przedmioty (broń, pancerze) są stawiane pionowo według wymiarów ze spisu modeli.
+	 * Pokazuje podgląd 3D jednego przedmiotu w podanym kontenerze; zwraca funkcję sprzątającą.
+	 * Model przychodzi zaszyfrowany z bramki modeli i jest odszyfrowywany tylko w pamięci;
+	 * płaskie przedmioty (broń, pancerze) są układane według wymiarów zapisanych w modelu.
 	 */
-	showModelPreview(container: HTMLElement, modelUrl: string): () => void {
+	showModelPreview(container: HTMLElement, modelPath: string): () => void {
 		const preview = new ModelPreview(container);
-		this.itemModelCatalog
-			.findBounds(modelUrl)
-			.then((bounds) =>
-				preview.showModel(modelUrl, this.previewOrientationChooser.chooseOrientation(bounds))
-			)
-			.catch((error: unknown) => console.error(error));
+		const world = this.currentWorld;
+		const loader = this.protectedModelLoader;
+		if (world && loader) {
+			loader
+				.loadModel(world.protectedModelsUrl, modelPath)
+				.then((model) =>
+					preview.showModel(
+						model.glb,
+						model.fileId,
+						this.previewOrientationChooser.chooseOrientation(model.bounds)
+					)
+				)
+				.catch((error: unknown) => console.error(error));
+		}
 		return () => preview.destroy();
 	}
 

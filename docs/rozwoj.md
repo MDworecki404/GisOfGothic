@@ -76,8 +76,20 @@ Wydanie i wdrożenie razem: `npm run release`, `git push --follow-tags origin ma
 
 Jeśli wrangler zaproponuje albo sam wykona automatyczną konfigurację (zamiana `adapter-static`
 na `adapter-cloudflare`, plik `wrangler.jsonc`), cofnij te zmiany — aplikacja jest statyczna.
-Nowy adres strony trzeba dopisać do CORS bucketa modeli (`wrangler r2 bucket cors set gis-of-gothic-models`)
-i do ograniczeń tokenu Cesium ion.
+Nowy adres strony trzeba dopisać do `ALLOWED_ORIGINS` bramki modeli
+(`workers/model-gate/wrangler.jsonc`, potem `npx wrangler deploy` w tym katalogu) i do ograniczeń tokenu
+Cesium ion.
+
+### Modele przedmiotów
+
+Modele są szyfrowane i wydawane tylko przez bramkę ([ADR 0012](adr/0012-ochrona-modeli-przedmiotow.md)).
+
+1. `node scripts/protect-item-models.mjs <dist>/<gra>/<świat>/models/previews <folder-wynikowy> <gra>/<świat>`
+   — wbudowuje tekstury, szyfruje kluczem `PUBLIC_MODEL_KEY` z `.env` (tworzy go, jeśli brak).
+2. `node scripts/upload-models-to-r2.mjs <folder-wynikowy> gis-of-gothic-models <gra>/<świat>/items`.
+3. `npm run deploy` — klucz z `.env` trafia do strony.
+
+Bucket nie może mieć publicznego adresu (domena własna ani `r2.dev`) — tylko bramka ma do niego dostęp.
 
 ## Decyzje projektowe
 

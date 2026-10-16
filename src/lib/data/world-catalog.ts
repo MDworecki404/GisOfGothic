@@ -3,7 +3,8 @@ export interface WorldDefinition {
 	gameId: string;
 	name: string;
 	dataBaseUrl: string;
-	modelsBaseUrl: string;
+	modelNamespace: string;
+	protectedModelsUrl: string;
 	worldTilesetIonAssetId: number;
 }
 
@@ -49,7 +50,9 @@ const KHORINIS: WorldDefinition = {
 	gameId: 'g2nk',
 	name: 'Khorinis',
 	dataBaseUrl: '/data/g2nk/khorinis',
-	modelsBaseUrl: 'https://gisofgothicmodels.dworecki.dev/g2nk/khorinis/models',
+	modelNamespace: 'g2nk/khorinis',
+	protectedModelsUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g2nk/khorinis/items',
 	worldTilesetIonAssetId: 6033666
 };
 

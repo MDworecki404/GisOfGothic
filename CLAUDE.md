@@ -91,6 +91,8 @@ Korzystaj z pluginów i skilli: `superpowers` (planowanie, TDD, weryfikacja, rev
 - Service worker to katalog `src/service-worker/` z własnym `tsconfig.json`; `paths.relative: false`
   jest wymagane, bo zapisana powłoka jest podawana pod każdym adresem (ADR 0011).
 - Dane z gry (`static/data/`) nie trafiają do repo. Nie używamy `npm audit fix --force`.
+- **Zasoby gry nie mogą być do pobrania** (ADR 0012): modele tylko zaszyfrowane, przez bramkę
+  `workers/model-gate/`, odszyfrowane w pamięci; nigdy publiczny adres bucketu, adres `blob:` ani link do pliku.
 - Motyw: ciemny „Gothic” (zmienne shadcn w `src/app.css`); bez logo, czcionek i grafik z gry.
 
 ## Weryfikacja przed oddaniem

@@ -1,4 +1,4 @@
-import type { ModelBounds } from './item-model-catalog.js';
+import type { ModelBounds } from './protected-model-format.js';
 
 /**
  * `as-saved` — model ma naturalne proporcje i zostaje tak, jak jest w grze; `view-from-above` —

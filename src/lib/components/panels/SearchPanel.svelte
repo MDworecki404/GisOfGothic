@@ -11,8 +11,8 @@
 
 	const hasQuery = $derived(appState.searchQuery.trim().length > 0);
 
-	function showPreview(modelUrl: string): Attachment<HTMLElement> {
-		return (container) => geoportal.showModelPreview(container, modelUrl);
+	function showPreview(modelPath: string): Attachment<HTMLElement> {
+		return (container) => geoportal.showModelPreview(container, modelPath);
 	}
 </script>
 
@@ -32,12 +32,12 @@
 			{entry.categoryLabel} · <span class="text-xs">{entry.code}</span>
 		</p>
 
-		{#if entry.modelUrl}
+		{#if entry.modelPath}
 			<div
 				class="my-3 h-48 overflow-hidden rounded-sm border border-border"
 				aria-label="Podgląd 3D: {entry.name}"
 				role="img"
-				{@attach showPreview(entry.modelUrl)}
+				{@attach showPreview(entry.modelPath)}
 			></div>
 		{/if}
 

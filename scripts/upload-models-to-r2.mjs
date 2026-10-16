@@ -5,7 +5,8 @@ import path from 'node:path';
 const CONTENT_TYPES = new Map([
 	['.glb', 'model/gltf-binary'],
 	['.png', 'image/png'],
-	['.json', 'application/json']
+	['.json', 'application/json'],
+	['.bin', 'application/octet-stream']
 ]);
 const CACHE_CONTROL = 'public,max-age=31536000,immutable';
 const PARALLEL_UPLOADS = 6;
