@@ -2,6 +2,32 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.2.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.1.0...v0.2.0) (2026-10-16)
+
+### Nowe funkcje
+
+* instalacja jako aplikacja (PWA) i praca bez sieci ([0fc8a6d](https://github.com/MDworecki404/GisOfGothic/commit/0fc8a6d9f49ddbbf33ef9a4ce89fa839e2687877))
+* kamienne tablice mają nazwy z atrybutem i stopniem, da się je wyszukać ([fff5428](https://github.com/MDworecki404/GisOfGothic/commit/fff5428a159049bbf229c1f11031e3cac711270c))
+* model świata przez bramkę, bez tokenu ion w stronie ([33e07ca](https://github.com/MDworecki404/GisOfGothic/commit/33e07ca8ac7fe52c589ebabbebe85883c3702499))
+* ochrona modeli przedmiotów przed pobraniem ([46bf579](https://github.com/MDworecki404/GisOfGothic/commit/46bf579fc295dde390a3d40a1de2c28d89ed8020))
+
+### Poprawki błędów
+
+* broń z szerokim ostrzem stoi w podglądzie 3D ([9e6042e](https://github.com/MDworecki404/GisOfGothic/commit/9e6042e38f46a5c9525c90ed340edfb6f5e90f7f))
+* stojące modele broni w podglądzie 3D ([08eaf75](https://github.com/MDworecki404/GisOfGothic/commit/08eaf752e2f1ea039edffe20e2125f2ebf0df7d6))
+
+### Dokumentacja
+
+* licencja MIT dla kodu z wyłączeniem zasobów gry ([ef6b426](https://github.com/MDworecki404/GisOfGothic/commit/ef6b42698183b4253834ce39df3194a30f91be21))
+* rozdzielenie akapitów w README ([c583b72](https://github.com/MDworecki404/GisOfGothic/commit/c583b727e1d044ea4d8e555fca010152aa80e77f))
+
+### Budowanie
+
+* opis paczki danych nie trafia na stronę ([bffe7eb](https://github.com/MDworecki404/GisOfGothic/commit/bffe7eb5824c1e91f84cef292262f236c706161d))
+* produkcja tylko z wydań, po testach ([9ad7ff7](https://github.com/MDworecki404/GisOfGothic/commit/9ad7ff77d2b352c7f942106dd80043e12cd70f37))
+* wdrożenie na Cloudflare Pages ([47007b8](https://github.com/MDworecki404/GisOfGothic/commit/47007b8c5dde24c9ed44f6719acb5fdf9dfc3335))
+* wdrożenie sprawdza klucz modeli w .env ([c2e978e](https://github.com/MDworecki404/GisOfGothic/commit/c2e978ec87d034510d735a4aad2ddecf7de1470f))
+
 ## 0.1.0 (2026-10-16)
 
 ### Nowe funkcje
