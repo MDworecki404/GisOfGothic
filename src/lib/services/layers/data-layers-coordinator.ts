@@ -1,5 +1,7 @@
 import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
+import { MAP_ICON_NODES } from './map-icon-shapes.js';
+import type { MapIconNode } from './map-icons.js';
 import type { DataLayerPoint, FeaturePick } from '#lib/services/map/data-layers-renderer.js';
 import {
 	DATA_LAYERS,
@@ -15,11 +17,17 @@ export interface DataLayersDisplay {
 
 export type DataLayerStatus = 'hidden' | 'loading' | 'visible' | 'error';
 
+export interface LayerLegendEntryView {
+	label: string;
+	nodes: readonly MapIconNode[];
+}
+
 export interface DataLayerView {
 	id: DataLayerId;
 	name: string;
 	description: string;
 	color: string;
+	legend: LayerLegendEntryView[];
 	featureCount: number | null;
 	status: DataLayerStatus;
 }
@@ -154,6 +162,7 @@ export class DataLayersCoordinator {
 				name: layer.name,
 				description: layer.description,
 				color: layer.color,
+				legend: layer.legend.map(({ label, iconId }) => ({ label, nodes: MAP_ICON_NODES[iconId] })),
 				featureCount:
 					this.loadedFeatures.get(layer.id)?.length ??
 					this.featureCounts[layer.metadataCountKey] ??

@@ -13,6 +13,14 @@ export type MapIconId =
 	| 'chest'
 	| 'person';
 
+/** Jeden element SVG ikony: nazwa znacznika i jego atrybuty (np. `['path', { d: '…' }]`). */
+export type MapIconNode = readonly [string, Readonly<Record<string, string>>];
+
+export interface IconLegendEntry {
+	label: string;
+	iconId: MapIconId;
+}
+
 const ICON_BY_ITEM_CATEGORY: ReadonlyMap<string, MapIconId> = new Map<string, MapIconId>([
 	['Rośliny', 'plant'],
 	['Jedzenie', 'food'],
@@ -25,6 +33,11 @@ const ICON_BY_ITEM_CATEGORY: ReadonlyMap<string, MapIconId> = new Map<string, Ma
 	['Magia', 'magic'],
 	['Pancerze', 'armor']
 ]);
+
+export const ITEM_ICON_LEGEND: readonly IconLegendEntry[] = [
+	...[...ICON_BY_ITEM_CATEGORY].map(([label, iconId]) => ({ label, iconId })),
+	{ label: 'Różne', iconId: 'misc' }
+];
 
 /** Ikona przedmiotu na mapie wynika z jego kategorii; nieznana albo „Różne” dostaje worek rzeczy. */
 export function pickItemIcon(category: string | null): MapIconId {

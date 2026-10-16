@@ -137,6 +137,18 @@ test('link z narzędziem otwiera panel, a uszkodzona kamera jest ignorowana', as
 	await expect(page).not.toHaveURL(/widok=/);
 });
 
+test('panel Warstwy pokazuje legendę ikon kategorii', async ({ page }) => {
+	await page.goto('/g2nk/khorinis');
+	await page
+		.getByRole('navigation', { name: 'Narzędzia' })
+		.getByRole('button', { name: 'Warstwy' })
+		.click();
+	const itemIcons = page.getByLabel('Ikony: Przedmioty w świecie');
+	await expect(itemIcons).toContainText('Rośliny');
+	await expect(itemIcons).toContainText('Broń biała');
+	await expect(page.getByLabel('Ikony: Skrzynie')).toContainText('Skrzynia');
+});
+
 test('link z wpisem otwiera kartę postaci', async ({ page }) => {
 	await page.goto('/g2nk/khorinis?wpis=character:VLK_412_HARAD');
 	await expect(page.getByRole('heading', { name: 'Harad' })).toBeVisible({ timeout: 30_000 });
