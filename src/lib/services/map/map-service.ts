@@ -21,7 +21,7 @@ import { AnalysisRenderer } from './analysis-renderer.js';
 import { CameraFramer } from './camera-framer.js';
 import type { MapViewInsets } from './free-area-calculator.js';
 import { DataLayersRenderer, type DataLayerPoint } from './data-layers-renderer.js';
-import { MapViewObserver, type MapViewListeners } from './map-view-observer.js';
+import { MapViewObserver, type MapViewListeners, type TileLayerId } from './map-view-observer.js';
 import { MeasurementRenderer } from './measurement-renderer.js';
 import { PlaceMarkersLayer, type PlaceMarker } from './place-markers-layer.js';
 import { ViewerOptionsBuilder } from './viewer-options-builder.js';
@@ -65,7 +65,12 @@ export class MapService {
 	private latestTilesetRequest = 0;
 	private minuteOfDay: number | null = null;
 
-	constructor(container: HTMLElement, listeners: MapViewListeners) {
+	private readonly pendingTilesByLayer = new Map<TileLayerId, number>();
+
+	constructor(
+		container: HTMLElement,
+		private readonly listeners: MapViewListeners
+	) {
 		const options = new ViewerOptionsBuilder()
 			.withoutIonBaseLayer()
 			.withoutToolbarWidgets()
@@ -100,6 +105,7 @@ export class MapService {
 			return;
 		}
 		this.worldTileset = tileset;
+		this.reportTileLoadingOf(tileset, 'world');
 		this.worldFrame = frame;
 		this.viewer.scene.primitives.add(tileset);
 		if (this.minuteOfDay !== null) this.showTimeOfDay(this.minuteOfDay);
@@ -361,11 +367,13 @@ export class MapService {
 			return;
 		}
 		this.staticObjectsTileset = tileset;
+		this.reportTileLoadingOf(tileset, 'static-objects');
 		this.viewer.scene.primitives.add(tileset);
 	}
 
 	hideStaticObjectsTileset(): void {
 		this.latestStaticObjectsRequest++;
+		this.reportPendingTiles('static-objects', 0);
 		if (!this.staticObjectsTileset) return;
 		this.viewer.scene.primitives.remove(this.staticObjectsTileset);
 		this.staticObjectsTileset = null;
@@ -373,6 +381,7 @@ export class MapService {
 
 	removeWorldTileset(): void {
 		this.hideStaticObjectsTileset();
+		this.reportPendingTiles('world', 0);
 		if (!this.worldTileset) return;
 		this.viewer.scene.primitives.remove(this.worldTileset);
 		this.worldTileset = null;
@@ -385,6 +394,22 @@ export class MapService {
 		if (!this.viewer.isDestroyed()) this.viewer.destroy();
 		this.worldTileset = null;
 		this.worldFrame = null;
+	}
+
+	/**
+	 * Cesium zgłasza postęp wczytywania kafli zdarzeniem `loadProgress` (żądania w toku i kafle
+	 * w przetwarzaniu); suma 0 oznacza, że wszystkie kafle w widoku są gotowe. Zgłaszamy tylko zmiany.
+	 */
+	private reportTileLoadingOf(tileset: Cesium3DTileset, layer: TileLayerId): void {
+		tileset.loadProgress.addEventListener((pendingRequests, tilesProcessing) =>
+			this.reportPendingTiles(layer, pendingRequests + tilesProcessing)
+		);
+	}
+
+	private reportPendingTiles(layer: TileLayerId, pendingTiles: number): void {
+		if ((this.pendingTilesByLayer.get(layer) ?? 0) === pendingTiles) return;
+		this.pendingTilesByLayer.set(layer, pendingTiles);
+		this.listeners.onTilesLoadProgress(layer, pendingTiles);
 	}
 
 	private pickPointAtScreenCentre(): Cartesian3 | null {

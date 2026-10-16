@@ -336,7 +336,9 @@ export class GeoportalFacade {
 				this.eventBus.publish({ type: 'camera-heading-changed', headingDegrees }),
 			onScaleChanged: (metresPerPixel) =>
 				this.eventBus.publish({ type: 'map-scale-changed', metresPerPixel }),
-			onCameraSettled: () => this.publishCameraView()
+			onCameraSettled: () => this.publishCameraView(),
+			onTilesLoadProgress: (layer, pendingTiles) =>
+				this.eventBus.publish({ type: 'tiles-load-progress', layer, pendingTiles })
 		};
 	}
 

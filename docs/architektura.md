@@ -106,6 +106,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `time-of-day-changed`        | `minuteOfDay`, `routineLayerStatus`, `charactersOnMap`                  | zmiana pory dnia albo warstwy postaci o tej godzinie                        |
 | `app-installability-changed` | `canInstall`                                                            | przeglądarka pozwala zainstalować aplikację albo instalacja się zakończyła  |
 | `static-objects-changed`     | `status`, `errorMessage`                                                | włączenie, wczytywanie albo błąd warstwy obiektów świata                    |
+| `tiles-load-progress`        | `layer`, `pendingTiles`                                                 | zmiana liczby kafli 3D Tiles w trakcie wczytywania (0 = gotowe)             |
 
 ## Cesium a reaktywność Svelte
 
@@ -261,6 +262,11 @@ osobny tileset 3D Tiles z Cesium ion, podawany przez bramkę zasobów (`staticOb
 w katalogu światów). `MapService.showStaticObjectsTileset` ustawia go tą samą macierzą kotwicy co
 model świata i działa dopiero po jego wczytaniu. Warstwa jest domyślnie wyłączona, wczytuje się
 przy pierwszym włączeniu, a zmiana świata ją wyłącza. Stan publikuje zdarzenie `static-objects-changed`.
+
+**Wskaźnik wczytywania kafli:** `MapService` nasłuchuje zdarzenia `loadProgress` obu tilesetów (żądania w toku
+i kafle w przetwarzaniu) i zgłasza zmiany jako `tiles-load-progress` (`layer`: `world` albo `static-objects`,
+`pendingTiles`). UI pokazuje mosiężny pierścień (`TileLoader`) przy przełączniku warstwy oraz pigułkę
+nad mapą (`TilesLoadingBadge`) z liczbą kafli; przy `prefers-reduced-motion` pierścień się nie obraca.
 
 ## Pora dnia
 
