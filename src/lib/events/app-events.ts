@@ -51,6 +51,7 @@ export type AppEvent =
 			routineLayerStatus: RoutineLayerStatus;
 			charactersOnMap: number | null;
 			shadows: ShadowSettings;
-	  };
+	  }
+	| { type: 'app-installability-changed'; canInstall: boolean };
 
 export type AppEventBus = EventBus<AppEvent>;

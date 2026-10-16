@@ -71,7 +71,12 @@ export class AppState {
 	charactersAtTimeOfDay = $state<number | null>(null);
 	shadows = $state.raw<ShadowSettings>({ areEnabled: false, areSoft: true });
 
+	canInstallApp = $state(false);
+
 	constructor(eventBus: AppEventBus) {
+		eventBus.subscribe('app-installability-changed', ({ canInstall }) => {
+			this.canInstallApp = canInstall;
+		});
 		eventBus.subscribe('search-results-changed', ({ query, typeFilter, results }) => {
 			this.searchQuery = query;
 			this.searchTypeFilter = typeFilter;

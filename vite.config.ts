@@ -14,7 +14,8 @@ export default defineConfig({
 				runes: ({ filename }) =>
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
-			adapter: adapter({ fallback: 'index.html' })
+			adapter: adapter({ fallback: 'index.html' }),
+			paths: { relative: false }
 		}),
 		viteStaticCopy({
 			targets: ['Workers', 'Assets', 'ThirdParty', 'Widgets'].map((dir) => ({

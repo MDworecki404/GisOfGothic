@@ -79,31 +79,32 @@ odpięcie mapy) jest pomijany, a niepotrzebny tileset niszczony.
 Lista w `src/lib/events/app-events.ts`. Zdarzenie to obiekt z polem `type` (unia dyskryminowana),
 więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez asercji.
 
-| Zdarzenie                   | Dane                                                                    | Kiedy                                                                       |
-| --------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `world-opened`              | `worldName`                                                             | fasada przełączyła świat                                                    |
-| `world-load-started`        | —                                                                       | start wczytywania modelu świata                                             |
-| `world-loaded`              | —                                                                       | tileset świata dodany do sceny                                              |
-| `world-load-failed`         | `message`                                                               | brak tokenu ion albo błąd wczytywania                                       |
-| `search-index-load-started` | —                                                                       | start wczytywania indeksu                                                   |
-| `search-index-loaded`       | `counts`                                                                | indeks wczytany; liczba przedmiotów i postaci                               |
-| `search-index-load-failed`  | `message`                                                               | błąd pobrania lub walidacji indeksu                                         |
-| `tool-selected`             | `toolId` lub `null`                                                     | otwarto albo zamknięto narzędzie na szynie                                  |
-| `cursor-moved`              | `position` (E, N, H, lon, lat) lub `null`                               | kursor nad terenem (najwyżej raz na klatkę)                                 |
-| `camera-heading-changed`    | `headingDegrees`                                                        | obrót kamery — kompas                                                       |
-| `map-scale-changed`         | `metresPerPixel` lub `null`                                             | zmiana skali w środku ekranu — podziałka                                    |
-| `coordinate-system-changed` | `systemId`                                                              | zmiana układu współrzędnych w pasku przyrządu                               |
-| `search-results-changed`    | `query`, `typeFilter`, `results`                                        | zmiana zapytania, filtra albo wczytanie indeksu                             |
-| `search-entry-selected`     | `details` lub `null`                                                    | wybrano wpis (karta szczegółów, znaczniki na mapie) albo wrócono do wyników |
-| `data-layers-changed`       | `layers` (nazwa, kolor, liczność, stan)                                 | włączenie, wczytywanie albo błąd warstwy danych                             |
-| `data-layer-load-failed`    | `layerName`, `message`                                                  | nie udało się pobrać lub sprawdzić pliku warstwy                            |
-| `feature-identified`        | `identification` lub `null`                                             | kliknięto punkt warstwy (karta informacji) albo puste miejsce               |
-| `analysis-changed`          | `analysis` (tryb, temat, punkt odniesienia, wyniki)                     | zmiana tematu, punktu albo wyniku analizy w narzędziu Analizy               |
-| `camera-view-changed`       | `view` (E, N, H, kierunek, nachylenie) lub `null`                       | kamera się zatrzymała (`moveEnd`) albo odtworzono widok z linku             |
-| `bookmarks-changed`         | `bookmarks`, `hasStorageError`                                          | wczytano, dodano albo usunięto zakładkę (lista dotyczy otwartego świata)    |
-| `measurement-changed`       | `measurement` (tryb, wierzchołki, podsumowanie, profil, wskazany punkt) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie    |
-| `chapter-changed`           | `chapter` (1–6) lub `null`                                              | wybór rozdziału w panelu Czas albo odtworzenie go z linku lub zakładki      |
-| `time-of-day-changed`       | `minuteOfDay`, `routineLayerStatus`, `charactersOnMap`                  | zmiana pory dnia albo warstwy postaci o tej godzinie                        |
+| Zdarzenie                    | Dane                                                                    | Kiedy                                                                       |
+| ---------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `world-opened`               | `worldName`                                                             | fasada przełączyła świat                                                    |
+| `world-load-started`         | —                                                                       | start wczytywania modelu świata                                             |
+| `world-loaded`               | —                                                                       | tileset świata dodany do sceny                                              |
+| `world-load-failed`          | `message`                                                               | brak tokenu ion albo błąd wczytywania                                       |
+| `search-index-load-started`  | —                                                                       | start wczytywania indeksu                                                   |
+| `search-index-loaded`        | `counts`                                                                | indeks wczytany; liczba przedmiotów i postaci                               |
+| `search-index-load-failed`   | `message`                                                               | błąd pobrania lub walidacji indeksu                                         |
+| `tool-selected`              | `toolId` lub `null`                                                     | otwarto albo zamknięto narzędzie na szynie                                  |
+| `cursor-moved`               | `position` (E, N, H, lon, lat) lub `null`                               | kursor nad terenem (najwyżej raz na klatkę)                                 |
+| `camera-heading-changed`     | `headingDegrees`                                                        | obrót kamery — kompas                                                       |
+| `map-scale-changed`          | `metresPerPixel` lub `null`                                             | zmiana skali w środku ekranu — podziałka                                    |
+| `coordinate-system-changed`  | `systemId`                                                              | zmiana układu współrzędnych w pasku przyrządu                               |
+| `search-results-changed`     | `query`, `typeFilter`, `results`                                        | zmiana zapytania, filtra albo wczytanie indeksu                             |
+| `search-entry-selected`      | `details` lub `null`                                                    | wybrano wpis (karta szczegółów, znaczniki na mapie) albo wrócono do wyników |
+| `data-layers-changed`        | `layers` (nazwa, kolor, liczność, stan)                                 | włączenie, wczytywanie albo błąd warstwy danych                             |
+| `data-layer-load-failed`     | `layerName`, `message`                                                  | nie udało się pobrać lub sprawdzić pliku warstwy                            |
+| `feature-identified`         | `identification` lub `null`                                             | kliknięto punkt warstwy (karta informacji) albo puste miejsce               |
+| `analysis-changed`           | `analysis` (tryb, temat, punkt odniesienia, wyniki)                     | zmiana tematu, punktu albo wyniku analizy w narzędziu Analizy               |
+| `camera-view-changed`        | `view` (E, N, H, kierunek, nachylenie) lub `null`                       | kamera się zatrzymała (`moveEnd`) albo odtworzono widok z linku             |
+| `bookmarks-changed`          | `bookmarks`, `hasStorageError`                                          | wczytano, dodano albo usunięto zakładkę (lista dotyczy otwartego świata)    |
+| `measurement-changed`        | `measurement` (tryb, wierzchołki, podsumowanie, profil, wskazany punkt) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie    |
+| `chapter-changed`            | `chapter` (1–6) lub `null`                                              | wybór rozdziału w panelu Czas albo odtworzenie go z linku lub zakładki      |
+| `time-of-day-changed`        | `minuteOfDay`, `routineLayerStatus`, `charactersOnMap`                  | zmiana pory dnia albo warstwy postaci o tej godzinie                        |
+| `app-installability-changed` | `canInstall`                                                            | przeglądarka pozwala zainstalować aplikację albo instalacja się zakończyła  |
 
 ## Cesium a reaktywność Svelte
 
@@ -266,3 +267,13 @@ znikaniu postaci. Filtr dotyczy warstw „Unikatowe postacie” i „Wszyscy NPC
 `DATA_LAYERS`) oraz warstwy „postacie o tej godzinie”: rutyny nie mają rozdziału, więc `SpawnChapterIndex`
 (z `npcs.geojson`, pobieranego razem z rutynami) daje im najwcześniejszy rozdział wstawienia postaci o tym
 `npc_code`. Rozdział trafia do adresu (`rozdzial=1…6`) i do zakładek (`SavedView.chapter`).
+
+## PWA
+
+Aplikację da się zainstalować (manifest, ikony, service worker) i działa bez sieci — poza modelem
+świata z Cesium ion. Service worker (`src/service-worker/index.ts`, klasa `AppServiceWorker`) przy
+instalacji zapisuje powłokę (pliki z hashem, ikony, manifest, stronę startową), a żądania obsługuje
+według `CachingPolicy` (`services/pwa/`): strony najpierw z sieci, pliki z hashem i zasoby Cesium
+najpierw z pamięci, dane świata z pamięci z odświeżeniem w tle; kafli ion i modeli z R2 nie dotyka.
+`AppInstallation` przechwytuje `beforeinstallprompt` i publikuje `app-installability-changed`;
+pasek górny pokazuje wtedy przycisk „Zainstaluj”. Szczegóły i pułapki: [ADR 0011](adr/0011-pwa-z-wlasnym-service-workerem.md).

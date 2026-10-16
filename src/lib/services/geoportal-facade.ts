@@ -28,7 +28,13 @@ import type { ToolId } from './tools/tool-id.js';
 
 export type DataLoaderFactory = (dataBaseUrl: string) => GeoportalDataLoader;
 
+const OFFLINE_WORLD_MESSAGE =
+	'brak połączenia z internetem — model świata pobiera się z sieci; wyszukiwarka i dane działają dalej';
 const MISSING_ION_TOKEN_MESSAGE = 'brak tokenu Cesium ion (PUBLIC_CESIUM_ION_TOKEN w pliku .env)';
+
+function describeWorldLoadError(error: unknown): string {
+	return navigator.onLine ? describeError(error) : OFFLINE_WORLD_MESSAGE;
+}
 
 function describeError(error: unknown): string {
 	return error instanceof Error ? error.message : String(error);
@@ -430,7 +436,7 @@ export class GeoportalFacade {
 		} catch (error) {
 			if (!isStillCurrent()) return;
 			console.error(error);
-			this.eventBus.publish({ type: 'world-load-failed', message: describeError(error) });
+			this.eventBus.publish({ type: 'world-load-failed', message: describeWorldLoadError(error) });
 		}
 	}
 }
