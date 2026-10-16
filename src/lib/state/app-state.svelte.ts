@@ -74,10 +74,16 @@ export class AppState {
 	shadows = $state.raw<ShadowSettings>({ areEnabled: false, areSoft: true });
 
 	canInstallApp = $state(false);
+	worldTilesPending = $state(0);
+	staticObjectsTilesPending = $state(0);
 	staticObjectsStatus = $state<StaticObjectsStatus>('hidden');
 	staticObjectsErrorMessage = $state<string | null>(null);
 
 	constructor(eventBus: AppEventBus) {
+		eventBus.subscribe('tiles-load-progress', ({ layer, pendingTiles }) => {
+			if (layer === 'world') this.worldTilesPending = pendingTiles;
+			else this.staticObjectsTilesPending = pendingTiles;
+		});
 		eventBus.subscribe('static-objects-changed', ({ status, errorMessage }) => {
 			this.staticObjectsStatus = status;
 			this.staticObjectsErrorMessage = errorMessage;

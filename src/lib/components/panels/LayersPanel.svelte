@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { appState, geoportal } from '#lib/composition-root.js';
+	import TileLoader from '#lib/components/shell/TileLoader.svelte';
 
 	const STATUS_LABELS = {
 		hidden: '',
@@ -31,7 +32,14 @@
 		{/if}
 	</span>
 	<span class="text-[13px] text-muted-foreground">
-		{appState.staticObjectsStatus === 'loading' ? 'wczytywanie…' : ''}
+		{#if appState.staticObjectsStatus === 'loading' || (appState.staticObjectsStatus === 'visible' && appState.staticObjectsTilesPending > 0)}
+			<TileLoader
+				label="Wczytuję obiekty świata"
+				count={appState.staticObjectsStatus === 'visible'
+					? appState.staticObjectsTilesPending
+					: null}
+			/>
+		{/if}
 	</span>
 </label>
 

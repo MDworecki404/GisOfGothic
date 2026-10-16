@@ -14,12 +14,15 @@ export interface MapClick {
 	featurePick: FeaturePick | null;
 }
 
+export type TileLayerId = 'world' | 'static-objects';
+
 export interface MapViewListeners {
 	onCursorMoved(position: WorldPosition | null): void;
 	onMapClicked(click: MapClick): void;
 	onHeadingChanged(headingDegrees: number): void;
 	onScaleChanged(metresPerPixel: number | null): void;
 	onCameraSettled(): void;
+	onTilesLoadProgress(layer: TileLayerId, pendingTiles: number): void;
 }
 
 const SCALE_SAMPLE_PIXELS = 100;

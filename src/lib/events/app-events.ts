@@ -54,6 +54,7 @@ export type AppEvent =
 			shadows: ShadowSettings;
 	  }
 	| { type: 'app-installability-changed'; canInstall: boolean }
-	| { type: 'static-objects-changed'; status: StaticObjectsStatus; errorMessage: string | null };
+	| { type: 'static-objects-changed'; status: StaticObjectsStatus; errorMessage: string | null }
+	| { type: 'tiles-load-progress'; layer: 'world' | 'static-objects'; pendingTiles: number };
 
 export type AppEventBus = EventBus<AppEvent>;
