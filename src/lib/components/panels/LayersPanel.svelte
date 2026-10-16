@@ -9,6 +9,32 @@
 	} as const;
 </script>
 
+<h3 class="mb-1 text-sm font-medium text-muted-foreground">Świat</h3>
+<label class="grid cursor-pointer grid-cols-[18px_1fr_auto] items-start gap-2.5 pb-3">
+	<input
+		type="checkbox"
+		class="mt-0.5 size-4 accent-[var(--primary)]"
+		checked={appState.staticObjectsStatus === 'visible' ||
+			appState.staticObjectsStatus === 'loading'}
+		disabled={appState.staticObjectsStatus === 'loading'}
+		onchange={() => geoportal.toggleStaticObjects()}
+	/>
+	<span class="min-w-0">
+		Obiekty świata
+		<span class="block text-[13px] text-muted-foreground">
+			wszystkie statyczne voby: drzewa, budynki, rekwizyty i przedmioty leżące na ziemi
+		</span>
+		{#if appState.staticObjectsErrorMessage}
+			<span class="block text-[13px] text-destructive" role="alert">
+				Nie udało się wczytać: {appState.staticObjectsErrorMessage}
+			</span>
+		{/if}
+	</span>
+	<span class="text-[13px] text-muted-foreground">
+		{appState.staticObjectsStatus === 'loading' ? 'wczytywanie…' : ''}
+	</span>
+</label>
+
 <h3 class="mb-1 text-sm font-medium text-muted-foreground">Dane</h3>
 <p class="mb-2 text-[13px] text-muted-foreground">
 	Kliknij punkt na mapie, żeby zobaczyć, co to jest.

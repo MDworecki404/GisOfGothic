@@ -58,6 +58,8 @@ export class MapService {
 	private readonly analysis: AnalysisRenderer;
 	private readonly cameraFramer: CameraFramer;
 	private worldTileset: Cesium3DTileset | null = null;
+	private staticObjectsTileset: Cesium3DTileset | null = null;
+	private latestStaticObjectsRequest = 0;
 	private worldFrame: WorldFrame | null = null;
 	private isDestroyed = false;
 	private latestTilesetRequest = 0;
@@ -344,7 +346,33 @@ export class MapService {
 		return clamped.map((position) => (position ? frame.toWorldPosition(position) : null));
 	}
 
+	/**
+	 * Statyczne obiekty świata (voby) to osobny tileset w tym samym układzie co model świata,
+	 * więc używa tej samej macierzy kotwicy. Wymaga wczytanego świata.
+	 */
+	async showStaticObjectsTileset(tilesetUrl: string): Promise<void> {
+		const frame = this.worldFrame;
+		if (!frame) throw new Error('Obiekty świata można pokazać dopiero po wczytaniu świata');
+		this.hideStaticObjectsTileset();
+		const request = this.latestStaticObjectsRequest;
+		const tileset = await Cesium3DTileset.fromUrl(tilesetUrl, { modelMatrix: frame.anchorToEcef });
+		if (this.isDestroyed || request !== this.latestStaticObjectsRequest) {
+			tileset.destroy();
+			return;
+		}
+		this.staticObjectsTileset = tileset;
+		this.viewer.scene.primitives.add(tileset);
+	}
+
+	hideStaticObjectsTileset(): void {
+		this.latestStaticObjectsRequest++;
+		if (!this.staticObjectsTileset) return;
+		this.viewer.scene.primitives.remove(this.staticObjectsTileset);
+		this.staticObjectsTileset = null;
+	}
+
 	removeWorldTileset(): void {
+		this.hideStaticObjectsTileset();
 		if (!this.worldTileset) return;
 		this.viewer.scene.primitives.remove(this.worldTileset);
 		this.worldTileset = null;

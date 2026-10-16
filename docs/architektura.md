@@ -105,6 +105,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `chapter-changed`            | `chapter` (1–6) lub `null`                                              | wybór rozdziału w panelu Czas albo odtworzenie go z linku lub zakładki      |
 | `time-of-day-changed`        | `minuteOfDay`, `routineLayerStatus`, `charactersOnMap`                  | zmiana pory dnia albo warstwy postaci o tej godzinie                        |
 | `app-installability-changed` | `canInstall`                                                            | przeglądarka pozwala zainstalować aplikację albo instalacja się zakończyła  |
+| `static-objects-changed`     | `status`, `errorMessage`                                                | włączenie, wczytywanie albo błąd warstwy obiektów świata                    |
 
 ## Cesium a reaktywność Svelte
 
@@ -251,6 +252,15 @@ trafiają do `PreviewOrientationChooser`, który dobiera ułożenie:
 - płaski, ale szeroki (pancerze złożone w kupkę, amulety, zwoje) — leży, kamera patrzy z góry.
 
 Brak wymiarów oznacza podgląd bez obrotu.
+
+## Obiekty świata (voby)
+
+`StaticObjectsCoordinator` (`services/layers/`) obsługuje warstwę „Obiekty świata” w panelu Warstwy:
+wszystkie statyczne voby danego świata (drzewa, budynki, rekwizyty i przedmioty leżące na ziemi) jako
+osobny tileset 3D Tiles z Cesium ion, podawany przez bramkę zasobów (`staticObjectsTilesetUrl`
+w katalogu światów). `MapService.showStaticObjectsTileset` ustawia go tą samą macierzą kotwicy co
+model świata i działa dopiero po jego wczytaniu. Warstwa jest domyślnie wyłączona, wczytuje się
+przy pierwszym włączeniu, a zmiana świata ją wyłącza. Stan publikuje zdarzenie `static-objects-changed`.
 
 ## Pora dnia
 
