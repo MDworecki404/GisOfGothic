@@ -10,6 +10,8 @@ zobacz [wizję projektu](docs/wizja.md).
 > warstwy danych z identyfikacją obiektów, pomiar odległości z profilem terenu, współrzędne z komendą
 > Marvina i pora dnia z rutynami postaci.
 
+**Wersja na żywo: https://gisofgothic.dworecki.dev**
+
 ## Szybki start
 
 ```bash
