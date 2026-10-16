@@ -165,3 +165,17 @@ test('rozdział z linku zaznacza przycisk w panelu Czas i trafia do adresu', asy
 	await page.getByRole('button', { name: 'Wszystkie', exact: true }).click();
 	await expect(page).not.toHaveURL(/rozdzial=/);
 });
+
+test('arkusz mobilny zmienia stan z klawiatury, a Esc zamyka panel', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto('/g2nk/khorinis');
+	const handle = page.getByRole('slider', { name: /Wysokość panelu/ });
+	await expect(handle).toHaveAttribute('aria-valuetext', 'połowa ekranu');
+	await handle.focus();
+	await page.keyboard.press('ArrowUp');
+	await expect(handle).toHaveAttribute('aria-valuetext', 'pełny ekran');
+	await page.keyboard.press('Home');
+	await expect(handle).toHaveAttribute('aria-valuetext', 'zwinięty');
+	await page.keyboard.press('Escape');
+	await expect(handle).toHaveCount(0);
+});
