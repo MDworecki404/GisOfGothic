@@ -62,6 +62,10 @@ pole i odrzucają błędne dane z komunikatem wskazującym wpis — bez asercji 
 Znane odstępstwa od kontraktu, które parser dopuszcza:
 
 - `category` bywa `null` (np. `ITFO_MUTTON`) — typ `string | null`.
+- Kamienne tablice z dodatku mają w danych jedną nazwę („Kamienna tablica”); atrybut i stopień wynikają
+  z kodu (`ITWR_STRSTONEPLATE2_ADDON`). `StonePlateNameResolver` (`src/lib/data/stone-plate-names.ts`)
+  składa z niego nazwę, np. „Kamienna tablica siły II”, przy parsowaniu indeksu, warstwy przedmiotów
+  i zawartości skrzyń, oraz podaje wyszukiwarce słowa kluczowe (`siła`, `zręczność`, `jednoręczna`…).
 
 ## Modele przedmiotów
 

@@ -42,6 +42,14 @@ const service = new SearchService({
 		createItem('ITPL_HEALTH_HERB_02', 'Ziele lecznicze', 'Rośliny', 132),
 		createItem('ITPL_HEALTH_HERB_01', 'Roślina lecznicza', 'Rośliny', 328),
 		createItem('ITMI_KEY', 'Klucz do kufra', 'Różne', 1),
+		createItem('ITWR_STRSTONEPLATE1_ADDON', 'Kamienna tablica siły I', 'Dokumenty', 2),
+		createItem('ITWR_DEXSTONEPLATE1_ADDON', 'Kamienna tablica zręczności I', 'Dokumenty', 1),
+		createItem(
+			'ITWR_ONEHSTONEPLATE1_ADDON',
+			'Kamienna tablica walki bronią jednoręczną I',
+			'Dokumenty',
+			2
+		),
 		harad
 	]
 });
@@ -70,6 +78,13 @@ describe('SearchService', () => {
 	it('szuka postaci po nazwie gildii i filtruje rodzaj', () => {
 		expect(findNames('mieszczanin')).toEqual(['Harad']);
 		expect(findNames('harad', 'item')).toEqual([]);
+	});
+
+	it('znajduje kamienną tablicę po atrybucie w mianowniku', () => {
+		expect(findNames('siła')).toEqual(['Kamienna tablica siły I']);
+		expect(findNames('zrecznosc')).toEqual(['Kamienna tablica zręczności I']);
+		expect(findNames('jednoreczna')).toEqual(['Kamienna tablica walki bronią jednoręczną I']);
+		expect(findNames('tablica')).toHaveLength(3);
 	});
 
 	it('pusty tekst nie daje wyników', () => {

@@ -1,5 +1,6 @@
 import MiniSearch from 'minisearch';
 import { describeCategory } from '#lib/data/category-names.js';
+import { stonePlateNameResolver } from '#lib/data/stone-plate-names.js';
 import type { SearchEntry, SearchEntryType, SearchIndex } from '#lib/data/types.js';
 
 export type SearchTypeFilter = 'all' | SearchEntryType;
@@ -9,6 +10,7 @@ interface IndexedDocument {
 	name: string;
 	category: string;
 	code: string;
+	keywords: string;
 	type: SearchEntryType;
 }
 
@@ -30,11 +32,11 @@ export class SearchService {
 	constructor(index: SearchIndex) {
 		this.entriesById = new Map(index.entries.map((entry) => [entry.id, entry]));
 		this.miniSearch = new MiniSearch<IndexedDocument>({
-			fields: ['name', 'category', 'code'],
+			fields: ['name', 'category', 'code', 'keywords'],
 			storeFields: ['type'],
 			processTerm: normalizeSearchTerm,
 			searchOptions: {
-				boost: { name: 3, category: 1, code: 0.5 },
+				boost: { name: 3, category: 1, code: 0.5, keywords: 1 },
 				prefix: true,
 				fuzzy: (term) => (term.length > 4 ? 0.2 : false),
 				combineWith: 'AND'
@@ -46,6 +48,7 @@ export class SearchService {
 				name: entry.name,
 				category: describeCategory(entry.category),
 				code: entry.code,
+				keywords: stonePlateNameResolver.describeSearchKeywords(entry.code),
 				type: entry.type
 			}))
 		);
