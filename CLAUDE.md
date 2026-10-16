@@ -31,7 +31,7 @@ Repozytorium będzie publiczne, więc dokumentację programistyczną (po polsku)
 - Obiektów Cesium (Viewer, Model, kolekcje) **nie trzymamy w `$state`** — tylko w polach klas.
   Reaktywne są wyłącznie dane aplikacji; do Cesium przekazuje je warstwa łącząca w `$effect`.
 - Ciężkie warstwy (model świata, modele 3D) są tilowane i ładowane z **Cesium ion** (3D Tiles), nigdy
-  z plików aplikacji. Asset ID trzymamy w katalogu światów (`src/lib/data/world-catalog.ts`).
+  z plików aplikacji, przez bramkę zasobów (`worldTilesetUrl` w `src/lib/data/world-catalog.ts`).
 
 ### Struktura folderów (alias `#lib`)
 
@@ -93,6 +93,7 @@ Korzystaj z pluginów i skilli: `superpowers` (planowanie, TDD, weryfikacja, rev
 - Dane z gry (`static/data/`) nie trafiają do repo. Nie używamy `npm audit fix --force`.
 - **Zasoby gry nie mogą być do pobrania** (ADR 0012): modele tylko zaszyfrowane, przez bramkę
   `workers/model-gate/`, odszyfrowane w pamięci; nigdy publiczny adres bucketu, adres `blob:` ani link do pliku.
+  Model świata tylko przez bramkę do ion (ADR 0013); token ion nigdy nie trafia do kodu strony.
 - Motyw: ciemny „Gothic” (zmienne shadcn w `src/app.css`); bez logo, czcionek i grafik z gry.
 
 ## Weryfikacja przed oddaniem

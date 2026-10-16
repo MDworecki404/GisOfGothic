@@ -5,7 +5,8 @@ export interface WorldDefinition {
 	dataBaseUrl: string;
 	modelNamespace: string;
 	protectedModelsUrl: string;
-	worldTilesetIonAssetId: number;
+	/** Adres `tileset.json` modelu świata w bramce zasobów (kafle z Cesium ion, ADR 0013). */
+	worldTilesetUrl: string;
 }
 
 export interface GameDefinition {
@@ -53,7 +54,8 @@ const KHORINIS: WorldDefinition = {
 	modelNamespace: 'g2nk/khorinis',
 	protectedModelsUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g2nk/khorinis/items',
-	worldTilesetIonAssetId: 6033666
+	worldTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6033666/tileset.json'
 };
 
 export const worldCatalog = new WorldCatalog(

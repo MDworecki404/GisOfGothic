@@ -84,7 +84,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `world-opened`               | `worldName`                                                             | fasada przełączyła świat                                                    |
 | `world-load-started`         | —                                                                       | start wczytywania modelu świata                                             |
 | `world-loaded`               | —                                                                       | tileset świata dodany do sceny                                              |
-| `world-load-failed`          | `message`                                                               | brak tokenu ion albo błąd wczytywania                                       |
+| `world-load-failed`          | `message`                                                               | błąd wczytywania modelu świata (np. brak sieci)                             |
 | `search-index-load-started`  | —                                                                       | start wczytywania indeksu                                                   |
 | `search-index-loaded`        | `counts`                                                                | indeks wczytany; liczba przedmiotów i postaci                               |
 | `search-index-load-failed`   | `message`                                                               | błąd pobrania lub walidacji indeksu                                         |
@@ -279,6 +279,6 @@ Aplikację da się zainstalować (manifest, ikony, service worker) i działa bez
 świata z Cesium ion. Service worker (`src/service-worker/index.ts`, klasa `AppServiceWorker`) przy
 instalacji zapisuje powłokę (pliki z hashem, ikony, manifest, stronę startową), a żądania obsługuje
 według `CachingPolicy` (`services/pwa/`): strony najpierw z sieci, pliki z hashem i zasoby Cesium
-najpierw z pamięci, dane świata z pamięci z odświeżeniem w tle; kafli ion i modeli z R2 nie dotyka.
+najpierw z pamięci, dane świata z pamięci z odświeżeniem w tle; plików z bramki zasobów (kafle świata, modele przedmiotów) nie dotyka.
 `AppInstallation` przechwytuje `beforeinstallprompt` i publikuje `app-installability-changed`;
 pasek górny pokazuje wtedy przycisk „Zainstaluj”. Szczegóły i pułapki: [ADR 0011](adr/0011-pwa-z-wlasnym-service-workerem.md).

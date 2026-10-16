@@ -16,7 +16,7 @@ zobacz [wizję projektu](docs/wizja.md).
 
 ```bash
 npm install
-cp .env.example .env    # wpisz PUBLIC_CESIUM_ION_TOKEN
+cp .env.example .env    # wpisz PUBLIC_MODEL_KEY (patrz docs/rozwoj.md)
 npm run dev             # http://localhost:5173 → /g2nk/khorinis
 ```
 

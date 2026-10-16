@@ -1,6 +1,6 @@
 # 0002. Ciężkie warstwy na Cesium ion
 
-- Status: przyjęta
+- Status: przyjęta; sposób dostępu do ion zmieniony w [0013](0013-model-swiata-przez-bramke-ion.md)
 - Data: 2026-10-15
 
 ## Kontekst

@@ -1,5 +1,5 @@
 import { browser } from '$app/env';
-import { PUBLIC_CESIUM_ION_TOKEN, PUBLIC_MODEL_KEY } from '$app/env/public';
+import { PUBLIC_MODEL_KEY } from '$app/env/public';
 import { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
 import type { AppEvent } from '#lib/events/app-events.js';
 import { EventBus } from '#lib/events/event-bus.js';
@@ -16,8 +16,7 @@ export const geoportal = new GeoportalFacade(
 	eventBus,
 	(dataBaseUrl) => new GeoportalDataLoader(dataBaseUrl),
 	BookmarkStore.forBrowser(),
-	PUBLIC_MODEL_KEY ? new ProtectedModelLoader(PUBLIC_MODEL_KEY) : null,
-	PUBLIC_CESIUM_ION_TOKEN
+	PUBLIC_MODEL_KEY ? new ProtectedModelLoader(PUBLIC_MODEL_KEY) : null
 );
 
 export const appState = new AppState(eventBus);

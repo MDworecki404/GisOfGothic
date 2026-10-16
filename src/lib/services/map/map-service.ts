@@ -6,7 +6,6 @@ import {
 	Color,
 	DirectionalLight,
 	HeadingPitchRange,
-	Ion,
 	Math as CesiumMath,
 	Matrix4,
 	Viewer
@@ -64,9 +63,7 @@ export class MapService {
 	private latestTilesetRequest = 0;
 	private minuteOfDay: number | null = null;
 
-	constructor(container: HTMLElement, listeners: MapViewListeners, ionAccessToken?: string) {
-		if (ionAccessToken) Ion.defaultAccessToken = ionAccessToken;
-
+	constructor(container: HTMLElement, listeners: MapViewListeners) {
 		const options = new ViewerOptionsBuilder()
 			.withoutIonBaseLayer()
 			.withoutToolbarWidgets()
@@ -84,16 +81,16 @@ export class MapService {
 	}
 
 	/**
-	 * Tileset z ion nie jest georeferencjonowany: ion zamienia osie glTF (Wschód, Góra, -Północ)
-	 * na lokalne (Wschód, Północ, Góra) wokół środka Ziemi. Macierz ENU kotwicy stawia go
+	 * Tileset z ion (podawany przez bramkę zasobów) nie jest georeferencjonowany: ion zamienia
+	 * osie glTF (Wschód, Góra, -Północ) na lokalne (Wschód, Północ, Góra) wokół środka Ziemi. Macierz ENU kotwicy stawia go
 	 * w punkcie kotwicy z poprawnymi kierunkami świata. Tileset z wcześniejszego, wyprzedzonego
 	 * wywołania jest niszczony zamiast pokazany.
 	 */
-	async showWorldTileset(ionAssetId: number, anchor: Anchor): Promise<void> {
+	async showWorldTileset(tilesetUrl: string, anchor: Anchor): Promise<void> {
 		const request = ++this.latestTilesetRequest;
 		this.removeWorldTileset();
 		const frame = new WorldFrame(anchor);
-		const tileset = await Cesium3DTileset.fromIonAssetId(ionAssetId, {
+		const tileset = await Cesium3DTileset.fromUrl(tilesetUrl, {
 			modelMatrix: frame.anchorToEcef
 		});
 		if (this.isDestroyed || request !== this.latestTilesetRequest) {
