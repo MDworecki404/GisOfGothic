@@ -40,8 +40,11 @@ UI po polsku.
 | [docs/adr/](docs/adr/)                       | zapisy decyzji architektonicznych                        |
 | [CHANGELOG.md](CHANGELOG.md)                 | historia wersji (po pierwszym wydaniu)                   |
 
-## Prawa
+## Licencja i prawa
 
-Gothic jest znakiem towarowym THQ Nordic; świat gry, jego model i dane należą do ich właścicieli
-(Piranha Bytes, THQ Nordic). Repozytorium nie zawiera zasobów z gry. Projekt fanowski, niekomercyjny,
-bez logo i grafik z gry.
+Kod i dokumentacja: [MIT](LICENSE). Licencja **nie obejmuje zasobów z gry**.
+
+Gothic jest znakiem towarowym THQ Nordic; świat gry, modele 3D, tekstury i dane należą do ich
+właścicieli (Piranha Bytes, THQ Nordic). Repozytorium nie zawiera zasobów z gry, a aplikacja nie
+udostępnia ich do pobrania. Projekt fanowski, niekomercyjny, niepowiązany z THQ Nordic ani Piranha
+Bytes, bez logo i grafik z gry.
