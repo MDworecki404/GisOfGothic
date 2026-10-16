@@ -16,3 +16,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0010](0010-hosting-cloudflare-pages-z-wgrywaniem-lokalnym.md) | Hosting na Cloudflare Pages z wgrywaniem z komputera | przyjęta |
 | [0011](0011-pwa-z-wlasnym-service-workerem.md)                 | PWA z własnym service workerem SvelteKit             | przyjęta |
 | [0012](0012-ochrona-modeli-przedmiotow.md)                     | Ochrona modeli przedmiotów przed pobraniem           | przyjęta |
+| [0013](0013-model-swiata-przez-bramke-ion.md)                  | Model świata przez bramkę do Cesium ion              | przyjęta |

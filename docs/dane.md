@@ -35,7 +35,8 @@ const KHORINIS: WorldDefinition = {
 	modelNamespace: 'g2nk/khorinis', // przestrzeń nazw chronionych modeli
 	protectedModelsUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g2nk/khorinis/items', // bramka modeli (ADR 0012)
-	worldTilesetIonAssetId: 6033666 // model świata na Cesium ion
+	worldTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6033666/tileset.json' // model świata z ion przez bramkę (ADR 0013)
 };
 ```
 

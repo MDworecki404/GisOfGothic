@@ -30,7 +30,6 @@ export type DataLoaderFactory = (dataBaseUrl: string) => GeoportalDataLoader;
 
 const OFFLINE_WORLD_MESSAGE =
 	'brak połączenia z internetem — model świata pobiera się z sieci; wyszukiwarka i dane działają dalej';
-const MISSING_ION_TOKEN_MESSAGE = 'brak tokenu Cesium ion (PUBLIC_CESIUM_ION_TOKEN w pliku .env)';
 
 function describeWorldLoadError(error: unknown): string {
 	return navigator.onLine ? describeError(error) : OFFLINE_WORLD_MESSAGE;
@@ -70,8 +69,7 @@ export class GeoportalFacade {
 		private readonly eventBus: AppEventBus,
 		private readonly createDataLoader: DataLoaderFactory,
 		bookmarkStore: BookmarkStore,
-		private readonly protectedModelLoader: ProtectedModelLoader | null,
-		private readonly cesiumIonAccessToken?: string
+		private readonly protectedModelLoader: ProtectedModelLoader | null
 	) {
 		this.bookmarksCoordinator = new BookmarksCoordinator(eventBus, bookmarkStore);
 		this.searchCoordinator = new SearchCoordinator(eventBus, () => this.mapService);
@@ -106,16 +104,8 @@ export class GeoportalFacade {
 	}
 
 	attachMapTo(container: HTMLElement): void {
-		if (!this.cesiumIonAccessToken) {
-			this.eventBus.publish({ type: 'world-load-failed', message: MISSING_ION_TOKEN_MESSAGE });
-			return;
-		}
 		this.isWorldShownOnMap = false;
-		this.mapService = new MapService(
-			container,
-			this.createMapViewListeners(),
-			this.cesiumIonAccessToken
-		);
+		this.mapService = new MapService(container, this.createMapViewListeners());
 		this.mapService.setViewInsets(this.mapViewInsets);
 		void this.showCurrentWorldOnMap();
 		this.searchCoordinator.showSelectedEntryOnMap(false);
@@ -433,7 +423,7 @@ export class GeoportalFacade {
 			if (!isStillCurrent()) return;
 			this.dataLayersCoordinator.updateFeatureCounts(metadata.package.counts);
 			this.analysisCoordinator.useAnchor(metadata.anchor);
-			await mapService.showWorldTileset(world.worldTilesetIonAssetId, metadata.anchor);
+			await mapService.showWorldTileset(world.worldTilesetUrl, metadata.anchor);
 			if (!isStillCurrent()) return;
 			this.isWorldShownOnMap = true;
 			const cameraFromLink = this.pendingCameraView;

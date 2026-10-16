@@ -38,7 +38,7 @@ maksymalne utrudnienie i brak jakiejkolwiek „otwartej” drogi.
 - Zdeterminowana osoba z umiejętnościami programistycznymi nadal może wydobyć klucz z kodu strony
   albo przechwycić dane z karty graficznej — tego nie da się wykluczyć w przeglądarce.
 - Model świata na Cesium ion nie jest objęty tym mechanizmem (kafle 3D Tiles pobiera Cesium
-  z serwerów ion); token ion jest ograniczony do domen aplikacji — osobna decyzja.
+  z serwerów ion) — patrz [ADR 0013](0013-model-swiata-przez-bramke-ion.md).
 - Nowe modele: `protect-item-models.mjs` → `upload-models-to-r2.mjs` (prefiks `<gra>/<świat>/items`).
   Zmiana klucza wymaga ponownego zaszyfrowania i wgrania wszystkich modeli.
 - Nowy adres aplikacji trzeba dopisać do `ALLOWED_ORIGINS` w `workers/model-gate/wrangler.jsonc`
