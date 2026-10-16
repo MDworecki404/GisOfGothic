@@ -3,13 +3,15 @@
 	import SearchIcon from '@lucide/svelte/icons/search';
 	import { appState, geoportal, installApp } from '#lib/composition-root.js';
 	import BrandMark from './BrandMark.svelte';
+	import WorldSwitcher, { type WorldSwitcherGame } from './WorldSwitcher.svelte';
 
 	interface Props {
-		gameName: string;
-		worldName: string;
+		games: readonly WorldSwitcherGame[];
+		currentGameId: string;
+		currentWorldId: string;
 	}
 
-	let { gameName, worldName }: Props = $props();
+	let { games, currentGameId, currentWorldId }: Props = $props();
 	let searchInput: HTMLInputElement;
 
 	function openSearchPanel(): void {
@@ -41,13 +43,7 @@
 		</span>
 	</div>
 
-	<div
-		class="flex shrink-0 items-center gap-1.5 rounded-sm border border-border px-2.5 py-1.5 whitespace-nowrap"
-		title="{gameName} › {worldName}"
-	>
-		<span class="hidden text-muted-foreground md:inline">{gameName} ›</span>
-		<span>{worldName}</span>
-	</div>
+	<WorldSwitcher {games} {currentGameId} {currentWorldId} />
 
 	<label
 		class="mx-auto flex h-9 max-w-xl min-w-0 flex-1 items-center gap-2 rounded-sm border border-border bg-background/70 px-3 text-muted-foreground focus-within:border-primary/60"
