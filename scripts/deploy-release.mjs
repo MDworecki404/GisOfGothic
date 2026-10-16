@@ -19,12 +19,12 @@ class ReleaseDeployment {
 		return execFileSync('git', args, { encoding: 'utf8' }).trim();
 	}
 
+	/** Na Windows `npm` i `npx` wymagają powłoki, która dzieli argumenty po spacjach — stąd cudzysłowy. */
 	runStep(description, command, args) {
 		console.log(`\n▶ ${description}`);
-		const result = spawnSync(command, args, {
-			stdio: 'inherit',
-			shell: process.platform === 'win32'
-		});
+		const usesShell = process.platform === 'win32';
+		const shellSafeArgs = usesShell ? args.map((arg) => (/\s/.test(arg) ? `"${arg}"` : arg)) : args;
+		const result = spawnSync(command, shellSafeArgs, { stdio: 'inherit', shell: usesShell });
 		if (result.status !== 0) this.refuse(`krok „${description}” się nie powiódł`);
 	}
 
