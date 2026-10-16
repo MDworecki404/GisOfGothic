@@ -2,6 +2,8 @@ export interface WorldDefinition {
 	id: string;
 	gameId: string;
 	name: string;
+	/** Nazwa lokalnego układu współrzędnych w pasku przyrządu, np. „Układ Khorinis 1992”. */
+	localCoordinateSystemName: string;
 	dataBaseUrl: string;
 	modelNamespace: string;
 	protectedModelsUrl: string;
@@ -50,6 +52,7 @@ const KHORINIS: WorldDefinition = {
 	id: 'khorinis',
 	gameId: 'g2nk',
 	name: 'Khorinis',
+	localCoordinateSystemName: 'Układ Khorinis 1992',
 	dataBaseUrl: '/data/g2nk/khorinis',
 	modelNamespace: 'g2nk/khorinis',
 	protectedModelsUrl:
@@ -58,7 +61,20 @@ const KHORINIS: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6033666/tileset.json'
 };
 
+const GORNICZA_DOLINA: WorldDefinition = {
+	id: 'gornicza-dolina',
+	gameId: 'g2nk',
+	name: 'Górnicza Dolina',
+	localCoordinateSystemName: 'Układ Górniczej Doliny 1992',
+	dataBaseUrl: '/data/g2nk/gornicza-dolina',
+	modelNamespace: 'g2nk/gornicza-dolina',
+	protectedModelsUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g2nk/gornicza-dolina/items',
+	worldTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6044750/tileset.json'
+};
+
 export const worldCatalog = new WorldCatalog(
-	[{ id: 'g2nk', name: 'Gothic 2: Noc Kruka', worlds: [KHORINIS] }],
+	[{ id: 'g2nk', name: 'Gothic 2: Noc Kruka', worlds: [KHORINIS, GORNICZA_DOLINA] }],
 	KHORINIS
 );
