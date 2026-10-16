@@ -19,7 +19,7 @@
 		}
 	],
 	"vars": {
-		"ALLOWED_ORIGINS": "https://gisofgothic.dworecki.dev,https://gis-of-gothic.pages.dev,http://localhost:5173,http://localhost:5174,http://localhost:4173",
+		"ALLOWED_ORIGINS": "https://gisofgothic.dworecki.dev,https://gis-of-gothic.pages.dev,https://podglad.gis-of-gothic.pages.dev,http://localhost:5173,http://localhost:5174,http://localhost:4173",
 		"ALLOWED_ION_ASSETS": "6033666",
 		"ION_REFERER": "https://gisofgothic.dworecki.dev/"
 	}

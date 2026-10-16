@@ -21,18 +21,20 @@ pracy lokalnej. Token Cesium ion nie trafia do strony — jest sekretem Workera
 
 ## Skrypty
 
-| Komenda                               | Co robi                                                                                                   |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `npm run dev`                         | serwer deweloperski                                                                                       |
-| `npm run check`                       | `svelte-check` (typy TS i Svelte) oraz typy service workera (`tsc -p src/service-worker`)                 |
-| `npm run lint`                        | ESLint (w tym zakaz `any`, `!`, `as` i granice warstw)                                                    |
-| `npm run format`                      | Prettier                                                                                                  |
-| `npm run test`                        | testy jednostkowe Vitest (`src/**/*.test.ts`)                                                             |
-| `npm run test:e2e`                    | Playwright: buduje, serwuje i testuje w przeglądarce (wymaga danych i tokenu)                             |
-| `npm run build`                       | statyczna strona w `build/`                                                                               |
-| `node scripts/generate-pwa-icons.mjs` | ikony PWA w `static/icons/` z `static/favicon.svg` (po zmianie ikony)                                     |
-| `npm run deploy`                      | buduje stronę, usuwa z niej niepubliczny opis paczki danych (`README.md`) i wysyła ją na Cloudflare Pages |
-| `npm run release`                     | nowa wersja: podbija `package.json`, dopisuje `CHANGELOG.md`, tworzy tag                                  |
+| Komenda                               | Co robi                                                                                                           |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`                         | serwer deweloperski                                                                                               |
+| `npm run check`                       | `svelte-check` (typy TS i Svelte) oraz typy service workera (`tsc -p src/service-worker`)                         |
+| `npm run lint`                        | ESLint (w tym zakaz `any`, `!`, `as` i granice warstw)                                                            |
+| `npm run format`                      | Prettier                                                                                                          |
+| `npm run test`                        | testy jednostkowe Vitest (`src/**/*.test.ts`)                                                                     |
+| `npm run test:e2e`                    | Playwright: buduje, serwuje i testuje w przeglądarce (wymaga danych i tokenu)                                     |
+| `npm run build`                       | statyczna strona w `build/`                                                                                       |
+| `node scripts/generate-pwa-icons.mjs` | ikony PWA w `static/icons/` z `static/favicon.svg` (po zmianie ikony)                                             |
+| `npm run deploy`                      | **produkcja, tylko z wydania**: sprawdza tag i czyste repo, uruchamia wszystkie testy, buduje i wysyła (ADR 0014) |
+| `npm run deploy:preview`              | bieżący build na podgląd `https://podglad.gis-of-gothic.pages.dev` (produkcja bez zmian)                          |
+| `npm run deploy:gate`                 | wdraża bramkę zasobów (`workers/model-gate/`)                                                                     |
+| `npm run release`                     | nowa wersja: podbija `package.json`, dopisuje `CHANGELOG.md`, tworzy tag                                          |
 
 ## Konwencje kodu
 
@@ -69,17 +71,21 @@ Pełne zasady: [`CLAUDE.md`](../CLAUDE.md). Najważniejsze:
 Strona działa na Cloudflare Pages: **https://gisofgothic.dworecki.dev** (także
 https://gis-of-gothic.pages.dev). Szczegóły decyzji: [ADR 0010](adr/0010-hosting-cloudflare-pages-z-wgrywaniem-lokalnym.md).
 
-1. Jednorazowo: `npx wrangler login`.
-2. Upewnij się, że `static/data/` ma aktualne dane, a `.env` klucz `PUBLIC_MODEL_KEY` (trafia do zbudowanej strony).
-3. `npm run deploy` — build i wysyłka katalogu `build/`.
+**Na produkcję trafiają tylko wydania, po testach** ([ADR 0014](adr/0014-produkcja-tylko-z-wydan.md)).
+Zmiany commitujemy na bieżąco, ale strona zmienia się dopiero przy wydaniu.
 
-Wydanie i wdrożenie razem: `npm run release`, `git push --follow-tags origin main`, `npm run deploy`.
+Jednorazowo: `npx wrangler login`; `static/data/` z aktualnymi danymi i `PUBLIC_MODEL_KEY` w `.env`.
+
+1. **Podgląd:** `npm run deploy:preview` → sprawdź zmiany na `https://podglad.gis-of-gothic.pages.dev`.
+2. **Wydanie:** `npm run release` (wersja i `CHANGELOG.md` z commitów, tag `vX.Y.Z`).
+3. **Publikacja w repo:** `git push --follow-tags origin main`.
+4. **Produkcja:** `npm run deploy` — odmówi bez tagu wydania, przy niezacommitowanych zmianach albo
+   niewypchniętym commicie/tagu; uruchamia `check`, `lint`, Vitest i Playwright, dopiero potem wysyła.
 
 Jeśli wrangler zaproponuje albo sam wykona automatyczną konfigurację (zamiana `adapter-static`
 na `adapter-cloudflare`, plik `wrangler.jsonc`), cofnij te zmiany — aplikacja jest statyczna.
 Nowy adres strony trzeba dopisać do `ALLOWED_ORIGINS` bramki modeli
-(`workers/model-gate/wrangler.jsonc`, potem `npx wrangler deploy` w tym katalogu) i do ograniczeń tokenu
-Cesium ion.
+(`workers/model-gate/wrangler.jsonc`, potem `npm run deploy:gate`).
 
 ### Modele przedmiotów
 
@@ -88,7 +94,7 @@ Modele są szyfrowane i wydawane tylko przez bramkę ([ADR 0012](adr/0012-ochron
 1. `node scripts/protect-item-models.mjs <dist>/<gra>/<świat>/models/previews <folder-wynikowy> <gra>/<świat>`
    — wbudowuje tekstury, szyfruje kluczem `PUBLIC_MODEL_KEY` z `.env` (tworzy go, jeśli brak).
 2. `node scripts/upload-models-to-r2.mjs <folder-wynikowy> gis-of-gothic-models <gra>/<świat>/items`.
-3. `npm run deploy` — klucz z `.env` trafia do strony.
+3. Podgląd i wydanie jak wyżej — klucz z `.env` trafia do strony.
 
 Bucket nie może mieć publicznego adresu (domena własna ani `r2.dev`) — tylko bramka ma do niego dostęp.
 
