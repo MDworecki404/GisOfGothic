@@ -3,6 +3,11 @@ import type { BookmarkView } from '#lib/services/bookmarks/bookmarks-coordinator
 import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
 import { ViewLinkCodec } from '#lib/services/bookmarks/view-link-codec.js';
 import type { AnalysisView } from '#lib/services/analysis/analysis-coordinator.js';
+import {
+	CHAPTER_LABELS,
+	CHAPTER_NUMBERS,
+	type ChapterNumber
+} from '#lib/services/chapters/chapter-filter.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
 import {
 	COORDINATE_SYSTEMS,
@@ -60,6 +65,7 @@ export class AppState {
 	cameraView = $state.raw<CameraView | null>(null);
 	bookmarks = $state.raw<BookmarkView[]>([]);
 	bookmarkStorageFailed = $state(false);
+	selectedChapter = $state<ChapterNumber | null>(null);
 	minuteOfDay = $state(12 * 60);
 	routineLayerStatus = $state<RoutineLayerStatus>('hidden');
 	charactersAtTimeOfDay = $state<number | null>(null);
@@ -87,6 +93,9 @@ export class AppState {
 				this.charactersAtTimeOfDay = charactersOnMap;
 			}
 		);
+		eventBus.subscribe('chapter-changed', ({ chapter }) => {
+			this.selectedChapter = chapter;
+		});
 		eventBus.subscribe('measurement-changed', ({ measurement }) => {
 			this.measurement = measurement;
 		});
@@ -230,17 +239,22 @@ export class AppState {
 		return point ? coordinateFormatter.formatMarvinTeleportCommand(point) : null;
 	}
 
-	/** Parametry adresu odtwarzające bieżący widok: wpis, kamera i narzędzie. */
+	/** Parametry adresu odtwarzające bieżący widok: wpis, kamera, narzędzie i rozdział. */
 	get sharedViewQuery(): string {
 		return viewLinkCodec.buildQuery({
 			entryId: this.selectedEntry?.id ?? null,
 			camera: this.cameraView,
-			toolId: this.activeToolId
+			toolId: this.activeToolId,
+			chapter: this.selectedChapter
 		});
 	}
 
 	formatLength(lengthMetres: number): string {
 		return coordinateFormatter.formatLength(lengthMetres);
+	}
+
+	get chapterOptions(): { chapter: ChapterNumber; label: string }[] {
+		return CHAPTER_NUMBERS.map((chapter) => ({ chapter, label: CHAPTER_LABELS[chapter] }));
 	}
 
 	get timeOfDayLabel(): string {

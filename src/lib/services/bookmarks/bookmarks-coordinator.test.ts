@@ -25,7 +25,8 @@ const newBookmark: NewBookmark = {
 	entryId: 'item:ITPL_PERM_HERB',
 	entryName: 'Szczaw królewski',
 	toolId: 'measure',
-	camera: { east: 10, north: 20, height: 300, headingDegrees: 90, pitchDegrees: -45 }
+	camera: { east: 10, north: 20, height: 300, headingDegrees: 90, pitchDegrees: -45 },
+	chapter: null
 };
 
 function createCoordinator(storage = new FakeStorage()): {
@@ -61,6 +62,15 @@ describe('BookmarksCoordinator', () => {
 			linkQuery: '?wpis=item%3AITPL_PERM_HERB&widok=10_20_300_90_-45&narzedzie=measure'
 		});
 		expect(bookmark.savedAtLabel).not.toBe('');
+	});
+
+	it('zapamiętuje wybrany rozdział w opisie i w linku', () => {
+		const { coordinator, latestBookmarks } = createCoordinator();
+		coordinator.useWorld('g2nk', 'khorinis');
+		coordinator.addBookmark({ ...newBookmark, chapter: 4 });
+		const [bookmark] = latestBookmarks();
+		expect(bookmark.details).toBe('Narzędzie: Pomiary · Wpis: Szczaw królewski · Rozdział IV');
+		expect(bookmark.linkQuery).toContain('rozdzial=4');
 	});
 
 	it('pusta nazwa dostaje numerowaną nazwę domyślną', () => {

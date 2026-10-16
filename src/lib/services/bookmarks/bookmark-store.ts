@@ -1,4 +1,5 @@
 import { isRecord } from '#lib/data/parsers.js';
+import { isChapterNumber, type ChapterNumber } from '#lib/services/chapters/chapter-filter.js';
 import { isToolId, type ToolId } from '#lib/services/tools/tool-id.js';
 import type { CameraView } from './camera-view-codec.js';
 
@@ -12,6 +13,7 @@ export interface SavedView {
 	entryName: string | null;
 	toolId: ToolId | null;
 	camera: CameraView | null;
+	chapter: ChapterNumber | null;
 }
 
 export type BookmarkStorage = Pick<Storage, 'getItem' | 'setItem'>;
@@ -59,7 +61,8 @@ function readSavedView(value: unknown): SavedView | null {
 		entryId: readNullableString(value, 'entryId'),
 		entryName: readNullableString(value, 'entryName'),
 		toolId: isToolId(toolId) ? toolId : null,
-		camera: readCameraView(value.camera)
+		camera: readCameraView(value.camera),
+		chapter: isChapterNumber(value.chapter) ? value.chapter : null
 	};
 }
 

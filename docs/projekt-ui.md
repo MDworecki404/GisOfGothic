@@ -85,7 +85,7 @@ z ziarnem CSS.
 ## Narzędzia
 
 Stan na wersję v1: zrobione są Szukaj, Warstwy (dane i identyfikacja), Pomiary (odległość z profilem,
-pole, współrzędne), Czas (godzina dla rutyn) i Analizy („Najbliższe”, „Zasięg”, „Zagęszczenie”). Zakładki (zapis widoku, link), widoczność z punktu, podkłady i wybór rozdziału — w kolejnych krokach.
+pole, współrzędne), Czas (godzina dla rutyn) i Analizy („Najbliższe”, „Zasięg”, „Zagęszczenie”). Zakładki (zapis widoku, link) i wybór rozdziału są zrobione; widoczność z punktu i podkłady — w kolejnych krokach.
 
 | Narzędzie           | Funkcje                                                                                                                                                                                     | Etap                                 |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
@@ -93,11 +93,11 @@ pole, współrzędne), Czas (godzina dla rutyn) i Analizy („Najbliższe”, �
 | **Warstwy**         | podkład: Teren 3D / Poziomice / Pergamin; warstwy danych (przedmioty, skrzynie, unikatowe postacie, wszyscy NPC), podfiltry, liczności; siatka, waypointy; questy „wkrótce”                 | v1: dane; podkłady później           |
 | **Pomiary**         | odległość (po terenie i w linii prostej, przewyższenie, przeliczenia: pieszo, biegiem, strzały z łuku); pole; profil terenu; współrzędne punktu i komenda Marvina `goto pos` do skopiowania | v1: odległość, współrzędne; v2: pole |
 | **Analizy**         | najbliższe wystąpienia od punktu; zasięg (bufor); mapa zagęszczenia; widoczność z punktu                                                                                                    | v2: najbliższe, zasięg, zagęszczenie |
-| **Czas i rozdział** | suwak godziny (postacie tam, gdzie są o tej porze, światło jak w grze), wybór rozdziału I–VI                                                                                                | v1: godzina dla rutyn                |
+| **Czas i rozdział** | suwak godziny (postacie tam, gdzie są o tej porze, światło jak w grze), wybór rozdziału I–VI                                                                                                | v1: godzina dla rutyn; v3: rozdział  |
 | **Zakładki**        | zapis widoku, link do udostępnienia                                                                                                                                                         | v2                                   |
 
 Stan widoku (świat, wybrany wpis, narzędzie, kamera) trafia do adresu URL — każdy widok da się wysłać.
-Parametry: `wpis`, `widok` (kamera: `E_N_H_kierunek_nachylenie`), `narzedzie`; zakładki zapisują ten sam widok
+Parametry: `wpis`, `widok` (kamera: `E_N_H_kierunek_nachylenie`), `narzedzie`, `rozdzial` (1–6); zakładki zapisują ten sam widok
 w `localStorage` i dają „Kopiuj link”.
 
 ## Teksty

@@ -1,4 +1,5 @@
 import type { AppEventBus } from '#lib/events/app-events.js';
+import { CHAPTER_LABELS } from '#lib/services/chapters/chapter-filter.js';
 import { TOOL_LABELS } from '#lib/services/tools/tool-id.js';
 import type { BookmarkStore, SavedView } from './bookmark-store.js';
 import { ViewLinkCodec } from './view-link-codec.js';
@@ -19,6 +20,7 @@ export interface NewBookmark {
 	entryName: string | null;
 	toolId: SavedView['toolId'];
 	camera: SavedView['camera'];
+	chapter: SavedView['chapter'];
 }
 
 const savedAtFormat = new Intl.DateTimeFormat('pl-PL', { dateStyle: 'medium', timeStyle: 'short' });
@@ -71,7 +73,8 @@ export class BookmarksCoordinator {
 				entryId: bookmark.entryId,
 				entryName: bookmark.entryName,
 				toolId: bookmark.toolId,
-				camera: bookmark.camera
+				camera: bookmark.camera,
+				chapter: bookmark.chapter
 			}
 		];
 		this.persistAndPublish();
@@ -104,7 +107,8 @@ export class BookmarksCoordinator {
 	private presentBookmark(view: SavedView): BookmarkView {
 		const details = [
 			view.toolId ? `Narzędzie: ${TOOL_LABELS[view.toolId]}` : 'Panel zamknięty',
-			view.entryName ? `Wpis: ${view.entryName}` : null
+			view.entryName ? `Wpis: ${view.entryName}` : null,
+			view.chapter ? `Rozdział ${CHAPTER_LABELS[view.chapter]}` : null
 		].filter((part) => part !== null);
 		return {
 			id: view.id,
@@ -116,7 +120,8 @@ export class BookmarksCoordinator {
 			linkQuery: this.linkCodec.buildQuery({
 				entryId: view.entryId,
 				camera: view.camera,
-				toolId: view.toolId
+				toolId: view.toolId,
+				chapter: view.chapter
 			})
 		};
 	}

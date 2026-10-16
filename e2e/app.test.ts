@@ -155,3 +155,13 @@ test('link z wpisem otwiera kartę postaci', async ({ page }) => {
 	await expect(page.getByText('Mieszczanin')).toBeVisible();
 	await expect(page).toHaveTitle('Harad · Khorinis — GIS of Gothic');
 });
+
+test('rozdział z linku zaznacza przycisk w panelu Czas i trafia do adresu', async ({ page }) => {
+	await page.goto('/g2nk/khorinis?narzedzie=time&rozdzial=3');
+	await expect(page.getByRole('button', { name: 'III', exact: true })).toHaveAttribute(
+		'aria-pressed',
+		'true'
+	);
+	await page.getByRole('button', { name: 'Wszystkie', exact: true }).click();
+	await expect(page).not.toHaveURL(/rozdzial=/);
+});

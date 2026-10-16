@@ -38,6 +38,35 @@
 	{/each}
 </div>
 
+<h3 class="mt-5 mb-1 text-sm font-medium text-muted-foreground">Rozdział</h3>
+<div class="flex flex-wrap gap-1.5" role="group" aria-label="Rozdział gry">
+	<button
+		class="rounded-full border px-2.5 py-0.5 text-[13px] {appState.selectedChapter === null
+			? 'border-primary text-foreground'
+			: 'border-border text-muted-foreground hover:text-foreground'}"
+		aria-pressed={appState.selectedChapter === null}
+		onclick={() => geoportal.selectChapter(null)}
+	>
+		Wszystkie
+	</button>
+	{#each appState.chapterOptions as option (option.chapter)}
+		<button
+			class="rounded-full border px-2.5 py-0.5 text-[13px] tabular-nums {appState.selectedChapter ===
+			option.chapter
+				? 'border-primary text-foreground'
+				: 'border-border text-muted-foreground hover:text-foreground'}"
+			aria-pressed={appState.selectedChapter === option.chapter}
+			onclick={() => geoportal.selectChapter(option.chapter)}
+		>
+			{option.label}
+		</button>
+	{/each}
+</div>
+<p class="mt-1 text-[13px] text-muted-foreground">
+	Wybrany rozdział pokazuje postacie, które do niego pojawiły się w świecie (warstwy postaci i
+	„postacie o tej godzinie”).
+</p>
+
 <label class="mt-5 flex cursor-pointer items-start gap-2.5 border-t border-border/60 pt-3">
 	<input
 		type="checkbox"
@@ -102,6 +131,4 @@
 	</span>
 </label>
 
-<p class="mt-5 text-[13px] text-muted-foreground">
-	Światło mapy podąża za porą dnia. Wybór rozdziału — wkrótce.
-</p>
+<p class="mt-5 text-[13px] text-muted-foreground">Światło mapy podąża za porą dnia.</p>
