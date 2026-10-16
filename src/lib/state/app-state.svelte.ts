@@ -48,6 +48,7 @@ export class AppState {
 	searchIndexErrorMessage = $state<string | null>(null);
 	indexCounts = $state<IndexCounts | null>(null);
 	openedWorldName = $state<string | null>(null);
+	localCoordinateSystemName = $state<string | null>(null);
 	activeToolId = $state<ToolId | null>('search');
 	cursorPosition = $state<WorldPosition | null>(null);
 	headingDegrees = $state(0);
@@ -135,8 +136,9 @@ export class AppState {
 		eventBus.subscribe('coordinate-system-changed', ({ systemId }) => {
 			this.coordinateSystemId = systemId;
 		});
-		eventBus.subscribe('world-opened', ({ worldName }) => {
+		eventBus.subscribe('world-opened', ({ worldName, localCoordinateSystemName }) => {
 			this.openedWorldName = worldName;
+			this.localCoordinateSystemName = localCoordinateSystemName;
 			this.indexCounts = null;
 		});
 		eventBus.subscribe('world-load-started', () => {
@@ -179,7 +181,9 @@ export class AppState {
 	}
 
 	get coordinateSystem(): CoordinateSystem {
-		return coordinateFormatter.findCoordinateSystem(this.coordinateSystemId);
+		return this.nameForCurrentWorld(
+			coordinateFormatter.findCoordinateSystem(this.coordinateSystemId)
+		);
 	}
 
 	get cursorReadings(): CoordinateReading[] | null {
@@ -234,7 +238,7 @@ export class AppState {
 		const point = this.measurement?.pickedPoint;
 		if (!point) return [];
 		return COORDINATE_SYSTEMS.map((system) => ({
-			systemName: system.name,
+			systemName: this.nameForCurrentWorld(system).name,
 			readings: coordinateFormatter.formatPosition(point, system.id)
 		}));
 	}
@@ -268,6 +272,12 @@ export class AppState {
 
 	get scaleBar(): ScaleBar | null {
 		return this.metresPerPixel === null ? null : scaleBarCalculator.calculate(this.metresPerPixel);
+	}
+
+	/** Lokalny układ współrzędnych nosi nazwę otwartego świata (np. „Układ Górniczej Doliny 1992”). */
+	private nameForCurrentWorld(system: CoordinateSystem): CoordinateSystem {
+		if (system.id !== 'khorinis-1992' || !this.localCoordinateSystemName) return system;
+		return { ...system, name: this.localCoordinateSystemName };
 	}
 
 	get hasError(): boolean {

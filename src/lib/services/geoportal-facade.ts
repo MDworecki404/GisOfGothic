@@ -91,7 +91,11 @@ export class GeoportalFacade {
 		this.pendingCameraView = null;
 		this.bookmarksCoordinator.useWorld(world.gameId, world.id);
 		this.currentDataLoader = this.createDataLoader(world.dataBaseUrl);
-		this.eventBus.publish({ type: 'world-opened', worldName: world.name });
+		this.eventBus.publish({
+			type: 'world-opened',
+			worldName: world.name,
+			localCoordinateSystemName: world.localCoordinateSystemName
+		});
 		this.searchCoordinator.useModelNamespace(world.modelNamespace);
 		this.searchCoordinator.useIndex(null);
 		this.analysisCoordinator.resetForNewWorld();

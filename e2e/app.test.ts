@@ -186,3 +186,16 @@ test('analiza „Widoczność” prosi o punkt na mapie i ma suwak promienia', a
 	await expect(page.getByText('Kliknij punkt na mapie.')).toBeVisible();
 	await expect(page.getByLabel('Promień widoczności w metrach')).toBeVisible();
 });
+
+test('przełącznik światów przenosi do Górniczej Doliny z jej danymi', async ({ page }) => {
+	await page.goto('/g2nk/khorinis');
+	await expect(page.getByText(/312 przedmiotów/)).toBeVisible({ timeout: 30_000 });
+	await page.getByTitle('Zmień świat').click();
+	await page
+		.getByRole('navigation', { name: 'Światy' })
+		.getByRole('link', { name: 'Górnicza Dolina' })
+		.click();
+	await expect(page).toHaveURL(/\/g2nk\/gornicza-dolina(\?|$)/);
+	await expect(page).toHaveTitle('Górnicza Dolina — GIS of Gothic');
+	await expect(page.getByText(/214 przedmiotów/)).toBeVisible({ timeout: 30_000 });
+});

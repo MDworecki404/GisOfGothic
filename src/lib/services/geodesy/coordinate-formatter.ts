@@ -16,8 +16,8 @@ export interface CoordinateReading {
 export const COORDINATE_SYSTEMS: readonly CoordinateSystem[] = [
 	{
 		id: 'khorinis-1992',
-		name: 'Układ Khorinis 1992',
-		description: 'metry od środka wyspy: wschód, północ, wysokość nad poziomem morza'
+		name: 'Układ lokalny świata',
+		description: 'metry od punktu zakotwiczenia świata: wschód, północ, wysokość nad poziomem morza'
 	},
 	{
 		id: 'game-units',

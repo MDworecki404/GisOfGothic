@@ -5,6 +5,7 @@ const khorinis: WorldDefinition = {
 	id: 'khorinis',
 	gameId: 'g2nk',
 	name: 'Khorinis',
+	localCoordinateSystemName: 'Układ Khorinis 1992',
 	dataBaseUrl: '/data/g2nk/khorinis',
 	modelNamespace: 'g2nk/khorinis',
 	protectedModelsUrl: 'https://modele.example/g2nk/khorinis/items',

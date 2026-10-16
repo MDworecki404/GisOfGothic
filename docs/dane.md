@@ -45,13 +45,22 @@ a nieznany świat pokazuje stronę błędu 404.
 
 ## Jak dodać nowy świat
 
-1. **Wygeneruj paczkę** świata w projekcie ekstrakcji (`dist/<gra>/<świat>/`).
+Tak dodano Górniczą Dolinę (`/g2nk/gornicza-dolina`, asset ion 6044750).
+
+1. **Wygeneruj paczkę** świata w projekcie ekstrakcji (`dist/<gra>/<świat>/`, ten sam kontrakt co Khorinis).
 2. **Wgraj model** `world.glb` na [Cesium ion](https://ion.cesium.com) jako _3D Model (tile as 3D Tiles)_.
-   Lokalizacji nie ustawiaj — aplikacja sama stawia tileset w kotwicy. Zanotuj asset ID.
-3. **Skopiuj lekkie dane** do `static/data/<gra>/<świat>/` — bez `world.glb` i `models/`.
-4. **Dodaj wpis** do `WorldCatalog` w `world-catalog.ts` (nowa gra albo nowy świat w istniejącej).
-5. **Sprawdź** `npm run dev` → `/<gra>/<świat>`: model widoczny, poprawnie ustawiony, pasek statusu
-   pokazuje liczby z indeksu, brak błędów w konsoli.
+   Lokalizacji nie ustawiaj — aplikacja sama stawia tileset w kotwicy. Zanotuj asset ID i dodaj asset
+   do zasobów tokenu bramki na ion (token nie zmienia wartości, jeśli go nie wygenerujesz ponownie;
+   po ponownym wygenerowaniu: `.env` → `CESIUM_ION_SERVER_TOKEN` i `npx wrangler secret put` w bramce).
+3. **Dopuść asset w bramce:** `ALLOWED_ION_ASSETS` w `workers/model-gate/wrangler.jsonc`, potem `npm run deploy:gate`.
+4. **Skopiuj lekkie dane** do `static/data/<gra>/<świat>/` — bez `world.glb` i `models/`.
+5. **Zaszyfruj i wgraj podglądy przedmiotów** z przestrzenią `<gra>/<świat>` (docs/rozwoj.md, „Modele przedmiotów”).
+6. **Dodaj wpis** do `WorldCatalog` w `world-catalog.ts`: `id`, `name`, `localCoordinateSystemName`,
+   `dataBaseUrl`, `modelNamespace`, `protectedModelsUrl`, `worldTilesetUrl` (bramka `/ion/<asset>/tileset.json`).
+   Przełącznik światów w pasku górnym pokaże go sam.
+7. **Sprawdź** `npm run deploy:preview` → `https://podglad.gis-of-gothic.pages.dev/<gra>/<świat>`: model
+   poprawnie ustawiony, znaczniki na terenie, podglądy przedmiotów, brak błędów w konsoli. Na produkcję
+   świat trafia z najbliższym wydaniem.
 
 ## Indeks wyszukiwania
 
