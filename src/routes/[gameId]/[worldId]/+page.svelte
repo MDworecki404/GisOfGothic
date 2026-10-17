@@ -4,6 +4,7 @@
 	import InstrumentBar from '#lib/components/shell/InstrumentBar.svelte';
 	import MapInsetsReporter from '#lib/components/shell/MapInsetsReporter.svelte';
 	import TilesLoadingBadge from '#lib/components/shell/TilesLoadingBadge.svelte';
+	import FlightSticks from '#lib/components/shell/FlightSticks.svelte';
 	import MapControls from '#lib/components/shell/MapControls.svelte';
 	import ToolPanel from '#lib/components/shell/ToolPanel.svelte';
 	import ToolRail from '#lib/components/shell/ToolRail.svelte';
@@ -46,6 +47,7 @@
 	<ToolPanel />
 	<MapInsetsReporter />
 	<MapControls />
+	<FlightSticks />
 	<TilesLoadingBadge />
 	<IdentifyCard />
 	<InstrumentBar />
