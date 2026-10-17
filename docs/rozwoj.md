@@ -34,7 +34,7 @@ pracy lokalnej. Token Cesium ion nie trafia do strony — jest sekretem Workera
 | `npm run deploy`                      | **produkcja, tylko z wydania**: sprawdza tag i czyste repo, uruchamia wszystkie testy, buduje i wysyła (ADR 0014) |
 | `npm run deploy:preview`              | bieżący build na podgląd `https://podglad.gis-of-gothic.pages.dev` (produkcja bez zmian)                          |
 | `npm run deploy:gate`                 | wdraża bramkę zasobów (`workers/model-gate/`)                                                                     |
-| `npm run release`                     | nowa wersja: podbija `package.json`, dopisuje `CHANGELOG.md`, tworzy tag                                          |
+| `npm run release`                     | nowa wersja: nowe `feat` podbijają minor (ADR 0016), aktualizuje `package.json` i `CHANGELOG.md`, tworzy tag      |
 
 ## Konwencje kodu
 
@@ -77,7 +77,7 @@ Zmiany commitujemy na bieżąco, ale strona zmienia się dopiero przy wydaniu.
 Jednorazowo: `npx wrangler login`; `static/data/` z aktualnymi danymi i `PUBLIC_MODEL_KEY` w `.env`.
 
 1. **Podgląd:** `npm run deploy:preview` → sprawdź zmiany na `https://podglad.gis-of-gothic.pages.dev`.
-2. **Wydanie:** `npm run release` (wersja i `CHANGELOG.md` z commitów, tag `vX.Y.Z`).
+2. **Wydanie:** `npm run release` (wersja i `CHANGELOG.md` z commitów, tag `vX.Y.Z`; `feat` podbija środkową liczbę, [ADR 0016](adr/0016-nowe-funkcje-podnosza-wersje-minor.md)).
 3. **Publikacja w repo:** `git push --follow-tags origin main`.
 4. **Produkcja:** `npm run deploy` — odmówi bez tagu wydania, przy niezacommitowanych zmianach albo
    niewypchniętym commicie/tagu; uruchamia `check`, `lint`, Vitest i Playwright, dopiero potem wysyła.
