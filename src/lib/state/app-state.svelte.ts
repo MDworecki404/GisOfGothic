@@ -29,6 +29,10 @@ import type { MeasurementView } from '#lib/services/measurement/measurement-coor
 import { formatMinuteOfDay } from '#lib/services/time/daily-schedule.js';
 import type { RoutineLayerStatus, ShadowSettings } from '#lib/services/time/time-coordinator.js';
 import type { StaticObjectsStatus } from '#lib/services/layers/static-objects-coordinator.js';
+import type {
+	PerformancePreference,
+	QualityLevel
+} from '#lib/services/performance/performance-profiles.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 
 const coordinateFormatter = new CoordinateFormatter();
@@ -73,6 +77,11 @@ export class AppState {
 	charactersAtTimeOfDay = $state<number | null>(null);
 	shadows = $state.raw<ShadowSettings>({ areEnabled: false, areSoft: true });
 
+	performancePreference = $state<PerformancePreference>('auto');
+	performanceLevel = $state<QualityLevel>('high');
+	performanceWasLoweredAutomatically = $state(false);
+	measuredFramesPerSecond = $state<number | null>(null);
+
 	canInstallApp = $state(false);
 	worldTilesPending = $state(0);
 	staticObjectsTilesPending = $state(0);
@@ -88,6 +97,15 @@ export class AppState {
 			this.staticObjectsStatus = status;
 			this.staticObjectsErrorMessage = errorMessage;
 		});
+		eventBus.subscribe(
+			'performance-changed',
+			({ preference, effectiveLevel, wasLoweredAutomatically, measuredFramesPerSecond }) => {
+				this.performancePreference = preference;
+				this.performanceLevel = effectiveLevel;
+				this.performanceWasLoweredAutomatically = wasLoweredAutomatically;
+				this.measuredFramesPerSecond = measuredFramesPerSecond;
+			}
+		);
 		eventBus.subscribe('app-installability-changed', ({ canInstall }) => {
 			this.canInstallApp = canInstall;
 		});

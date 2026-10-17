@@ -24,6 +24,9 @@ import {
 import type { MapClick, MapViewListeners } from './map/map-view-observer.js';
 import { SearchCoordinator } from './search/search-coordinator.js';
 import type { SearchTypeFilter } from './search/search-service.js';
+import { PerformanceCoordinator } from './performance/performance-coordinator.js';
+import type { PerformancePreferenceStore } from './performance/performance-preference-store.js';
+import type { PerformancePreference } from './performance/performance-profiles.js';
 import { ROUTINE_LAYER_ID, TimeCoordinator, type ShadowSettings } from './time/time-coordinator.js';
 import type { ToolId } from './tools/tool-id.js';
 
@@ -66,12 +69,14 @@ export class GeoportalFacade {
 	private readonly staticObjectsCoordinator: StaticObjectsCoordinator;
 	private readonly measurementCoordinator: MeasurementCoordinator;
 	private readonly timeCoordinator: TimeCoordinator;
+	private readonly performanceCoordinator: PerformanceCoordinator;
 
 	constructor(
 		private readonly eventBus: AppEventBus,
 		private readonly createDataLoader: DataLoaderFactory,
 		bookmarkStore: BookmarkStore,
-		private readonly protectedModelLoader: ProtectedModelLoader | null
+		private readonly protectedModelLoader: ProtectedModelLoader | null,
+		performancePreferenceStore: PerformancePreferenceStore
 	) {
 		this.bookmarksCoordinator = new BookmarksCoordinator(eventBus, bookmarkStore);
 		this.searchCoordinator = new SearchCoordinator(eventBus, () => this.mapService);
@@ -85,6 +90,11 @@ export class GeoportalFacade {
 		this.staticObjectsCoordinator = new StaticObjectsCoordinator(eventBus, () => this.mapService);
 		this.measurementCoordinator = new MeasurementCoordinator(eventBus, () => this.mapService);
 		this.timeCoordinator = new TimeCoordinator(eventBus, () => this.mapService);
+		this.performanceCoordinator = new PerformanceCoordinator(
+			eventBus,
+			() => this.mapService,
+			performancePreferenceStore
+		);
 	}
 
 	openWorld(world: WorldDefinition): void {
@@ -119,6 +129,7 @@ export class GeoportalFacade {
 		this.searchCoordinator.showSelectedEntryOnMap(false);
 		this.dataLayersCoordinator.showVisibleLayersOnMap();
 		this.timeCoordinator.showOnMap();
+		this.performanceCoordinator.showOnMap();
 		if (this.activeToolId === 'analysis') this.analysisCoordinator.activate();
 	}
 
@@ -184,6 +195,11 @@ export class GeoportalFacade {
 
 	setShadows(settings: ShadowSettings): void {
 		this.timeCoordinator.setShadows(settings);
+	}
+
+	/** Wybiera jakość renderowania: `auto` dostosowuje ją do FPS, pozostałe wartości ustawiają ją na stałe. */
+	selectPerformance(preference: PerformancePreference): void {
+		this.performanceCoordinator.selectPreference(preference);
 	}
 
 	toggleCharactersAtTimeOfDay(): void {
@@ -338,7 +354,9 @@ export class GeoportalFacade {
 				this.eventBus.publish({ type: 'map-scale-changed', metresPerPixel }),
 			onCameraSettled: () => this.publishCameraView(),
 			onTilesLoadProgress: (layer, pendingTiles) =>
-				this.eventBus.publish({ type: 'tiles-load-progress', layer, pendingTiles })
+				this.eventBus.publish({ type: 'tiles-load-progress', layer, pendingTiles }),
+			onFrameRendered: (timestampMilliseconds) =>
+				this.performanceCoordinator.recordFrame(timestampMilliseconds)
 		};
 	}
 

@@ -16,6 +16,7 @@ import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
 import type { ViewshedCell } from '#lib/services/analysis/viewshed-calculator.js';
 import type { DensityCell } from '#lib/services/analysis/density-grid-builder.js';
 import type { LocalPoint } from '#lib/services/measurement/measurement-calculator.js';
+import type { PerformanceProfile } from '#lib/services/performance/performance-profiles.js';
 import type { ShadowSettings } from '#lib/services/time/time-coordinator.js';
 import { AnalysisRenderer } from './analysis-renderer.js';
 import { CameraFramer } from './camera-framer.js';
@@ -64,6 +65,8 @@ export class MapService {
 	private isDestroyed = false;
 	private latestTilesetRequest = 0;
 	private minuteOfDay: number | null = null;
+	private shadowSettings: ShadowSettings = { areEnabled: false, areSoft: true };
+	private performanceProfile: PerformanceProfile | null = null;
 
 	private readonly pendingTilesByLayer = new Map<TileLayerId, number>();
 
@@ -85,6 +88,9 @@ export class MapService {
 		this.analysis = new AnalysisRenderer(this.viewer);
 		this.cameraFramer = new CameraFramer(this.viewer);
 		this.placeMarkers = new PlaceMarkersLayer(this.viewer, this.cameraFramer);
+		this.viewer.scene.postRender.addEventListener(() =>
+			listeners.onFrameRendered(performance.now())
+		);
 	}
 
 	/**
@@ -105,6 +111,7 @@ export class MapService {
 			return;
 		}
 		this.worldTileset = tileset;
+		this.applyTileDetailTo(tileset);
 		this.reportTileLoadingOf(tileset, 'world');
 		this.worldFrame = frame;
 		this.viewer.scene.primitives.add(tileset);
@@ -236,12 +243,25 @@ export class MapService {
 	}
 
 	/** Cienie rzuca światło sceny, więc podążają za porą dnia. Gładkie cienie kosztują więcej GPU. */
-	showShadows({ areEnabled, areSoft }: ShadowSettings): void {
-		this.viewer.shadows = areEnabled;
-		const shadowMap = this.viewer.scene.shadowMap;
-		shadowMap.softShadows = areSoft;
-		shadowMap.size = areSoft ? SOFT_SHADOW_MAP_SIZE : SHARP_SHADOW_MAP_SIZE;
-		shadowMap.darkness = SHADOW_DARKNESS;
+	showShadows(settings: ShadowSettings): void {
+		this.shadowSettings = settings;
+		this.applyShadows();
+	}
+
+	/**
+	 * Stosuje profil wydajności: rozdzielczość renderowania, wygładzanie krawędzi, szczegółowość
+	 * kafli 3D (im wyższy dopuszczalny błąd ekranowy, tym mniej i grubsze kafle) oraz limit jakości cieni.
+	 */
+	showPerformanceProfile(profile: PerformanceProfile): void {
+		this.performanceProfile = profile;
+		const scene = this.viewer.scene;
+		this.viewer.resolutionScale = profile.resolutionScale;
+		if (scene.msaaSupported) scene.msaaSamples = profile.msaaSamples;
+		scene.postProcessStages.fxaa.enabled = profile.isFxaaEnabled;
+		for (const tileset of [this.worldTileset, this.staticObjectsTileset]) {
+			if (tileset) this.applyTileDetailTo(tileset);
+		}
+		this.applyShadows();
 	}
 
 	showMeasurement(vertices: readonly LocalPoint[], linePath: readonly LocalPoint[]): void {
@@ -367,6 +387,7 @@ export class MapService {
 			return;
 		}
 		this.staticObjectsTileset = tileset;
+		this.applyTileDetailTo(tileset);
 		this.reportTileLoadingOf(tileset, 'static-objects');
 		this.viewer.scene.primitives.add(tileset);
 	}
@@ -410,6 +431,24 @@ export class MapService {
 		if ((this.pendingTilesByLayer.get(layer) ?? 0) === pendingTiles) return;
 		this.pendingTilesByLayer.set(layer, pendingTiles);
 		this.listeners.onTilesLoadProgress(layer, pendingTiles);
+	}
+
+	private applyTileDetailTo(tileset: Cesium3DTileset): void {
+		if (this.performanceProfile) {
+			tileset.maximumScreenSpaceError = this.performanceProfile.maximumScreenSpaceError;
+		}
+	}
+
+	private applyShadows(): void {
+		const limit = this.performanceProfile?.shadowQualityLimit ?? 'soft';
+		const { areEnabled, areSoft } = this.shadowSettings;
+		const areShown = areEnabled && limit !== 'off';
+		const areShownSoft = areSoft && limit === 'soft';
+		this.viewer.shadows = areShown;
+		const shadowMap = this.viewer.scene.shadowMap;
+		shadowMap.softShadows = areShownSoft;
+		shadowMap.size = areShownSoft ? SOFT_SHADOW_MAP_SIZE : SHARP_SHADOW_MAP_SIZE;
+		shadowMap.darkness = SHADOW_DARKNESS;
 	}
 
 	private pickPointAtScreenCentre(): Cartesian3 | null {
