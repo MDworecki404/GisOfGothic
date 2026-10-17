@@ -19,3 +19,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0013](0013-model-swiata-przez-bramke-ion.md)                  | Model świata przez bramkę do Cesium ion              | przyjęta |
 | [0014](0014-produkcja-tylko-z-wydan.md)                        | Produkcja tylko z wydań, po testach                  | przyjęta |
 | [0015](0015-jakosc-renderowania-auto-tylko-w-dol.md)           | Jakość renderowania: automatyka tylko w dół          | przyjęta |
+| [0016](0016-nowe-funkcje-podnosza-wersje-minor.md)             | Nowe funkcje podnoszą wersję minor przed 1.0.0       | przyjęta |
