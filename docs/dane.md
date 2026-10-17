@@ -46,7 +46,8 @@ a nieznany świat pokazuje stronę błędu 404.
 ## Jak dodać nowy świat
 
 Tak dodano Górniczą Dolinę (`/g2nk/gornicza-dolina`, asset ion 6044750) i Jarkendar (`/g2nk/jarkendar`,
-świat 6045115, voby 6045113).
+świat 6045115, voby 6045113) oraz Irdorath (`/g2nk/irdorath`,
+świat 6047295, voby 6047297).
 
 1. **Wygeneruj paczkę** świata w projekcie ekstrakcji (`dist/<gra>/<świat>/`, ten sam kontrakt co Khorinis).
 2. **Wgraj model** `world.glb` na [Cesium ion](https://ion.cesium.com) jako _3D Model (tile as 3D Tiles)_.

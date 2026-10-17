@@ -20,7 +20,7 @@
 	],
 	"vars": {
 		"ALLOWED_ORIGINS": "https://gisofgothic.dworecki.dev,https://gis-of-gothic.pages.dev,https://podglad.gis-of-gothic.pages.dev,http://localhost:5173,http://localhost:5174,http://localhost:4173",
-		"ALLOWED_ION_ASSETS": "6033666,6044750,6045068,6045072,6045113,6045115",
+		"ALLOWED_ION_ASSETS": "6033666,6044750,6045068,6045072,6045113,6045115,6047295,6047297",
 		"ION_REFERER": "https://gisofgothic.dworecki.dev/"
 	}
 	// Sekret CESIUM_ION_SERVER_TOKEN: npx wrangler secret put CESIUM_ION_SERVER_TOKEN (ADR 0013)
