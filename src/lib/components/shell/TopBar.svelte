@@ -4,6 +4,7 @@
 	import { appState, geoportal, installApp } from '#lib/composition-root.js';
 	import AboutDialog from './AboutDialog.svelte';
 	import BrandMark from './BrandMark.svelte';
+	import PerformanceDialog from './PerformanceDialog.svelte';
 	import WorldSwitcher, { type WorldSwitcherGame } from './WorldSwitcher.svelte';
 
 	interface Props {
@@ -78,5 +79,6 @@
 		</button>
 	{/if}
 
+	<PerformanceDialog />
 	<AboutDialog />
 </header>

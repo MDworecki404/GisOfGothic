@@ -23,6 +23,7 @@ export interface MapViewListeners {
 	onScaleChanged(metresPerPixel: number | null): void;
 	onCameraSettled(): void;
 	onTilesLoadProgress(layer: TileLayerId, pendingTiles: number): void;
+	onFrameRendered(timestampMilliseconds: number): void;
 }
 
 const SCALE_SAMPLE_PIXELS = 100;

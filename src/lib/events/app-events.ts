@@ -15,6 +15,10 @@ import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator
 import type { MeasurementView } from '#lib/services/measurement/measurement-coordinator.js';
 import type { RoutineLayerStatus, ShadowSettings } from '#lib/services/time/time-coordinator.js';
 import type { StaticObjectsStatus } from '#lib/services/layers/static-objects-coordinator.js';
+import type {
+	PerformancePreference,
+	QualityLevel
+} from '#lib/services/performance/performance-profiles.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 import { EventBus } from './event-bus.js';
 
@@ -55,6 +59,13 @@ export type AppEvent =
 	  }
 	| { type: 'app-installability-changed'; canInstall: boolean }
 	| { type: 'static-objects-changed'; status: StaticObjectsStatus; errorMessage: string | null }
+	| {
+			type: 'performance-changed';
+			preference: PerformancePreference;
+			effectiveLevel: QualityLevel;
+			wasLoweredAutomatically: boolean;
+			measuredFramesPerSecond: number | null;
+	  }
 	| { type: 'tiles-load-progress'; layer: 'world' | 'static-objects'; pendingTiles: number };
 
 export type AppEventBus = EventBus<AppEvent>;
