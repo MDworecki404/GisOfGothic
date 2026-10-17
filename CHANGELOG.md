@@ -2,6 +2,19 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.2.2](https://github.com/MDworecki404/GisOfGothic/compare/v0.2.1...v0.2.2) (2026-10-17)
+
+### Nowe funkcje
+
+* lot kamerą z klawiatury i joysticków ekranowych ([fb7eba7](https://github.com/MDworecki404/GisOfGothic/commit/fb7eba7a524e2fec04ea1c1913fdaaf66ba3a99a))
+* świat Irdorath ([ca4b4a1](https://github.com/MDworecki404/GisOfGothic/commit/ca4b4a18addccf36410c58f5bab33a9efe064e23))
+* ustawienia wydajności z automatycznym obniżaniem jakości ([c810de9](https://github.com/MDworecki404/GisOfGothic/commit/c810de995bc1fb7d6937d076b2cf8dccfe9fab62))
+
+### Dokumentacja
+
+* usunięcie odnośnika do makiety z README ([7274e71](https://github.com/MDworecki404/GisOfGothic/commit/7274e713b734fdd750ff64ca55e5aae54eb1e3f5))
+* usunięcie przedwdrożeniowej makiety interfejsu ([2b03a13](https://github.com/MDworecki404/GisOfGothic/commit/2b03a133276ac2ac2658a1845841b778cc068526))
+
 ## [0.2.1](https://github.com/MDworecki404/GisOfGothic/compare/v0.2.0...v0.2.1) (2026-10-16)
 
 ### Nowe funkcje
