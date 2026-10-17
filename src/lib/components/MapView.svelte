@@ -6,7 +6,11 @@
 
 	onMount(() => {
 		geoportal.attachMapTo(container);
-		return () => geoportal.detachMap();
+		const stopListeningToFlightKeyboard = geoportal.listenToFlightKeyboard(window);
+		return () => {
+			stopListeningToFlightKeyboard();
+			geoportal.detachMap();
+		};
 	});
 </script>
 

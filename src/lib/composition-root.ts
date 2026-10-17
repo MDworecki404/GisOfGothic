@@ -9,6 +9,7 @@ import { ProtectedModelLoader } from '#lib/services/models/protected-model-loade
 import { PerformancePreferenceStore } from '#lib/services/performance/performance-preference-store.js';
 import { AppInstallation } from '#lib/services/pwa/app-installation.js';
 import { AppState } from '#lib/state/app-state.svelte.js';
+import { FlightControlsState } from '#lib/state/flight-controls-state.svelte.js';
 import { MobileSheetState } from '#lib/state/mobile-sheet-state.svelte.js';
 
 const eventBus = new EventBus<AppEvent>();
@@ -24,6 +25,10 @@ export const geoportal = new GeoportalFacade(
 export const appState = new AppState(eventBus);
 
 export const mobileSheet = new MobileSheetState(eventBus);
+
+export const flightControls = new FlightControlsState(
+	browser && window.matchMedia('(pointer: coarse)').matches
+);
 
 const appInstallation = new AppInstallation(eventBus, globalThis);
 if (browser) appInstallation.listenForInstallability();

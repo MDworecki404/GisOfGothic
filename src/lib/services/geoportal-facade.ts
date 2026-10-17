@@ -13,6 +13,10 @@ import { AnalysisCoordinator, type AnalysisMode } from './analysis/analysis-coor
 import { ChapterFilter, type ChapterNumber } from './chapters/chapter-filter.js';
 import type { GridShape } from './analysis/density-grid-builder.js';
 import { CoordinateFormatter, type CoordinateSystemId } from './geodesy/coordinate-formatter.js';
+import { FlightInputMixer } from './flight/flight-input-mixer.js';
+import type { FlightInput } from './flight/flight-input.js';
+import { KeyboardFlightListener } from './flight/keyboard-flight-listener.js';
+import { StickDeflectionCalculator } from './flight/stick-deflection-calculator.js';
 import { StaticObjectsCoordinator } from './layers/static-objects-coordinator.js';
 import { DataLayersCoordinator } from './layers/data-layers-coordinator.js';
 import type { DataLayerId } from './layers/data-layer-catalog.js';
@@ -29,6 +33,8 @@ import type { PerformancePreferenceStore } from './performance/performance-prefe
 import type { PerformancePreference } from './performance/performance-profiles.js';
 import { ROUTINE_LAYER_ID, TimeCoordinator, type ShadowSettings } from './time/time-coordinator.js';
 import type { ToolId } from './tools/tool-id.js';
+
+export type FlightStick = 'move' | 'look';
 
 export type DataLoaderFactory = (dataBaseUrl: string) => GeoportalDataLoader;
 
@@ -62,6 +68,8 @@ export class GeoportalFacade {
 	private readonly analysisCoordinator: AnalysisCoordinator;
 	private readonly bookmarksCoordinator: BookmarksCoordinator;
 	private readonly viewLinkCodec = new ViewLinkCodec();
+	private readonly flightInputMixer = new FlightInputMixer();
+	private readonly stickDeflectionCalculator = new StickDeflectionCalculator();
 	private pendingCameraView: CameraView | null = null;
 	private isWorldShownOnMap = false;
 	private mapViewInsets: MapViewInsets = { leftPixels: 0, bottomPixels: 0 };
@@ -309,6 +317,44 @@ export class GeoportalFacade {
 		this.mapService?.showWholeWorld();
 	}
 
+	/**
+	 * Włącza sterowanie lotem kamery z klawiatury (WASD – ruch, strzałki – obrót, Q/E – wysokość,
+	 * Shift – przyspieszenie); zwraca funkcję wyłączającą.
+	 */
+	listenToFlightKeyboard(eventSource: Window): () => void {
+		return new KeyboardFlightListener(eventSource, (input) => {
+			this.flightInputMixer.replaceKeyboardInput(input);
+			this.sendFlightInputToMap();
+		}).start();
+	}
+
+	/** Wychylenie gałki joysticka: przesunięcie od środka i promień w pikselach ekranu. */
+	deflectFlightStick(
+		stick: FlightStick,
+		offsetXPixels: number,
+		offsetYPixels: number,
+		radiusPixels: number
+	): void {
+		const deflection = this.stickDeflectionCalculator.calculate(
+			offsetXPixels,
+			offsetYPixels,
+			radiusPixels
+		);
+		if (stick === 'move') this.flightInputMixer.replaceMoveStick(deflection);
+		else this.flightInputMixer.replaceLookStick(deflection);
+		this.sendFlightInputToMap();
+	}
+
+	releaseFlightStick(stick: FlightStick): void {
+		this.deflectFlightStick(stick, 0, 0, 1);
+	}
+
+	/** Przyciski wysokości na ekranie: 1 – w górę, -1 – w dół, 0 – puszczony. */
+	pressFlightRiseButton(direction: -1 | 0 | 1): void {
+		this.flightInputMixer.replaceRiseButton(direction);
+		this.sendFlightInputToMap();
+	}
+
 	turnMapToNorth(): void {
 		this.mapService?.turnToNorth();
 	}
@@ -342,6 +388,11 @@ export class GeoportalFacade {
 		this.isWorldShownOnMap = false;
 		this.mapService?.destroy();
 		this.mapService = null;
+	}
+
+	private sendFlightInputToMap(): void {
+		const input: FlightInput = this.flightInputMixer.mix();
+		this.mapService?.setFlightInput(input);
 	}
 
 	private createMapViewListeners(): MapViewListeners {

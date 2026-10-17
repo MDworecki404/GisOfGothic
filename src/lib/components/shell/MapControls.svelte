@@ -1,8 +1,9 @@
 <script lang="ts">
+	import GamepadIcon from '@lucide/svelte/icons/gamepad-2';
 	import HouseIcon from '@lucide/svelte/icons/house';
 	import MinusIcon from '@lucide/svelte/icons/minus';
 	import PlusIcon from '@lucide/svelte/icons/plus';
-	import { appState, geoportal } from '#lib/composition-root.js';
+	import { appState, flightControls, geoportal } from '#lib/composition-root.js';
 
 	const controlButton =
 		'grid size-9.5 place-items-center border-b border-border text-foreground last:border-b-0 hover:bg-secondary';
@@ -43,6 +44,15 @@
 			onclick={() => geoportal.showWholeWorld()}
 		>
 			<HouseIcon class="size-4" />
+		</button>
+		<button
+			class="{controlButton} {flightControls.areSticksShown ? 'bg-secondary text-primary' : ''}"
+			aria-label="Joysticki lotu kamerą"
+			aria-pressed={flightControls.areSticksShown}
+			title="Joysticki lotu kamerą (klawiatura: WASD, strzałki, Q/E)"
+			onclick={() => flightControls.toggleSticks()}
+		>
+			<GamepadIcon class="size-4" />
 		</button>
 	</div>
 </div>

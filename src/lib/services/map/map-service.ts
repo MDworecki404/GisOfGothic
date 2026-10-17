@@ -18,7 +18,9 @@ import type { DensityCell } from '#lib/services/analysis/density-grid-builder.js
 import type { LocalPoint } from '#lib/services/measurement/measurement-calculator.js';
 import type { PerformanceProfile } from '#lib/services/performance/performance-profiles.js';
 import type { ShadowSettings } from '#lib/services/time/time-coordinator.js';
+import type { FlightInput } from '#lib/services/flight/flight-input.js';
 import { AnalysisRenderer } from './analysis-renderer.js';
+import { CameraFlightController } from './camera-flight-controller.js';
 import { CameraFramer } from './camera-framer.js';
 import type { MapViewInsets } from './free-area-calculator.js';
 import { DataLayersRenderer, type DataLayerPoint } from './data-layers-renderer.js';
@@ -58,6 +60,7 @@ export class MapService {
 	private readonly measurement: MeasurementRenderer;
 	private readonly analysis: AnalysisRenderer;
 	private readonly cameraFramer: CameraFramer;
+	private readonly flightController: CameraFlightController;
 	private worldTileset: Cesium3DTileset | null = null;
 	private staticObjectsTileset: Cesium3DTileset | null = null;
 	private latestStaticObjectsRequest = 0;
@@ -87,6 +90,9 @@ export class MapService {
 		this.measurement = new MeasurementRenderer(this.viewer);
 		this.analysis = new AnalysisRenderer(this.viewer);
 		this.cameraFramer = new CameraFramer(this.viewer);
+		this.flightController = new CameraFlightController(this.viewer, () =>
+			this.measureDistanceToScreenCentreIfKnown()
+		);
 		this.placeMarkers = new PlaceMarkersLayer(this.viewer, this.cameraFramer);
 		this.viewer.scene.postRender.addEventListener(() =>
 			listeners.onFrameRendered(performance.now())
@@ -167,6 +173,11 @@ export class MapService {
 			),
 			flightSeconds: flightDurationSeconds
 		});
+	}
+
+	/** Ustawia bieżący zamiar lotu kamerą (klawiatura, joysticki); lot trwa, dopóki zamiar nie jest zerowy. */
+	setFlightInput(input: FlightInput): void {
+		this.flightController.replaceInput(input);
 	}
 
 	zoomIn(): void {
@@ -411,6 +422,7 @@ export class MapService {
 
 	destroy(): void {
 		this.isDestroyed = true;
+		this.flightController.destroy();
 		this.viewObserver.destroy();
 		if (!this.viewer.isDestroyed()) this.viewer.destroy();
 		this.worldTileset = null;
@@ -456,6 +468,11 @@ export class MapService {
 		return this.viewObserver.pickSceneCartesian(
 			new Cartesian2(canvas.clientWidth / 2, canvas.clientHeight / 2)
 		);
+	}
+
+	private measureDistanceToScreenCentreIfKnown(): number | null {
+		const centre = this.pickPointAtScreenCentre();
+		return centre ? Cartesian3.distance(this.viewer.camera.position, centre) : null;
 	}
 
 	private measureDistanceToScreenCentre(): number {

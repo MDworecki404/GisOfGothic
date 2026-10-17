@@ -223,6 +223,25 @@ proporcjonalnie do zasłoniętej części. Przez `CameraFramer` idą przeloty do
 do wyników analiz i do całego świata; widok z linku albo zakładki to dokładna pozycja kamery. Przy
 `prefers-reduced-motion` przeloty są natychmiastowe. Decyzja: [ADR 0008](adr/0008-kadrowanie-kamery-z-marginesem-na-panele.md).
 
+## Lot kamerą
+
+Kamerą można latać z klawiatury i z ekranowych joysticków; oba źródła działają jednocześnie.
+Klawisze (rozpoznawane po `event.code`, więc niezależnie od układu): **W/S** – do przodu i do tyłu,
+**A/D** – w bok, **←/→** – obrót, **↑/↓** – pochylenie spojrzenia, **Q/E** – w dół i w górę, **Shift** –
+przyspieszenie ×3. Na ekranie dotykowym są dwa joysticki (ruch i rozglądanie) oraz dwa przyciski
+wysokości; przycisk w `MapControls` je włącza (domyślnie włączone przy `pointer: coarse`).
+
+Przepływ: `MapView` wywołuje `geoportal.listenToFlightKeyboard(window)` (`KeyboardFlightListener` +
+`KeyboardFlightMapper`; pomija pola tekstowe, suwaki, dialogi i skróty z Ctrl/Alt/Meta), a `FlightSticks`
+zgłasza wychylenia przez `deflectFlightStick` i `pressFlightRiseButton` (`StickDeflectionCalculator`
+liczy wychylenie jednostkowe ze strefą martwą). `FlightInputMixer` w fasadzie składa wszystkie źródła
+w jeden `FlightInput` i przekazuje go do `MapService.setFlightInput`. `CameraFlightController` co klatkę
+(`scene.preRender`) przesuwa kamerę o krok z `FlightMotionCalculator`: prędkość rośnie z odległością od
+oglądanej powierzchni, ruch odbywa się poziomo, wysokość wzdłuż pionu, a obrót wokół pionu zachowuje
+horyzont (pochylenie ograniczone do ±85°). Początek lotu przerywa trwający przelot. Stan widoczności
+joysticków (`FlightControlsState`, `flightControls`) jest wyłącznie stanem interfejsu. Po zatrzymaniu kamery
+adres strony i zakładki aktualizują się jak po zwykłym ruchu myszą.
+
 ## Arkusz mobilny
 
 Na telefonie panel narzędzia (`ToolPanel`) jest arkuszem z uchwytem i trzema stanami: zwinięty, połowa,
