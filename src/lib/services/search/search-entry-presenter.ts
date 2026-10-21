@@ -1,4 +1,5 @@
 import { describeCategory } from '#lib/data/category-names.js';
+import { EncyclopediaLinkBuilder } from '#lib/services/encyclopedia/encyclopedia-link-builder.js';
 import type { Place, PlaceKind, SearchEntry, SearchEntryType } from '#lib/data/types.js';
 
 export interface PlaceKindPresentation {
@@ -47,6 +48,7 @@ export interface SearchEntryDetails {
 	/** Logiczna ścieżka podglądu 3D (np. `g2nk/khorinis/previews/x.glb`), nie adres pliku. */
 	modelPath: string | null;
 	facts: EntryFact[];
+	encyclopediaUrl: string | null;
 	places: PlaceSummary[];
 }
 
@@ -60,6 +62,8 @@ function sumAmounts(places: readonly Place[]): number {
 
 /** Zamienia surowe wpisy indeksu na teksty i liczby gotowe do pokazania w UI. */
 export class SearchEntryPresenter {
+	private readonly encyclopediaLinkBuilder = new EncyclopediaLinkBuilder();
+
 	presentResult(entry: SearchEntry): SearchResult {
 		return {
 			id: entry.id,
@@ -80,6 +84,10 @@ export class SearchEntryPresenter {
 			categoryLabel: describeCategory(entry.category),
 			modelPath: entry.model ? `${modelNamespace}/${entry.model}` : null,
 			facts: entry.type === 'item' ? this.listItemFacts(entry) : this.listCharacterFacts(entry),
+			encyclopediaUrl:
+				entry.type === 'character'
+					? this.encyclopediaLinkBuilder.buildCharacterSearchUrl(entry.name)
+					: null,
 			places: entry.places.map((place, index) => this.presentPlace(place, index))
 		};
 	}

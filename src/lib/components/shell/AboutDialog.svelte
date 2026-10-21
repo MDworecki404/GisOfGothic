@@ -45,12 +45,17 @@
 
 			<div class="mt-6 space-y-3 text-[15px] leading-relaxed text-foreground/90">
 				<p>
-					Wiki Gothica mówi, że miecz leży „gdzieś w Górniczej Dolinie”. Tu zobaczysz, gdzie dokładnie: przedmioty
-					i postacie są naniesione na model 3D świata gry, a stąd można zaplanować drogę.
+					Wiki Gothica mówi, że miecz leży „gdzieś w Górniczej Dolinie”. Tu zobaczysz, gdzie
+					dokładnie: przedmioty i postacie są naniesione na model 3D świata gry, a stąd można
+					zaplanować drogę.
 				</p>
 				<p>
-					Jest wyszukiwarka, pomiary odległości i profil terenu, zakładki oraz suwak czasu. Aplikację
-					zainstalujesz na telefonie albo komputerze. Konta nie potrzebujesz.
+					Jest wyszukiwarka, pomiary odległości i profil terenu, zakładki oraz suwak czasu.
+					Aplikację zainstalujesz na telefonie albo komputerze. Konta nie potrzebujesz.
+				</p>
+				<p class="text-sm text-muted-foreground">
+					Opisy postaci znajdziesz w Gothicpedii (CC BY-SA) — karta postaci prowadzi do jej
+					wyszukiwarki.
 				</p>
 			</div>
 
@@ -69,7 +74,9 @@
 						</svg>
 						<span class="flex-1">
 							<span class="block font-medium">Kod źródłowy</span>
-							<span class="block text-sm text-muted-foreground">github.com/MDworecki404/GisOfGothic</span>
+							<span class="block text-sm text-muted-foreground"
+								>github.com/MDworecki404/GisOfGothic</span
+							>
 						</span>
 						<ExternalLinkIcon class="size-4 text-muted-foreground group-hover:text-primary" />
 						<span class="sr-only">(otwiera się w nowej karcie)</span>
@@ -94,8 +101,8 @@
 			</ul>
 
 			<p class="mt-5 text-xs leading-relaxed text-muted-foreground">
-				Projekt fanowski, niekomercyjny. Gothic i powiązane nazwy należą do ich właścicieli; autor nie jest
-				związany z Piranha Bytes ani THQ Nordic.
+				Projekt fanowski, niekomercyjny. Gothic i powiązane nazwy należą do ich właścicieli; autor
+				nie jest związany z Piranha Bytes ani THQ Nordic.
 			</p>
 		</div>
 	</Dialog.Content>

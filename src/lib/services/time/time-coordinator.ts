@@ -12,6 +12,7 @@ import {
 import type { AppEventBus } from '#lib/events/app-events.js';
 import type { DataLayersDisplay } from '#lib/services/layers/data-layers-coordinator.js';
 import { ChapterFilter, SpawnChapterIndex } from '#lib/services/chapters/chapter-filter.js';
+import { EncyclopediaLinkBuilder } from '#lib/services/encyclopedia/encyclopedia-link-builder.js';
 import { DailySchedule, isMinuteWithinInterval, parseTimeInterval } from './daily-schedule.js';
 
 export const ROUTINE_LAYER_ID = 'routines';
@@ -44,6 +45,7 @@ function describeError(error: unknown): string {
  * ukrywa postacie, które skrypt wstawia do świata dopiero w późniejszym rozdziale.
  */
 export class TimeCoordinator {
+	private readonly encyclopediaLinkBuilder = new EncyclopediaLinkBuilder();
 	private minuteOfDay = NOON_MINUTE;
 	private status: RoutineLayerStatus = 'hidden';
 	private schedule: DailySchedule<RoutinePlace> | null = null;
@@ -129,7 +131,10 @@ export class TimeCoordinator {
 				],
 				listTitle: null,
 				listItems: [],
-				searchQuery: properties.characterName
+				searchQuery: properties.characterName,
+				encyclopediaUrl: this.encyclopediaLinkBuilder.buildCharacterSearchUrl(
+					properties.characterName
+				)
 			}
 		});
 	}

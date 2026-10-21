@@ -118,6 +118,16 @@ describe('SearchEntryPresenter', () => {
 		expect(details.places[1]).toMatchObject({ description: 'U NPC: Baltram', isUncertain: true });
 	});
 
+	it('daje link do Gothicpedii tylko dla postaci', () => {
+		expect(presenter.presentDetails(harad, 'g2nk/khorinis').encyclopediaUrl).toBe(
+			'https://gothic.fandom.com/pl/wiki/Special:Search?query=Harad'
+		);
+		expect(
+			presenter.presentDetails(createItem('X', 'Ziele', 'Rośliny', 1), 'g2nk/khorinis')
+				.encyclopediaUrl
+		).toBeNull();
+	});
+
 	it('zamienia kod gildii postaci na nazwę', () => {
 		expect(presenter.presentResult(harad)).toMatchObject({
 			categoryLabel: 'Mieszczanin',
