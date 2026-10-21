@@ -26,6 +26,7 @@ import type { SearchTypeFilter } from '#lib/services/search/search-service.js';
 import type { FeatureIdentification } from '#lib/services/layers/data-layer-catalog.js';
 import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator.js';
 import type { MeasurementView } from '#lib/services/measurement/measurement-coordinator.js';
+import { DurationFormatter } from '#lib/services/measurement/duration-formatter.js';
 import { formatMinuteOfDay } from '#lib/services/time/daily-schedule.js';
 import type { RoutineLayerStatus, ShadowSettings } from '#lib/services/time/time-coordinator.js';
 import type { StaticObjectsStatus } from '#lib/services/layers/static-objects-coordinator.js';
@@ -36,6 +37,7 @@ import type {
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 
 const coordinateFormatter = new CoordinateFormatter();
+const durationFormatter = new DurationFormatter();
 
 export interface MeasurementReading {
 	label: string;
@@ -240,6 +242,13 @@ export class AppState {
 			);
 		}
 		return readings;
+	}
+
+	get travelTimeReadings(): MeasurementReading[] {
+		return (this.measurement?.travelTimes ?? []).map((estimate) => ({
+			label: estimate.label,
+			value: `${durationFormatter.formatRealTime(estimate.realSeconds)} · w grze ${durationFormatter.formatGameTime(estimate.gameMinutes)}`
+		}));
 	}
 
 	get distanceHeadline(): string | null {
