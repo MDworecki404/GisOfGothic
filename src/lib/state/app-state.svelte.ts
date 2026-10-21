@@ -208,7 +208,7 @@ export class AppState {
 		}
 		if (this.worldStatus === 'loading') return 'Wczytywanie modelu świata…';
 		if (this.indexCounts) {
-			return `Przedmioty: ${this.indexCounts.items} · Postacie: ${this.indexCounts.characters}`;
+			return `Przedmioty: ${this.indexCounts.items} · Postacie: ${this.indexCounts.characters} · Questy: ${this.indexCounts.quests}`;
 		}
 		return 'Wczytywanie indeksu…';
 	}

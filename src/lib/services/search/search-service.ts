@@ -48,7 +48,8 @@ export class SearchService {
 				name: entry.name,
 				category: describeCategory(entry.category),
 				code: entry.code,
-				keywords: stonePlateNameResolver.describeSearchKeywords(entry.code),
+				keywords:
+					`${stonePlateNameResolver.describeSearchKeywords(entry.code)} ${entry.giver ?? ''}`.trim(),
 				type: entry.type
 			}))
 		);

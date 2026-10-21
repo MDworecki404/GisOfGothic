@@ -36,6 +36,20 @@ const harad: SearchEntry = {
 	places: [{ kind: 'routine', lon: 0, lat: 0, h: 0, label: '07:00–21:30', routine: 'START' }]
 };
 
+const hodgesQuest: SearchEntry = {
+	id: 'quest:TOPIC_RESCUEBENNET',
+	type: 'quest',
+	code: 'TOPIC_RESCUEBENNET',
+	name: 'Bennet siedzi w więzieniu',
+	category: 'Misja',
+	giver: 'Hodges',
+	chapter: 3,
+	places: [
+		{ kind: 'spawn', lon: 0, lat: 0, h: 1, label: 'pojawia się (BIGFARM)', role: 'giver' },
+		{ kind: 'routine', lon: 0, lat: 0, h: 1, label: '07:00–19:00', role: 'target' }
+	]
+};
+
 const service = new SearchService({
 	version: 1,
 	entries: [
@@ -50,11 +64,15 @@ const service = new SearchService({
 			'Dokumenty',
 			2
 		),
-		harad
+		harad,
+		hodgesQuest
 	]
 });
 
-function findNames(query: string, filter: 'all' | 'item' | 'character' = 'all'): string[] {
+function findNames(
+	query: string,
+	filter: 'all' | 'item' | 'character' | 'quest' = 'all'
+): string[] {
 	return service.search(query, filter).map((entry) => entry.name);
 }
 
@@ -85,6 +103,11 @@ describe('SearchService', () => {
 		expect(findNames('zrecznosc')).toEqual(['Kamienna tablica zręczności I']);
 		expect(findNames('jednoreczna')).toEqual(['Kamienna tablica walki bronią jednoręczną I']);
 		expect(findNames('tablica')).toHaveLength(3);
+	});
+
+	it('znajduje quest po nazwie i po zleceniodawcy, a filtr rodzaju go wyodrębnia', () => {
+		expect(findNames('bennet', 'quest')).toEqual(['Bennet siedzi w więzieniu']);
+		expect(findNames('hodges')).toEqual(['Bennet siedzi w więzieniu']);
 	});
 
 	it('pusty tekst nie daje wyników', () => {
@@ -126,6 +149,20 @@ describe('SearchEntryPresenter', () => {
 			presenter.presentDetails(createItem('X', 'Ziele', 'Rośliny', 1), 'g2nk/khorinis')
 				.encyclopediaUrl
 		).toBeNull();
+	});
+
+	it('opisuje quest: zleceniodawca, rozdział i role miejsc', () => {
+		const details = presenter.presentDetails(hodgesQuest, 'g2nk/khorinis');
+		expect(details.facts).toEqual([
+			{ label: 'zleceniodawca', value: 'Hodges' },
+			{ label: 'rozdział', value: '3' }
+		]);
+		expect(details.places.map((place) => place.kindLabel)).toEqual(['Zleceniodawca', 'Cel questa']);
+		expect(details.encyclopediaUrl).toContain('Bennet+siedzi');
+		expect(presenter.presentResult(hodgesQuest)).toMatchObject({
+			categoryLabel: 'Misja',
+			summary: 'rozdz. 3'
+		});
 	});
 
 	it('zamienia kod gildii postaci na nazwę', () => {

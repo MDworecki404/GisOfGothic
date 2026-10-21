@@ -68,9 +68,14 @@ Tak dodano Górniczą Dolinę (`/g2nk/gornicza-dolina`, asset ion 6044750) i Jar
 
 ## Indeks wyszukiwania
 
-`search_index.json` to lista wpisów `item` (przedmiot) i `character` (unikatowa postać) z miejscami
-występowania. Typy TS: `src/lib/data/types.ts`. Parsery (`src/lib/data/parsers.ts`) walidują każde
+`search_index.json` to lista wpisów `item` (przedmiot), `character` (unikatowa postać) i `quest` (temat dziennika)
+z miejscami występowania. Typy TS: `src/lib/data/types.ts`. Parsery (`src/lib/data/parsers.ts`) walidują każde
 pole i odrzucają błędne dane z komunikatem wskazującym wpis — bez asercji typów.
+
+Wpis `quest` jest lekki: `giver` (imię zleceniodawcy albo `null`, gdy exporter nie jest pewny), `chapter` (rozdział
+startu albo `null`, ok. 55% questów) i miejsca z polem `role` (`giver` / `target` / `stage`), których kolor na mapie
+zależy od roli. Pełne etapy dziennika, postacie, przedmioty i nagrody są w osobnym pliku `quests.json`
+(paczka v4) wczytywanym dopiero przy otwarciu karty questa — to etap 2.
 
 Znane odstępstwa od kontraktu, które parser dopuszcza:
 

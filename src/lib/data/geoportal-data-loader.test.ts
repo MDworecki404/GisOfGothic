@@ -62,6 +62,22 @@ describe('parsery danych', () => {
 		expect(parseSearchIndex({ version: 1, entries: [entry] }).entries[0].category).toBeNull();
 	});
 
+	it('czyta wpis questa ze zleceniodawcą, rozdziałem i rolą miejsca', () => {
+		const quest = {
+			id: 'quest:TOPIC_X',
+			type: 'quest',
+			code: 'TOPIC_X',
+			name: 'Piracki handel',
+			category: 'Misja',
+			giver: 'Skip',
+			chapter: null,
+			places: [{ kind: 'spawn', lon: 0, lat: 0, h: 1, label: 'pojawia się (NW)', role: 'giver' }]
+		};
+		const [entry] = parseSearchIndex({ version: 1, entries: [quest] }).entries;
+		expect(entry).toMatchObject({ type: 'quest', giver: 'Skip', chapter: null });
+		expect(entry.places[0].role).toBe('giver');
+	});
+
 	it('odrzuca wpis o nieznanym typie', () => {
 		const broken = { version: 1, entries: [{ ...searchIndexJson.entries[0], type: 'monster' }] };
 		expect(() => parseSearchIndex(broken)).toThrow(/wpis #0/);
@@ -77,7 +93,7 @@ describe('GeoportalDataLoader', () => {
 	it('wczytuje metadata i indeks oraz liczy wpisy według typu', async () => {
 		const loader = createLoaderServing(searchIndexJson);
 		const index = await loader.loadSearchIndex();
-		expect(loader.countEntriesByType(index)).toEqual({ items: 1, characters: 1 });
+		expect(loader.countEntriesByType(index)).toEqual({ items: 1, characters: 1, quests: 0 });
 		expect((await createLoaderServing(metadataJson).loadMetadata()).world).toBe('NEWWORLD');
 	});
 

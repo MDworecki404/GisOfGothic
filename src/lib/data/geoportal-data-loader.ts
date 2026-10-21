@@ -24,11 +24,13 @@ export class GeoportalDataLoader {
 	countEntriesByType(index: SearchIndex): IndexCounts {
 		let items = 0;
 		let characters = 0;
+		let quests = 0;
 		for (const entry of index.entries) {
 			if (entry.type === 'item') items++;
-			else characters++;
+			else if (entry.type === 'character') characters++;
+			else quests++;
 		}
-		return { items, characters };
+		return { items, characters, quests };
 	}
 
 	private async fetchJson(fileName: string): Promise<unknown> {

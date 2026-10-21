@@ -3,6 +3,7 @@ import type {
 	Metadata,
 	Place,
 	PlaceKind,
+	QuestPlaceRole,
 	SearchEntry,
 	SearchEntryType,
 	SearchIndex
@@ -17,7 +18,8 @@ const PLACE_KINDS: readonly PlaceKind[] = [
 	'spawn',
 	'routine'
 ];
-const ENTRY_TYPES: readonly SearchEntryType[] = ['item', 'character'];
+const ENTRY_TYPES: readonly SearchEntryType[] = ['item', 'character', 'quest'];
+const QUEST_PLACE_ROLES: readonly QuestPlaceRole[] = ['giver', 'target', 'stage'];
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -25,6 +27,10 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isPlaceKind(value: unknown): value is PlaceKind {
 	return PLACE_KINDS.some((kind) => kind === value);
+}
+
+function readQuestPlaceRole(record: Record<string, unknown>): QuestPlaceRole | undefined {
+	return QUEST_PLACE_ROLES.find((role) => role === record.role);
 }
 
 function isSearchEntryType(value: unknown): value is SearchEntryType {
@@ -159,7 +165,8 @@ function parsePlace(value: unknown, description: string): Place {
 		chapter: readOptionalChapter(record),
 		routine: readOptionalString(record, 'routine'),
 		is_default: readOptionalBoolean(record, 'is_default'),
-		actions: readStringList(record, 'actions')
+		actions: readStringList(record, 'actions'),
+		role: readQuestPlaceRole(record)
 	};
 }
 
@@ -183,6 +190,8 @@ function parseSearchEntry(value: unknown, position: number): SearchEntry {
 		total: readOptionalNumber(record, 'total'),
 		level: readOptionalNumber(record, 'level'),
 		codes: readStringList(record, 'codes'),
+		giver: record.giver === null ? null : readOptionalString(record, 'giver'),
+		chapter: readOptionalChapter(record),
 		places: record.places.map((place, index) =>
 			parsePlace(place, `${description}, miejsce #${index}`)
 		)

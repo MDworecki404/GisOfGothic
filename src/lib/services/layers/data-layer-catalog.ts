@@ -126,7 +126,7 @@ function presentCharacter(layerName: string) {
 			listItems: [],
 			searchQuery: isUniqueCharacter ? properties.name : null,
 			encyclopediaUrl: isUniqueCharacter
-				? encyclopediaLinkBuilder.buildCharacterSearchUrl(properties.name)
+				? encyclopediaLinkBuilder.buildSearchUrl(properties.name)
 				: null
 		};
 	};

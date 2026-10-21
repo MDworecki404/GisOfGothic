@@ -139,8 +139,12 @@ Mieszczanin) i kod; wyszukiwanie po początku słowa, z tolerancją literówek w
 polskich znaków (`normalizeSearchTerm`). `SearchEntryPresenter` zamienia wpisy na teksty dla UI,
 a `PlaceMarkersLayer` rysuje miejsca wybranego wpisu jako jedną kolekcję punktów Cesium.
 
-Karta postaci (wyszukiwarka, kliknięcie na mapie, rutyna w panelu czasu) ma przycisk „Zobacz na Gothicpedii”.
-`EncyclopediaLinkBuilder` (`services/encyclopedia/`) buduje adres do wyszukiwarki wiki
+Wpisy `quest` mają ten sam przepływ co postacie: filtr „Questy”, wynik z kategorią „Misja” albo „Notatka”, imię zleceniodawcy
+dopisane do słów kluczowych (wyszukanie „Hodges” znajduje jego questy), znaczniki miejsc barwione rolą
+(`QUEST_ROLE_PRESENTATION`, `pickPlaceColor`).
+
+Karta postaci i questa (wyszukiwarka, kliknięcie na mapie, rutyna w panelu czasu) ma przycisk „Zobacz na Gothicpedii”.
+`EncyclopediaLinkBuilder.buildSearchUrl` (`services/encyclopedia/`) buduje adres do wyszukiwarki wiki
 (`Special:Search?query=<nazwa>`); pole `encyclopediaUrl` jest w `SearchEntryDetails` i `FeatureIdentification`.
 Treści z Gothicpedii nie kopiujemy (licencja CC BY-SA), tylko linkujemy i wskazujemy źródło.
 
