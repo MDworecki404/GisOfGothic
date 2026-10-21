@@ -1,4 +1,4 @@
-import type { QuestDetailsView } from '#lib/services/search/quest-presenter.js';
+import type { QuestDetailsView, QuestLinkView } from '#lib/services/search/quest-presenter.js';
 import type { IndexCounts } from '#lib/data/types.js';
 import type { ChapterNumber } from '#lib/services/chapters/chapter-filter.js';
 import type { CoordinateSystemId } from '#lib/services/geodesy/coordinate-formatter.js';
@@ -48,6 +48,12 @@ export type AppEvent =
 			entryId: string;
 			status: 'loading' | 'ready' | 'error';
 			details: QuestDetailsView | null;
+	  }
+	| {
+			type: 'related-quests-changed';
+			entryId: string;
+			status: 'loading' | 'ready' | 'error';
+			quests: QuestLinkView[];
 	  }
 	| { type: 'data-layers-changed'; layers: DataLayerView[] }
 	| { type: 'data-layer-load-failed'; layerName: string; message: string }

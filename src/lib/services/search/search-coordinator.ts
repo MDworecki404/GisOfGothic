@@ -1,7 +1,7 @@
 import type { QuestCatalog, SearchEntry, SearchIndex } from '#lib/data/types.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
 import type { PlaceMarker } from '#lib/services/map/place-markers-layer.js';
-import { QuestPresenter } from './quest-presenter.js';
+import { QuestPresenter, type QuestLinkView } from './quest-presenter.js';
 import { pickPlaceColor, SearchEntryPresenter } from './search-entry-presenter.js';
 import { SearchService, type SearchTypeFilter } from './search-service.js';
 
@@ -86,6 +86,7 @@ export class SearchCoordinator {
 		});
 		this.showSelectedEntryOnMap(shouldFlyToMarkers);
 		if (entry.type === 'quest') void this.showQuestDetails(entry);
+		if (entry.type === 'character') void this.showQuestsOfCharacter(entry);
 	}
 
 	clearSelection(): void {
@@ -136,6 +137,29 @@ export class SearchCoordinator {
 				status: 'error',
 				details: null
 			});
+		}
+	}
+
+	private async showQuestsOfCharacter(entry: SearchEntry): Promise<void> {
+		const publishState = (status: 'loading' | 'ready' | 'error', quests: QuestLinkView[]): void =>
+			this.eventBus.publish({
+				type: 'related-quests-changed',
+				entryId: entry.id,
+				status,
+				quests
+			});
+		publishState('loading', []);
+		try {
+			const catalog = await this.readQuestCatalog();
+			if (this.selectedEntry?.id !== entry.id) return;
+			const characterCodes = entry.codes ?? [entry.code];
+			publishState(
+				'ready',
+				this.questPresenter.presentQuestsOfCharacter(catalog.quests, characterCodes)
+			);
+		} catch (error) {
+			console.error(error);
+			if (this.selectedEntry?.id === entry.id) publishState('error', []);
 		}
 	}
 

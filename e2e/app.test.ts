@@ -176,6 +176,16 @@ test('karta questa pokazuje etapy dziennika i prowadzi do karty postaci', async 
 	await expect(page).toHaveURL(/wpis=character/);
 });
 
+test('karta postaci wymienia jej questy i prowadzi do karty questa', async ({ page }) => {
+	await page.goto('/g2nk/khorinis?wpis=character:SLD_809_BENNET');
+	await expect(page.getByRole('heading', { name: /^Questy \(\d+\)$/ })).toBeVisible({
+		timeout: 30_000
+	});
+	await page.getByRole('button', { name: /^Bennet siedzi w więzieniu/ }).click();
+	await expect(page).toHaveURL(/wpis=quest/);
+	await expect(page.getByRole('heading', { name: 'Etapy dziennika' })).toBeVisible();
+});
+
 test('zamknięcie wyszukiwarki usuwa wybraną postać z mapy i z adresu', async ({ page }) => {
 	await page.goto('/g2nk/khorinis?wpis=character:VLK_412_HARAD');
 	await expect(page.getByRole('heading', { name: 'Harad' })).toBeVisible({ timeout: 30_000 });

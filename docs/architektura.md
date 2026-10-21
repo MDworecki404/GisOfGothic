@@ -149,6 +149,11 @@ dziennika, postacie i przedmioty z linkami, nagroda XP), a stan dostaje zdarzeni
 (`loading` / `ready` / `error`). Powtórzone z rzędu statusy pokazujemy raz; kolejność etapów jest opisana w karcie
 jako wynikająca ze skryptów, nie jako chronologia.
 
+Karta postaci też korzysta z `quests.json`: `SearchCoordinator` wyszukuje w nim questy, w których występuje jedna
+z jej kodów instancji (`QuestPresenter.presentQuestsOfCharacter`), i publikuje `related-quests-changed`. Lista idzie od
+najważniejszej roli (zleca, możliwy zleceniodawca, występuje w etapach) i prowadzi do kart questów; otwarcie
+jakiejkolwiek karty postaci wczytuje więc plik (potem jest w pamięci).
+
 Karta postaci i questa (wyszukiwarka, kliknięcie na mapie, rutyna w panelu czasu) ma przycisk „Zobacz na Gothicpedii”.
 `EncyclopediaLinkBuilder.buildSearchUrl` (`services/encyclopedia/`) buduje adres do wyszukiwarki wiki
 (`Special:Search?query=<nazwa>`); pole `encyclopediaUrl` jest w `SearchEntryDetails` i `FeatureIdentification`.
@@ -181,10 +186,12 @@ liczy odległość w poziomie i w przestrzeni, a profil terenu powstaje z próbe
 na model świata (`MapService.sampleTerrainUnder` → `clampToHeightMostDetailed`). Model zawiera drzewa
 i dachy, więc przed liczeniem profilu wysokości przechodzą przez filtr medianowy
 (`removeNarrowObstacles`), który usuwa wąskie przeszkody; gęsty las nadal może podnieść profil.
-`TravelTimeCalculator` przelicza odległość w poziomie na czas przejścia bohatera: marsz (1,43 m/s), bieg
-(3,45 m/s), skradanie (0,77 m/s) i marsz z dobytą bronią (1,95 m/s). Prędkości policzono z animacji `.MAN` modelu
-HUMANS Gothica II (przesunięcie korzenia na cykl pętli), a przelicznik czasu gry to 4 s rzeczywiste na minutę
-gry (pomiar stoperem). `DurationFormatter` zapisuje wynik po polsku; `measurement-changed` niesie `travelTimes`.
+`TravelTimeCalculator` przelicza odległość w poziomie na czas przejścia bohatera: marsz, bieg, skradanie
+i marsz z dobytą bronią. Prędkości (m/s) czyta z `metadata.json` świata (`movement_speeds_m_s`, paczka v4; exporter liczy je
+z animacji `.MAN` modelu HUMANS, przesunięcie korzenia na cykl pętli), a fasada przekazuje je przez
+`MeasurementCoordinator.useMovementSpeeds`. Bez nich (starsza paczka) sekcja czasu się nie pokazuje. Przelicznik
+czasu gry to stała: 4 s rzeczywiste na minutę gry (pomiar stoperem). `DurationFormatter` zapisuje wynik po polsku;
+`measurement-changed` niesie `travelTimes`.
 Tryb **Pole** zbiera wierzchołki wielokąta; od trzech `MeasurementCalculator.summarizePolygon` liczy pole
 w rzucie na płaszczyznę poziomą (wzór Gaussa, wynik w m² i ha) oraz obwód, a obrys domyka się i idzie
 po terenie jak linia odległości.

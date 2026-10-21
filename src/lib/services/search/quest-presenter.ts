@@ -1,4 +1,10 @@
-import type { QuestPerson, QuestRecord, QuestStage, QuestStageStatus } from '#lib/data/types.js';
+import type {
+	QuestPerson,
+	QuestPersonRole,
+	QuestRecord,
+	QuestStage,
+	QuestStageStatus
+} from '#lib/data/types.js';
 
 export interface QuestLinkView {
 	name: string;
@@ -47,6 +53,15 @@ const ITEM_ROLE_LABELS = {
 	placed: 'zostaje w świecie'
 } as const;
 
+/** Od najważniejszej roli: zleceniodawca jest ważniejszy niż samo wystąpienie w etapach. */
+const PERSON_ROLE_PRIORITY: readonly QuestPersonRole[] = [
+	'giver',
+	'giver_candidate',
+	'stage',
+	'insert',
+	'routine'
+];
+
 /** Zamienia surowy quest z `quests.json` na teksty i listy gotowe do pokazania w karcie. */
 export class QuestPresenter {
 	presentQuest(quest: QuestRecord): QuestDetailsView {
@@ -70,6 +85,51 @@ export class QuestPresenter {
 			experienceLabel:
 				quest.experiencePoints === null ? null : `${quest.experiencePoints} pkt doświadczenia`
 		};
+	}
+
+	/**
+	 * Questy, w których występuje postać (po którymkolwiek z jej kodów instancji), od najważniejszej roli:
+	 * najpierw te, które zleca, potem te, w których tylko się pojawia.
+	 */
+	presentQuestsOfCharacter(
+		quests: readonly QuestRecord[],
+		characterCodes: readonly string[]
+	): QuestLinkView[] {
+		const matches = quests.flatMap((quest) => {
+			const role = this.findBestRoleOfCharacter(quest, characterCodes);
+			return role ? [{ quest, role }] : [];
+		});
+		matches.sort(
+			(first, second) =>
+				PERSON_ROLE_PRIORITY.indexOf(first.role) - PERSON_ROLE_PRIORITY.indexOf(second.role) ||
+				first.quest.name.localeCompare(second.quest.name, 'pl')
+		);
+		return matches.map(({ quest, role }) => ({
+			name: quest.name,
+			description: [
+				PERSON_ROLE_LABELS[role],
+				quest.chapter === null ? '' : `rozdz. ${quest.chapter}`
+			]
+				.filter((part) => part !== '')
+				.join(', '),
+			isUncertain: false,
+			entryId: quest.id
+		}));
+	}
+
+	private findBestRoleOfCharacter(
+		quest: QuestRecord,
+		characterCodes: readonly string[]
+	): QuestPersonRole | null {
+		const roles = new Set<QuestPersonRole>();
+		for (const person of quest.people) {
+			if (characterCodes.includes(person.code)) roles.add(person.role);
+		}
+		if (quest.giver && characterCodes.includes(quest.giver.code)) roles.add('giver');
+		if (quest.giverCandidates.some((candidate) => characterCodes.includes(candidate.code))) {
+			roles.add('giver_candidate');
+		}
+		return PERSON_ROLE_PRIORITY.find((role) => roles.has(role)) ?? null;
 	}
 
 	private presentGiver(

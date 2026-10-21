@@ -1,6 +1,7 @@
 import type {
 	Anchor,
 	Metadata,
+	MovementSpeeds,
 	Place,
 	PlaceKind,
 	QuestPlaceRole,
@@ -130,6 +131,19 @@ function parseCounts(value: unknown): Record<string, number> {
 	return counts;
 }
 
+function parseMovementSpeeds(value: unknown): MovementSpeeds | undefined {
+	if (!isRecord(value)) return undefined;
+	const walk = readOptionalNumber(value, 'walk');
+	const run = readOptionalNumber(value, 'run');
+	const sneak = readOptionalNumber(value, 'sneak');
+	const walkArmed = readOptionalNumber(value, 'walk_armed');
+	if (walk === undefined || run === undefined) return undefined;
+	if (sneak === undefined || walkArmed === undefined) return undefined;
+	return [walk, run, sneak, walkArmed].every((speed) => speed > 0)
+		? { walk, run, sneak, walkArmed }
+		: undefined;
+}
+
 export function parseMetadata(json: unknown): Metadata {
 	const root = requireRecord(json, 'metadata.json');
 	const pack = requireRecord(root.package, 'metadata.json → package');
@@ -141,6 +155,7 @@ export function parseMetadata(json: unknown): Metadata {
 		gltf_axes: requireString(root, 'gltf_axes', 'metadata.json'),
 		zenkit_version: readOptionalString(root, 'zenkit_version'),
 		generated_at: readOptionalString(root, 'generated_at'),
+		movement_speeds_m_s: parseMovementSpeeds(root.movement_speeds_m_s),
 		package: {
 			version: requireNumber(pack, 'version', 'metadata.json → package'),
 			counts: parseCounts(pack.counts),

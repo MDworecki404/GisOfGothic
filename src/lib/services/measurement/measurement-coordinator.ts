@@ -7,6 +7,7 @@ import {
 	type PolygonSummary,
 	type TerrainProfile
 } from './measurement-calculator.js';
+import type { MovementSpeeds } from '#lib/data/types.js';
 import { TravelTimeCalculator, type TravelTimeEstimate } from './travel-time-calculator.js';
 
 export type MeasurementMode = 'distance' | 'area' | 'point';
@@ -39,7 +40,7 @@ const OBSTACLE_FILTER_WINDOW = 7;
  */
 export class MeasurementCoordinator {
 	private readonly calculator = new MeasurementCalculator();
-	private readonly travelTimeCalculator = new TravelTimeCalculator();
+	private travelTimeCalculator: TravelTimeCalculator | null = null;
 	private mode: MeasurementMode = 'distance';
 	private vertices: WorldPosition[] = [];
 	private pickedPoint: WorldPosition | null = null;
@@ -51,6 +52,12 @@ export class MeasurementCoordinator {
 		private readonly eventBus: AppEventBus,
 		private readonly getDisplay: () => MeasurementDisplay | null
 	) {}
+
+	/** Prędkości bohatera ze świata; bez nich (starsza paczka danych) czasu przejścia nie pokazujemy. */
+	useMovementSpeeds(movementSpeeds: MovementSpeeds | null): void {
+		this.travelTimeCalculator = movementSpeeds ? new TravelTimeCalculator(movementSpeeds) : null;
+		this.publish();
+	}
 
 	switchMode(mode: MeasurementMode): void {
 		this.mode = mode;
@@ -147,7 +154,7 @@ export class MeasurementCoordinator {
 	}
 
 	private estimateTravelTimes(summary: PathSummary | null): TravelTimeEstimate[] {
-		return this.mode === 'distance' && summary
+		return this.mode === 'distance' && summary && this.travelTimeCalculator
 			? this.travelTimeCalculator.estimateTravelTimes(summary.horizontalMetres)
 			: [];
 	}
