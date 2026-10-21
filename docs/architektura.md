@@ -143,6 +143,12 @@ Wpisy `quest` mają ten sam przepływ co postacie: filtr „Questy”, wynik z k
 dopisane do słów kluczowych (wyszukanie „Hodges” znajduje jego questy), znaczniki miejsc barwione rolą
 (`QUEST_ROLE_PRESENTATION`, `pickPlaceColor`).
 
+Karta questa po wybraniu wpisu prosi `SearchCoordinator` o szczegóły: `loadQuestCatalog` pobiera `quests.json` raz na świat
+(wynik jest w cache, błąd pozwala ponowić), `QuestPresenter` składa widok (zleceniodawca albo lista możliwych, etapy
+dziennika, postacie i przedmioty z linkami, nagroda XP), a stan dostaje zdarzenie `quest-details-changed`
+(`loading` / `ready` / `error`). Powtórzone z rzędu statusy pokazujemy raz; kolejność etapów jest opisana w karcie
+jako wynikająca ze skryptów, nie jako chronologia.
+
 Karta postaci i questa (wyszukiwarka, kliknięcie na mapie, rutyna w panelu czasu) ma przycisk „Zobacz na Gothicpedii”.
 `EncyclopediaLinkBuilder.buildSearchUrl` (`services/encyclopedia/`) buduje adres do wyszukiwarki wiki
 (`Special:Search?query=<nazwa>`); pole `encyclopediaUrl` jest w `SearchEntryDetails` i `FeatureIdentification`.

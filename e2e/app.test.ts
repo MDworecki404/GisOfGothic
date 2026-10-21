@@ -165,6 +165,17 @@ test('link z wpisem otwiera kartę questa ze zleceniodawcą i rozdziałem', asyn
 	await expect(page.getByText('rozdział', { exact: true })).toBeVisible();
 });
 
+test('karta questa pokazuje etapy dziennika i prowadzi do karty postaci', async ({ page }) => {
+	await page.goto('/g2nk/khorinis?wpis=quest:TOPIC_BALTRAM');
+	await expect(page.getByRole('heading', { name: 'Etapy dziennika' })).toBeVisible({
+		timeout: 30_000
+	});
+	await expect(page.getByText('Nagroda:')).toBeVisible();
+	await page.getByRole('button', { name: /^Akil/ }).click();
+	await expect(page.getByRole('heading', { name: 'Akil', level: 3 })).toBeVisible();
+	await expect(page).toHaveURL(/wpis=character/);
+});
+
 test('zamknięcie wyszukiwarki usuwa wybraną postać z mapy i z adresu', async ({ page }) => {
 	await page.goto('/g2nk/khorinis?wpis=character:VLK_412_HARAD');
 	await expect(page.getByRole('heading', { name: 'Harad' })).toBeVisible({ timeout: 30_000 });
