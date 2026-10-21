@@ -139,6 +139,11 @@ Mieszczanin) i kod; wyszukiwanie po początku słowa, z tolerancją literówek w
 polskich znaków (`normalizeSearchTerm`). `SearchEntryPresenter` zamienia wpisy na teksty dla UI,
 a `PlaceMarkersLayer` rysuje miejsca wybranego wpisu jako jedną kolekcję punktów Cesium.
 
+Karta postaci (wyszukiwarka, kliknięcie na mapie, rutyna w panelu czasu) ma przycisk „Zobacz na Gothicpedii”.
+`EncyclopediaLinkBuilder` (`services/encyclopedia/`) buduje adres do wyszukiwarki wiki
+(`Special:Search?query=<nazwa>`); pole `encyclopediaUrl` jest w `SearchEntryDetails` i `FeatureIdentification`.
+Treści z Gothicpedii nie kopiujemy (licencja CC BY-SA), tylko linkujemy i wskazujemy źródło.
+
 Wybrany wpis jest w adresie: `/g2nk/khorinis?wpis=item:ITPL_PERM_HERB`. Wpis z linku czeka na
 wczytanie indeksu, a po wczytaniu modelu świata kamera leci do jego miejsc.
 

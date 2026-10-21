@@ -1,4 +1,5 @@
 import { describeCategory } from '#lib/data/category-names.js';
+import { EncyclopediaLinkBuilder } from '#lib/services/encyclopedia/encyclopedia-link-builder.js';
 import {
 	ITEM_ICON_LEGEND,
 	pickItemIcon,
@@ -31,6 +32,7 @@ export interface FeatureIdentification {
 	listTitle: string | null;
 	listItems: string[];
 	searchQuery: string | null;
+	encyclopediaUrl: string | null;
 }
 
 export interface IdentifiableFeature {
@@ -74,7 +76,8 @@ function presentItem(properties: ItemProperties): FeatureIdentification {
 		],
 		listTitle: null,
 		listItems: [],
-		searchQuery: properties.name
+		searchQuery: properties.name,
+		encyclopediaUrl: null
 	};
 }
 
@@ -98,12 +101,16 @@ function presentContainer(properties: ContainerProperties): FeatureIdentificatio
 		facts: [{ label: 'Przedmiotów', value: String(properties.contents.length) }],
 		listTitle: properties.contents.length > 0 ? 'Zawartość' : null,
 		listItems: properties.contents.map(describeInventoryLine),
-		searchQuery: null
+		searchQuery: null,
+		encyclopediaUrl: null
 	};
 }
 
+const encyclopediaLinkBuilder = new EncyclopediaLinkBuilder();
+
 function presentCharacter(layerName: string) {
 	return (properties: CharacterProperties): FeatureIdentification => {
+		const isUniqueCharacter = layerName === 'Unikatowa postać';
 		const facts: FeatureFact[] = [];
 		if (properties.level !== null) facts.push({ label: 'Poziom', value: String(properties.level) });
 		if (properties.chapter !== null) {
@@ -117,7 +124,10 @@ function presentCharacter(layerName: string) {
 			facts,
 			listTitle: null,
 			listItems: [],
-			searchQuery: layerName === 'Unikatowa postać' ? properties.name : null
+			searchQuery: isUniqueCharacter ? properties.name : null,
+			encyclopediaUrl: isUniqueCharacter
+				? encyclopediaLinkBuilder.buildCharacterSearchUrl(properties.name)
+				: null
 		};
 	};
 }

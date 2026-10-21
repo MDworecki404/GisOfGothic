@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
 	import XIcon from '@lucide/svelte/icons/x';
 	import { appState, geoportal } from '#lib/composition-root.js';
 
@@ -56,6 +57,20 @@
 			>
 				Pokaż wszystkie wystąpienia
 			</button>
+		{/if}
+
+		{#if feature.encyclopediaUrl}
+			<!-- eslint-disable svelte/no-navigation-without-resolve -- zewnętrzny adres Gothicpedii, nie ścieżka aplikacji -->
+			<a
+				class="mt-3 flex items-center gap-1.5 text-sm text-primary hover:underline"
+				href={feature.encyclopediaUrl}
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				<ExternalLinkIcon class="size-4" />
+				Zobacz na Gothicpedii
+			</a>
+			<!-- eslint-enable svelte/no-navigation-without-resolve -->
 		{/if}
 	</aside>
 {/if}

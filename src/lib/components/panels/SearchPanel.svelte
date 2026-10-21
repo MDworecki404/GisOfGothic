@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
 	import type { Attachment } from 'svelte/attachments';
 	import { appState, geoportal } from '#lib/composition-root.js';
 
@@ -50,6 +51,21 @@
 					</div>
 				{/each}
 			</dl>
+		{/if}
+
+		{#if entry.encyclopediaUrl}
+			<!-- eslint-disable svelte/no-navigation-without-resolve -- zewnętrzny adres Gothicpedii, nie ścieżka aplikacji -->
+			<a
+				class="my-3 flex items-center gap-1.5 text-sm text-primary hover:underline"
+				href={entry.encyclopediaUrl}
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				<ExternalLinkIcon class="size-4" />
+				Zobacz na Gothicpedii
+			</a>
+			<!-- eslint-enable svelte/no-navigation-without-resolve -->
+			<p class="-mt-1 mb-2 text-xs text-muted-foreground">Opisy postaci: Gothicpedia (CC BY-SA)</p>
 		{/if}
 
 		<h4 class="mt-4 mb-1 text-sm text-muted-foreground">
