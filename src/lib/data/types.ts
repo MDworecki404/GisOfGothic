@@ -82,3 +82,54 @@ export interface IndexCounts {
 	characters: number;
 	quests: number;
 }
+
+export type QuestSection = 'mission' | 'note';
+export type QuestStageStatus = 'RUNNING' | 'SUCCESS' | 'FAILED' | 'OBSOLETE';
+export type QuestPersonRole = 'giver' | 'giver_candidate' | 'stage' | 'insert' | 'routine';
+export type QuestItemRole = 'reward' | 'handover' | 'placed';
+
+/** Etap questu: wpis dziennika (`entry`) albo zmiana statusu (`status`). Kolejność wg skryptów, nie chronologia. */
+export interface QuestStage {
+	seq: number;
+	kind: 'entry' | 'status';
+	text: string | null;
+	status: QuestStageStatus | null;
+	chapter: number | null;
+	isConditional: boolean;
+}
+
+/** Postać albo przedmiot powiązane z questem; `entryId` jest ustawione tylko dla wpisów z indeksu wyszukiwania. */
+export interface QuestPerson {
+	code: string;
+	name: string;
+	role: QuestPersonRole;
+	certainty: 'always' | 'possible';
+	entryId: string | null;
+}
+
+export interface QuestItem {
+	code: string;
+	name: string;
+	role: QuestItemRole;
+	amount: number;
+	certainty: 'always' | 'possible';
+	entryId: string | null;
+}
+
+export interface QuestRecord {
+	id: string;
+	name: string;
+	section: QuestSection;
+	chapter: number | null;
+	giver: { code: string; name: string } | null;
+	giverCandidates: { code: string; name: string }[];
+	stages: QuestStage[];
+	people: QuestPerson[];
+	items: QuestItem[];
+	experiencePoints: number | null;
+}
+
+export interface QuestCatalog {
+	version: number;
+	quests: QuestRecord[];
+}

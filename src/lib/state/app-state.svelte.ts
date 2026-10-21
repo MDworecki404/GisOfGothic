@@ -18,6 +18,7 @@ import {
 } from '#lib/services/geodesy/coordinate-formatter.js';
 import { ScaleBarCalculator, type ScaleBar } from '#lib/services/geodesy/scale-bar-calculator.js';
 import type { WorldPosition } from '#lib/services/geodesy/world-frame.js';
+import type { QuestDetailsView } from '#lib/services/search/quest-presenter.js';
 import type {
 	SearchEntryDetails,
 	SearchResult
@@ -64,6 +65,11 @@ export class AppState {
 	searchQuery = $state('');
 	searchTypeFilter = $state<SearchTypeFilter>('all');
 	searchResults = $state.raw<SearchResult[]>([]);
+	questDetails = $state.raw<{
+		entryId: string;
+		status: 'loading' | 'ready' | 'error';
+		details: QuestDetailsView | null;
+	} | null>(null);
 	selectedEntry = $state.raw<SearchEntryDetails | null>(null);
 	dataLayers = $state.raw<DataLayerView[]>([]);
 	dataLayerErrorMessage = $state<string | null>(null);
@@ -153,6 +159,10 @@ export class AppState {
 		});
 		eventBus.subscribe('search-entry-selected', ({ details }) => {
 			this.selectedEntry = details;
+			this.questDetails = null;
+		});
+		eventBus.subscribe('quest-details-changed', ({ entryId, status, details }) => {
+			this.questDetails = { entryId, status, details };
 		});
 		eventBus.subscribe('tool-selected', ({ toolId }) => {
 			this.activeToolId = toolId;

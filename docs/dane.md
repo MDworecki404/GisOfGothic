@@ -75,7 +75,9 @@ pole i odrzucają błędne dane z komunikatem wskazującym wpis — bez asercji 
 Wpis `quest` jest lekki: `giver` (imię zleceniodawcy albo `null`, gdy exporter nie jest pewny), `chapter` (rozdział
 startu albo `null`, ok. 55% questów) i miejsca z polem `role` (`giver` / `target` / `stage`), których kolor na mapie
 zależy od roli. Pełne etapy dziennika, postacie, przedmioty i nagrody są w osobnym pliku `quests.json`
-(paczka v4) wczytywanym dopiero przy otwarciu karty questa — to etap 2.
+(paczka v4) wczytywanym dopiero przy otwarciu karty questa ([ADR 0017](adr/0017-szczegoly-questow-ladowane-leniwie.md)).
+`parseQuestCatalog` (`src/lib/data/quest-parsers.ts`) zostawia `entryId` tylko tam, gdzie postać albo przedmiot ma wpis
+w indeksie (`in_index`), pomija nieznane role i dopuszcza questy bez etapów, postaci i nagrody.
 
 Znane odstępstwa od kontraktu, które parser dopuszcza:
 

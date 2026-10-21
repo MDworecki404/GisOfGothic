@@ -92,13 +92,13 @@ export function readStringList(record: Record<string, unknown>, key: string): st
 	return value.filter((item) => typeof item === 'string');
 }
 
-function readOptionalChapter(record: Record<string, unknown>): number | null | undefined {
+export function readOptionalChapter(record: Record<string, unknown>): number | null | undefined {
 	const value = record.chapter;
 	if (value === null) return null;
 	return typeof value === 'number' ? value : undefined;
 }
 
-function readCertainty(record: Record<string, unknown>): Place['certainty'] {
+export function readCertainty(record: Record<string, unknown>): Place['certainty'] {
 	const value = record.certainty;
 	return value === 'always' || value === 'possible' ? value : undefined;
 }

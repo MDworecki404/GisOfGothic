@@ -3,6 +3,7 @@
 	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
 	import type { Attachment } from 'svelte/attachments';
 	import { appState, geoportal } from '#lib/composition-root.js';
+	import type { QuestLinkView } from '#lib/services/search/quest-presenter.js';
 
 	const TYPE_FILTERS = [
 		{ value: 'all', label: 'Wszystko' },
@@ -11,12 +12,49 @@
 		{ value: 'quest', label: 'Questy' }
 	] as const;
 
+	const questDetails = $derived(
+		appState.questDetails && appState.questDetails.entryId === appState.selectedEntry?.id
+			? appState.questDetails
+			: null
+	);
+
 	const hasQuery = $derived(appState.searchQuery.trim().length > 0);
 
 	function showPreview(modelPath: string): Attachment<HTMLElement> {
 		return (container) => geoportal.showModelPreview(container, modelPath);
 	}
 </script>
+
+{#snippet linkList(heading: string, links: readonly QuestLinkView[])}
+	{#if links.length > 0}
+		<h4 class="mt-4 mb-1 text-sm text-muted-foreground">{heading}</h4>
+		<ul class="text-sm">
+			{#each links as link, index (index)}
+				<li class="border-t border-border/60">
+					{#if link.entryId}
+						{@const entryId = link.entryId}
+						<button
+							class="flex w-full items-baseline justify-between gap-3 py-1.5 text-left hover:bg-secondary/60"
+							onclick={() => geoportal.selectSearchEntry(entryId)}
+						>
+							<span class="text-primary">{link.name}</span>
+							<span class="text-xs text-muted-foreground">
+								{link.description}{link.isUncertain ? ' (możliwe)' : ''}
+							</span>
+						</button>
+					{:else}
+						<div class="flex items-baseline justify-between gap-3 py-1.5">
+							<span>{link.name}</span>
+							<span class="text-xs text-muted-foreground">
+								{link.description}{link.isUncertain ? ' (możliwe)' : ''}
+							</span>
+						</div>
+					{/if}
+				</li>
+			{/each}
+		</ul>
+	{/if}
+{/snippet}
 
 {#if appState.selectedEntry}
 	{@const entry = appState.selectedEntry}
@@ -52,6 +90,54 @@
 					</div>
 				{/each}
 			</dl>
+		{/if}
+
+		{#if entry.type === 'quest'}
+			{#if questDetails?.status === 'loading' || !questDetails}
+				<p class="mt-3 text-sm text-muted-foreground">Wczytuję szczegóły questa…</p>
+			{:else if questDetails.status === 'error' || !questDetails.details}
+				<p class="mt-3 text-sm text-destructive" role="alert">
+					Nie udało się wczytać szczegółów questa.
+				</p>
+			{:else}
+				{@const quest = questDetails.details}
+				{#if quest.experienceLabel}
+					<p class="mt-3 text-sm">
+						<span class="text-muted-foreground">Nagroda:</span>
+						{quest.experienceLabel}
+					</p>
+				{/if}
+				{@render linkList(quest.giverHeading, quest.givers)}
+
+				{#if quest.stages.length > 0}
+					<h4 class="mt-4 mb-1 text-sm text-muted-foreground">Etapy dziennika</h4>
+					<ol class="border-l border-primary/40 pl-3 text-sm">
+						{#each quest.stages as stage (stage.seq)}
+							<li class="relative py-1.5">
+								{#if stage.text}
+									<p class="leading-snug">{stage.text}</p>
+								{/if}
+								{#if stage.statusLabel}
+									<p class="text-xs font-medium text-primary">{stage.statusLabel}</p>
+								{/if}
+								{#if stage.chapterLabel || stage.isConditional}
+									<p class="text-xs text-muted-foreground">
+										{[stage.chapterLabel, stage.isConditional ? 'zależnie od przebiegu' : null]
+											.filter((part) => part !== null)
+											.join(' · ')}
+									</p>
+								{/if}
+							</li>
+						{/each}
+					</ol>
+					<p class="mt-1 text-xs text-muted-foreground">
+						Kolejność etapów wynika ze skryptów gry, nie jest pewną chronologią.
+					</p>
+				{/if}
+
+				{@render linkList('Postacie', quest.people)}
+				{@render linkList('Przedmioty', quest.items)}
+			{/if}
 		{/if}
 
 		{#if entry.encyclopediaUrl}

@@ -120,6 +120,8 @@ export class GeoportalFacade {
 		this.searchCoordinator.useModelNamespace(world.modelNamespace);
 		this.staticObjectsCoordinator.useWorld(world.staticObjectsTilesetUrl);
 		this.searchCoordinator.useIndex(null);
+		const questDataLoader = this.currentDataLoader;
+		this.searchCoordinator.useQuestCatalogSource(() => questDataLoader.loadQuestCatalog());
 		this.analysisCoordinator.resetForNewWorld();
 		this.dataLayersCoordinator.useWorld(this.currentDataLoader, {});
 		this.measurementCoordinator.clear();
