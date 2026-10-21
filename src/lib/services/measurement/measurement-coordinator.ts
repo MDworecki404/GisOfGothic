@@ -7,6 +7,7 @@ import {
 	type PolygonSummary,
 	type TerrainProfile
 } from './measurement-calculator.js';
+import { TravelTimeCalculator, type TravelTimeEstimate } from './travel-time-calculator.js';
 
 export type MeasurementMode = 'distance' | 'area' | 'point';
 
@@ -16,6 +17,7 @@ export interface MeasurementView {
 	summary: PathSummary | null;
 	profile: TerrainProfile | null;
 	polygon: PolygonSummary | null;
+	travelTimes: TravelTimeEstimate[];
 	isProfileLoading: boolean;
 	pickedPoint: WorldPosition | null;
 }
@@ -37,6 +39,7 @@ const OBSTACLE_FILTER_WINDOW = 7;
  */
 export class MeasurementCoordinator {
 	private readonly calculator = new MeasurementCalculator();
+	private readonly travelTimeCalculator = new TravelTimeCalculator();
 	private mode: MeasurementMode = 'distance';
 	private vertices: WorldPosition[] = [];
 	private pickedPoint: WorldPosition | null = null;
@@ -143,15 +146,23 @@ export class MeasurementCoordinator {
 		return Math.max(PROFILE_SAMPLE_SPACING_METRES, length / MAXIMUM_PROFILE_SAMPLES);
 	}
 
+	private estimateTravelTimes(summary: PathSummary | null): TravelTimeEstimate[] {
+		return this.mode === 'distance' && summary
+			? this.travelTimeCalculator.estimateTravelTimes(summary.horizontalMetres)
+			: [];
+	}
+
 	private publish(): void {
+		const summary = this.vertices.length >= 2 ? this.calculator.summarizePath(this.vertices) : null;
 		this.eventBus.publish({
 			type: 'measurement-changed',
 			measurement: {
 				mode: this.mode,
 				pointCount: this.vertices.length,
-				summary: this.vertices.length >= 2 ? this.calculator.summarizePath(this.vertices) : null,
+				summary,
 				profile: this.profile,
 				polygon: this.mode === 'area' ? this.calculator.summarizePolygon(this.vertices) : null,
+				travelTimes: this.estimateTravelTimes(summary),
 				isProfileLoading: this.isProfileLoading,
 				pickedPoint: this.pickedPoint
 			}

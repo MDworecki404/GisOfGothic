@@ -97,6 +97,22 @@
 			{/if}
 		</div>
 
+		{#if appState.travelTimeReadings.length > 0}
+			<h3 class="mt-4 mb-1 text-sm font-medium text-muted-foreground">Czas przejścia</h3>
+			<dl class="text-sm tabular-nums">
+				{#each appState.travelTimeReadings as reading (reading.label)}
+					<div class="flex justify-between gap-3 border-t border-border/60 py-1">
+						<dt class="text-muted-foreground">{reading.label}</dt>
+						<dd class="text-right">{reading.value}</dd>
+					</div>
+				{/each}
+			</dl>
+			<p class="mt-1 text-xs text-muted-foreground">
+				Dla odległości w poziomie, prędkości bohatera z animacji gry. 4 s rzeczywiste to minuta w
+				grze.
+			</p>
+		{/if}
+
 		{#if appState.measurement?.profile}
 			{@const profile = appState.measurement.profile}
 			<h3 class="mt-4 mb-1 text-sm font-medium text-muted-foreground">Profil terenu</h3>
