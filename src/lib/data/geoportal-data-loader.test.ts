@@ -89,6 +89,25 @@ describe('parsery danych', () => {
 	});
 });
 
+describe('parseMetadata', () => {
+	it('czyta prędkości ruchu bohatera i zwraca je w m/s', () => {
+		const speeds = { walk: 1.43, run: 3.45, sneak: 0.77, walk_armed: 1.95 };
+		const metadata = parseMetadata({ ...metadataJson, movement_speeds_m_s: speeds });
+		expect(metadata.movement_speeds_m_s).toEqual({
+			walk: 1.43,
+			run: 3.45,
+			sneak: 0.77,
+			walkArmed: 1.95
+		});
+	});
+
+	it('starsza paczka bez prędkości albo z niepełnymi prędkościami nie ma pola', () => {
+		expect(parseMetadata(metadataJson).movement_speeds_m_s).toBeUndefined();
+		const incomplete = { ...metadataJson, movement_speeds_m_s: { walk: 1.43 } };
+		expect(parseMetadata(incomplete).movement_speeds_m_s).toBeUndefined();
+	});
+});
+
 describe('GeoportalDataLoader', () => {
 	it('wczytuje metadata i indeks oraz liczy wpisy według typu', async () => {
 		const loader = createLoaderServing(searchIndexJson);

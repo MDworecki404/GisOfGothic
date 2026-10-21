@@ -117,3 +117,35 @@ describe('QuestPresenter', () => {
 		expect(view.items[0]).toMatchObject({ name: 'Złoto', description: 'nagroda, ×35' });
 	});
 });
+
+describe('QuestPresenter: questy postaci', () => {
+	const presenter = new QuestPresenter();
+	const stageOnlyQuest: QuestRecord = {
+		...quest,
+		id: 'quest:TOPIC_OTHER',
+		name: 'Inny quest',
+		chapter: null,
+		giverCandidates: [],
+		people: [
+			{ code: 'BAU_908_HODGES', name: 'Hodges', role: 'stage', certainty: 'always', entryId: null }
+		]
+	};
+
+	it('podaje questy po roli: najpierw zlecane, potem tylko występujące', () => {
+		const links = presenter.presentQuestsOfCharacter([stageOnlyQuest, quest], ['BAU_908_HODGES']);
+		expect(links.map((link) => link.name)).toEqual(['Bennet siedzi w więzieniu', 'Inny quest']);
+		expect(links[0]).toMatchObject({
+			description: 'możliwy zleceniodawca, rozdz. 3',
+			entryId: 'quest:TOPIC_RESCUEBENNET'
+		});
+		expect(links[1].description).toBe('występuje w etapach');
+	});
+
+	it('uwzględnia wszystkie kody instancji postaci i pomija obce questy', () => {
+		expect(presenter.presentQuestsOfCharacter([quest], ['PAL_200_HAGEN'])).toHaveLength(1);
+		expect(presenter.presentQuestsOfCharacter([quest], ['NIEZNANY', 'PAL_200_HAGEN'])).toHaveLength(
+			1
+		);
+		expect(presenter.presentQuestsOfCharacter([quest], ['NIEZNANY'])).toEqual([]);
+	});
+});

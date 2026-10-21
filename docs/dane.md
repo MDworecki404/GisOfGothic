@@ -79,6 +79,9 @@ zależy od roli. Pełne etapy dziennika, postacie, przedmioty i nagrody są w os
 `parseQuestCatalog` (`src/lib/data/quest-parsers.ts`) zostawia `entryId` tylko tam, gdzie postać albo przedmiot ma wpis
 w indeksie (`in_index`), pomija nieznane role i dopuszcza questy bez etapów, postaci i nagrody.
 
+`metadata.json` paczki v4 ma `movement_speeds_m_s` (`walk`, `run`, `sneak`, `walk_armed` w m/s); parser zwraca je jako
+`MovementSpeeds` albo pomija pole, gdy brak go lub jest niepełne. Aplikacja używa ich w czasie przejścia w narzędziu Pomiary.
+
 Znane odstępstwa od kontraktu, które parser dopuszcza:
 
 - `category` bywa `null` (np. `ITFO_MUTTON`) — typ `string | null`.

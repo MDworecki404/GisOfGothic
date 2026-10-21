@@ -2,8 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { DurationFormatter } from './duration-formatter.js';
 import { TravelTimeCalculator } from './travel-time-calculator.js';
 
+const movementSpeeds = { walk: 1.43, run: 3.45, sneak: 0.77, walkArmed: 1.95 };
+
 describe('TravelTimeCalculator', () => {
-	const estimates = new TravelTimeCalculator().estimateTravelTimes(345);
+	const calculator = new TravelTimeCalculator(movementSpeeds);
+	const estimates = calculator.estimateTravelTimes(345);
 
 	it('liczy czas biegu z prędkości 3,45 m/s', () => {
 		const run = estimates.find((estimate) => estimate.mode === 'run');
@@ -22,7 +25,7 @@ describe('TravelTimeCalculator', () => {
 	});
 
 	it('zerowa odległość daje zerowy czas', () => {
-		const zero = new TravelTimeCalculator().estimateTravelTimes(0);
+		const zero = calculator.estimateTravelTimes(0);
 		expect(zero.every((estimate) => estimate.realSeconds === 0)).toBe(true);
 	});
 });

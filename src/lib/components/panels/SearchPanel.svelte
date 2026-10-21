@@ -18,6 +18,12 @@
 			: null
 	);
 
+	const relatedQuests = $derived(
+		appState.relatedQuests && appState.relatedQuests.entryId === appState.selectedEntry?.id
+			? appState.relatedQuests
+			: null
+	);
+
 	const hasQuery = $derived(appState.searchQuery.trim().length > 0);
 
 	function showPreview(modelPath: string): Attachment<HTMLElement> {
@@ -137,6 +143,14 @@
 
 				{@render linkList('Postacie', quest.people)}
 				{@render linkList('Przedmioty', quest.items)}
+			{/if}
+		{/if}
+
+		{#if entry.type === 'character' && relatedQuests}
+			{#if relatedQuests.status === 'error'}
+				<p class="mt-3 text-sm text-muted-foreground">Nie udało się wczytać questów postaci.</p>
+			{:else if relatedQuests.status === 'ready'}
+				{@render linkList(`Questy (${relatedQuests.quests.length})`, relatedQuests.quests)}
 			{/if}
 		{/if}
 

@@ -6,6 +6,14 @@ export interface Anchor {
 	h: number;
 }
 
+/** Prędkości bohatera w m/s policzone przez exporter z animacji pętli modelu HUMANS. */
+export interface MovementSpeeds {
+	walk: number;
+	run: number;
+	sneak: number;
+	walkArmed: number;
+}
+
 export interface Metadata {
 	game: string;
 	world: string;
@@ -14,6 +22,8 @@ export interface Metadata {
 	gltf_axes: string;
 	zenkit_version?: string;
 	generated_at?: string;
+	/** Brak w starszych paczkach (przed wersją 4). */
+	movement_speeds_m_s?: MovementSpeeds;
 	package: {
 		version: number;
 		counts: Record<string, number>;

@@ -1,3 +1,5 @@
+import type { MovementSpeeds } from '#lib/data/types.js';
+
 export type TravelMode = 'walk' | 'run' | 'sneak' | 'walkWithWeapon';
 
 export interface TravelTimeEstimate {
@@ -7,22 +9,12 @@ export interface TravelTimeEstimate {
 	gameMinutes: number;
 }
 
-interface TravelModeDefinition {
-	mode: TravelMode;
-	label: string;
-	metresPerSecond: number;
-}
-
-/**
- * Prędkości bohatera policzone z animacji pętli `.MAN` modelu HUMANS (przesunięcie korzenia szkieletu
- * na cykl podzielone przez jego czas). Wartości dla Gothica II; silnik może je skalować dla postaci
- * o niestandardowym modelu.
- */
-const TRAVEL_MODES: readonly TravelModeDefinition[] = [
-	{ mode: 'walk', label: 'Marsz', metresPerSecond: 1.43 },
-	{ mode: 'run', label: 'Bieg', metresPerSecond: 3.45 },
-	{ mode: 'sneak', label: 'Skradanie', metresPerSecond: 0.77 },
-	{ mode: 'walkWithWeapon', label: 'Marsz z bronią', metresPerSecond: 1.95 }
+/** Etykiety trybów w kolejności pokazywania; prędkości pochodzą z `metadata.json` świata. */
+const TRAVEL_MODE_LABELS: readonly { mode: TravelMode; label: string }[] = [
+	{ mode: 'walk', label: 'Marsz' },
+	{ mode: 'run', label: 'Bieg' },
+	{ mode: 'sneak', label: 'Skradanie' },
+	{ mode: 'walkWithWeapon', label: 'Marsz z bronią' }
 ];
 
 /** Jedna minuta czasu gry trwa ok. 4 s rzeczywistych (pomiar stoperem w grze). */
@@ -30,10 +22,20 @@ const REAL_SECONDS_PER_GAME_MINUTE = 4;
 
 /** Przelicza odległość w poziomie na czas przejścia bohatera: rzeczywisty i w świecie gry. */
 export class TravelTimeCalculator {
+	constructor(private readonly movementSpeeds: MovementSpeeds) {}
+
 	estimateTravelTimes(horizontalMetres: number): TravelTimeEstimate[] {
-		return TRAVEL_MODES.map(({ mode, label, metresPerSecond }) => {
+		return TRAVEL_MODE_LABELS.map(({ mode, label }) => {
+			const metresPerSecond = this.readSpeed(mode);
 			const realSeconds = horizontalMetres / metresPerSecond;
 			return { mode, label, realSeconds, gameMinutes: realSeconds / REAL_SECONDS_PER_GAME_MINUTE };
 		});
+	}
+
+	private readSpeed(mode: TravelMode): number {
+		if (mode === 'walk') return this.movementSpeeds.walk;
+		if (mode === 'run') return this.movementSpeeds.run;
+		if (mode === 'sneak') return this.movementSpeeds.sneak;
+		return this.movementSpeeds.walkArmed;
 	}
 }
