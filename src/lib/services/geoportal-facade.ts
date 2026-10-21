@@ -447,6 +447,7 @@ export class GeoportalFacade {
 			this.measurementCoordinator.clear();
 		if (this.activeToolId === 'analysis' && toolId !== 'analysis')
 			this.analysisCoordinator.deactivate();
+		if (this.activeToolId === 'search' && toolId === null) this.searchCoordinator.clearSelection();
 		if (toolId === 'analysis' && this.activeToolId !== 'analysis')
 			this.analysisCoordinator.activate();
 		this.activeToolId = toolId;
