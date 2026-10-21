@@ -1,7 +1,7 @@
 import type { SearchEntry, SearchIndex } from '#lib/data/types.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
 import type { PlaceMarker } from '#lib/services/map/place-markers-layer.js';
-import { PLACE_KIND_PRESENTATION, SearchEntryPresenter } from './search-entry-presenter.js';
+import { pickPlaceColor, SearchEntryPresenter } from './search-entry-presenter.js';
 import { SearchService, type SearchTypeFilter } from './search-service.js';
 
 export interface PlaceMarkersDisplay {
@@ -94,7 +94,7 @@ export class SearchCoordinator {
 			lon: place.lon,
 			lat: place.lat,
 			h: place.h,
-			color: PLACE_KIND_PRESENTATION[place.kind].color
+			color: pickPlaceColor(place)
 		}));
 		this.getMarkersDisplay()?.showPlaceMarkers(markers, shouldFlyToMarkers);
 	}

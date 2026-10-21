@@ -54,7 +54,7 @@
 					Aplikację zainstalujesz na telefonie albo komputerze. Konta nie potrzebujesz.
 				</p>
 				<p class="text-sm text-muted-foreground">
-					Opisy postaci znajdziesz w Gothicpedii (CC BY-SA) — karta postaci prowadzi do jej
+					Opisy postaci i questów znajdziesz w Gothicpedii (CC BY-SA) — ich karty prowadzą do jej
 					wyszukiwarki.
 				</p>
 			</div>

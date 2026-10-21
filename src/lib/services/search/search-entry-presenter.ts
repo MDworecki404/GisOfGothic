@@ -1,6 +1,12 @@
 import { describeCategory } from '#lib/data/category-names.js';
 import { EncyclopediaLinkBuilder } from '#lib/services/encyclopedia/encyclopedia-link-builder.js';
-import type { Place, PlaceKind, SearchEntry, SearchEntryType } from '#lib/data/types.js';
+import type {
+	Place,
+	PlaceKind,
+	QuestPlaceRole,
+	SearchEntry,
+	SearchEntryType
+} from '#lib/data/types.js';
 
 export interface PlaceKindPresentation {
 	label: string;
@@ -15,6 +21,19 @@ export const PLACE_KIND_PRESENTATION: Readonly<Record<PlaceKind, PlaceKindPresen
 	spawn: { label: 'Pojawia się', color: '#c9a24a' },
 	routine: { label: 'Rutyna dnia', color: '#e0662f' }
 };
+
+export const QUEST_ROLE_PRESENTATION: Readonly<Record<QuestPlaceRole, PlaceKindPresentation>> = {
+	giver: { label: 'Zleceniodawca', color: '#c9a24a' },
+	target: { label: 'Cel questa', color: '#e0662f' },
+	stage: { label: 'Miejsce etapu', color: '#8aa3a0' }
+};
+
+/** Kolor znacznika miejsca: questy barwi rola miejsca, pozostałe wpisy rodzaj miejsca. */
+export function pickPlaceColor(place: Place): string {
+	return place.role
+		? QUEST_ROLE_PRESENTATION[place.role].color
+		: PLACE_KIND_PRESENTATION[place.kind].color;
+}
 
 export interface SearchResult {
 	id: string;
@@ -71,7 +90,7 @@ export class SearchEntryPresenter {
 			name: entry.name,
 			categoryLabel: describeCategory(entry.category),
 			summary: this.summarizeEntry(entry),
-			markerColor: entry.type === 'item' ? PLACE_KIND_PRESENTATION.ground.color : '#c9a24a'
+			markerColor: this.pickResultMarkerColor(entry)
 		};
 	}
 
@@ -83,18 +102,40 @@ export class SearchEntryPresenter {
 			code: entry.code,
 			categoryLabel: describeCategory(entry.category),
 			modelPath: entry.model ? `${modelNamespace}/${entry.model}` : null,
-			facts: entry.type === 'item' ? this.listItemFacts(entry) : this.listCharacterFacts(entry),
+			facts: this.listFacts(entry),
 			encyclopediaUrl:
-				entry.type === 'character'
-					? this.encyclopediaLinkBuilder.buildCharacterSearchUrl(entry.name)
-					: null,
+				entry.type !== 'item' ? this.encyclopediaLinkBuilder.buildSearchUrl(entry.name) : null,
 			places: entry.places.map((place, index) => this.presentPlace(place, index))
 		};
 	}
 
+	private pickResultMarkerColor(entry: SearchEntry): string {
+		if (entry.type === 'item') return PLACE_KIND_PRESENTATION.ground.color;
+		if (entry.type === 'quest') return QUEST_ROLE_PRESENTATION.giver.color;
+		return '#c9a24a';
+	}
+
 	private summarizeEntry(entry: SearchEntry): string {
 		if (entry.type === 'item') return `${entry.total ?? sumAmounts(entry.places)} szt.`;
+		if (entry.type === 'quest') {
+			return entry.chapter === undefined || entry.chapter === null ? '' : `rozdz. ${entry.chapter}`;
+		}
 		return entry.level === undefined ? '' : `poz. ${entry.level}`;
+	}
+
+	private listFacts(entry: SearchEntry): EntryFact[] {
+		if (entry.type === 'item') return this.listItemFacts(entry);
+		if (entry.type === 'quest') return this.listQuestFacts(entry);
+		return this.listCharacterFacts(entry);
+	}
+
+	private listQuestFacts(entry: SearchEntry): EntryFact[] {
+		const facts: EntryFact[] = [];
+		if (entry.giver) facts.push({ label: 'zleceniodawca', value: entry.giver });
+		if (entry.chapter !== undefined && entry.chapter !== null) {
+			facts.push({ label: 'rozdział', value: String(entry.chapter) });
+		}
+		return facts;
 	}
 
 	private listItemFacts(entry: SearchEntry): EntryFact[] {
@@ -123,7 +164,9 @@ export class SearchEntryPresenter {
 	}
 
 	private presentPlace(place: Place, index: number): PlaceSummary {
-		const presentation = PLACE_KIND_PRESENTATION[place.kind];
+		const presentation = place.role
+			? QUEST_ROLE_PRESENTATION[place.role]
+			: PLACE_KIND_PRESENTATION[place.kind];
 		return {
 			index,
 			description: capitalize(place.label),

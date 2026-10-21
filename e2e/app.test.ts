@@ -156,6 +156,15 @@ test('link z wpisem otwiera kartę postaci', async ({ page }) => {
 	await expect(page).toHaveTitle('Harad · Khorinis — GIS of Gothic');
 });
 
+test('link z wpisem otwiera kartę questa ze zleceniodawcą i rozdziałem', async ({ page }) => {
+	await page.goto('/g2nk/khorinis?wpis=quest:TOPIC_RESCUEBENNET');
+	await expect(page.getByRole('heading', { name: 'Bennet siedzi w więzieniu' })).toBeVisible({
+		timeout: 30_000
+	});
+	await expect(page.getByText('Misja')).toBeVisible();
+	await expect(page.getByText('rozdział', { exact: true })).toBeVisible();
+});
+
 test('zamknięcie wyszukiwarki usuwa wybraną postać z mapy i z adresu', async ({ page }) => {
 	await page.goto('/g2nk/khorinis?wpis=character:VLK_412_HARAD');
 	await expect(page.getByRole('heading', { name: 'Harad' })).toBeVisible({ timeout: 30_000 });

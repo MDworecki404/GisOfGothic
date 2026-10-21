@@ -23,6 +23,9 @@ export interface Metadata {
 
 export type PlaceKind = 'ground' | 'script' | 'container' | 'npc' | 'spawn' | 'routine';
 
+/** Rola miejsca w queście: zleceniodawca, cel albo miejsce jednego z etapów. */
+export type QuestPlaceRole = 'giver' | 'target' | 'stage';
+
 /** Miejsce występowania wpisu; współrzędne WGS84 (`h` w metrach nad elipsoidą). */
 export interface Place {
 	kind: PlaceKind;
@@ -41,9 +44,11 @@ export interface Place {
 	routine?: string;
 	is_default?: boolean;
 	actions?: string[];
+	/** Questy: rola miejsca. */
+	role?: QuestPlaceRole;
 }
 
-export type SearchEntryType = 'item' | 'character';
+export type SearchEntryType = 'item' | 'character' | 'quest';
 
 export interface SearchEntry {
 	id: string;
@@ -60,6 +65,10 @@ export interface SearchEntry {
 	level?: number;
 	/** Postać może mieć kilka kodów instancji. */
 	codes?: string[];
+	/** Questy: imię zleceniodawcy albo `null`, gdy go nie ustalono. */
+	giver?: string | null;
+	/** Questy: rozdział startu albo `null`, gdy nieznany. */
+	chapter?: number | null;
 	places: Place[];
 }
 
@@ -71,4 +80,5 @@ export interface SearchIndex {
 export interface IndexCounts {
 	items: number;
 	characters: number;
+	quests: number;
 }

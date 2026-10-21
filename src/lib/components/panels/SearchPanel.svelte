@@ -7,7 +7,8 @@
 	const TYPE_FILTERS = [
 		{ value: 'all', label: 'Wszystko' },
 		{ value: 'item', label: 'Przedmioty' },
-		{ value: 'character', label: 'Postacie' }
+		{ value: 'character', label: 'Postacie' },
+		{ value: 'quest', label: 'Questy' }
 	] as const;
 
 	const hasQuery = $derived(appState.searchQuery.trim().length > 0);
@@ -65,7 +66,7 @@
 				Zobacz na Gothicpedii
 			</a>
 			<!-- eslint-enable svelte/no-navigation-without-resolve -->
-			<p class="-mt-1 mb-2 text-xs text-muted-foreground">Opisy postaci: Gothicpedia (CC BY-SA)</p>
+			<p class="-mt-1 mb-2 text-xs text-muted-foreground">Opisy: Gothicpedia (CC BY-SA)</p>
 		{/if}
 
 		<h4 class="mt-4 mb-1 text-sm text-muted-foreground">
@@ -113,10 +114,10 @@
 
 	{#if !hasQuery}
 		<p class="mt-4 text-sm text-muted-foreground">
-			Wpisz nazwę przedmiotu albo postaci w polu u góry, np. „ziele”, „klucz” albo „Harad”.
+			Wpisz nazwę przedmiotu, postaci albo questa w polu u góry, np. „ziele”, „Harad” albo „Bennet”.
 			{#if appState.indexCounts}
 				W tym świecie jest {appState.indexCounts.items} przedmiotów i {appState.indexCounts
-					.characters} unikatowych postaci.
+					.characters} unikatowych postaci i {appState.indexCounts.quests} questów.
 			{/if}
 		</p>
 	{:else if appState.searchResults.length === 0}

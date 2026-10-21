@@ -132,9 +132,7 @@ export class TimeCoordinator {
 				listTitle: null,
 				listItems: [],
 				searchQuery: properties.characterName,
-				encyclopediaUrl: this.encyclopediaLinkBuilder.buildCharacterSearchUrl(
-					properties.characterName
-				)
+				encyclopediaUrl: this.encyclopediaLinkBuilder.buildSearchUrl(properties.characterName)
 			}
 		});
 	}
