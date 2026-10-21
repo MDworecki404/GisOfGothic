@@ -2,6 +2,24 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.3.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.2.2...v0.3.0) (2026-10-21)
+
+### Nowe funkcje
+
+* czas przejścia w narzędziu Pomiary ([4b8e36f](https://github.com/MDworecki404/GisOfGothic/commit/4b8e36fe6015604411787cb0906541a9b832af4b))
+* karta questa z etapami dziennika ([94f0434](https://github.com/MDworecki404/GisOfGothic/commit/94f043481240a72cae1613e0b078fee033b3a6d4))
+* link do Gothicpedii w karcie postaci ([eae4f28](https://github.com/MDworecki404/GisOfGothic/commit/eae4f28d57d7b833d553136b8a745c2b2307cf33))
+* questy w karcie postaci i prędkości ruchu z danych świata ([a9c1b66](https://github.com/MDworecki404/GisOfGothic/commit/a9c1b66384f74adc950d910ca08434a7eac63375))
+* questy w wyszukiwarce i na mapie ([3c4fba7](https://github.com/MDworecki404/GisOfGothic/commit/3c4fba797811148a6c5fc475f7117b1e1e8449dc))
+
+### Poprawki błędów
+
+* zamknięcie wyszukiwarki usuwa wybrany wpis z mapy ([984b12a](https://github.com/MDworecki404/GisOfGothic/commit/984b12a3d248258ea46c79875c587b167d476e14))
+
+### Budowanie
+
+* nowe funkcje podnoszą wersję minor przed 1.0.0 ([3041476](https://github.com/MDworecki404/GisOfGothic/commit/3041476a11dab3dd4a82c216d753d3d84603ef54))
+
 ## [0.2.2](https://github.com/MDworecki404/GisOfGothic/compare/v0.2.1...v0.2.2) (2026-10-17)
 
 ### Nowe funkcje
