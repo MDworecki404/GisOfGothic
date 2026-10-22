@@ -2,6 +2,17 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.4.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.3.0...v0.4.0) (2026-10-22)
+
+### Nowe funkcje
+
+* nazwy gildii z danych świata ([d0ad4e1](https://github.com/MDworecki404/GisOfGothic/commit/d0ad4e162e277d857cc12bf08e1cc1ba1bf6909c))
+* światy Gothica 1 ([3bdcfa5](https://github.com/MDworecki404/GisOfGothic/commit/3bdcfa555e406d9ed39061b566970579c3554078))
+
+### Dokumentacja
+
+* zapis zasobów tokenu ion regeneruje token ([37a0438](https://github.com/MDworecki404/GisOfGothic/commit/37a0438b36897e6575b370b514b9bb1d0804de41))
+
 ## [0.3.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.2.2...v0.3.0) (2026-10-21)
 
 ### Nowe funkcje
