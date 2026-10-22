@@ -113,6 +113,15 @@ function parseAnchor(value: unknown): Anchor {
 	};
 }
 
+function parseGuildNames(value: unknown): Record<string, string> | undefined {
+	if (!isRecord(value)) return undefined;
+	const guildNames: Record<string, string> = {};
+	for (const [code, name] of Object.entries(value)) {
+		if (typeof name === 'string') guildNames[code] = name;
+	}
+	return guildNames;
+}
+
 function parseAxes(value: unknown): Metadata['axes'] {
 	const axes: Metadata['axes'] = {};
 	if (!isRecord(value)) return axes;
@@ -156,6 +165,7 @@ export function parseMetadata(json: unknown): Metadata {
 		zenkit_version: readOptionalString(root, 'zenkit_version'),
 		generated_at: readOptionalString(root, 'generated_at'),
 		movement_speeds_m_s: parseMovementSpeeds(root.movement_speeds_m_s),
+		guild_names: parseGuildNames(root.guild_names),
 		package: {
 			version: requireNumber(pack, 'version', 'metadata.json → package'),
 			counts: parseCounts(pack.counts),

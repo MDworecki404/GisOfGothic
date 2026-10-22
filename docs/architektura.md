@@ -178,6 +178,10 @@ importowania logiki do komponentu.
 `{ layerId, featureIndex }`; kliknięcie mapy (`MapViewObserver` → `onMapClicked`) wskazuje obiekt
 w danych bez dodatkowych map, a fasada publikuje `feature-identified`.
 
+Nazwy gildii (kategoria postaci) pochodzą z `metadata.json` świata: fasada wczytuje metadane razem z indeksem wyszukiwania
+i ustawia `guildNameBook` (`data/category-names.ts`) przed zbudowaniem indeksu, bo MiniSearch indeksuje już opisaną kategorię.
+`describeCategory` zamienia kod na nazwę; przy zmianie świata księga jest czyszczona.
+
 ## Pomiary
 
 Gdy aktywne jest narzędzie Pomiary, fasada kieruje kliknięcia mapy do `MeasurementCoordinator`

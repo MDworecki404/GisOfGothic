@@ -101,6 +101,15 @@ describe('parseMetadata', () => {
 		});
 	});
 
+	it('czyta nazwy gildii świata i pomija wpisy niebędące tekstem', () => {
+		const metadata = parseMetadata({
+			...metadataJson,
+			guild_names: { GRD: 'Strażnik', STT: 'Cień', BROKEN: 5 }
+		});
+		expect(metadata.guild_names).toEqual({ GRD: 'Strażnik', STT: 'Cień' });
+		expect(parseMetadata(metadataJson).guild_names).toBeUndefined();
+	});
+
 	it('starsza paczka bez prędkości albo z niepełnymi prędkościami nie ma pola', () => {
 		expect(parseMetadata(metadataJson).movement_speeds_m_s).toBeUndefined();
 		const incomplete = { ...metadataJson, movement_speeds_m_s: { walk: 1.43 } };

@@ -21,3 +21,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0015](0015-jakosc-renderowania-auto-tylko-w-dol.md)           | Jakość renderowania: automatyka tylko w dół          | przyjęta |
 | [0016](0016-nowe-funkcje-podnosza-wersje-minor.md)             | Nowe funkcje podnoszą wersję minor przed 1.0.0       | przyjęta |
 | [0017](0017-szczegoly-questow-ladowane-leniwie.md)             | Szczegóły questów ładowane leniwie z `quests.json`   | przyjęta |
+| [0018](0018-nazwy-gildii-z-danych-swiata.md)                   | Nazwy gildii z danych świata, nie z kodu aplikacji   | przyjęta |
