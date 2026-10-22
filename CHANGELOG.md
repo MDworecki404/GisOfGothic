@@ -2,6 +2,12 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.4.1](https://github.com/MDworecki404/GisOfGothic/compare/v0.4.0...v0.4.1) (2026-10-22)
+
+### Poprawki błędów
+
+* warstwa przedmiotów w świecie ładuje się mimo obiektów bez instancji ([585585f](https://github.com/MDworecki404/GisOfGothic/commit/585585f47530b391a713a5d10149c025eeeeeace))
+
 ## [0.4.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.3.0...v0.4.0) (2026-10-22)
 
 ### Nowe funkcje
