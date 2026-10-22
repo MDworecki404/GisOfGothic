@@ -31,6 +31,23 @@ describe('warstwy danych', () => {
 		});
 	});
 
+	it('pomija obiekt przedmiotu bez instancji (pusty kod i brak nazwy) zamiast psuć warstwę', () => {
+		const layer = DATA_LAYERS.find((definition) => definition.id === 'items');
+		const point = { type: 'Point', coordinates: [0.001, 0.002, 33] };
+		const features = layer?.readFeatures({
+			type: 'FeatureCollection',
+			features: [
+				{ type: 'Feature', geometry: point, properties: { id: 'item-0', code: '', name: null } },
+				{
+					type: 'Feature',
+					geometry: point,
+					properties: { id: 'item-1', code: 'ITFO_APPLE', name: 'Jabłko', category: 'Jedzenie' }
+				}
+			]
+		});
+		expect(features?.map((feature) => feature.identification.title)).toEqual(['Jabłko']);
+	});
+
 	it('opisuje zamkniętą skrzynię z kluczem i zawartością', () => {
 		const [feature] = readLayer('containers', {
 			id: 'container-1',

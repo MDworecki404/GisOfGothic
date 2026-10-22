@@ -68,6 +68,20 @@ function parseInventory(value: unknown): InventoryLine[] {
 	});
 }
 
+function isItemPlaceholder(feature: unknown): boolean {
+	if (!isRecord(feature) || !isRecord(feature.properties)) return false;
+	return feature.properties.code === '' && feature.properties.name === null;
+}
+
+/**
+ * Pliki ZEN Gothica 1 zawierają kilka obiektów przedmiotu bez przypisanej instancji (pusty kod, brak nazwy).
+ * Nie da się ich opisać ani wyszukać, więc pomijamy je zamiast przerywać wczytanie całej warstwy.
+ */
+export function omitItemPlaceholders(json: unknown): unknown {
+	if (!isRecord(json) || !Array.isArray(json.features)) return json;
+	return { ...json, features: json.features.filter((feature) => !isItemPlaceholder(feature)) };
+}
+
 /** Czyta `FeatureCollection` punktów; każdy obiekt przechodzi przez parser właściwości warstwy. */
 export function parsePointFeatures<P>(
 	json: unknown,
