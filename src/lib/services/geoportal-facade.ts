@@ -1,3 +1,4 @@
+import { guildNameBook } from '#lib/data/category-names.js';
 import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
 import type { WorldDefinition } from '#lib/data/world-catalog.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
@@ -120,6 +121,7 @@ export class GeoportalFacade {
 		this.searchCoordinator.useModelNamespace(world.modelNamespace);
 		this.staticObjectsCoordinator.useWorld(world.staticObjectsTilesetUrl);
 		this.searchCoordinator.useIndex(null);
+		guildNameBook.useGuildNames(undefined);
 		const questDataLoader = this.currentDataLoader;
 		this.searchCoordinator.useQuestCatalogSource(() => questDataLoader.loadQuestCatalog());
 		this.analysisCoordinator.resetForNewWorld();
@@ -477,8 +479,12 @@ export class GeoportalFacade {
 		if (!dataLoader) return;
 		this.eventBus.publish({ type: 'search-index-load-started' });
 		try {
-			const index = await dataLoader.loadSearchIndex();
+			const [metadata, index] = await Promise.all([
+				dataLoader.loadMetadata(),
+				dataLoader.loadSearchIndex()
+			]);
 			if (dataLoader !== this.currentDataLoader) return;
+			guildNameBook.useGuildNames(metadata.guild_names);
 			this.searchCoordinator.useIndex(index);
 			this.eventBus.publish({
 				type: 'search-index-loaded',

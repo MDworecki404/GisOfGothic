@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { guildNameBook } from '#lib/data/category-names.js';
 import type { SearchEntry } from '#lib/data/types.js';
 import { SearchEntryPresenter } from './search-entry-presenter.js';
 import { normalizeSearchTerm, SearchService } from './search-service.js';
@@ -35,6 +36,8 @@ const harad: SearchEntry = {
 	level: 30,
 	places: [{ kind: 'routine', lon: 0, lat: 0, h: 0, label: '07:00–21:30', routine: 'START' }]
 };
+
+guildNameBook.useGuildNames({ VLK: 'Mieszczanin' });
 
 const hodgesQuest: SearchEntry = {
 	id: 'quest:TOPIC_RESCUEBENNET',

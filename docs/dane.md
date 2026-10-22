@@ -79,6 +79,10 @@ zależy od roli. Pełne etapy dziennika, postacie, przedmioty i nagrody są w os
 `parseQuestCatalog` (`src/lib/data/quest-parsers.ts`) zostawia `entryId` tylko tam, gdzie postać albo przedmiot ma wpis
 w indeksie (`in_index`), pomija nieznane role i dopuszcza questy bez etapów, postaci i nagrody.
 
+`metadata.json` paczki v4 ma też `guild_names`: kod gildii → polska nazwa z tabeli TXT_GUILDS gry, tylko dla gildii występujących
+w świecie ([ADR 0018](adr/0018-nazwy-gildii-z-danych-swiata.md)). Kody bywają aliasami o tej samej wartości (`HUMAN` to w G2 paladyn, a w G1 magnat),
+dlatego nazwa zależy od świata, a nie od samego kodu; `NONE` aplikacja pokazuje jako „Bez gildii”. Parser czyta `game` (`g2nk`, `g1`) z tego samego pliku.
+
 `metadata.json` paczki v4 ma `movement_speeds_m_s` (`walk`, `run`, `sneak`, `walk_armed` w m/s); parser zwraca je jako
 `MovementSpeeds` albo pomija pole, gdy brak go lub jest niepełne. Aplikacja używa ich w czasie przejścia w narzędziu Pomiary.
 

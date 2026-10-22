@@ -10,8 +10,17 @@ export class GeoportalDataLoader {
 		private readonly fetchResource: ResourceFetcher = (url) => fetch(url)
 	) {}
 
-	async loadMetadata(): Promise<Metadata> {
-		return parseMetadata(await this.fetchJson('metadata.json'));
+	private metadataLoading: Promise<Metadata> | null = null;
+
+	/** Metadane są potrzebne kilku kolejnym krokom wczytywania świata, więc pobieramy je raz. */
+	loadMetadata(): Promise<Metadata> {
+		this.metadataLoading ??= this.fetchJson('metadata.json')
+			.then(parseMetadata)
+			.catch((error: unknown) => {
+				this.metadataLoading = null;
+				throw error;
+			});
+		return this.metadataLoading;
 	}
 
 	async loadSearchIndex(): Promise<SearchIndex> {

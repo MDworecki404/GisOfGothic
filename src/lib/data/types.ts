@@ -24,6 +24,8 @@ export interface Metadata {
 	generated_at?: string;
 	/** Brak w starszych paczkach (przed wersją 4). */
 	movement_speeds_m_s?: MovementSpeeds;
+	/** Kod gildii → nazwa po polsku (tabela TXT_GUILDS z gry); tylko gildie występujące w świecie. */
+	guild_names?: Record<string, string>;
 	package: {
 		version: number;
 		counts: Record<string, number>;

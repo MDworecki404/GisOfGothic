@@ -152,7 +152,7 @@ test('panel Warstwy pokazuje legendę ikon kategorii', async ({ page }) => {
 test('link z wpisem otwiera kartę postaci', async ({ page }) => {
 	await page.goto('/g2nk/khorinis?wpis=character:VLK_412_HARAD');
 	await expect(page.getByRole('heading', { name: 'Harad' })).toBeVisible({ timeout: 30_000 });
-	await expect(page.getByText('Mieszczanin')).toBeVisible();
+	await expect(page.getByText('Obywatel')).toBeVisible();
 	await expect(page).toHaveTitle('Harad · Khorinis — GIS of Gothic');
 });
 

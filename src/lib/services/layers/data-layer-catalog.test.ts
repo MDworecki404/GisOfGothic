@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { guildNameBook } from '#lib/data/category-names.js';
 import { DATA_LAYERS, type DataLayerId } from './data-layer-catalog.js';
 
 function readLayer(layerId: DataLayerId, properties: Record<string, unknown>) {
@@ -43,6 +44,7 @@ describe('warstwy danych', () => {
 	});
 
 	it('zamienia kod gildii NPC na nazwę', () => {
+		guildNameBook.useGuildNames({ KDW: 'Mag Wody' });
 		const [feature] = readLayer('npcs', {
 			id: 'npc-0',
 			code: 'KDW_140300_ADDON_MYXIR_CITY',
