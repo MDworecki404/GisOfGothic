@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { WorldCatalog, type WorldDefinition } from './world-catalog.js';
+import { WorldCatalog, worldCatalog, type WorldDefinition } from './world-catalog.js';
 
 const khorinis: WorldDefinition = {
 	id: 'khorinis',
@@ -36,5 +36,25 @@ describe('WorldCatalog', () => {
 	it('listuje wszystkie światy i buduje ścieżkę', () => {
 		expect(catalog.listAllWorlds()).toEqual([oldCamp, khorinis]);
 		expect(catalog.buildWorldPath(khorinis)).toBe('/g2nk/khorinis');
+	});
+});
+
+describe('worldCatalog', () => {
+	it('ma światy Gothica 1 i 2 pod własnymi adresami i przestrzeniami modeli', () => {
+		const colony = worldCatalog.findWorld('g1', 'kolonia');
+		expect(colony?.dataBaseUrl).toBe('/data/g1/kolonia');
+		expect(colony?.modelNamespace).toBe('g1/kolonia');
+		expect(worldCatalog.findGame('g1')?.worlds).toHaveLength(5);
+		expect(worldCatalog.findGame('g2nk')?.worlds).toHaveLength(4);
+	});
+
+	it('każdy świat ma własne zasoby: żadne dwa światy nie dzielą kafli ani przestrzeni modeli', () => {
+		const worlds = worldCatalog.listAllWorlds();
+		const tilesets = worlds.flatMap((world) => [
+			world.worldTilesetUrl,
+			world.staticObjectsTilesetUrl
+		]);
+		expect(new Set(tilesets).size).toBe(tilesets.length);
+		expect(new Set(worlds.map((world) => world.modelNamespace)).size).toBe(worlds.length);
 	});
 });

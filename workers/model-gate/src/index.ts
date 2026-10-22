@@ -31,7 +31,7 @@ interface Environment {
 
 declare const caches: { default: EdgeCache };
 
-const PROTECTED_MODEL_PATH = /^\/g2nk\/[a-z0-9_-]+\/items\/[0-9a-f]{32}\.bin$/;
+const PROTECTED_MODEL_PATH = /^\/(?:g1|g2nk)\/[a-z0-9_-]+\/items\/[0-9a-f]{32}\.bin$/;
 const ION_TILE_PATH = /^\/ion\/(\d+)\/(.+)$/;
 
 let ionTileProxy: IonTileProxy | null = null;
@@ -90,7 +90,7 @@ async function serveIonTile(
 
 /**
  * Bramka zasobów gry. Wydaje tylko dwa rodzaje plików, wyłącznie aplikacji (ADR 0012, 0013):
- * zaszyfrowane podglądy przedmiotów z R2 (`/g2nk/<świat>/items/<hmac>.bin`) oraz kafle modelu
+ * zaszyfrowane podglądy przedmiotów z R2 (`/<gra>/<świat>/items/<hmac>.bin`) oraz kafle modelu
  * świata pobierane w imieniu aplikacji z Cesium ion (`/ion/<asset>/<plik>`), z tokenem ion
  * trzymanym jako sekret Workera.
  */

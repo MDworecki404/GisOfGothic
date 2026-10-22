@@ -110,7 +110,93 @@ const IRDORATH: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6047297/tileset.json'
 };
 
+const KOLONIA: WorldDefinition = {
+	id: 'kolonia',
+	gameId: 'g1',
+	name: 'Kolonia Karna',
+	localCoordinateSystemName: 'Układ Kolonii Karnej 1992',
+	dataBaseUrl: '/data/g1/kolonia',
+	modelNamespace: 'g1/kolonia',
+	protectedModelsUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g1/kolonia/items',
+	worldTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067772/tileset.json',
+	staticObjectsTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067768/tileset.json'
+};
+
+const WOLNA_KOPALNIA: WorldDefinition = {
+	id: 'wolna-kopalnia',
+	gameId: 'g1',
+	name: 'Wolna Kopalnia',
+	localCoordinateSystemName: 'Układ Wolnej Kopalni 1992',
+	dataBaseUrl: '/data/g1/wolna-kopalnia',
+	modelNamespace: 'g1/wolna-kopalnia',
+	protectedModelsUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g1/wolna-kopalnia/items',
+	worldTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067744/tileset.json',
+	staticObjectsTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067746/tileset.json'
+};
+
+const STARA_KOPALNIA: WorldDefinition = {
+	id: 'stara-kopalnia',
+	gameId: 'g1',
+	name: 'Stara Kopalnia',
+	localCoordinateSystemName: 'Układ Starej Kopalni 1992',
+	dataBaseUrl: '/data/g1/stara-kopalnia',
+	modelNamespace: 'g1/stara-kopalnia',
+	protectedModelsUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g1/stara-kopalnia/items',
+	worldTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067752/tileset.json',
+	staticObjectsTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067750/tileset.json'
+};
+
+const CMENTARZYSKO_ORKOW: WorldDefinition = {
+	id: 'cmentarzysko-orkow',
+	gameId: 'g1',
+	name: 'Cmentarzysko orków',
+	localCoordinateSystemName: 'Układ Cmentarzyska orków 1992',
+	dataBaseUrl: '/data/g1/cmentarzysko-orkow',
+	modelNamespace: 'g1/cmentarzysko-orkow',
+	protectedModelsUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g1/cmentarzysko-orkow/items',
+	worldTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067756/tileset.json',
+	staticObjectsTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067758/tileset.json'
+};
+
+const SWIATYNIA_ORKOW: WorldDefinition = {
+	id: 'swiatynia-orkow',
+	gameId: 'g1',
+	name: 'Świątynia orków',
+	localCoordinateSystemName: 'Układ Świątyni orków 1992',
+	dataBaseUrl: '/data/g1/swiatynia-orkow',
+	modelNamespace: 'g1/swiatynia-orkow',
+	protectedModelsUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g1/swiatynia-orkow/items',
+	worldTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067766/tileset.json',
+	staticObjectsTilesetUrl:
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067764/tileset.json'
+};
+
 export const worldCatalog = new WorldCatalog(
-	[{ id: 'g2nk', name: 'Gothic 2: Noc Kruka', worlds: [KHORINIS, GORNICZA_DOLINA, JARKENDAR, IRDORATH] }],
+	[
+		{
+			id: 'g1',
+			name: 'Gothic',
+			worlds: [KOLONIA, WOLNA_KOPALNIA, STARA_KOPALNIA, CMENTARZYSKO_ORKOW, SWIATYNIA_ORKOW]
+		},
+		{
+			id: 'g2nk',
+			name: 'Gothic 2: Noc Kruka',
+			worlds: [KHORINIS, GORNICZA_DOLINA, JARKENDAR, IRDORATH]
+		}
+	],
 	KHORINIS
 );
