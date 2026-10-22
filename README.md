@@ -3,7 +3,8 @@
 Trójwymiarowa wikipedia świata Gothic. Wyszukujesz przedmiot albo unikatową postać i widzisz
 na modelu 3D świata gry, gdzie leży, kto go ma i gdzie ktoś przebywa o danej porze.
 
-Na start: Gothic 2: Noc Kruka — Khorinis, Górnicza Dolina, Jarkendar i Irdorath. Docelowo Gothic 1, kolejne światy i questy —
+Gothic 2: Noc Kruka — Khorinis, Górnicza Dolina, Jarkendar i Irdorath. Gothic 1 — Kolonia Karna, Wolna Kopalnia,
+Stara Kopalnia, Cmentarzysko orków i Świątynia orków. Przedmioty, unikatowe postacie i questy. Dalsze plany —
 zobacz [wizję projektu](docs/wizja.md).
 
 > Projekt w budowie. Działa: mapa 3D świata, wyszukiwarka przedmiotów i postaci z podglądem 3D,
