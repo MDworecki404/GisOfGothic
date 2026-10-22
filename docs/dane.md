@@ -54,8 +54,9 @@ zasobów przepuszcza podglądy przedmiotów ze ścieżek `/g1/…` i `/g2nk/…`
 1. **Wygeneruj paczkę** świata w projekcie ekstrakcji (`dist/<gra>/<świat>/`, ten sam kontrakt co Khorinis).
 2. **Wgraj model** `world.glb` na [Cesium ion](https://ion.cesium.com) jako _3D Model (tile as 3D Tiles)_.
    Lokalizacji nie ustawiaj — aplikacja sama stawia tileset w kotwicy. Zanotuj asset ID i dodaj asset
-   do zasobów tokenu bramki na ion (token nie zmienia wartości, jeśli go nie wygenerujesz ponownie;
-   po ponownym wygenerowaniu: `.env` → `CESIUM_ION_SERVER_TOKEN` i `npx wrangler secret put` w bramce).
+   do zasobów tokenu bramki na ion. **Zapis zmiany regeneruje token** (stary ciąg przestaje działać), więc zaraz po zapisie
+   wstaw nowy do `.env` → `CESIUM_ION_SERVER_TOKEN` i `npx wrangler secret put CESIUM_ION_SERVER_TOKEN` w `workers/model-gate`;
+   do tego czasu produkcyjna mapa nie ładuje kafli.
 3. **Dopuść asset w bramce:** `ALLOWED_ION_ASSETS` w `workers/model-gate/wrangler.jsonc`, potem `npm run deploy:gate`.
 4. **Skopiuj lekkie dane** do `static/data/<gra>/<świat>/` — bez `world.glb` i `models/`.
 5. **Zaszyfruj i wgraj podglądy przedmiotów** z przestrzenią `<gra>/<świat>` (docs/rozwoj.md, „Modele przedmiotów”).
