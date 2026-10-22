@@ -8,6 +8,7 @@ import {
 } from './map-icons.js';
 import {
 	parseCharacterProperties,
+	omitItemPlaceholders,
 	parseContainerProperties,
 	parseItemProperties,
 	parsePointFeatures,
@@ -164,7 +165,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		isFilteredByChapter: false,
 		readFeatures: (json) =>
 			readPresentedFeatures(
-				json,
+				omitItemPlaceholders(json),
 				'items.geojson',
 				parseItemProperties,
 				presentItem,

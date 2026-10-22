@@ -91,6 +91,9 @@ dlatego nazwa zależy od świata, a nie od samego kodu; `NONE` aplikacja pokazuj
 
 Znane odstępstwa od kontraktu, które parser dopuszcza:
 
+- Warstwa przedmiotów w świecie (`items.geojson`) bywa z obiektami bez instancji (pusty `code`, `name: null`): kilka w ZEN-ach
+  Gothica 1 (Kolonia 2, Świątynia orków 1). `omitItemPlaceholders` pomija je przed parsowaniem, bo inaczej jeden taki obiekt
+  przerywa wczytanie całej warstwy.
 - `category` bywa `null` (np. `ITFO_MUTTON`) — typ `string | null`.
 - Kamienne tablice z dodatku mają w danych jedną nazwę („Kamienna tablica”); atrybut i stopień wynikają
   z kodu (`ITWR_STRSTONEPLATE2_ADDON`). `StonePlateNameResolver` (`src/lib/data/stone-plate-names.ts`)
