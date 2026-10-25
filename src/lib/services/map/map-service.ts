@@ -21,8 +21,13 @@ import type { PerformanceProfile } from '#lib/services/performance/performance-p
 import type { ShadowSettings } from '#lib/services/time/time-coordinator.js';
 import type { FlightInput } from '#lib/services/flight/flight-input.js';
 import { AnalysisRenderer } from './analysis-renderer.js';
+import {
+	CameraPresetBuilder,
+	type CameraPreset
+} from '#lib/services/camera/camera-preset-builder.js';
 import { CameraFlightController } from './camera-flight-controller.js';
 import { CameraFramer } from './camera-framer.js';
+import { CameraProjectionController } from './camera-projection-controller.js';
 import type { MapViewInsets } from './free-area-calculator.js';
 import { DataLayersRenderer, type DataLayerPoint } from './data-layers-renderer.js';
 import { MapViewObserver, type MapViewListeners, type TileLayerId } from './map-view-observer.js';
@@ -60,6 +65,8 @@ export class MapService {
 	private readonly measurement: MeasurementRenderer;
 	private readonly analysis: AnalysisRenderer;
 	private readonly cameraFramer: CameraFramer;
+	private readonly projectionController: CameraProjectionController;
+	private readonly presetBuilder = new CameraPresetBuilder();
 	private readonly flightController: CameraFlightController;
 	private worldTileset: Cesium3DTileset | null = null;
 	private staticObjectsTileset: Cesium3DTileset | null = null;
@@ -70,7 +77,6 @@ export class MapService {
 	private minuteOfDay: number | null = null;
 	private shadowSettings: ShadowSettings = { areEnabled: false, areSoft: true };
 	private performanceProfile: PerformanceProfile | null = null;
-	private requestedProjection: CameraProjectionSetting | null = null;
 
 	private readonly pendingTilesByLayer = new Map<TileLayerId, number>();
 
@@ -88,13 +94,23 @@ export class MapService {
 			.build();
 		this.viewer = new Viewer(container, options);
 		this.configureSceneForWorldBelowSeaLevel();
-		this.viewObserver = new MapViewObserver(this.viewer, listeners, () => this.worldFrame);
+		this.viewObserver = new MapViewObserver(
+			this.viewer,
+			listeners,
+			() => this.worldFrame,
+			() => this.projectionController.readOrthographicMetresPerPixel()
+		);
 		this.dataLayers = new DataLayersRenderer(this.viewer);
 		this.measurement = new MeasurementRenderer(this.viewer);
 		this.analysis = new AnalysisRenderer(this.viewer);
-		this.cameraFramer = new CameraFramer(this.viewer);
-		this.flightController = new CameraFlightController(this.viewer, () =>
+		this.projectionController = new CameraProjectionController(this.viewer, () =>
 			this.measureDistanceToScreenCentreIfKnown()
+		);
+		this.cameraFramer = new CameraFramer(this.viewer, this.projectionController);
+		this.flightController = new CameraFlightController(
+			this.viewer,
+			() => this.measureDistanceToScreenCentreIfKnown(),
+			() => this.projectionController.isOrthographic()
 		);
 		this.placeMarkers = new PlaceMarkersLayer(this.viewer, this.cameraFramer);
 		this.viewer.scene.postRender.addEventListener(() =>
@@ -160,6 +176,7 @@ export class MapService {
 		};
 		if (flightDurationSeconds <= 0) {
 			this.viewer.camera.setView({ destination, orientation });
+			this.projectionController.synchronizeWidthWhenSurfaceKnown();
 			return;
 		}
 		this.viewer.camera.flyTo({ destination, orientation, duration: flightDurationSeconds });
@@ -178,9 +195,28 @@ export class MapService {
 		});
 	}
 
-	/** Zapamiętuje rzut kamery; zmiana frustum dochodzi razem z kontrolerem rzutu. */
+	/** Przełącza rzut i kąt widzenia kamery; skala, kierunek i adres odświeżają się po zmianie. */
 	showCameraProjection(setting: CameraProjectionSetting): void {
-		this.requestedProjection = setting;
+		this.projectionController.applyProjection(setting);
+		this.applyShadows();
+		this.viewObserver.requestRefresh();
+		this.listeners.onCameraSettled();
+	}
+
+	/** Leci do widoku „Z góry” albo „Skos” nad punktem pod środkiem ekranu, zachowując bieżący rozmiar widoku. */
+	showCameraPreset(preset: CameraPreset): void {
+		const target = this.pickPointAtScreenCentre();
+		if (!target) return;
+		const camera = this.viewer.camera;
+		const orientation = this.presetBuilder.build(preset, camera.heading);
+		this.cameraFramer.flyToPoint(target, {
+			headingRadians: orientation.headingRadians,
+			pitchRadians: orientation.pitchRadians,
+			rangeMetres: this.projectionController.convertCameraDistanceToViewRange(
+				Cartesian3.distance(camera.position, target)
+			),
+			flightSeconds: 1
+		});
 	}
 
 	/** Ustawia bieżący zamiar lotu kamerą (klawiatura, joysticki); lot trwa, dopóki zamiar nie jest zerowy. */
@@ -261,7 +297,11 @@ export class MapService {
 		});
 	}
 
-	/** Cienie rzuca światło sceny, więc podążają za porą dnia. Gładkie cienie kosztują więcej GPU. */
+	/**
+	 * Cienie rzuca światło sceny, więc podążają za porą dnia. Gładkie cienie kosztują więcej GPU.
+	 * Cesium nie obsługuje kaskadowych map cieni przy kamerze ortogonalnej (wywraca renderowanie),
+	 * dlatego w rzucie ortogonalnym cienie są wyłączone, a po powrocie do perspektywy wracają.
+	 */
 	showShadows(settings: ShadowSettings): void {
 		this.shadowSettings = settings;
 		this.applyShadows();
@@ -431,6 +471,7 @@ export class MapService {
 	destroy(): void {
 		this.isDestroyed = true;
 		this.flightController.destroy();
+		this.projectionController.destroy();
 		this.viewObserver.destroy();
 		if (!this.viewer.isDestroyed()) this.viewer.destroy();
 		this.worldTileset = null;
@@ -462,7 +503,7 @@ export class MapService {
 	private applyShadows(): void {
 		const limit = this.performanceProfile?.shadowQualityLimit ?? 'soft';
 		const { areEnabled, areSoft } = this.shadowSettings;
-		const areShown = areEnabled && limit !== 'off';
+		const areShown = areEnabled && limit !== 'off' && !this.projectionController.isOrthographic();
 		const areShownSoft = areSoft && limit === 'soft';
 		this.viewer.shadows = areShown;
 		const shadowMap = this.viewer.scene.shadowMap;

@@ -30,6 +30,7 @@ import type { MapClick, MapViewListeners } from './map/map-view-observer.js';
 import { SearchCoordinator } from './search/search-coordinator.js';
 import type { SearchTypeFilter } from './search/search-service.js';
 import { CameraProjectionCoordinator } from './camera/camera-projection-coordinator.js';
+import type { CameraPreset } from './camera/camera-preset-builder.js';
 import { KeyboardProjectionListener } from './camera/keyboard-projection-listener.js';
 import { PerformanceCoordinator } from './performance/performance-coordinator.js';
 import type { PerformancePreferenceStore } from './performance/performance-preference-store.js';
@@ -387,6 +388,10 @@ export class GeoportalFacade {
 		return new KeyboardProjectionListener(eventSource, () =>
 			this.cameraProjectionCoordinator.toggleKind()
 		).start();
+	}
+
+	showCameraPreset(preset: CameraPreset): void {
+		this.mapService?.showCameraPreset(preset);
 	}
 
 	turnMapToNorth(): void {

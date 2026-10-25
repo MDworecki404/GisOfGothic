@@ -1,7 +1,6 @@
-import { Cartesian3, Matrix4, PerspectiveFrustum, Transforms, type Viewer } from 'cesium';
+import { Cartesian3, Matrix4, Transforms, type Viewer } from 'cesium';
+import type { CameraViewGeometry } from './camera-projection-controller.js';
 import { FreeAreaCalculator, type MapViewInsets } from './free-area-calculator.js';
-
-const FALLBACK_FIELD_OF_VIEW = Math.PI / 3;
 
 export interface FramedFlight {
 	headingRadians: number;
@@ -20,7 +19,10 @@ export class CameraFramer {
 	private readonly freeAreaCalculator = new FreeAreaCalculator();
 	private insets: MapViewInsets = { leftPixels: 0, bottomPixels: 0 };
 
-	constructor(private readonly viewer: Viewer) {}
+	constructor(
+		private readonly viewer: Viewer,
+		private readonly viewGeometry: CameraViewGeometry
+	) {}
 
 	setInsets(insets: MapViewInsets): void {
 		this.insets = insets;
@@ -42,14 +44,12 @@ export class CameraFramer {
 		const camera = this.viewer.camera;
 		const canvasSize = this.readCanvasSize();
 		const shift = this.freeAreaCalculator.calculateShiftToFreeAreaCentre(this.insets, canvasSize);
-		const verticalFieldOfView =
-			camera.frustum instanceof PerspectiveFrustum
-				? (camera.frustum.fovy ?? FALLBACK_FIELD_OF_VIEW)
-				: FALLBACK_FIELD_OF_VIEW;
+		const verticalFieldOfView = this.viewGeometry.readVerticalFieldOfViewRadians();
 		const metresPerPixel =
 			(2 * flight.rangeMetres * Math.tan(verticalFieldOfView / 2)) / canvasSize.heightPixels;
 
 		const { headingRadians: heading, pitchRadians: pitch, rangeMetres: range } = flight;
+		const cameraDistance = this.viewGeometry.convertViewRangeToCameraDistance(range);
 		const forward = new Cartesian3(
 			Math.sin(heading) * Math.cos(pitch),
 			Math.cos(heading) * Math.cos(pitch),
@@ -58,7 +58,7 @@ export class CameraFramer {
 		const right = new Cartesian3(Math.cos(heading), -Math.sin(heading), 0);
 		const up = Cartesian3.cross(right, forward, new Cartesian3());
 		const offset = new Cartesian3();
-		Cartesian3.multiplyByScalar(forward, -range, offset);
+		Cartesian3.multiplyByScalar(forward, -cameraDistance, offset);
 		Cartesian3.subtract(
 			offset,
 			Cartesian3.multiplyByScalar(right, shift.rightPixels * metresPerPixel, new Cartesian3()),

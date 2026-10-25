@@ -30,10 +30,12 @@ export class CameraFlightController {
 
 	/**
 	 * @param measureReferenceDistance odległość kamery od oglądanej powierzchni; `null`, gdy nieznana
+	 * @param isOrthographic w rzucie ortogonalnym odległość kamery nie zmienia rozmiaru obrazu, więc „wysokość” działa jak zoom
 	 */
 	constructor(
 		private readonly viewer: Viewer,
-		private readonly measureReferenceDistance: () => number | null
+		private readonly measureReferenceDistance: () => number | null,
+		private readonly isOrthographic: () => boolean
 	) {
 		this.stopListeningToRender = viewer.scene.preRender.addEventListener(() =>
 			this.moveCameraForThisFrame(performance.now())
@@ -83,7 +85,10 @@ export class CameraFlightController {
 		);
 		if (step.forwardMetres !== 0) camera.move(forward, step.forwardMetres);
 		if (step.rightMetres !== 0) camera.move(right, step.rightMetres);
-		if (step.riseMetres !== 0) camera.move(surfaceUp, step.riseMetres);
+		if (step.riseMetres !== 0) {
+			if (this.isOrthographic()) camera.move(camera.directionWC, -step.riseMetres);
+			else camera.move(surfaceUp, step.riseMetres);
+		}
 		if (step.turnRadians !== 0) camera.look(surfaceUp, step.turnRadians);
 		if (step.tiltRadians !== 0) {
 			const tiltedPitch = CesiumMath.clamp(

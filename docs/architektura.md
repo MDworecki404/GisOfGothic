@@ -100,7 +100,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `feature-identified`         | `identification` lub `null`                                                              | kliknięto punkt warstwy (karta informacji) albo puste miejsce                        |
 | `analysis-changed`           | `analysis` (tryb, temat, punkt odniesienia, wyniki)                                      | zmiana tematu, punktu albo wyniku analizy w narzędziu Analizy                        |
 | `camera-view-changed`        | `view` (E, N, H, kierunek, nachylenie) lub `null`                                        | kamera się zatrzymała (`moveEnd`) albo odtworzono widok z linku                      |
-| `camera-projection-changed`  | `projection` (perspektywa z FOV albo ortogonalny), `fieldOfViewDegrees`                  | wybór rzutu, zmiana kąta widzenia albo odtworzenie rzutu z linku lub zakładki |
+| `camera-projection-changed`  | `projection` (perspektywa z FOV albo ortogonalny), `fieldOfViewDegrees`                  | wybór rzutu, zmiana kąta widzenia albo odtworzenie rzutu z linku lub zakładki        |
 | `bookmarks-changed`          | `bookmarks`, `hasStorageError`                                                           | wczytano, dodano albo usunięto zakładkę (lista dotyczy otwartego świata)             |
 | `measurement-changed`        | `measurement` (tryb, wierzchołki, podsumowanie, profil, czasy przejścia, wskazany punkt) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie             |
 | `chapter-changed`            | `chapter` (1–6) lub `null`                                                               | wybór rozdziału w panelu Czas albo odtworzenie go z linku lub zakładki               |
@@ -254,7 +254,9 @@ narzędzia — i zgłasza fasadzie `reserveMapSpace({ leftPixels, bottomPixels }
 z lewej, na telefonie arkusz od dołu. `CameraFramer` przesuwa kamerę w bok i w górę, tak by cel wypadł
 w środku wolnego obszaru (`FreeAreaCalculator`), a przy dopasowaniu do wielu znaczników oddala ją
 proporcjonalnie do zasłoniętej części. Przez `CameraFramer` idą przeloty do znaczników i miejsc wpisu,
-do wyników analiz i do całego świata; widok z linku albo zakładki to dokładna pozycja kamery. Przy
+do wyników analiz i do całego świata (w rzucie ortogonalnym zakres przelotu jest zamieniany na odległość
+kamery wzorem z sekcji „Rzut kamery”, więc cel ma ten sam rozmiar w obu rzutach); widok z linku albo zakładki
+to dokładna pozycja kamery. Przy
 `prefers-reduced-motion` przeloty są natychmiastowe. Decyzja: [ADR 0008](adr/0008-kadrowanie-kamery-z-marginesem-na-panele.md).
 
 ## Lot kamerą
@@ -272,9 +274,37 @@ liczy wychylenie jednostkowe ze strefą martwą). `FlightInputMixer` w fasadzie 
 w jeden `FlightInput` i przekazuje go do `MapService.setFlightInput`. `CameraFlightController` co klatkę
 (`scene.preRender`) przesuwa kamerę o krok z `FlightMotionCalculator`: prędkość rośnie z odległością od
 oglądanej powierzchni, ruch odbywa się poziomo, wysokość wzdłuż pionu, a obrót wokół pionu zachowuje
-horyzont (pochylenie ograniczone do ±85°). Początek lotu przerywa trwający przelot. Stan widoczności
+horyzont (pochylenie ograniczone do ±85°). Początek lotu przerywa trwający przelot. W rzucie ortogonalnym odległość kamery nie zmienia rozmiaru obrazu, więc
+przyciski wysokości działają tam jak zoom. Stan widoczności
 joysticków (`FlightControlsState`, `flightControls`) jest wyłącznie stanem interfejsu. Po zatrzymaniu kamery
 adres strony i zakładki aktualizują się jak po zwykłym ruchu myszą.
+
+## Rzut kamery
+
+Kamera może być w rzucie środkowym (perspektywa, kąt widzenia 30–100°, domyślnie 60°) albo ortogonalnym
+(plan mapy: metr ma wszędzie tyle samo pikseli). Ustawienie to `CameraProjectionSetting`
+(`services/camera/camera-projection.ts`); `CameraProjectionCoordinator` trzyma wybrany rzut i ostatni kąt
+widzenia (także w ortho, żeby powrót do perspektywy go przywrócił), stosuje go na mapie przez
+`CameraProjectionDisplay` (`MapService.showCameraProjection`) i publikuje `camera-projection-changed`, który
+odbiera `AppState` (`cameraProjection`, `fieldOfViewDegrees`). Fasada udostępnia `selectCameraProjection`,
+`toggleCameraProjection`, `setCameraFieldOfView`, `showCameraPreset` i `listenToProjectionKeyboard` (klawisz **P**,
+`KeyboardProjectionListener` ze wspólnym strażnikiem `isKeyboardTargetUsingKeysItself`).
+
+Jedynym miejscem, które zmienia frustum Cesium, jest `CameraProjectionController` (`services/map/`). W rzucie
+ortogonalnym Cesium ustawia szerokość widoku równą odległości kamery od punktu pod środkiem ekranu, więc przy
+przełączeniu kontroler odsuwa albo przysuwa kamerę tak, by cel zachował rozmiar: odległość = widoczna szerokość
+perspektywy (`CameraProjectionConverter.calculatePerspectiveVisibleWidth`); powrót do perspektywy używa wzoru
+odwrotnego z dolną granicą 5 m. Przeloty i kadrowanie (`CameraFramer`) liczą w „zakresie perspektywy”
+(`CameraViewGeometry`), a kontroler zamienia go na odległość kamery. Skala w pasku stanu w ortho to
+`frustum.width / szerokość płótna` (`MapViewObserver` pyta o nią kontroler); w perspektywie zostaje pomiar
+przez `pickPosition`. Przyciski wysokości (Q/E, joysticki) w ortho działają jak zoom (`CameraFlightController`).
+Widok „Z góry” (północ u góry, nachylenie −89,99°) i „Skos” (−50°) składa `CameraPresetBuilder`, a lot idzie
+przez `CameraFramer`. Po przywróceniu widoku z linku w ortho `synchronizeWidthWhenSurfaceKnown` ustawia
+szerokość na odległość od powierzchni, gdy tylko kafle się wczytają.
+
+Cienie Cesium nie działają przy kamerze ortogonalnej, więc `MapService.applyShadows` wyłącza je w ortho i
+przywraca po powrocie do perspektywy. Rzut jest w adresie (`rzut=o` albo `rzut=p_<fov>`) i w zakładkach.
+Decyzja i wyniki spike'a: [ADR 0021](adr/0021-rzut-kamery.md).
 
 ## Arkusz mobilny
 
