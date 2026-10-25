@@ -20,6 +20,7 @@ export interface NewBookmark {
 	entryName: string | null;
 	toolId: SavedView['toolId'];
 	camera: SavedView['camera'];
+	projection: SavedView['projection'];
 	chapter: SavedView['chapter'];
 }
 
@@ -74,6 +75,7 @@ export class BookmarksCoordinator {
 				entryName: bookmark.entryName,
 				toolId: bookmark.toolId,
 				camera: bookmark.camera,
+				projection: bookmark.projection,
 				chapter: bookmark.chapter
 			}
 		];
@@ -108,7 +110,8 @@ export class BookmarksCoordinator {
 		const details = [
 			view.toolId ? `Narzędzie: ${TOOL_LABELS[view.toolId]}` : 'Panel zamknięty',
 			view.entryName ? `Wpis: ${view.entryName}` : null,
-			view.chapter ? `Rozdział ${CHAPTER_LABELS[view.chapter]}` : null
+			view.chapter ? `Rozdział ${CHAPTER_LABELS[view.chapter]}` : null,
+			view.projection?.kind === 'orthographic' ? 'Rzut ortogonalny' : null
 		].filter((part) => part !== null);
 		return {
 			id: view.id,
@@ -120,7 +123,7 @@ export class BookmarksCoordinator {
 			linkQuery: this.linkCodec.buildQuery({
 				entryId: view.entryId,
 				camera: view.camera,
-				projection: null,
+				projection: view.projection,
 				toolId: view.toolId,
 				chapter: view.chapter
 			})

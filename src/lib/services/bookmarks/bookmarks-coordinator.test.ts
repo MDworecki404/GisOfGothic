@@ -26,7 +26,8 @@ const newBookmark: NewBookmark = {
 	entryName: 'Szczaw królewski',
 	toolId: 'measure',
 	camera: { east: 10, north: 20, height: 300, headingDegrees: 90, pitchDegrees: -45 },
-	chapter: null
+	chapter: null,
+	projection: null
 };
 
 function createCoordinator(storage = new FakeStorage()): {
@@ -71,6 +72,29 @@ describe('BookmarksCoordinator', () => {
 		const [bookmark] = latestBookmarks();
 		expect(bookmark.details).toBe('Narzędzie: Pomiary · Wpis: Szczaw królewski · Rozdział IV');
 		expect(bookmark.linkQuery).toContain('rozdzial=4');
+	});
+
+	it('zakładka w rzucie ortogonalnym ma rzut w linku i w opisie', () => {
+		const { coordinator, latestBookmarks } = createCoordinator();
+		coordinator.useWorld('g2nk', 'khorinis');
+		coordinator.addBookmark({ ...newBookmark, projection: { kind: 'orthographic' } });
+		const [bookmark] = latestBookmarks();
+		expect(bookmark.details).toBe(
+			'Narzędzie: Pomiary · Wpis: Szczaw królewski · Rzut ortogonalny'
+		);
+		expect(bookmark.linkQuery).toContain('rzut=o');
+	});
+
+	it('zakładka w perspektywie 60° nie dodaje rzutu do linku ani opisu', () => {
+		const { coordinator, latestBookmarks } = createCoordinator();
+		coordinator.useWorld('g2nk', 'khorinis');
+		coordinator.addBookmark({
+			...newBookmark,
+			projection: { kind: 'perspective', fovDegrees: 60 }
+		});
+		const [bookmark] = latestBookmarks();
+		expect(bookmark.linkQuery).not.toContain('rzut');
+		expect(bookmark.details).not.toContain('Rzut');
 	});
 
 	it('pusta nazwa dostaje numerowaną nazwę domyślną', () => {

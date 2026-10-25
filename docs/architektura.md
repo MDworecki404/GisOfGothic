@@ -242,7 +242,7 @@ kamery (`camera.moveEnd`), fasada publikuje `camera-view-changed`. Widok z linku
 
 `BookmarksCoordinator` trzyma zakładki otwartego świata, a `BookmarkStore` zapisuje je w `localStorage`
 (klucz `gisofgothic:bookmarks:v1`, lista JSON). Odczyt waliduje każdy wpis; niedostępna albo pełna pamięć
-nie przerywa działania — panel pokazuje ostrzeżenie. Zakładka zapamiętuje to samo co link, więc „Kopiuj
+nie przerywa działania — panel pokazuje ostrzeżenie. Zakładka zapamiętuje to samo co link (także opcjonalny `projection`; brak pola w starej zakładce oznacza rzut domyślny), więc „Kopiuj
 link” składa adres z `linkQuery` zakładki. Decyzje: [ADR 0007](adr/0007-widok-w-adresie-i-zakladki-w-localstorage.md).
 
 ## Kadrowanie kamery
