@@ -29,6 +29,8 @@ import {
 import type { MapClick, MapViewListeners } from './map/map-view-observer.js';
 import { SearchCoordinator } from './search/search-coordinator.js';
 import type { SearchTypeFilter } from './search/search-service.js';
+import { CameraProjectionCoordinator } from './camera/camera-projection-coordinator.js';
+import { KeyboardProjectionListener } from './camera/keyboard-projection-listener.js';
 import { PerformanceCoordinator } from './performance/performance-coordinator.js';
 import type { PerformancePreferenceStore } from './performance/performance-preference-store.js';
 import type { PerformancePreference } from './performance/performance-profiles.js';
@@ -79,6 +81,7 @@ export class GeoportalFacade {
 	private readonly measurementCoordinator: MeasurementCoordinator;
 	private readonly timeCoordinator: TimeCoordinator;
 	private readonly performanceCoordinator: PerformanceCoordinator;
+	private readonly cameraProjectionCoordinator: CameraProjectionCoordinator;
 
 	constructor(
 		private readonly eventBus: AppEventBus,
@@ -99,6 +102,10 @@ export class GeoportalFacade {
 		this.staticObjectsCoordinator = new StaticObjectsCoordinator(eventBus, () => this.mapService);
 		this.measurementCoordinator = new MeasurementCoordinator(eventBus, () => this.mapService);
 		this.timeCoordinator = new TimeCoordinator(eventBus, () => this.mapService);
+		this.cameraProjectionCoordinator = new CameraProjectionCoordinator(
+			eventBus,
+			() => this.mapService
+		);
 		this.performanceCoordinator = new PerformanceCoordinator(
 			eventBus,
 			() => this.mapService,
@@ -362,6 +369,26 @@ export class GeoportalFacade {
 		this.sendFlightInputToMap();
 	}
 
+	selectCameraProjection(kind: 'perspective' | 'orthographic'): void {
+		this.cameraProjectionCoordinator.selectKind(kind);
+	}
+
+	toggleCameraProjection(): void {
+		this.cameraProjectionCoordinator.toggleKind();
+	}
+
+	/** Ustawia kąt widzenia kamery w stopniach (przycinany do 30–100°); w rzucie ortogonalnym tylko go zapamiętuje. */
+	setCameraFieldOfView(degrees: number): void {
+		this.cameraProjectionCoordinator.setFieldOfView(degrees);
+	}
+
+	/** Włącza przełączanie rzutu klawiszem P; zwraca funkcję wyłączającą. */
+	listenToProjectionKeyboard(eventSource: Window): () => void {
+		return new KeyboardProjectionListener(eventSource, () =>
+			this.cameraProjectionCoordinator.toggleKind()
+		).start();
+	}
+
 	turnMapToNorth(): void {
 		this.mapService?.turnToNorth();
 	}
@@ -422,7 +449,7 @@ export class GeoportalFacade {
 		return {
 			entryId: this.searchCoordinator.selectedEntryReference?.id ?? null,
 			camera: this.mapService?.readCameraView() ?? null,
-			projection: null,
+			projection: this.cameraProjectionCoordinator.currentSetting,
 			toolId: this.activeToolId,
 			chapter: this.selectedChapter
 		};
@@ -431,6 +458,7 @@ export class GeoportalFacade {
 	private applyViewState(state: SharedViewState, isCameraAnimated: boolean): void {
 		this.activateTool(state.toolId);
 		this.selectChapter(state.chapter);
+		this.cameraProjectionCoordinator.restore(state.projection);
 		if (state.entryId) this.searchCoordinator.selectEntry(state.entryId, state.camera === null);
 		else this.searchCoordinator.clearSelection();
 		const camera = state.camera;
@@ -523,6 +551,7 @@ export class GeoportalFacade {
 			await mapService.showWorldTileset(world.worldTilesetUrl, metadata.anchor);
 			if (!isStillCurrent()) return;
 			this.isWorldShownOnMap = true;
+			this.cameraProjectionCoordinator.showOnMap();
 			const cameraFromLink = this.pendingCameraView;
 			this.pendingCameraView = null;
 			if (cameraFromLink) mapService.moveCameraToView(cameraFromLink, 0);

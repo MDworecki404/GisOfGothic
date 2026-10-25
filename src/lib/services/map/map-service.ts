@@ -12,6 +12,7 @@ import {
 } from 'cesium';
 import type { Anchor } from '#lib/data/types.js';
 import { WorldFrame } from '#lib/services/geodesy/world-frame.js';
+import type { CameraProjectionSetting } from '#lib/services/camera/camera-projection.js';
 import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
 import type { ViewshedCell } from '#lib/services/analysis/viewshed-calculator.js';
 import type { DensityCell } from '#lib/services/analysis/density-grid-builder.js';
@@ -69,6 +70,7 @@ export class MapService {
 	private minuteOfDay: number | null = null;
 	private shadowSettings: ShadowSettings = { areEnabled: false, areSoft: true };
 	private performanceProfile: PerformanceProfile | null = null;
+	private requestedProjection: CameraProjectionSetting | null = null;
 
 	private readonly pendingTilesByLayer = new Map<TileLayerId, number>();
 
@@ -174,6 +176,11 @@ export class MapService {
 			),
 			flightSeconds: flightDurationSeconds
 		});
+	}
+
+	/** Zapamiętuje rzut kamery; zmiana frustum dochodzi razem z kontrolerem rzutu. */
+	showCameraProjection(setting: CameraProjectionSetting): void {
+		this.requestedProjection = setting;
 	}
 
 	/** Ustawia bieżący zamiar lotu kamerą (klawiatura, joysticki); lot trwa, dopóki zamiar nie jest zerowy. */
