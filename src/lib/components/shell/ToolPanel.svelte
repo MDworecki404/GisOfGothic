@@ -127,7 +127,8 @@
 	}
 
 	function closePanelOnEscape(event: KeyboardEvent): void {
-		if (event.key === 'Escape' && activeTool) geoportal.closeActiveTool();
+		if (event.key === 'Escape' && !event.defaultPrevented && activeTool)
+			geoportal.closeActiveTool();
 	}
 </script>
 
