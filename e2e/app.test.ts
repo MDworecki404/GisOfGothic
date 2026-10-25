@@ -238,6 +238,25 @@ test('na telefonie pole wyszukiwania rozwija arkusz, a okna otwiera menu „Wię
 	await expect(handle).toBeVisible();
 });
 
+test('legenda włączonej warstwy otwiera panel Warstwy jednym kliknięciem', async ({ page }) => {
+	await page.goto('/g2nk/khorinis?narzedzie=layers');
+	await page.getByRole('checkbox', { name: /Unikatowe postacie/ }).check();
+	await page.getByRole('button', { name: 'Zamknij panel' }).click();
+	const legend = page.getByRole('button', { name: /Legenda włączonych warstw/ });
+	await expect(legend).toContainText('Unikatowe postacie', { timeout: 30_000 });
+	await legend.click();
+	await expect(page.getByRole('heading', { name: 'Warstwy' })).toBeVisible();
+});
+
+test('pusty wynik w jednym rodzaju proponuje szukanie we wszystkich', async ({ page }) => {
+	await page.goto('/g2nk/khorinis');
+	await expect(page.getByText(/312 przedmiotów/)).toBeVisible({ timeout: 30_000 });
+	await page.getByRole('button', { name: 'Przedmioty', exact: true }).click();
+	await page.getByRole('searchbox').fill('harad');
+	await page.getByRole('button', { name: 'Szukaj we wszystkich rodzajach' }).click();
+	await expect(page.getByRole('button', { name: /Harad/ }).first()).toBeVisible();
+});
+
 test('mapa pokazuje atrybucję Cesium ion i praw do świata gry', async ({ page }) => {
 	await page.goto('/g2nk/khorinis');
 	const attribution = page.getByRole('complementary', { name: 'Źródła i prawa autorskie' });

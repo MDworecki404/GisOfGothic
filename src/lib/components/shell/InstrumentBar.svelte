@@ -7,7 +7,7 @@
 </script>
 
 <footer
-	class="instrument-bar fixed bottom-[calc(var(--bottom-nav-height)+var(--sheet-occupied-height)+var(--gutter)+2.25rem)] left-(--gutter) z-20 h-8 items-stretch rounded-sm text-caption tabular-nums md:inset-x-0 md:bottom-0 md:h-(--status-bar-height) md:rounded-none {appState.cursorReadings
+	class="instrument-bar fixed top-[calc(var(--top-bar-height)+var(--gutter))] left-(--gutter) z-20 h-8 items-stretch rounded-sm text-caption tabular-nums md:inset-x-0 md:top-auto md:bottom-0 md:h-(--status-bar-height) md:rounded-none {appState.cursorReadings
 		? 'flex'
 		: 'hidden md:flex'}"
 	aria-label="Pozycja kursora, skala i stan"
