@@ -48,7 +48,8 @@ export class MapViewObserver {
 	constructor(
 		private readonly viewer: Viewer,
 		private readonly listeners: MapViewListeners,
-		private readonly getWorldFrame: () => WorldFrame | null
+		private readonly getWorldFrame: () => WorldFrame | null,
+		private readonly readExactMetresPerPixel: () => number | null
 	) {
 		this.inputHandler = new ScreenSpaceEventHandler(viewer.scene.canvas);
 		this.inputHandler.setInputAction((movement: ScreenSpaceEventHandler.MotionEvent) => {
@@ -69,6 +70,11 @@ export class MapViewObserver {
 		this.stopListeningToRender = viewer.scene.postRender.addEventListener(() =>
 			this.reportChangesAfterRender()
 		);
+	}
+
+	/** Wymusza ponowne zgłoszenie skali i kierunku po zmianie, której nie widać w zdarzeniach kamery (np. rzutu). */
+	requestRefresh(): void {
+		this.isCameraChanged = true;
 	}
 
 	pickWorldPosition(screenPosition: Cartesian2): WorldPosition | null {
@@ -119,7 +125,7 @@ export class MapViewObserver {
 			this.isCameraChanged = false;
 			this.framesSinceScaleAttempt = 0;
 			this.listeners.onHeadingChanged(CesiumMath.toDegrees(this.viewer.camera.heading));
-			const metresPerPixel = this.measureMetresPerPixelAtCentre();
+			const metresPerPixel = this.readExactMetresPerPixel() ?? this.measureMetresPerPixelAtCentre();
 			this.isScaleKnown = metresPerPixel !== null;
 			this.listeners.onScaleChanged(metresPerPixel);
 		}
