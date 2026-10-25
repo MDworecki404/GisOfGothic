@@ -202,7 +202,7 @@ export class MapService {
 		this.projectionController.applyProjection(setting);
 		this.applyShadows();
 		this.viewObserver.requestRefresh();
-		this.listeners.onCameraSettled();
+		if (this.worldFrame) this.listeners.onCameraSettled();
 	}
 
 	/** Leci do widoku „Z góry” albo „Skos” nad punktem pod środkiem ekranu, zachowując bieżący rozmiar widoku. */
