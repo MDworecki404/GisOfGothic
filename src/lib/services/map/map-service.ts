@@ -103,8 +103,10 @@ export class MapService {
 		this.dataLayers = new DataLayersRenderer(this.viewer);
 		this.measurement = new MeasurementRenderer(this.viewer);
 		this.analysis = new AnalysisRenderer(this.viewer);
-		this.projectionController = new CameraProjectionController(this.viewer, () =>
-			this.measureDistanceToScreenCentreIfKnown()
+		this.projectionController = new CameraProjectionController(
+			this.viewer,
+			() => this.measureDistanceToScreenCentreIfKnown(),
+			() => this.estimateDistanceAlongViewToWorldCentre()
 		);
 		this.cameraFramer = new CameraFramer(this.viewer, this.projectionController);
 		this.flightController = new CameraFlightController(
@@ -205,7 +207,7 @@ export class MapService {
 
 	/** Leci do widoku „Z góry” albo „Skos” nad punktem pod środkiem ekranu, zachowując bieżący rozmiar widoku. */
 	showCameraPreset(preset: CameraPreset): void {
-		const target = this.pickPointAtScreenCentre();
+		const target = this.findViewTarget();
 		if (!target) return;
 		const camera = this.viewer.camera;
 		const orientation = this.presetBuilder.build(preset, camera.heading);
@@ -522,6 +524,30 @@ export class MapService {
 	private measureDistanceToScreenCentreIfKnown(): number | null {
 		const centre = this.pickPointAtScreenCentre();
 		return centre ? Cartesian3.distance(this.viewer.camera.position, centre) : null;
+	}
+
+	/** Punkt pod środkiem ekranu; gdy go nie ma (woda, niewczytane kafle), punkt na osi widzenia w oszacowanej odległości. */
+	private findViewTarget(): Cartesian3 | null {
+		const pickedPoint = this.pickPointAtScreenCentre();
+		if (pickedPoint) return pickedPoint;
+		const distance = this.estimateDistanceAlongViewToWorldCentre();
+		if (distance === null) return null;
+		const camera = this.viewer.camera;
+		return Cartesian3.add(
+			camera.positionWC,
+			Cartesian3.multiplyByScalar(camera.directionWC, distance, new Cartesian3()),
+			new Cartesian3()
+		);
+	}
+
+	/** Odległość do środka świata rzutowana na kierunek patrzenia; zastępuje pomiar, gdy pod środkiem ekranu nie ma powierzchni. */
+	private estimateDistanceAlongViewToWorldCentre(): number | null {
+		const sphere = this.worldTileset?.boundingSphere;
+		if (!sphere) return null;
+		const camera = this.viewer.camera;
+		const towardsCentre = Cartesian3.subtract(sphere.center, camera.positionWC, new Cartesian3());
+		const distanceAlongView = Cartesian3.dot(towardsCentre, camera.directionWC);
+		return distanceAlongView > 1 ? distanceAlongView : null;
 	}
 
 	private measureDistanceToScreenCentre(): number {
