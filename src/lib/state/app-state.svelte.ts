@@ -1,6 +1,11 @@
 import type { IndexCounts } from '#lib/data/types.js';
 import type { BookmarkView } from '#lib/services/bookmarks/bookmarks-coordinator.js';
 import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
+import {
+	DEFAULT_CAMERA_PROJECTION,
+	DEFAULT_FIELD_OF_VIEW_DEGREES,
+	type CameraProjectionSetting
+} from '#lib/services/camera/camera-projection.js';
 import { ViewLinkCodec } from '#lib/services/bookmarks/view-link-codec.js';
 import type { AnalysisView } from '#lib/services/analysis/analysis-coordinator.js';
 import {
@@ -82,6 +87,8 @@ export class AppState {
 	measurement = $state.raw<MeasurementView | null>(null);
 	analysis = $state.raw<AnalysisView | null>(null);
 	cameraView = $state.raw<CameraView | null>(null);
+	cameraProjection = $state.raw<CameraProjectionSetting>(DEFAULT_CAMERA_PROJECTION);
+	fieldOfViewDegrees = $state(DEFAULT_FIELD_OF_VIEW_DEGREES);
 	bookmarks = $state.raw<BookmarkView[]>([]);
 	bookmarkStorageFailed = $state(false);
 	selectedChapter = $state<ChapterNumber | null>(null);
@@ -151,6 +158,10 @@ export class AppState {
 		});
 		eventBus.subscribe('camera-view-changed', ({ view }) => {
 			this.cameraView = view;
+		});
+		eventBus.subscribe('camera-projection-changed', ({ projection, fieldOfViewDegrees }) => {
+			this.cameraProjection = projection;
+			this.fieldOfViewDegrees = fieldOfViewDegrees;
 		});
 		eventBus.subscribe('bookmarks-changed', ({ bookmarks, hasStorageError }) => {
 			this.bookmarks = bookmarks;
@@ -312,7 +323,7 @@ export class AppState {
 		return viewLinkCodec.buildQuery({
 			entryId: this.selectedEntry?.id ?? null,
 			camera: this.cameraView,
-			projection: null,
+			projection: this.cameraProjection,
 			toolId: this.activeToolId,
 			chapter: this.selectedChapter
 		});

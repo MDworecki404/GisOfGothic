@@ -100,6 +100,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `feature-identified`         | `identification` lub `null`                                                              | kliknięto punkt warstwy (karta informacji) albo puste miejsce                        |
 | `analysis-changed`           | `analysis` (tryb, temat, punkt odniesienia, wyniki)                                      | zmiana tematu, punktu albo wyniku analizy w narzędziu Analizy                        |
 | `camera-view-changed`        | `view` (E, N, H, kierunek, nachylenie) lub `null`                                        | kamera się zatrzymała (`moveEnd`) albo odtworzono widok z linku                      |
+| `camera-projection-changed`  | `projection` (perspektywa z FOV albo ortogonalny), `fieldOfViewDegrees`                  | wybór rzutu, zmiana kąta widzenia albo odtworzenie rzutu z linku lub zakładki |
 | `bookmarks-changed`          | `bookmarks`, `hasStorageError`                                                           | wczytano, dodano albo usunięto zakładkę (lista dotyczy otwartego świata)             |
 | `measurement-changed`        | `measurement` (tryb, wierzchołki, podsumowanie, profil, czasy przejścia, wskazany punkt) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie             |
 | `chapter-changed`            | `chapter` (1–6) lub `null`                                                               | wybór rozdziału w panelu Czas albo odtworzenie go z linku lub zakładki               |

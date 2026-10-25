@@ -20,6 +20,7 @@ import type {
 	PerformancePreference,
 	QualityLevel
 } from '#lib/services/performance/performance-profiles.js';
+import type { CameraProjectionSetting } from '#lib/services/camera/camera-projection.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 import { EventBus } from './event-bus.js';
 
@@ -61,6 +62,11 @@ export type AppEvent =
 	| { type: 'measurement-changed'; measurement: MeasurementView }
 	| { type: 'analysis-changed'; analysis: AnalysisView }
 	| { type: 'camera-view-changed'; view: CameraView | null }
+	| {
+			type: 'camera-projection-changed';
+			projection: CameraProjectionSetting;
+			fieldOfViewDegrees: number;
+	  }
 	| { type: 'chapter-changed'; chapter: ChapterNumber | null }
 	| { type: 'bookmarks-changed'; bookmarks: BookmarkView[]; hasStorageError: boolean }
 	| {
