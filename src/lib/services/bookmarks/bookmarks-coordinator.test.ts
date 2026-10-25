@@ -79,9 +79,7 @@ describe('BookmarksCoordinator', () => {
 		coordinator.useWorld('g2nk', 'khorinis');
 		coordinator.addBookmark({ ...newBookmark, projection: { kind: 'orthographic' } });
 		const [bookmark] = latestBookmarks();
-		expect(bookmark.details).toBe(
-			'Narzędzie: Pomiary · Wpis: Szczaw królewski · Rzut ortogonalny'
-		);
+		expect(bookmark.details).toBe('Narzędzie: Pomiary · Wpis: Szczaw królewski · Rzut ortogonalny');
 		expect(bookmark.linkQuery).toContain('rzut=o');
 	});
 

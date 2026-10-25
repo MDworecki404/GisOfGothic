@@ -33,7 +33,9 @@ export class ViewLinkCodec {
 		const parameters = new URLSearchParams();
 		if (state.entryId) parameters.set(ENTRY_PARAMETER, state.entryId);
 		if (state.camera) parameters.set(CAMERA_PARAMETER, this.cameraCodec.serialize(state.camera));
-		const projectionText = state.projection ? this.projectionCodec.serialize(state.projection) : null;
+		const projectionText = state.projection
+			? this.projectionCodec.serialize(state.projection)
+			: null;
 		if (projectionText !== null) parameters.set(PROJECTION_PARAMETER, projectionText);
 		if (state.toolId === null) parameters.set(TOOL_PARAMETER, CLOSED_TOOL_VALUE);
 		else if (state.toolId !== DEFAULT_TOOL_ID) parameters.set(TOOL_PARAMETER, state.toolId);

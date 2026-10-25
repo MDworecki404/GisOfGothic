@@ -1,8 +1,7 @@
 import { isRecord } from '#lib/data/parsers.js';
 
 export type CameraProjectionSetting =
-	| { kind: 'perspective'; fovDegrees: number }
-	| { kind: 'orthographic' };
+	{ kind: 'perspective'; fovDegrees: number } | { kind: 'orthographic' };
 
 export const MINIMUM_FIELD_OF_VIEW_DEGREES = 30;
 export const MAXIMUM_FIELD_OF_VIEW_DEGREES = 100;

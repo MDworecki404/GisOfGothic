@@ -6,15 +6,15 @@ const camera = { east: 10, north: 20, height: 300, headingDegrees: 90, pitchDegr
 
 describe('ViewLinkCodec', () => {
 	it('domyślny widok daje pusty adres', () => {
-		expect(codec.buildQuery({
+		expect(
+			codec.buildQuery({
 				entryId: null,
 				camera: null,
 				toolId: 'search',
 				chapter: null,
 				projection: null
-			})).toBe(
-			''
-		);
+			})
+		).toBe('');
 	});
 
 	it('zapisuje wpis, kamerę i narzędzie, a odczyt je odtwarza', () => {

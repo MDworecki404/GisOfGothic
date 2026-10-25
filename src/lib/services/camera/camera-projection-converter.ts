@@ -30,8 +30,7 @@ export class CameraProjectionConverter {
 		aspectRatio: number,
 		minimumDistanceMetres: number
 	): number {
-		const distance =
-			widthMetres / (2 * Math.tan(verticalFieldOfViewRadians / 2) * aspectRatio);
+		const distance = widthMetres / (2 * Math.tan(verticalFieldOfViewRadians / 2) * aspectRatio);
 		return Math.max(distance, minimumDistanceMetres);
 	}
 

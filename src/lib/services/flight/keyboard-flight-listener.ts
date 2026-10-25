@@ -1,8 +1,6 @@
+import { isKeyboardTargetUsingKeysItself } from '#lib/services/input/keyboard-focus-guard.js';
 import type { FlightInput } from './flight-input.js';
 import { KeyboardFlightMapper } from './keyboard-flight-mapper.js';
-
-const ELEMENTS_USING_KEYS_THEMSELVES =
-	'input, textarea, select, [contenteditable], [role="slider"], [role="dialog"], [role="listbox"], [role="menu"]';
 
 /**
  * Nasłuchuje klawiatury na podanym oknie i zgłasza zamiar lotu po każdej zmianie. Pomija klawisze
@@ -32,7 +30,7 @@ export class KeyboardFlightListener {
 	private readonly reactToKeyDown = (event: KeyboardEvent): void => {
 		if (!this.mapper.isControlledKey(event.code)) return;
 		if (event.ctrlKey || event.altKey || event.metaKey) return;
-		if (this.isKeyMeantForFocusedElement(event.target)) return;
+		if (isKeyboardTargetUsingKeysItself(event.target)) return;
 		event.preventDefault();
 		this.mapper.pressKey(event.code);
 		this.reportInput(this.mapper.readInput());
@@ -48,8 +46,4 @@ export class KeyboardFlightListener {
 		this.mapper.releaseAllKeys();
 		this.reportInput(this.mapper.readInput());
 	};
-
-	private isKeyMeantForFocusedElement(target: EventTarget | null): boolean {
-		return target instanceof Element && target.closest(ELEMENTS_USING_KEYS_THEMSELVES) !== null;
-	}
 }
