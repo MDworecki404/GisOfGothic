@@ -303,6 +303,19 @@ rowka liczy się z wartości). Karta obiektu (`IdentifyCard`) to notatka na perg
 (`parchment-note`, cień na `parchment-note-shadow`, bo `clip-path` przyciąłby cień), z przyciskiem `button-ink`.
 Wszystkie elementy klikalne mają co najmniej 44 px wysokości (`--touch-target`).
 
+Stany interfejsu:
+
+- **Legenda na mapie** (`ActiveLayersLegend`) wypisuje włączone warstwy danych z kolorem i liczbą obiektów;
+  kliknięcie otwiera panel Warstwy. Stoi nad atrybucją, przy lewej krawędzi wolnej części mapy.
+- **Wczytywanie**: wiersz warstwy i legenda pokazują pierścień `TileLoader`, a wyszukiwarka i karta questa
+  szkielet treści (`skeleton`, bez animacji przy `prefers-reduced-motion`).
+- **Błędy**: warstwa, której nie udało się wczytać, ma w panelu przycisk „Spróbuj ponownie” (ponowne
+  `toggleDataLayer`). Błąd modelu świata albo indeksu pokazuje kartę `MapLoadError` z przyciskiem
+  „Wczytaj ponownie” (przeładowanie strony), bo fasada nie ma osobnego ponawiania tych wczytań.
+- **Brak wyników**: wyszukiwarka nazywa wpisaną frazę i, gdy działa filtr rodzaju, proponuje szukanie
+  we wszystkich rodzajach.
+- Na telefonie odczyt położenia kursora jest w lewym górnym rogu mapy, bo dół zajmują legenda i atrybucja.
+
 Wymiary układu też są tokenami: `--top-bar-height`, `--bottom-nav-height`, `--rail-width`,
 `--status-bar-height`, `--panel-width` i `--map-controls-width` zmieniają się z szerokością ekranu.
 `ToolPanel` ustawia w biegu na `:root` `--sheet-occupied-height` (wysokość arkusza na telefonie) oraz

@@ -1,13 +1,6 @@
 <script lang="ts">
 	import { appState, geoportal } from '#lib/composition-root.js';
 	import TileLoader from '#lib/components/shell/TileLoader.svelte';
-
-	const STATUS_LABELS = {
-		hidden: '',
-		loading: 'wczytywanie…',
-		visible: '',
-		error: 'błąd'
-	} as const;
 </script>
 
 <h3 class="group-label mb-1">Świat</h3>
@@ -88,13 +81,21 @@
 							</span>
 						{/each}
 					</span>
+					{#if layer.status === 'error'}
+						<span class="mt-2 block text-caption text-destructive">
+							Nie udało się wczytać tej warstwy. Sprawdź połączenie i spróbuj ponownie.
+						</span>
+						<button class="button-iron mt-2" onclick={() => geoportal.toggleDataLayer(layer.id)}>
+							Spróbuj ponownie
+						</button>
+					{/if}
 				</span>
-				<span
-					class="text-caption tabular-nums {layer.status === 'error'
-						? 'text-destructive'
-						: 'text-muted-foreground'}"
-				>
-					{STATUS_LABELS[layer.status] || (layer.featureCount ?? '')}
+				<span class="text-caption text-muted-foreground tabular-nums">
+					{#if layer.status === 'loading'}
+						<TileLoader label="Wczytuję warstwę {layer.name}" />
+					{:else}
+						{layer.featureCount ?? ''}
+					{/if}
 				</span>
 			</label>
 		</li>
@@ -102,7 +103,7 @@
 </ul>
 
 {#if appState.dataLayerErrorMessage}
-	<p class="mt-2 text-sm text-destructive" role="alert">{appState.dataLayerErrorMessage}</p>
+	<p class="mt-2 text-caption text-destructive" role="alert">{appState.dataLayerErrorMessage}</p>
 {/if}
 
 <h3 class="group-label mt-5 mb-1">Wkrótce</h3>

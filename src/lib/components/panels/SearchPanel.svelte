@@ -100,10 +100,16 @@
 
 		{#if entry.type === 'quest'}
 			{#if questDetails?.status === 'loading' || !questDetails}
-				<p class="mt-3 text-sm text-muted-foreground">Wczytuję szczegóły questa…</p>
+				<div class="mt-3" role="status" aria-label="Wczytuję szczegóły questa">
+					<span class="skeleton w-2/5"></span>
+					<span class="skeleton mt-3 w-full"></span>
+					<span class="skeleton mt-2 w-11/12"></span>
+					<span class="skeleton mt-2 w-3/4"></span>
+				</div>
 			{:else if questDetails.status === 'error' || !questDetails.details}
 				<p class="mt-3 text-sm text-destructive" role="alert">
-					Nie udało się wczytać szczegółów questa.
+					Nie udało się wczytać szczegółów questa. Sprawdź połączenie, wróć do wyników i otwórz
+					quest ponownie.
 				</p>
 			{:else}
 				{@const quest = questDetails.details}
@@ -217,10 +223,26 @@
 					.characters} unikatowych postaci i {appState.indexCounts.quests} questów.
 			{/if}
 		</p>
+	{:else if appState.searchIndexStatus === 'loading'}
+		<div class="mt-4" role="status" aria-label="Wczytuję przedmioty i postacie świata">
+			{#each [0, 1, 2] as row (row)}
+				<span class="skeleton mt-3 w-full"></span>
+			{/each}
+		</div>
 	{:else if appState.searchResults.length === 0}
-		<p class="mt-4 text-sm text-muted-foreground">
-			Nic nie znaleziono. Spróbuj krótszej nazwy albo zmień rodzaj wyników.
-		</p>
+		<div class="mt-4 text-sm" role="status">
+			<p>Nic nie pasuje do „{appState.searchQuery.trim()}”.</p>
+			{#if appState.searchTypeFilter !== 'all'}
+				<p class="mt-1 text-muted-foreground">Szukasz tylko w jednym rodzaju wyników.</p>
+				<button class="button-quiet mt-3" onclick={() => geoportal.filterSearchByType('all')}>
+					Szukaj we wszystkich rodzajach
+				</button>
+			{:else}
+				<p class="mt-1 text-muted-foreground">
+					Spróbuj krótszej nazwy albo samego początku słowa, np. „miecz” zamiast „mieczyk”.
+				</p>
+			{/if}
+		</div>
 	{:else}
 		<p class="mt-3 mb-1 text-sm text-muted-foreground">
 			Wyniki: {appState.searchResults.length}

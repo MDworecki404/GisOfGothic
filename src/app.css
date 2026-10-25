@@ -578,6 +578,22 @@
 		background: var(--hover-surface);
 	}
 
+	/* Zarys treści w trakcie wczytywania */
+	.skeleton {
+		display: block;
+		height: 0.75rem;
+		border-radius: var(--radius-sm);
+		background: linear-gradient(90deg, var(--leather), var(--leather-raised), var(--leather))
+			0 0 / 200% 100%;
+		animation: skeleton-shimmer 1.4s ease-in-out infinite;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.skeleton {
+			animation: none;
+		}
+	}
+
 	/* Nagłówek grupy w panelu */
 	.group-label {
 		font-size: var(--text-label);
@@ -830,6 +846,12 @@ input[type='search']::-webkit-search-cancel-button {
 	border-top-color: var(--torch);
 	border-radius: 50%;
 	animation: tile-loader-spin 0.9s linear infinite;
+}
+
+@keyframes skeleton-shimmer {
+	to {
+		background-position: -200% 0;
+	}
 }
 
 @keyframes tile-loader-spin {
