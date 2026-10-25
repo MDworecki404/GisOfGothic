@@ -138,6 +138,10 @@ export class CameraProjectionController implements CameraViewGeometry {
 		frustum.width = visibleWidth;
 	}
 
+	/**
+	 * W rzucie ortogonalnym Cesium trzyma szerokość widoku równą odległości kamery od oglądanego miejsca, więc to
+	 * szerokość, a nie ponowny pomiar (który bywa niedostępny), wyznacza dotychczasową odległość kamery.
+	 */
 	private switchToPerspective(): void {
 		const camera = this.viewer.camera;
 		const orthographicFrustum = camera.frustum;
@@ -146,17 +150,16 @@ export class CameraProjectionController implements CameraViewGeometry {
 			return;
 		}
 		const orthographicWidth = orthographicFrustum.width;
-		const distance = this.measureDistanceToScreenCentre() ?? this.estimateDistanceToView();
 		camera.switchToPerspectiveFrustum();
 		this.applyFieldOfViewToFrustum();
-		if (distance === null || orthographicWidth === undefined) return;
+		if (orthographicWidth === undefined) return;
 		const perspectiveDistance = this.converter.calculatePerspectiveDistanceForWidth(
 			orthographicWidth,
 			this.readVerticalFieldOfViewRadians(),
 			this.readAspectRatio(),
 			MINIMUM_PERSPECTIVE_DISTANCE_METRES
 		);
-		camera.move(camera.directionWC, distance - perspectiveDistance);
+		camera.move(camera.directionWC, orthographicWidth - perspectiveDistance);
 	}
 
 	private applyFieldOfViewToFrustum(): void {

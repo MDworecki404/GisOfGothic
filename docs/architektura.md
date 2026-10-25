@@ -237,7 +237,8 @@ perspektywy z niedomyślnym kątem widzenia; brak parametru oznacza perspektywę
 a parametr spoza zakresu jest ignorowany.
 
 Strona (`+page.svelte`) tylko przekazuje fasadzie surowe `location.search` (`openSharedView`) i po każdej
-zmianie `AppState.sharedViewQuery` podmienia adres (`replaceState`). `MapViewObserver` zgłasza zatrzymanie
+zmianie `AppState.sharedViewQuery` podmienia adres (`replaceState`; porównuje z `window.location.search`, bo `page.url`
+nie odświeża się po `replaceState` i zatrzymywał powrót do adresu z chwili wczytania). `MapViewObserver` zgłasza zatrzymanie
 kamery (`camera.moveEnd`), fasada publikuje `camera-view-changed`. Widok z linku czeka na wczytanie modelu
 świata (kamera) i indeksu (wpis); gdy link ma kamerę, wpis nie przelatuje do swoich miejsc.
 

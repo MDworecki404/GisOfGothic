@@ -27,7 +27,7 @@
 
 	$effect(() => {
 		const viewQuery = appState.sharedViewQuery;
-		if (untrack(() => page.url.search) === viewQuery) return;
+		if (untrack(() => window.location.search) === viewQuery) return;
 		replaceState(
 			resolve('/[gameId]/[worldId]', { gameId: data.world.gameId, worldId: data.world.id }) +
 				viewQuery,
