@@ -1,9 +1,11 @@
 <script lang="ts">
 	import DownloadIcon from '@lucide/svelte/icons/download';
 	import SearchIcon from '@lucide/svelte/icons/search';
-	import { appState, geoportal, installApp } from '#lib/composition-root.js';
+	import { MediaQuery } from 'svelte/reactivity';
+	import { appState, geoportal, installApp, mobileSheet } from '#lib/composition-root.js';
 	import AboutDialog from './AboutDialog.svelte';
 	import BrandMark from './BrandMark.svelte';
+	import MoreMenu from './MoreMenu.svelte';
 	import PerformanceDialog from './PerformanceDialog.svelte';
 	import WorldSwitcher, { type WorldSwitcherGame } from './WorldSwitcher.svelte';
 
@@ -15,9 +17,14 @@
 
 	let { games, currentGameId, currentWorldId }: Props = $props();
 	let searchInput: HTMLInputElement;
+	let isPerformanceOpen = $state(false);
+	let isAboutOpen = $state(false);
+
+	const isPhone = new MediaQuery('max-width: 767px');
 
 	function openSearchPanel(): void {
 		if (appState.activeToolId !== 'search') geoportal.selectTool('search');
+		else mobileSheet.expandIfCollapsed();
 	}
 
 	function selectFirstResultOnEnter(event: KeyboardEvent): void {
@@ -36,25 +43,23 @@
 <svelte:window onkeydown={focusSearchOnShortcut} />
 
 <header
-	class="panel-stone fixed inset-x-0 top-0 z-40 flex h-14 items-center gap-2 border-x-0 border-t-0 px-3 md:h-13 md:gap-4 md:px-4"
+	class="material-leather fixed inset-x-0 top-0 z-40 flex h-(--top-bar-height) items-center gap-1.5 border-x-0 border-t-0 pr-1 pl-2 md:gap-4 md:px-4"
 >
-	<div class="flex shrink-0 items-center gap-2.5">
+	<div class="hidden shrink-0 items-center gap-2.5 md:flex">
 		<BrandMark />
-		<span class="hidden font-heading text-[17px] tracking-[0.05em] text-primary lg:inline">
-			GIS of Gothic
-		</span>
+		<span class="hidden font-heading text-lead text-primary lg:inline"> GIS of Gothic </span>
 	</div>
 
 	<WorldSwitcher {games} {currentGameId} {currentWorldId} />
 
 	<label
-		class="mx-auto flex h-9 max-w-xl min-w-0 flex-1 items-center gap-2 rounded-sm border border-border bg-background/70 px-3 text-muted-foreground focus-within:border-primary/60"
+		class="mx-auto flex h-11 max-w-xl min-w-0 flex-1 items-center gap-2 rounded-md border border-iron bg-background/80 px-3 text-muted-foreground shadow-well focus-within:border-ore focus-within:shadow-[var(--shadow-well),var(--glow-ore)] md:h-10"
 	>
 		<SearchIcon class="size-4 shrink-0" />
 		<input
 			bind:this={searchInput}
 			class="min-w-0 flex-1 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none"
-			placeholder="Szukaj przedmiotu lub postaci…"
+			placeholder={isPhone.current ? 'Szukaj…' : 'Szukaj przedmiotu lub postaci…'}
 			aria-label="Szukaj przedmiotu lub postaci"
 			type="search"
 			value={appState.searchQuery}
@@ -62,23 +67,28 @@
 			onkeydown={selectFirstResultOnEnter}
 			onfocus={openSearchPanel}
 		/>
-		<kbd class="hidden rounded-sm border border-border px-1.5 font-sans text-xs md:inline"
+		<kbd class="hidden rounded-sm border border-border px-1.5 font-sans text-caption md:inline"
 			>Ctrl K</kbd
 		>
 	</label>
 
 	{#if appState.canInstallApp}
 		<button
-			class="flex shrink-0 items-center gap-1.5 rounded-sm border border-border px-2.5 py-1.5 text-sm text-muted-foreground hover:border-primary/60 hover:text-foreground"
+			class="hidden min-h-11 shrink-0 items-center gap-1.5 rounded-sm border border-border px-3 text-label text-muted-foreground hover:border-torch/60 hover:text-foreground md:flex"
 			title="Zainstaluj GIS of Gothic jako aplikację na tym urządzeniu"
 			onclick={() => void installApp()}
 		>
 			<DownloadIcon class="size-4" />
-			<span class="hidden md:inline">Zainstaluj</span>
-			<span class="sr-only md:hidden">Zainstaluj aplikację</span>
+			Zainstaluj
 		</button>
 	{/if}
 
-	<PerformanceDialog />
-	<AboutDialog />
+	<PerformanceDialog bind:open={isPerformanceOpen} />
+	<AboutDialog bind:open={isAboutOpen} />
+	<MoreMenu
+		canInstallApp={appState.canInstallApp}
+		onInstallApp={() => void installApp()}
+		onOpenPerformance={() => (isPerformanceOpen = true)}
+		onOpenAbout={() => (isAboutOpen = true)}
+	/>
 </header>

@@ -16,9 +16,9 @@
 	import TimePanel from '#lib/components/panels/TimePanel.svelte';
 	import { TOOL_DEFINITIONS } from './tool-definitions.js';
 
-	const COLLAPSED_SHEET_PIXELS = 28;
-	const BOTTOM_NAVIGATION_PIXELS = 60;
-	const TOP_BAR_CLEARANCE_PIXELS = 56;
+	const COLLAPSED_SHEET_PIXELS = 100;
+	const BOTTOM_NAVIGATION_PIXELS = 64;
+	const TOP_BAR_CLEARANCE_PIXELS = 60;
 	const TAP_TOLERANCE_PIXELS = 6;
 	const VELOCITY_WINDOW_MILLISECONDS = 120;
 
@@ -52,6 +52,23 @@
 		draggedHeightPixels ?? heightResolver.findHeightOfDetent(mobileSheet.detent)
 	);
 	const isSheetCollapsed = $derived(isPhone.current && mobileSheet.detent === 'collapsed');
+
+	$effect(() => {
+		const rootStyle = document.documentElement.style;
+		const isPanelOpen = activeTool !== undefined;
+		rootStyle.setProperty(
+			'--sheet-occupied-height',
+			isPanelOpen && isPhone.current ? `${sheetHeightPixels}px` : '0px'
+		);
+		rootStyle.setProperty(
+			'--panel-occupied-width',
+			isPanelOpen && !isPhone.current ? 'calc(var(--panel-width) + var(--gutter))' : '0px'
+		);
+		return () => {
+			rootStyle.removeProperty('--sheet-occupied-height');
+			rootStyle.removeProperty('--panel-occupied-width');
+		};
+	});
 
 	function startDraggingSheet(event: PointerEvent): void {
 		if (event.pointerType === 'mouse' && event.button !== 0) return;
@@ -118,7 +135,7 @@
 
 {#if activeTool}
 	<section
-		class="panel-stone fixed inset-x-0 bottom-15 z-20 flex h-[var(--sheet-height)] flex-col overflow-hidden rounded-t-xl transition-[height] duration-200 ease-out motion-reduce:transition-none md:top-[calc(3.25rem+10px)] md:right-auto md:bottom-[calc(2.25rem+10px)] md:left-[calc(4rem+10px)] md:h-auto md:w-92 md:rounded-sm md:transition-none {mobileSheet.isDragging
+		class="material-leather material-leather-riveted fixed inset-x-0 bottom-(--bottom-nav-height) z-20 flex h-(--sheet-height) flex-col overflow-hidden rounded-t-2xl transition-[height] duration-200 ease-out motion-reduce:transition-none md:top-[calc(var(--top-bar-height)+var(--gutter))] md:right-auto md:bottom-auto md:left-[calc(var(--rail-width)+var(--gutter))] md:h-auto md:max-h-[calc(100dvh-var(--top-bar-height)-var(--status-bar-height)-2*var(--gutter))] md:w-(--panel-width) md:rounded-md md:transition-none {mobileSheet.isDragging
 			? 'transition-none'
 			: ''}"
 		style:--sheet-height="{sheetHeightPixels}px"
@@ -126,7 +143,7 @@
 		data-map-obstacle
 	>
 		<div
-			class="flex h-7 shrink-0 cursor-grab touch-none items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary md:hidden"
+			class="flex h-11 shrink-0 cursor-grab touch-none items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring md:hidden"
 			role="slider"
 			tabindex="0"
 			aria-orientation="vertical"
@@ -141,20 +158,22 @@
 			onpointercancel={finishDraggingSheet}
 			onkeydown={resizeSheetWithKeyboard}
 		>
-			<div class="h-1 w-10 rounded-full bg-[var(--forged-edge)]"></div>
+			<div class="h-1.5 w-11 rounded-full bg-iron-light/60"></div>
 		</div>
-		<div class="flex min-h-0 flex-1 flex-col" inert={isSheetCollapsed}>
-			<div class="flex items-center justify-between border-b border-border px-3.5 py-2.5">
-				<h2 class="text-[15px] font-semibold text-primary">{activeTool.panelTitle}</h2>
+		<div class="flex min-h-0 flex-1 flex-col">
+			<div
+				class="flex items-center justify-between border-b border-divider py-1 pr-1.5 pl-4 shadow-[0_1px_0_var(--divider-highlight)] md:pt-2"
+			>
+				<h2 class="text-title text-primary">{activeTool.panelTitle}</h2>
 				<button
-					class="grid size-8 place-items-center rounded-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+					class="grid size-11 place-items-center rounded-sm text-muted-foreground hover:bg-hover-surface hover:text-foreground"
 					aria-label="Zamknij panel"
 					onclick={() => geoportal.closeActiveTool()}
 				>
 					<XIcon class="size-4" />
 				</button>
 			</div>
-			<div class="flex-1 overflow-y-auto px-3.5 pt-3 pb-4">
+			<div class="min-h-0 flex-1 overflow-y-auto px-4 pt-3 pb-5" inert={isSheetCollapsed}>
 				{#if activeTool.id === 'search'}
 					<SearchPanel />
 				{:else if activeTool.id === 'layers'}

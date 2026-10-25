@@ -1,6 +1,6 @@
 /**
  * Czy na mapie widać ekranowe joysticki lotu. To wyłącznie stan interfejsu: domyślnie
- * joysticki są włączone na urządzeniach z ekranem dotykowym i wyłączone przy myszy.
+ * joysticki są wyłączone, żeby nie zasłaniały mapy; włącza je przycisk przy zoomie.
  */
 export class FlightControlsState {
 	areSticksShown: boolean;

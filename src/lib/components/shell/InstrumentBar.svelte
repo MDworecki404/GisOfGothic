@@ -9,9 +9,9 @@
 </script>
 
 <footer
-	class="instrument-bar fixed left-2 z-20 h-7 items-stretch rounded-sm text-[13px] tabular-nums md:inset-x-0 md:bottom-0 md:h-9 md:rounded-none {appState.activeToolId
-		? 'bottom-[calc(3.75rem+52dvh+8px)]'
-		: 'bottom-[calc(3.75rem+8px)]'} {appState.cursorReadings ? 'flex' : 'hidden md:flex'}"
+	class="instrument-bar fixed bottom-[calc(var(--bottom-nav-height)+var(--sheet-occupied-height)+var(--gutter))] left-(--gutter) z-20 h-8 items-stretch rounded-sm text-caption tabular-nums md:inset-x-0 md:bottom-0 md:h-(--status-bar-height) md:rounded-none {appState.cursorReadings
+		? 'flex'
+		: 'hidden md:flex'}"
 	aria-label="Pozycja kursora, skala i stan"
 >
 	<div class="{cell} hidden md:flex">

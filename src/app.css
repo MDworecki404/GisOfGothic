@@ -2,8 +2,8 @@
 @import "tw-animate-css";
 @import "shadcn-svelte/tailwind.css";
 @import "cesium/Build/Cesium/Widgets/widgets.css";
-@import "@fontsource/cinzel/latin-ext-600.css";
-@import "@fontsource/cinzel/latin-600.css";
+@import "@fontsource/grenze-gotisch/latin-ext-600.css";
+@import "@fontsource/grenze-gotisch/latin-600.css";
 @import "@fontsource/alegreya/latin-ext-400.css";
 @import "@fontsource/alegreya/latin-400.css";
 @import "@fontsource/alegreya/latin-ext-400-italic.css";
@@ -14,51 +14,159 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Motyw „Gothic”: kamień, żelazo, pergamin, mosiądz. Tylko tryb ciemny. */
+/*
+ * Motyw „Mapa z sakwy kopacza” (ADR 0019). Jedno źródło tokenów:
+ * 1. surowa paleta materiałów, 2. role (zmienne shadcn i własne), 3. układ ekranu.
+ * Komponenty używają ról i układu, nie surowej palety.
+ */
 :root {
 	color-scheme: dark;
-	--background: #14110d;
-	--foreground: #e8dcc0;
-	--card: #1d1812;
-	--card-foreground: #e8dcc0;
-	--popover: #1d1812;
-	--popover-foreground: #e8dcc0;
-	--primary: #c9a24a;
-	--primary-foreground: #14110d;
-	--secondary: #2a2218;
-	--secondary-foreground: #e8dcc0;
-	--muted: #241d15;
-	--muted-foreground: #a8977a;
-	--accent: #8b3a2b;
-	--accent-foreground: #f1e6cc;
-	--destructive: #b4432f;
-	--border: #4a3b28;
-	--input: #3a2e20;
-	--ring: #c9a24a;
-	--chart-1: #c9a24a;
-	--chart-2: #8b3a2b;
-	--chart-3: #a8977a;
-	--chart-4: #6b5a3c;
-	--chart-5: #4a3b28;
-	--radius: 0.25rem;
-	--sidebar: #1d1812;
-	--sidebar-foreground: #e8dcc0;
-	--sidebar-primary: #c9a24a;
-	--sidebar-primary-foreground: #14110d;
-	--sidebar-accent: #2a2218;
-	--sidebar-accent-foreground: #e8dcc0;
-	--sidebar-border: #4a3b28;
-	--sidebar-ring: #c9a24a;
 
-	/* kute ramki: jasna krawędź + ciemny cień */
-	--forged-edge: #6e5a3a;
-	--brass-dim: #8f7333;
+	/* 1. Paleta materiałów */
+	--pitch: #15110c;
+	--oak: #251b13;
+	--oak-light: #2c2016;
+	--leather: #35261a;
+	--leather-raised: #4a3524;
+	--iron: #5b5f62;
+	--iron-light: #9aa0a4;
+	--stone: #7d7466;
+	--parchment: #d8c39a;
+	--parchment-dark: #b59a6c;
+	--ink: #2a1c0f;
+	--ink-faded: #5a4128;
+	--ink-red: #6a2c12;
+	--ochre: #c99a45;
+	--ochre-dark: #93681f;
+	--torch: #e8913a;
+	--ore: #6cc3e8;
+	--ore-deep: #2c6f8f;
+	--blood: #e57a62;
+	--bone: #eadcc0;
+	--bone-dim: #b7a688;
+
+	/* 2. Role: zmienne shadcn */
+	--background: var(--pitch);
+	--foreground: var(--bone);
+	--card: var(--oak);
+	--card-foreground: var(--bone);
+	--popover: var(--oak);
+	--popover-foreground: var(--bone);
+	--primary: var(--ochre);
+	--primary-foreground: #1b1006;
+	--secondary: var(--leather);
+	--secondary-foreground: var(--bone);
+	--muted: var(--leather);
+	--muted-foreground: var(--bone-dim);
+	--accent: var(--leather-raised);
+	--accent-foreground: var(--bone);
+	--destructive: var(--blood);
+	--border: var(--leather-raised);
+	--edge: #0c0906;
+	--input: var(--iron-light);
+	--ring: var(--ore);
+	--chart-1: var(--ochre);
+	--chart-2: var(--torch);
+	--chart-3: var(--ore);
+	--chart-4: var(--stone);
+	--chart-5: var(--leather-raised);
+	--radius: 3px;
+	--sidebar: var(--oak);
+	--sidebar-foreground: var(--bone);
+	--sidebar-primary: var(--ochre);
+	--sidebar-primary-foreground: #1b1006;
+	--sidebar-accent: var(--leather);
+	--sidebar-accent-foreground: var(--bone);
+	--sidebar-border: var(--leather-raised);
+	--sidebar-ring: var(--ore);
+
+	/* Role: własne */
+	--hover: var(--torch);
+	--hover-surface: rgb(232 145 58 / 0.1);
+	--active: var(--ore);
+	--active-surface: rgb(108 195 232 / 0.14);
+	--divider: rgb(0 0 0 / 0.45);
+	--divider-highlight: rgb(201 154 69 / 0.1);
+	--rivet: var(--iron-light);
+	--stitch: rgb(201 154 69 / 0.22);
+
+	/* Cienie i poświaty */
+	--shadow-panel:
+		inset 0 1px 0 rgb(255 220 160 / 0.06), 0 0 0 1px rgb(0 0 0 / 0.55),
+		0 10px 28px rgb(0 0 0 / 0.65);
+	--shadow-raised: inset 0 1px 0 rgb(255 255 255 / 0.18), inset 0 -1px 0 rgb(0 0 0 / 0.5),
+		0 2px 4px rgb(0 0 0 / 0.6);
+	--shadow-well: inset 0 1px 3px rgb(0 0 0 / 0.8);
+	--glow-torch: 0 0 14px rgb(232 145 58 / 0.35);
+	--glow-ore: 0 0 10px rgb(108 195 232 / 0.35);
+
+	/* 3. Układ ekranu (telefon; większe ekrany niżej) */
+	--top-bar-height: 3.75rem;
+	--bottom-nav-height: 4rem;
+	--rail-width: 0px;
+	--status-bar-height: 0px;
+	--panel-width: 0px;
+	--gutter: 0.625rem;
+	--touch-target: 2.75rem;
+	--map-controls-width: 0px;
+
+	/* Wartości ustawiane w biegu przez ToolPanel: ile miejsca zajmuje otwarty panel lub arkusz */
+	--sheet-occupied-height: 0px;
+	--panel-occupied-width: 0px;
+}
+
+@media (min-width: 48rem) {
+	:root {
+		--top-bar-height: 3.5rem;
+		--bottom-nav-height: 0px;
+		--rail-width: 4.5rem;
+		--status-bar-height: 2.25rem;
+		--panel-width: 20rem;
+		--map-controls-width: 5.5rem;
+	}
+}
+
+@media (min-width: 64rem) {
+	:root {
+		--panel-width: 23rem;
+	}
 }
 
 @theme inline {
 	--font-sans: 'Alegreya Sans', ui-sans-serif, sans-serif;
 	--font-serif: 'Alegreya', Georgia, serif;
-	--font-heading: 'Cinzel', 'Alegreya', serif;
+	--font-heading: 'Grenze Gotisch', 'Alegreya', serif;
+
+	--text-caption: 0.8125rem;
+	--text-caption--line-height: 1.4;
+	--text-label: 0.875rem;
+	--text-label--line-height: 1.4;
+	--text-body: 0.9375rem;
+	--text-body--line-height: 1.5;
+	--text-lead: 1.0625rem;
+	--text-lead--line-height: 1.45;
+	--text-title: 1.375rem;
+	--text-title--line-height: 1.15;
+	--text-display: 1.75rem;
+	--text-display--line-height: 1.1;
+	--text-hero: 2.25rem;
+	--text-hero--line-height: 1.05;
+
+	--color-ochre: var(--ochre);
+	--color-torch: var(--torch);
+	--color-ore: var(--ore);
+	--color-iron: var(--iron);
+	--color-iron-light: var(--iron-light);
+	--color-parchment: var(--parchment);
+	--color-ink: var(--ink);
+	--color-ink-faded: var(--ink-faded);
+	--color-hover: var(--hover);
+	--color-active: var(--active);
+	--color-edge: var(--edge);
+	--color-hover-surface: var(--hover-surface);
+	--color-active-surface: var(--active-surface);
+	--color-divider: var(--divider);
+
 	--color-sidebar-ring: var(--sidebar-ring);
 	--color-sidebar-border: var(--sidebar-border);
 	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -90,13 +198,18 @@
 	--color-card: var(--card);
 	--color-foreground: var(--foreground);
 	--color-background: var(--background);
-	--radius-sm: calc(var(--radius) * 0.6);
-	--radius-md: calc(var(--radius) * 0.8);
+
+	--radius-sm: 2px;
+	--radius-md: var(--radius);
 	--radius-lg: var(--radius);
-	--radius-xl: calc(var(--radius) * 1.4);
-	--radius-2xl: calc(var(--radius) * 1.8);
-	--radius-3xl: calc(var(--radius) * 2.2);
-	--radius-4xl: calc(var(--radius) * 2.6);
+	--radius-xl: 6px;
+	--radius-2xl: 10px;
+	--radius-3xl: 14px;
+	--radius-4xl: 18px;
+
+	--shadow-panel: var(--shadow-panel);
+	--shadow-raised: var(--shadow-raised);
+	--shadow-well: var(--shadow-well);
 }
 
 @layer base {
@@ -104,81 +217,139 @@
 		@apply border-border outline-ring/50;
 	}
 	body {
-		@apply bg-background text-foreground;
+		@apply bg-background text-body text-foreground;
 	}
 	html {
 		@apply font-sans;
 	}
 	h1,
-	h2,
-	h3 {
+	h2 {
 		font-family: var(--font-heading);
-		letter-spacing: 0.06em;
+		font-weight: 600;
+		letter-spacing: 0.01em;
 	}
-}
-
-/* Panel z ziarnem zrobionym CSS-em (bez obrazków) */
-.panel-stone {
-	background-color: rgb(29 24 18 / 0.88);
-	background-image:
-		radial-gradient(rgb(232 220 192 / 0.035) 1px, transparent 1px),
-		radial-gradient(rgb(0 0 0 / 0.25) 1px, transparent 1px),
-		linear-gradient(180deg, rgb(255 255 255 / 0.03), transparent 40%);
-	background-size:
-		3px 3px,
-		5px 5px,
-		100% 100%;
-	backdrop-filter: blur(6px);
-	border: 1px solid var(--border);
-	box-shadow:
-		inset 0 0 0 1px rgb(110 90 58 / 0.35),
-		0 6px 24px rgb(0 0 0 / 0.55);
-}
-
-/* Pasek przyrządu: mosiężna listwa jak w instrumencie geodezyjnym */
-.instrument-bar {
-	background: linear-gradient(180deg, #2b2319, #17130e);
-	border: 1px solid var(--brass-dim);
-	box-shadow: inset 0 1px 0 rgb(236 208 138 / 0.25);
-}
-
-.instrument-cell {
-	border-right: 1px solid rgb(0 0 0 / 0.5);
-	box-shadow: 1px 0 0 rgb(110 90 58 / 0.35);
-}
-
-.instrument-cell:last-child {
-	border-right: 0;
-	box-shadow: none;
-}
-
-.tool-rail-button[aria-pressed='true'] {
-	color: var(--primary);
-	background: var(--secondary);
-}
-
-.tool-rail-button[aria-pressed='true']::before {
-	content: '';
-	position: absolute;
-	inset: -4px 25% auto 25%;
-	height: 3px;
-	border-radius: 0 0 2px 2px;
-	background: var(--primary);
-}
-
-@media (min-width: 48rem) {
-	.tool-rail-button[aria-pressed='true']::before {
-		inset: 8px auto 8px -6px;
-		width: 3px;
-		height: auto;
-		border-radius: 0 2px 2px 0;
-	}
-}
-
-@layer base {
 	:focus-visible {
-		outline: 2px solid var(--primary);
+		outline: 2px solid var(--ring);
 		outline-offset: 2px;
+	}
+}
+
+@layer components {
+	/* Wyprawiona skóra: ziarno z CSS, bez obrazków */
+	.material-leather {
+		background-color: var(--oak);
+		background-image:
+			radial-gradient(rgb(255 230 190 / 0.035) 1px, transparent 1px),
+			radial-gradient(rgb(0 0 0 / 0.22) 1px, transparent 1.2px),
+			linear-gradient(180deg, var(--oak-light), var(--oak));
+		background-size:
+			3px 3px,
+			5px 4px,
+			100% 100%;
+		background-position:
+			0 0,
+			1px 2px,
+			0 0;
+		border: 1px solid var(--edge);
+		box-shadow: var(--shadow-panel);
+	}
+
+	/* Okucia: nity w górnych rogach i przeszycie wzdłuż krawędzi (tylko większe panele) */
+	.material-leather-riveted {
+		position: relative;
+	}
+	.material-leather-riveted::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background:
+			radial-gradient(
+				circle at 9px 9px,
+				var(--rivet) 0 1.5px,
+				rgb(0 0 0 / 0.3) 2.5px,
+				transparent 3.5px
+			),
+			radial-gradient(
+				circle at calc(100% - 9px) 9px,
+				var(--rivet) 0 1.5px,
+				rgb(0 0 0 / 0.3) 2.5px,
+				transparent 3.5px
+			);
+	}
+	.material-leather-riveted::after {
+		content: '';
+		position: absolute;
+		inset: 4px;
+		pointer-events: none;
+		border: 1px dashed var(--stitch);
+		border-radius: 2px;
+	}
+
+	/* Kuta stal: przyciski i dźwignie */
+	.material-iron {
+		background: linear-gradient(180deg, #5d6164, #3f4245 48%, #34373a 52%, #2b2d2f);
+		border: 1px solid #111;
+		box-shadow: var(--shadow-raised);
+		text-shadow: 0 1px 0 #000;
+	}
+
+	/* Pergamin: notatki i karty obiektów */
+	.material-parchment {
+		color: var(--ink);
+		background:
+			radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(92 58 22 / 0.35) 100%),
+			radial-gradient(rgb(90 60 20 / 0.08) 1px, transparent 1.4px) 0 0 / 4px 4px,
+			var(--parchment);
+		border-radius: var(--radius-sm);
+	}
+
+	/* Listwa przyrządu na dole ekranu */
+	.instrument-bar {
+		background: linear-gradient(180deg, var(--oak-light), #17110b);
+		border-top: 1px solid var(--edge);
+		box-shadow: inset 0 1px 0 var(--divider-highlight);
+	}
+
+	.instrument-cell {
+		border-right: 1px solid var(--divider);
+		box-shadow: 1px 0 0 var(--divider-highlight);
+	}
+
+	.instrument-cell:last-child {
+		border-right: 0;
+		box-shadow: none;
+	}
+
+	.tool-rail-button:hover {
+		color: var(--foreground);
+		background: var(--hover-surface);
+	}
+
+	.tool-rail-button[aria-pressed='true'] {
+		color: var(--active);
+		background: linear-gradient(0deg, var(--active-surface), transparent);
+	}
+
+	.tool-rail-button[aria-pressed='true']::before {
+		content: '';
+		position: absolute;
+		inset: -1px 25% auto 25%;
+		height: 3px;
+		background: var(--active);
+		box-shadow: var(--glow-ore);
+	}
+
+	@media (min-width: 48rem) {
+		.tool-rail-button[aria-pressed='true'] {
+			background: linear-gradient(90deg, var(--active-surface), transparent);
+		}
+
+		.tool-rail-button[aria-pressed='true']::before {
+			inset: 10px auto 10px -6px;
+			width: 3px;
+			height: auto;
+		}
 	}
 }
 
@@ -186,13 +357,13 @@ input[type='search']::-webkit-search-cancel-button {
 	appearance: none;
 }
 
-/* Wskaźnik wczytywania kafli: mosiężny pierścień z żarem, obracany tylko gdy ruch jest dozwolony */
+/* Wskaźnik wczytywania kafli: żelazny pierścień z płomieniem pochodni, obracany tylko gdy ruch jest dozwolony */
 .tile-loader-ring {
 	display: inline-block;
 	width: 14px;
 	height: 14px;
-	border: 2px solid rgb(143 115 51 / 0.35);
-	border-top-color: var(--primary);
+	border: 2px solid rgb(201 154 69 / 0.3);
+	border-top-color: var(--torch);
 	border-radius: 50%;
 	animation: tile-loader-spin 0.9s linear infinite;
 }
@@ -206,7 +377,7 @@ input[type='search']::-webkit-search-cancel-button {
 @media (prefers-reduced-motion: reduce) {
 	.tile-loader-ring {
 		animation: none;
-		border-color: var(--primary);
+		border-color: var(--torch);
 		opacity: 0.8;
 	}
 }

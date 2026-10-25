@@ -46,7 +46,7 @@
 
 <div
 	bind:this={base}
-	class="panel-stone pointer-events-auto relative size-28 touch-none rounded-full select-none md:size-32"
+	class="material-leather pointer-events-auto relative size-28 touch-none rounded-full select-none md:size-32"
 	role="application"
 	aria-label={label}
 	onpointerdown={startDragging}
@@ -55,7 +55,7 @@
 	onpointercancel={stopDragging}
 >
 	<div
-		class="pointer-events-none absolute top-1/2 left-1/2 size-12 rounded-full border border-[var(--forged-edge)] bg-primary/80 shadow-md md:size-14"
+		class="pointer-events-none absolute top-1/2 left-1/2 size-12 rounded-full border border-[var(--iron)] bg-primary/80 shadow-md md:size-14"
 		style:transform="translate(calc(-50% + {thumbX}px), calc(-50% + {thumbY}px))"
 	></div>
 </div>

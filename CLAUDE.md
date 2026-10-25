@@ -97,7 +97,8 @@ Korzystaj z pluginów i skilli: `superpowers` (planowanie, TDD, weryfikacja, rev
 - **Zasoby gry nie mogą być do pobrania** (ADR 0012): modele tylko zaszyfrowane, przez bramkę
   `workers/model-gate/`, odszyfrowane w pamięci; nigdy publiczny adres bucketu, adres `blob:` ani link do pliku.
   Model świata tylko przez bramkę do ion (ADR 0013); token ion nigdy nie trafia do kodu strony.
-- Motyw: ciemny „Gothic” (zmienne shadcn w `src/app.css`); bez logo, czcionek i grafik z gry.
+- Motyw „Mapa z sakwy kopacza” (ADR 0019): wszystkie tokeny (kolory, pismo, układ) w `src/app.css`,
+  komponenty używają ról i klas `material-*`, nie surowych kolorów; bez logo, czcionek i grafik z gry.
 
 ## Weryfikacja przed oddaniem
 

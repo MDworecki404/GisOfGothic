@@ -209,14 +209,33 @@ test('arkusz mobilny zmienia stan z klawiatury, a Esc zamyka panel', async ({ pa
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto('/g2nk/khorinis');
 	const handle = page.getByRole('slider', { name: /Wysokość panelu/ });
-	await expect(handle).toHaveAttribute('aria-valuetext', 'połowa ekranu');
+	await expect(handle).toHaveAttribute('aria-valuetext', 'zwinięty');
 	await handle.focus();
+	await page.keyboard.press('ArrowUp');
+	await expect(handle).toHaveAttribute('aria-valuetext', 'połowa ekranu');
 	await page.keyboard.press('ArrowUp');
 	await expect(handle).toHaveAttribute('aria-valuetext', 'pełny ekran');
 	await page.keyboard.press('Home');
 	await expect(handle).toHaveAttribute('aria-valuetext', 'zwinięty');
 	await page.keyboard.press('Escape');
 	await expect(handle).toHaveCount(0);
+});
+
+test('na telefonie pole wyszukiwania rozwija arkusz, a okna otwiera menu „Więcej”', async ({
+	page
+}) => {
+	await page.setViewportSize({ width: 360, height: 780 });
+	await page.goto('/g2nk/khorinis');
+	const handle = page.getByRole('slider', { name: /Wysokość panelu/ });
+	await expect(handle).toHaveAttribute('aria-valuetext', 'zwinięty');
+	await page.getByRole('searchbox').click();
+	await expect(handle).toHaveAttribute('aria-valuetext', 'połowa ekranu');
+	await page.getByRole('button', { name: 'Więcej' }).click();
+	await page.getByRole('button', { name: 'O projekcie' }).click();
+	await expect(page.getByRole('dialog')).toContainText('Trójwymiarowa wikipedia');
+	await page.keyboard.press('Escape');
+	await expect(page.getByRole('dialog')).toBeHidden();
+	await expect(handle).toBeVisible();
 });
 
 test('analiza „Widoczność” prosi o punkt na mapie i ma suwak promienia', async ({ page }) => {

@@ -7,12 +7,16 @@
 	const repositoryUrl = 'https://github.com/MDworecki404/GisOfGothic';
 	const authorUrl = 'https://dworecki.dev';
 
-	let isOpen = $state(false);
+	interface Props {
+		open?: boolean;
+	}
+
+	let { open: isOpen = $bindable(false) }: Props = $props();
 </script>
 
 <Dialog.Root bind:open={isOpen}>
 	<Dialog.Trigger
-		class="flex size-9 shrink-0 items-center justify-center rounded-sm border border-border text-muted-foreground hover:border-primary/60 hover:text-foreground"
+		class="hidden size-11 shrink-0 items-center justify-center rounded-sm border border-border text-muted-foreground hover:border-torch/60 hover:text-foreground md:flex"
 		title="O projekcie"
 	>
 		<InfoIcon class="size-4" />
@@ -20,7 +24,7 @@
 	</Dialog.Trigger>
 
 	<Dialog.Content
-		class="panel-stone max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-sm p-0 ring-0 sm:max-w-lg"
+		class="material-leather max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-sm p-0 ring-0 sm:max-w-lg"
 	>
 		<div class="m-1.5 border border-primary/30 px-6 pt-8 pb-6 sm:px-9">
 			<div class="flex items-center gap-4">
@@ -34,9 +38,7 @@
 					<circle cx="32" cy="26.5" r="5" fill="#e0662f" />
 				</svg>
 				<div>
-					<Dialog.Title class="font-heading text-2xl tracking-[0.05em] text-primary">
-						GIS of Gothic
-					</Dialog.Title>
+					<Dialog.Title class="font-heading text-2xl text-primary">GIS of Gothic</Dialog.Title>
 					<Dialog.Description class="mt-0.5 text-muted-foreground">
 						Trójwymiarowa wikipedia światów Gothic
 					</Dialog.Description>

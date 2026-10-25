@@ -14,7 +14,7 @@
 </svelte:head>
 
 <main class="grid h-dvh place-items-center bg-background p-4">
-	<section class="panel-stone w-full max-w-md rounded-sm p-6 text-center">
+	<section class="material-leather w-full max-w-md rounded-sm p-6 text-center">
 		<h1 class="text-2xl font-semibold text-primary">{page.status}</h1>
 		<p class="mt-2 text-muted-foreground">{message}</p>
 		<a
