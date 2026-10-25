@@ -2,6 +2,35 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.5.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.4.1...v0.5.0) (2026-10-25)
+
+### Nowe funkcje
+
+* budowniczy widoków Z góry i Skos ([166428b](https://github.com/MDworecki404/GisOfGothic/commit/166428b5280a020603b36a165bf95eba8e4f3c29))
+* klawisz P przełącza rzut kamery ([0091bfa](https://github.com/MDworecki404/GisOfGothic/commit/0091bfaf27dfa7ed622ec818302e085cc8474766))
+* koordynator rzutu kamery w fasadzie i stanie aplikacji ([c39c1c5](https://github.com/MDworecki404/GisOfGothic/commit/c39c1c5b5de0b06bf76a12bc756a07ca66b5f598))
+* kute przyciski, własne kontrolki i karta obiektu jako notatka na pergaminie ([694f7fe](https://github.com/MDworecki404/GisOfGothic/commit/694f7fece97eff5b9eb8e735b2f450bd36df0c2a))
+* legenda włączonych warstw na mapie i czytelne stany wczytywania, błędu i braku wyników ([5cb1748](https://github.com/MDworecki404/GisOfGothic/commit/5cb1748f439039a0668d03418e0ac18e50150345))
+* mapa jak pergamin z ekwipunku, nowe kontrolki i widoczna atrybucja ([64e16c4](https://github.com/MDworecki404/GisOfGothic/commit/64e16c431668870d61f65e9335756c4f0eced190))
+* mapa obsługuje rzut ortogonalny i zmianę FOV ([2117c57](https://github.com/MDworecki404/GisOfGothic/commit/2117c5741048e954ef727b64e9410094d85128eb))
+* motyw „Mapa z sakwy kopacza” i układ wygodny na telefonie ([7972694](https://github.com/MDworecki404/GisOfGothic/commit/7972694f81f240572aff4e8fc7f681fd522a7ea5))
+* okienko ustawień kamery i skrót P ([6a85470](https://github.com/MDworecki404/GisOfGothic/commit/6a85470387dc22c55438d4d542971d834472004e))
+* parametr rzut w adresie widoku ([d3a491a](https://github.com/MDworecki404/GisOfGothic/commit/d3a491ae6395690ba3f0f5ef729e0e8b4eea5a25))
+* ustawienie rzutu kamery i jego zapis w adresie ([0bb6614](https://github.com/MDworecki404/GisOfGothic/commit/0bb661474e127b3461f5e1370af7f784e88b48ad))
+* wzory przeliczania rzutu perspektywa ↔ ortogonalny ([a5c11d5](https://github.com/MDworecki404/GisOfGothic/commit/a5c11d5a53751904ceaa54f2d107d638626e8fd2))
+* zakładki zapamiętują rzut kamery ([f729c65](https://github.com/MDworecki404/GisOfGothic/commit/f729c65bde015ddc23700e40ab099c466f3d7b64))
+
+### Poprawki błędów
+
+* Esc w oknie dialogowym nie zamyka już panelu narzędzia ([495b205](https://github.com/MDworecki404/GisOfGothic/commit/495b2050fbd66052cbbccb742ffa4f8882778b3f))
+* przełączenie rzutu przed wczytaniem świata nie kasuje kamery z adresu ([928f832](https://github.com/MDworecki404/GisOfGothic/commit/928f832f3580bc6e939afb52058bb73c845d7c79))
+
+### Dokumentacja
+
+* korekty projektu kamery po implementacji ([ad05b88](https://github.com/MDworecki404/GisOfGothic/commit/ad05b884744401c4f0aaa64734279cbc94510492))
+* plan implementacji ustawień kamery ([8720e3c](https://github.com/MDworecki404/GisOfGothic/commit/8720e3c21d3b5fba084d0a500aea197bff12547c))
+* projekt ustawień kamery (rzut ortogonalny, FOV) po spike'u ([aea6678](https://github.com/MDworecki404/GisOfGothic/commit/aea667880d971e8e5fad653a91df29967552f04c))
+
 ## [0.4.1](https://github.com/MDworecki404/GisOfGothic/compare/v0.4.0...v0.4.1) (2026-10-22)
 
 ### Poprawki błędów
