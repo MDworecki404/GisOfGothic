@@ -24,9 +24,9 @@
 	</Dialog.Trigger>
 
 	<Dialog.Content
-		class="material-leather max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-sm p-0 ring-0 sm:max-w-lg"
+		class="material-leather material-leather-riveted max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-md p-0 ring-0 sm:max-w-lg"
 	>
-		<div class="m-1.5 border border-primary/30 px-6 pt-8 pb-6 sm:px-9">
+		<div class="px-6 pt-8 pb-6 sm:px-9">
 			<div class="flex items-center gap-4">
 				<svg width="52" height="52" viewBox="0 0 64 64" aria-hidden="true" class="shrink-0">
 					<path
@@ -38,14 +38,14 @@
 					<circle cx="32" cy="26.5" r="5" fill="#e0662f" />
 				</svg>
 				<div>
-					<Dialog.Title class="font-heading text-2xl text-primary">GIS of Gothic</Dialog.Title>
+					<Dialog.Title class="text-display text-primary">GIS of Gothic</Dialog.Title>
 					<Dialog.Description class="mt-0.5 text-muted-foreground">
 						Trójwymiarowa wikipedia światów Gothic
 					</Dialog.Description>
 				</div>
 			</div>
 
-			<div class="mt-6 space-y-3 text-[15px] leading-relaxed text-foreground/90">
+			<div class="mt-6 space-y-3 text-body leading-relaxed text-foreground/90">
 				<p>
 					Wiki Gothica mówi, że miecz leży „gdzieś w Górniczej Dolinie”. Tu zobaczysz, gdzie
 					dokładnie: przedmioty i postacie są naniesione na model 3D świata gry, a stąd można
@@ -64,7 +64,7 @@
 			<ul class="mt-6 divide-y divide-border border-y border-border">
 				<li>
 					<a
-						class="group flex items-center gap-3 py-3 hover:text-primary"
+						class="group flex min-h-11 items-center gap-3 py-3 hover:text-hover"
 						href={repositoryUrl}
 						target="_blank"
 						rel="noopener noreferrer"
@@ -86,7 +86,7 @@
 				</li>
 				<li>
 					<a
-						class="group flex items-center gap-3 py-3 hover:text-primary"
+						class="group flex min-h-11 items-center gap-3 py-3 hover:text-hover"
 						href={authorUrl}
 						target="_blank"
 						rel="noopener noreferrer"
@@ -102,7 +102,7 @@
 				</li>
 			</ul>
 
-			<p class="mt-5 text-xs leading-relaxed text-muted-foreground">
+			<p class="mt-5 text-caption leading-relaxed text-muted-foreground">
 				Projekt fanowski, niekomercyjny. Gothic i powiązane nazwy należą do ich właścicieli; autor
 				nie jest związany z Piranha Bytes ani THQ Nordic.
 			</p>

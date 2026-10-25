@@ -33,25 +33,25 @@
 
 {#snippet linkList(heading: string, links: readonly QuestLinkView[])}
 	{#if links.length > 0}
-		<h4 class="mt-4 mb-1 text-sm text-muted-foreground">{heading}</h4>
+		<h4 class="group-label mt-4 mb-1">{heading}</h4>
 		<ul class="text-sm">
 			{#each links as link, index (index)}
 				<li class="border-t border-border/60">
 					{#if link.entryId}
 						{@const entryId = link.entryId}
 						<button
-							class="flex w-full items-baseline justify-between gap-3 py-1.5 text-left hover:bg-secondary/60"
+							class="list-row flex w-full items-center justify-between gap-3 px-1 text-left"
 							onclick={() => geoportal.selectSearchEntry(entryId)}
 						>
 							<span class="text-primary">{link.name}</span>
-							<span class="text-xs text-muted-foreground">
+							<span class="text-caption text-muted-foreground">
 								{link.description}{link.isUncertain ? ' (możliwe)' : ''}
 							</span>
 						</button>
 					{:else}
-						<div class="flex items-baseline justify-between gap-3 py-1.5">
+						<div class="flex min-h-11 items-center justify-between gap-3 px-1">
 							<span>{link.name}</span>
-							<span class="text-xs text-muted-foreground">
+							<span class="text-caption text-muted-foreground">
 								{link.description}{link.isUncertain ? ' (możliwe)' : ''}
 							</span>
 						</div>
@@ -65,7 +65,7 @@
 {#if appState.selectedEntry}
 	{@const entry = appState.selectedEntry}
 	<button
-		class="mb-3 flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+		class="list-row mb-2 -ml-2 inline-flex items-center gap-1.5 px-2 text-label text-muted-foreground hover:text-foreground"
 		onclick={() => geoportal.clearSearchSelection()}
 	>
 		<ArrowLeftIcon class="size-4" />
@@ -73,14 +73,14 @@
 	</button>
 
 	<article aria-labelledby="entry-name">
-		<h3 id="entry-name" class="font-serif text-[22px] leading-tight">{entry.name}</h3>
+		<h3 id="entry-name" class="font-serif text-title">{entry.name}</h3>
 		<p class="text-sm text-muted-foreground">
-			{entry.categoryLabel} · <span class="text-xs">{entry.code}</span>
+			{entry.categoryLabel} · <span class="text-caption">{entry.code}</span>
 		</p>
 
 		{#if entry.modelPath}
 			<div
-				class="my-3 h-48 overflow-hidden rounded-sm border border-border"
+				class="my-3 h-48 overflow-hidden rounded-md border border-edge bg-background shadow-well"
 				aria-label="Podgląd 3D: {entry.name}"
 				role="img"
 				{@attach showPreview(entry.modelPath)}
@@ -91,7 +91,7 @@
 			<dl class="my-3 flex flex-wrap gap-x-5 gap-y-2 tabular-nums">
 				{#each entry.facts as fact (fact.label)}
 					<div class="flex flex-col-reverse">
-						<dt class="text-xs text-muted-foreground">{fact.label}</dt>
+						<dt class="text-caption text-muted-foreground">{fact.label}</dt>
 						<dd class="text-xl text-primary">{fact.value}</dd>
 					</div>
 				{/each}
@@ -116,7 +116,7 @@
 				{@render linkList(quest.giverHeading, quest.givers)}
 
 				{#if quest.stages.length > 0}
-					<h4 class="mt-4 mb-1 text-sm text-muted-foreground">Etapy dziennika</h4>
+					<h4 class="group-label mt-4 mb-1">Etapy dziennika</h4>
 					<ol class="border-l border-primary/40 pl-3 text-sm">
 						{#each quest.stages as stage (stage.seq)}
 							<li class="relative py-1.5">
@@ -124,10 +124,10 @@
 									<p class="leading-snug">{stage.text}</p>
 								{/if}
 								{#if stage.statusLabel}
-									<p class="text-xs font-medium text-primary">{stage.statusLabel}</p>
+									<p class="text-caption font-medium text-primary">{stage.statusLabel}</p>
 								{/if}
 								{#if stage.chapterLabel || stage.isConditional}
-									<p class="text-xs text-muted-foreground">
+									<p class="text-caption text-muted-foreground">
 										{[stage.chapterLabel, stage.isConditional ? 'zależnie od przebiegu' : null]
 											.filter((part) => part !== null)
 											.join(' · ')}
@@ -136,7 +136,7 @@
 							</li>
 						{/each}
 					</ol>
-					<p class="mt-1 text-xs text-muted-foreground">
+					<p class="mt-1 text-caption text-muted-foreground">
 						Kolejność etapów wynika ze skryptów gry, nie jest pewną chronologią.
 					</p>
 				{/if}
@@ -166,17 +166,17 @@
 				Zobacz na Gothicpedii
 			</a>
 			<!-- eslint-enable svelte/no-navigation-without-resolve -->
-			<p class="-mt-1 mb-2 text-xs text-muted-foreground">Opisy: Gothicpedia (CC BY-SA)</p>
+			<p class="-mt-1 mb-2 text-caption text-muted-foreground">Opisy: Gothicpedia (CC BY-SA)</p>
 		{/if}
 
-		<h4 class="mt-4 mb-1 text-sm text-muted-foreground">
+		<h4 class="group-label mt-4 mb-1">
 			Miejsca ({entry.places.length}) — kliknij, aby polecieć
 		</h4>
 		<ul class="tabular-nums">
 			{#each entry.places as place (place.index)}
 				<li class="border-t border-border/60">
 					<button
-						class="grid w-full grid-cols-[12px_1fr_auto] items-baseline gap-2.5 py-2 text-left text-sm hover:bg-secondary/60"
+						class="list-row grid w-full grid-cols-[12px_1fr_auto] items-center gap-2.5 px-1 py-2 text-left"
 						onclick={() => geoportal.flyToPlaceOfSelectedEntry(place.index)}
 					>
 						<span
@@ -187,7 +187,7 @@
 						<span>
 							{place.description}
 							{#if place.isUncertain}
-								<span class="text-xs text-muted-foreground">(nie zawsze)</span>
+								<span class="text-caption text-muted-foreground">(nie zawsze)</span>
 							{/if}
 						</span>
 						<span class="text-muted-foreground">{place.quantity ?? ''}</span>
@@ -200,10 +200,7 @@
 	<div class="flex flex-wrap gap-1.5" role="group" aria-label="Rodzaj wyników">
 		{#each TYPE_FILTERS as filter (filter.value)}
 			<button
-				class="rounded-full border px-2.5 py-0.5 text-[13px] {appState.searchTypeFilter ===
-				filter.value
-					? 'border-primary/60 bg-secondary text-foreground'
-					: 'border-border text-muted-foreground hover:text-foreground'}"
+				class="chip"
 				aria-pressed={appState.searchTypeFilter === filter.value}
 				onclick={() => geoportal.filterSearchByType(filter.value)}
 			>
@@ -232,15 +229,15 @@
 			{#each appState.searchResults as result (result.id)}
 				<li>
 					<button
-						class="grid w-full grid-cols-[12px_1fr_auto] items-center gap-2.5 rounded-sm px-2 py-2 text-left hover:bg-secondary"
+						class="list-row grid w-full grid-cols-[12px_1fr_auto] items-center gap-2.5 px-2 py-1.5 text-left"
 						onclick={() => geoportal.selectSearchEntry(result.id)}
 					>
 						<span class="size-2.5 rounded-full" style:background-color={result.markerColor}></span>
 						<span class="min-w-0">
 							<span class="block truncate font-medium">{result.name}</span>
-							<span class="block text-[13px] text-muted-foreground">{result.categoryLabel}</span>
+							<span class="block text-caption text-muted-foreground">{result.categoryLabel}</span>
 						</span>
-						<span class="text-[13px] text-muted-foreground tabular-nums">{result.summary}</span>
+						<span class="text-caption text-muted-foreground tabular-nums">{result.summary}</span>
 					</button>
 				</li>
 			{/each}

@@ -55,7 +55,7 @@
 	onpointercancel={stopDragging}
 >
 	<div
-		class="pointer-events-none absolute top-1/2 left-1/2 size-12 rounded-full border border-[var(--iron)] bg-primary/80 shadow-md md:size-14"
+		class="pointer-events-none absolute top-1/2 left-1/2 size-12 rounded-full border border-black bg-[radial-gradient(circle_at_35%_35%,#c9ced1,var(--iron)_60%,#222)] shadow-md md:size-14"
 		style:transform="translate(calc(-50% + {thumbX}px), calc(-50% + {thumbY}px))"
 	></div>
 </div>

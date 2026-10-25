@@ -5,7 +5,7 @@
 	import FlightStick from './FlightStick.svelte';
 
 	const riseButton =
-		'material-leather pointer-events-auto grid size-12 touch-none place-items-center rounded-full text-foreground select-none active:bg-secondary';
+		'material-leather pointer-events-auto grid size-12 touch-none place-items-center rounded-full text-foreground select-none active:bg-active-surface';
 	const verticalPlacement =
 		'bottom-[calc(var(--bottom-nav-height)+var(--sheet-occupied-height)+14px)] md:bottom-[calc(var(--status-bar-height)+16px)]';
 	const moveStickPlacement =

@@ -68,10 +68,10 @@
 	</Dialog.Trigger>
 
 	<Dialog.Content
-		class="material-leather max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-sm p-0 ring-0 sm:max-w-md"
+		class="material-leather material-leather-riveted max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-md p-0 ring-0 sm:max-w-md"
 	>
-		<div class="m-1.5 border border-primary/30 px-6 pt-8 pb-6 sm:px-8">
-			<Dialog.Title class="font-heading text-2xl text-primary">Wydajność</Dialog.Title>
+		<div class="px-6 pt-8 pb-6 sm:px-8">
+			<Dialog.Title class="text-display text-primary">Wydajność</Dialog.Title>
 			<Dialog.Description class="mt-1 text-muted-foreground">
 				Gdy mapa się zacina, niższa jakość obrazu przyspiesza ją.
 			</Dialog.Description>
@@ -80,19 +80,19 @@
 				<legend class="sr-only">Jakość obrazu</legend>
 				{#each options as option (option.value)}
 					<label
-						class="flex cursor-pointer items-start gap-3 rounded-sm border border-transparent p-2.5 hover:border-border has-[:checked]:border-primary/50"
+						class="list-row flex cursor-pointer items-start gap-3 border border-transparent p-2.5 has-[:checked]:border-active has-[:checked]:bg-active-surface"
 					>
 						<input
 							type="radio"
 							name="performance"
-							class="mt-1 size-4 accent-[var(--primary)]"
+							class="check-forged mt-0.5"
 							value={option.value}
 							checked={appState.performancePreference === option.value}
 							onchange={() => geoportal.selectPerformance(option.value)}
 						/>
 						<span>
 							{option.label}
-							<span class="block text-[13px] text-muted-foreground">{option.description}</span>
+							<span class="block text-caption text-muted-foreground">{option.description}</span>
 						</span>
 					</label>
 				{/each}

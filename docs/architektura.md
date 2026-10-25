@@ -295,6 +295,14 @@ magiczna ruda zaznaczenie, aktywne narzędzie i focus. Materiały to klasy `mate
 (`material-leather-riveted` dodaje nity i przeszycie), `material-iron` i `material-parchment`. Krój
 Grenze Gotisch jest tylko w `h1`/`h2`; reszta to Alegreya Sans, a opisy na pergaminie Alegreya.
 
+Kontrolki mają klasy w `src/app.css` zamiast powtarzanych list klas Tailwind: przyciski `button-iron`
+(zwykła akcja), `button-ochre` (jedna główna akcja w widoku) i `button-quiet`, przełączniki `chip` i
+`choice-card` (stan z `aria-pressed`), pole tekstowe `field`, pola wyboru i opcje `check-forged`, wiersz
+listy `list-row`, nagłówek grupy `group-label`. Suwak to komponent `controls/ForgedRange.svelte` (wypełnienie
+rowka liczy się z wartości). Karta obiektu (`IdentifyCard`) to notatka na pergaminie przybita gwoździem
+(`parchment-note`, cień na `parchment-note-shadow`, bo `clip-path` przyciąłby cień), z przyciskiem `button-ink`.
+Wszystkie elementy klikalne mają co najmniej 44 px wysokości (`--touch-target`).
+
 Wymiary układu też są tokenami: `--top-bar-height`, `--bottom-nav-height`, `--rail-width`,
 `--status-bar-height`, `--panel-width` i `--map-controls-width` zmieniają się z szerokością ekranu.
 `ToolPanel` ustawia w biegu na `:root` `--sheet-occupied-height` (wysokość arkusza na telefonie) oraz

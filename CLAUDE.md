@@ -41,7 +41,7 @@ src/lib/
   events/       event bus i typy zdarzeń
   data/         typy, parsery, loader paczki danych
   state/        reaktywny stan dla UI (runy), tylko dane
-  components/   komponenty aplikacji (bez logiki domenowej); ui/ = shadcn-svelte
+  components/   komponenty aplikacji (bez logiki domenowej); ui/ = shadcn-svelte, controls/ = własne kontrolki
 ```
 
 Importy w `.ts`/`.svelte.ts` piszemy z rozszerzeniem `.js` (`#lib/data/geoportal-data-loader.js`).
