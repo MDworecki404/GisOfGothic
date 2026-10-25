@@ -1,13 +1,37 @@
 <script lang="ts">
+	import BoxIcon from '@lucide/svelte/icons/box';
 	import GamepadIcon from '@lucide/svelte/icons/gamepad-2';
 	import HouseIcon from '@lucide/svelte/icons/house';
 	import MinusIcon from '@lucide/svelte/icons/minus';
 	import PlusIcon from '@lucide/svelte/icons/plus';
+	import CameraSettingsPopover from '#lib/components/shell/CameraSettingsPopover.svelte';
 	import { appState, flightControls, geoportal } from '#lib/composition-root.js';
+
+	let isCameraSettingsOpen = $state(false);
+	let cameraSettingsButton = $state<HTMLButtonElement>();
 
 	const controlButton =
 		'map-control-button grid size-11 place-items-center text-foreground hover:bg-hover-surface hover:text-hover';
+
+	function closeCameraSettingsOnOutsideClick(event: MouseEvent): void {
+		if (!isCameraSettingsOpen) return;
+		const isInsideSettings =
+			event.target instanceof Element && event.target.closest('[data-camera-settings]') !== null;
+		if (!isInsideSettings) isCameraSettingsOpen = false;
+	}
+
+	function closeCameraSettingsOnEscape(event: KeyboardEvent): void {
+		if (!isCameraSettingsOpen || event.key !== 'Escape') return;
+		event.stopPropagation();
+		isCameraSettingsOpen = false;
+		cameraSettingsButton?.focus();
+	}
 </script>
+
+<svelte:window
+	onclick={closeCameraSettingsOnOutsideClick}
+	onkeydown={closeCameraSettingsOnEscape}
+/>
 
 <div
 	class="fixed top-[calc(var(--top-bar-height)+var(--gutter))] right-(--gutter) z-10 flex flex-col items-center gap-2.5 md:right-3.5"
@@ -82,5 +106,20 @@
 		>
 			<GamepadIcon class="size-5" />
 		</button>
+		<button
+			bind:this={cameraSettingsButton}
+			class="{controlButton} aria-pressed:bg-active-surface aria-pressed:text-active"
+			aria-label="Rzut kamery"
+			aria-pressed={appState.cameraProjection.kind === 'orthographic'}
+			aria-expanded={isCameraSettingsOpen}
+			title="Rzut kamery (klawisz P)"
+			data-camera-settings
+			onclick={() => (isCameraSettingsOpen = !isCameraSettingsOpen)}
+		>
+			<BoxIcon class="size-5" />
+		</button>
 	</div>
+	{#if isCameraSettingsOpen}
+		<CameraSettingsPopover onClose={() => (isCameraSettingsOpen = false)} />
+	{/if}
 </div>

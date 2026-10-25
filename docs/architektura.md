@@ -304,6 +304,16 @@ szerokość na odległość od powierzchni, gdy tylko kafle się wczytają.
 
 Cienie Cesium nie działają przy kamerze ortogonalnej, więc `MapService.applyShadows` wyłącza je w ortho i
 przywraca po powrocie do perspektywy. Rzut jest w adresie (`rzut=o` albo `rzut=p_<fov>`) i w zakładkach.
+
+Interfejs: przycisk „Rzut kamery” stoi na dole kolumny `MapControls` (`aria-pressed` w ortho) i otwiera
+`CameraSettingsPopover` (grupa przycisków `chip` Perspektywa / Ortogonalny, suwak `ForgedRange` kąta widzenia,
+nieaktywny w ortho, oraz przyciski „Z góry” i „Skos”). Okienko zamyka Esc, kliknięcie poza nim (elementy z
+`data-camera-settings` są „w środku”) albo wybór widoku. Stan otwarcia jest lokalny dla `MapControls`; szyna
+narzędzi się nie zmienia. W ortho pasek stanu pokazuje „rzut ortogonalny”, a panel Czas informuje, że cienie
+są wyłączone. Gdy pod środkiem ekranu nie ma powierzchni (woda, niewczytane kafle), przełączenie rzutu i
+widoki „Z góry”/„Skos” szacują odległość rzutem środka świata na kierunek patrzenia
+(`MapService.estimateDistanceAlongViewToWorldCentre`).
+
 Decyzja i wyniki spike'a: [ADR 0021](adr/0021-rzut-kamery.md).
 
 ## Arkusz mobilny

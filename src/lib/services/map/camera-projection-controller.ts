@@ -33,10 +33,13 @@ export class CameraProjectionController implements CameraViewGeometry {
 
 	/**
 	 * @param measureDistanceToScreenCentre odległość kamery od powierzchni pod środkiem ekranu; `null`, gdy nieznana
+	 * @param estimateDistanceToView przybliżona odległość do oglądanego miejsca, gdy pod środkiem ekranu nie ma
+	 * powierzchni (np. woda albo niewczytane kafle); `null`, gdy nie da się jej oszacować
 	 */
 	constructor(
 		private readonly viewer: Viewer,
-		private readonly measureDistanceToScreenCentre: () => number | null
+		private readonly measureDistanceToScreenCentre: () => number | null,
+		private readonly estimateDistanceToView: () => number | null
 	) {}
 
 	isOrthographic(): boolean {
@@ -122,7 +125,7 @@ export class CameraProjectionController implements CameraViewGeometry {
 	private switchToOrthographic(): void {
 		const camera = this.viewer.camera;
 		if (camera.frustum instanceof OrthographicFrustum) return;
-		const distance = this.measureDistanceToScreenCentre();
+		const distance = this.measureDistanceToScreenCentre() ?? this.estimateDistanceToView();
 		camera.switchToOrthographicFrustum();
 		const frustum = camera.frustum;
 		if (distance === null || !(frustum instanceof OrthographicFrustum)) return;
@@ -143,7 +146,7 @@ export class CameraProjectionController implements CameraViewGeometry {
 			return;
 		}
 		const orthographicWidth = orthographicFrustum.width;
-		const distance = this.measureDistanceToScreenCentre();
+		const distance = this.measureDistanceToScreenCentre() ?? this.estimateDistanceToView();
 		camera.switchToPerspectiveFrustum();
 		this.applyFieldOfViewToFrustum();
 		if (distance === null || orthographicWidth === undefined) return;

@@ -52,6 +52,10 @@
 		{/if}
 	</div>
 
+	{#if appState.cameraProjection.kind === 'orthographic'}
+		<div class="{cell} hidden text-muted-foreground md:flex">rzut ortogonalny</div>
+	{/if}
+
 	{#if appState.cursorReadings}
 		{#each appState.cursorReadings as reading, index (reading.axis)}
 			<div class="{cell} {readingWidths[index]} {index === 2 ? 'hidden md:flex' : ''}">

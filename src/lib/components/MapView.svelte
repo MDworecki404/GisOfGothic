@@ -10,8 +10,10 @@
 		if (!creditContainer) return;
 		geoportal.attachMapTo(container, creditContainer);
 		const stopListeningToFlightKeyboard = geoportal.listenToFlightKeyboard(window);
+		const stopListeningToProjectionKeyboard = geoportal.listenToProjectionKeyboard(window);
 		return () => {
 			stopListeningToFlightKeyboard();
+			stopListeningToProjectionKeyboard();
 			geoportal.detachMap();
 		};
 	});

@@ -99,6 +99,11 @@
 		<span class="block text-caption text-muted-foreground">
 			Budynki i skały rzucają cień zgodny z porą dnia. Obciąża kartę graficzną.
 		</span>
+		{#if appState.cameraProjection.kind === 'orthographic'}
+			<span class="block text-caption text-muted-foreground">
+				W rzucie ortogonalnym cienie są wyłączone.
+			</span>
+		{/if}
 	</span>
 </label>
 <label
