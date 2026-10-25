@@ -38,7 +38,11 @@
 		}
 	];
 
-	let isOpen = $state(false);
+	interface Props {
+		open?: boolean;
+	}
+
+	let { open: isOpen = $bindable(false) }: Props = $props();
 
 	const statusText = $derived.by(() => {
 		const level = QUALITY_LEVEL_LABELS[appState.performanceLevel].toLowerCase();
@@ -55,7 +59,7 @@
 
 <Dialog.Root bind:open={isOpen}>
 	<Dialog.Trigger
-		class="flex size-9 shrink-0 items-center justify-center rounded-sm border border-border text-muted-foreground hover:border-primary/60 hover:text-foreground"
+		class="hidden size-11 shrink-0 items-center justify-center rounded-sm border border-border text-muted-foreground hover:border-torch/60 hover:text-foreground md:flex"
 		title="Wydajność"
 		data-testid="performance-open"
 	>
@@ -64,12 +68,10 @@
 	</Dialog.Trigger>
 
 	<Dialog.Content
-		class="panel-stone max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-sm p-0 ring-0 sm:max-w-md"
+		class="material-leather max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-sm p-0 ring-0 sm:max-w-md"
 	>
 		<div class="m-1.5 border border-primary/30 px-6 pt-8 pb-6 sm:px-8">
-			<Dialog.Title class="font-heading text-2xl tracking-[0.05em] text-primary">
-				Wydajność
-			</Dialog.Title>
+			<Dialog.Title class="font-heading text-2xl text-primary">Wydajność</Dialog.Title>
 			<Dialog.Description class="mt-1 text-muted-foreground">
 				Gdy mapa się zacina, niższa jakość obrazu przyspiesza ją.
 			</Dialog.Description>

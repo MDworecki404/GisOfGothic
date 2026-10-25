@@ -13,17 +13,17 @@
 {#if appState.identifiedFeature}
 	{@const feature = appState.identifiedFeature}
 	<aside
-		class="panel-stone fixed top-[calc(3.5rem+10px)] right-16 left-2.5 z-20 max-h-[40dvh] overflow-y-auto rounded-sm p-3.5 md:top-[calc(3.25rem+14px)] md:right-22 md:left-auto md:max-h-[60dvh] md:w-80"
+		class="material-leather material-leather-riveted fixed inset-x-0 bottom-(--bottom-nav-height) z-30 max-h-[50dvh] overflow-y-auto rounded-t-2xl p-4 pt-3 pr-1.5 md:top-[calc(var(--top-bar-height)+var(--gutter))] md:right-(--map-controls-width) md:bottom-auto md:left-auto md:max-h-[60dvh] md:w-68 md:rounded-md lg:w-80"
 		aria-label="Informacje o obiekcie"
 	>
 		<div class="flex items-start justify-between gap-2">
-			<div class="min-w-0">
+			<div class="min-w-0 pt-1">
 				<p class="text-xs text-muted-foreground">{feature.layerName}</p>
 				<h3 class="font-serif text-xl leading-tight">{feature.title}</h3>
 				<p class="text-sm text-muted-foreground">{feature.subtitle}</p>
 			</div>
 			<button
-				class="grid size-8 shrink-0 place-items-center rounded-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+				class="grid size-11 shrink-0 place-items-center rounded-sm text-muted-foreground hover:bg-hover-surface hover:text-foreground"
 				aria-label="Zamknij informacje o obiekcie"
 				onclick={() => geoportal.closeFeatureIdentification()}
 			>
@@ -32,7 +32,7 @@
 		</div>
 
 		{#if feature.facts.length > 0}
-			<dl class="mt-2.5 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+			<dl class="mt-2.5 mr-2.5 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
 				{#each feature.facts as fact (fact.label)}
 					<dt class="text-muted-foreground">{fact.label}</dt>
 					<dd class="min-w-0 break-words">{fact.value}</dd>

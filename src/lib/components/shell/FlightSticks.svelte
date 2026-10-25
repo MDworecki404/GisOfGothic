@@ -1,21 +1,15 @@
 <script lang="ts">
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
-	import { appState, flightControls, geoportal } from '#lib/composition-root.js';
+	import { flightControls, geoportal } from '#lib/composition-root.js';
 	import FlightStick from './FlightStick.svelte';
 
 	const riseButton =
-		'panel-stone pointer-events-auto grid size-12 touch-none place-items-center rounded-full text-foreground select-none active:bg-secondary';
-	const verticalPlacement = $derived(
-		appState.activeToolId
-			? 'bottom-[calc(3.75rem+52dvh+14px)] md:bottom-[calc(2.25rem+16px)]'
-			: 'bottom-[calc(3.75rem+14px)] md:bottom-[calc(2.25rem+16px)]'
-	);
-	const moveStickPlacement = $derived(
-		appState.activeToolId
-			? 'left-3 md:left-[calc(4rem+23rem+26px)]'
-			: 'left-3 md:left-[calc(4rem+16px)]'
-	);
+		'material-leather pointer-events-auto grid size-12 touch-none place-items-center rounded-full text-foreground select-none active:bg-secondary';
+	const verticalPlacement =
+		'bottom-[calc(var(--bottom-nav-height)+var(--sheet-occupied-height)+14px)] md:bottom-[calc(var(--status-bar-height)+16px)]';
+	const moveStickPlacement =
+		'left-3 md:left-[calc(var(--rail-width)+var(--panel-occupied-width)+var(--gutter)+6px)]';
 </script>
 
 {#if flightControls.areSticksShown}

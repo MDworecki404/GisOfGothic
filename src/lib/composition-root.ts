@@ -26,9 +26,7 @@ export const appState = new AppState(eventBus);
 
 export const mobileSheet = new MobileSheetState(eventBus);
 
-export const flightControls = new FlightControlsState(
-	browser && window.matchMedia('(pointer: coarse)').matches
-);
+export const flightControls = new FlightControlsState(false);
 
 const appInstallation = new AppInstallation(eventBus, globalThis);
 if (browser) appInstallation.listenForInstallability();

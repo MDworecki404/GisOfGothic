@@ -47,7 +47,7 @@
 <div class="relative shrink-0" bind:this={switcher}>
 	{#if hasChoice}
 		<button
-			class="flex items-center gap-1.5 rounded-sm border border-border px-2.5 py-1.5 whitespace-nowrap hover:border-primary/60"
+			class="flex min-h-11 items-center gap-1.5 rounded-sm px-2 font-medium whitespace-nowrap hover:bg-hover-surface md:border md:border-border md:px-3 md:hover:border-torch/60"
 			aria-haspopup="true"
 			aria-expanded={isOpen}
 			title="Zmień świat"
@@ -59,9 +59,7 @@
 			<ChevronDownIcon class="size-4 text-muted-foreground" />
 		</button>
 	{:else}
-		<div
-			class="flex items-center gap-1.5 rounded-sm border border-border px-2.5 py-1.5 whitespace-nowrap"
-		>
+		<div class="flex min-h-11 items-center gap-1.5 px-2 font-medium whitespace-nowrap md:px-3">
 			<span class="hidden text-muted-foreground md:inline">{currentGame?.name} ›</span>
 			<span>{currentWorld?.name}</span>
 		</div>
@@ -69,18 +67,18 @@
 
 	{#if isOpen}
 		<nav
-			class="panel-stone absolute top-[calc(100%+6px)] left-0 z-40 min-w-60 rounded-sm py-1.5"
+			class="material-leather absolute top-[calc(100%+6px)] left-0 z-40 min-w-60 rounded-sm py-1.5"
 			aria-label="Światy"
 		>
 			{#each games as game (game.id)}
-				<p class="px-3 pt-1.5 pb-1 text-xs text-muted-foreground">{game.name}</p>
+				<p class="px-3 pt-1.5 pb-1 text-caption text-muted-foreground">{game.name}</p>
 				<ul>
 					{#each game.worlds as world (world.id)}
 						{@const isCurrent = game.id === currentGameId && world.id === currentWorldId}
 						<li>
 							<a
-								class="flex items-center justify-between gap-3 px-3 py-1.5 hover:bg-secondary {isCurrent
-									? 'text-primary'
+								class="flex min-h-11 items-center justify-between gap-3 px-3 hover:bg-hover-surface {isCurrent
+									? 'text-active'
 									: ''}"
 								href={resolve('/[gameId]/[worldId]', { gameId: game.id, worldId: world.id })}
 								aria-current={isCurrent ? 'page' : undefined}

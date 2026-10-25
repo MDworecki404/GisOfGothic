@@ -259,7 +259,7 @@ Kamerą można latać z klawiatury i z ekranowych joysticków; oba źródła dzi
 Klawisze (rozpoznawane po `event.code`, więc niezależnie od układu): **W/S** – do przodu i do tyłu,
 **A/D** – w bok, **←/→** – obrót, **↑/↓** – pochylenie spojrzenia, **Q/E** – w dół i w górę, **Shift** –
 przyspieszenie ×3. Na ekranie dotykowym są dwa joysticki (ruch i rozglądanie) oraz dwa przyciski
-wysokości; przycisk w `MapControls` je włącza (domyślnie włączone przy `pointer: coarse`).
+wysokości; przycisk w `MapControls` je włącza (domyślnie wyłączone, żeby nie zasłaniały mapy).
 
 Przepływ: `MapView` wywołuje `geoportal.listenToFlightKeyboard(window)` (`KeyboardFlightListener` +
 `KeyboardFlightMapper`; pomija pola tekstowe, suwaki, dialogi i skróty z Ctrl/Alt/Meta), a `FlightSticks`
@@ -276,10 +276,30 @@ adres strony i zakładki aktualizują się jak po zwykłym ruchu myszą.
 
 Na telefonie panel narzędzia (`ToolPanel`) jest arkuszem z uchwytem i trzema stanami: zwinięty, połowa,
 pełny. Stan i trwające przeciąganie trzyma `MobileSheetState` (`mobileSheet` w `composition-root.ts`) —
-to stan interfejsu, który nie trafia do fasady; wybór narzędzia (`tool-selected`) otwiera arkusz do połowy.
+to stan interfejsu, który nie trafia do fasady. Po otwarciu świata (`world-opened`) arkusz jest zwinięty
+i pokazuje tylko nagłówek, także gdy widok z adresu przywraca narzędzie. Każdy kolejny wybór narzędzia
+(`tool-selected`) i kliknięcie pola wyszukiwania otwierają go do połowy. Karta obiektu (`IdentifyCard`)
+jest na telefonie przypięta do dołu nad nawigacją, a wydajność, „O projekcie” i instalacja są w menu
+„Więcej” (`MoreMenu`).
 Wysokości i wybór stanu po puszczeniu uchwytu liczy czysta klasa `SheetHeightResolver`. `MapInsetsReporter`
 mierzy rzeczywistą wysokość arkusza, więc po każdej zmianie stanu (i po animacji wysokości) kadrowanie kamery
-widzi aktualny zasłonięty dół. Decyzja: [ADR 0009](adr/0009-wlasny-arkusz-mobilny-zamiast-drawera.md).
+widzi aktualny zasłonięty dół. Decyzje: [ADR 0009](adr/0009-wlasny-arkusz-mobilny-zamiast-drawera.md),
+[ADR 0019](adr/0019-motyw-mapa-z-sakwy-i-tokeny-ukladu.md).
+
+## Motyw i układ ekranu
+
+Wszystkie tokeny wyglądu są w `src/app.css`: paleta materiałów (smoła, dębina, skóra, kuta stal, pergamin,
+atrament, ochra, pochodnia, magiczna ruda, krew), role (zmienne shadcn oraz `--hover` i `--active`), skala
+pisma (`text-caption` … `text-hero`), cienie i promienie. Pochodnia oznacza najechanie i ładowanie,
+magiczna ruda zaznaczenie, aktywne narzędzie i focus. Materiały to klasy `material-leather`
+(`material-leather-riveted` dodaje nity i przeszycie), `material-iron` i `material-parchment`. Krój
+Grenze Gotisch jest tylko w `h1`/`h2`; reszta to Alegreya Sans, a opisy na pergaminie Alegreya.
+
+Wymiary układu też są tokenami: `--top-bar-height`, `--bottom-nav-height`, `--rail-width`,
+`--status-bar-height`, `--panel-width` i `--map-controls-width` zmieniają się z szerokością ekranu.
+`ToolPanel` ustawia w biegu na `:root` `--sheet-occupied-height` (wysokość arkusza na telefonie) oraz
+`--panel-occupied-width` (szerokość panelu na większych ekranach). Pasek stanu, joysticki i plakietka
+ładowania liczą z nich położenie zamiast stałych. Decyzja: [ADR 0019](adr/0019-motyw-mapa-z-sakwy-i-tokeny-ukladu.md).
 
 ## Podgląd modelu przedmiotu
 
