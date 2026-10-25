@@ -162,6 +162,7 @@ export class GeoportalFacade {
 			entryName: this.searchCoordinator.selectedEntryReference?.name ?? null,
 			toolId: viewState.toolId,
 			camera: viewState.camera,
+			projection: viewState.projection,
 			chapter: viewState.chapter
 		});
 	}
@@ -173,7 +174,7 @@ export class GeoportalFacade {
 			{
 				entryId: bookmark.entryId,
 				camera: bookmark.camera,
-				projection: null,
+				projection: bookmark.projection,
 				toolId: bookmark.toolId,
 				chapter: bookmark.chapter
 			},

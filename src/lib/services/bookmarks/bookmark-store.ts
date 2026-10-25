@@ -1,4 +1,8 @@
 import { isRecord } from '#lib/data/parsers.js';
+import {
+	isCameraProjectionSetting,
+	type CameraProjectionSetting
+} from '#lib/services/camera/camera-projection.js';
 import { isChapterNumber, type ChapterNumber } from '#lib/services/chapters/chapter-filter.js';
 import { isToolId, type ToolId } from '#lib/services/tools/tool-id.js';
 import type { CameraView } from './camera-view-codec.js';
@@ -13,6 +17,7 @@ export interface SavedView {
 	entryName: string | null;
 	toolId: ToolId | null;
 	camera: CameraView | null;
+	projection: CameraProjectionSetting | null;
 	chapter: ChapterNumber | null;
 }
 
@@ -40,6 +45,10 @@ function readCameraView(value: unknown): CameraView | null {
 	return { east, north, height, headingDegrees, pitchDegrees };
 }
 
+function readProjection(value: unknown): CameraProjectionSetting | null {
+	return isCameraProjectionSetting(value) ? value : null;
+}
+
 function readSavedView(value: unknown): SavedView | null {
 	if (!isRecord(value)) return null;
 	const { id, name, savedAt, gameId, worldId, toolId } = value;
@@ -62,6 +71,7 @@ function readSavedView(value: unknown): SavedView | null {
 		entryName: readNullableString(value, 'entryName'),
 		toolId: isToolId(toolId) ? toolId : null,
 		camera: readCameraView(value.camera),
+		projection: readProjection(value.projection),
 		chapter: isChapterNumber(value.chapter) ? value.chapter : null
 	};
 }

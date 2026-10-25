@@ -23,7 +23,8 @@ const view: SavedView = {
 	entryName: 'Szczaw królewski',
 	toolId: 'measure',
 	camera: { east: 1, north: 2, height: 3, headingDegrees: 4, pitchDegrees: -5 },
-	chapter: 2
+	chapter: 2,
+	projection: null
 };
 
 describe('BookmarkStore', () => {
@@ -52,6 +53,36 @@ describe('BookmarkStore', () => {
 		const [loaded, ...rest] = new BookmarkStore(storage).loadAll();
 		expect(rest).toEqual([]);
 		expect(loaded).toMatchObject({ id: 'a1', toolId: null, camera: null, chapter: 2 });
+	});
+
+	it('zakładka bez pola rzutu odczytuje się z rzutem domyślnym', () => {
+		const storage = new FakeStorage();
+		const withoutProjection = JSON.stringify([view], (key, value: unknown) =>
+			key === 'projection' ? undefined : value
+		);
+		storage.setItem('gisofgothic:bookmarks:v1', withoutProjection);
+		expect(new BookmarkStore(storage).loadAll()).toEqual([view]);
+	});
+
+	it('zapisuje i odczytuje rzut ortogonalny', () => {
+		const store = new BookmarkStore(new FakeStorage());
+		const orthographicView: SavedView = { ...view, projection: { kind: 'orthographic' } };
+		store.saveAll([orthographicView]);
+		expect(store.loadAll()).toEqual([orthographicView]);
+	});
+
+	it('nieprawidłowy rzut zamienia na domyślny, zachowując resztę zakładki', () => {
+		const storage = new FakeStorage();
+		storage.setItem(
+			'gisofgothic:bookmarks:v1',
+			JSON.stringify([
+				{ ...view, projection: { kind: 'perspective', fovDegrees: 5 } },
+				{ ...view, id: 'a2', projection: 'o' }
+			])
+		);
+		const loaded = new BookmarkStore(storage).loadAll();
+		expect(loaded.map((item) => item.projection)).toEqual([null, null]);
+		expect(loaded[0]).toMatchObject({ id: 'a1', name: 'Targ' });
 	});
 
 	it('bez pamięci przeglądarki nic nie zapisuje i nie rzuca', () => {
