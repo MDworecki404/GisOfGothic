@@ -21,14 +21,12 @@
 <div class="grid grid-cols-3 gap-2" role="group" aria-label="Rodzaj pomiaru">
 	{#each MODES as option (option.value)}
 		<button
-			class="flex flex-col rounded-sm border p-2 text-left {mode === option.value
-				? 'border-primary bg-secondary'
-				: 'border-border hover:border-primary/50'}"
+			class="choice-card"
 			aria-pressed={mode === option.value}
 			onclick={() => geoportal.switchMeasurementMode(option.value)}
 		>
-			<span class="text-[14px] font-medium">{option.label}</span>
-			<span class="text-[11.5px] leading-tight text-muted-foreground">{option.hint}</span>
+			<span class="font-medium">{option.label}</span>
+			<span class="text-caption leading-tight text-muted-foreground">{option.hint}</span>
 		</button>
 	{/each}
 </div>
@@ -57,16 +55,10 @@
 
 	{#if pointCount > 0}
 		<div class="mt-3 flex gap-2">
-			<button
-				class="rounded-sm border border-border px-3 py-1.5 text-sm hover:border-primary/60"
-				onclick={() => geoportal.removeLastMeasurementPoint()}
-			>
+			<button class="button-iron" onclick={() => geoportal.removeLastMeasurementPoint()}>
 				Cofnij punkt
 			</button>
-			<button
-				class="rounded-sm border border-border px-3 py-1.5 text-sm hover:border-primary/60"
-				onclick={() => geoportal.clearMeasurement()}
-			>
+			<button class="button-iron" onclick={() => geoportal.clearMeasurement()}>
 				Wyczyść pomiar
 			</button>
 		</div>
@@ -93,12 +85,12 @@
 				{/each}
 			</dl>
 			{#if appState.measurement?.isProfileLoading}
-				<p class="mt-1 text-xs text-muted-foreground">Liczę profil terenu…</p>
+				<p class="mt-1 text-caption text-muted-foreground">Liczę profil terenu…</p>
 			{/if}
 		</div>
 
 		{#if appState.travelTimeReadings.length > 0}
-			<h3 class="mt-4 mb-1 text-sm font-medium text-muted-foreground">Czas przejścia</h3>
+			<h3 class="group-label mt-4 mb-1">Czas przejścia</h3>
 			<dl class="text-sm tabular-nums">
 				{#each appState.travelTimeReadings as reading (reading.label)}
 					<div class="flex justify-between gap-3 border-t border-border/60 py-1">
@@ -107,7 +99,7 @@
 					</div>
 				{/each}
 			</dl>
-			<p class="mt-1 text-xs text-muted-foreground">
+			<p class="mt-1 text-caption text-muted-foreground">
 				Dla odległości w poziomie, prędkości bohatera z animacji gry. 4 s rzeczywiste to minuta w
 				grze.
 			</p>
@@ -115,7 +107,7 @@
 
 		{#if appState.measurement?.profile}
 			{@const profile = appState.measurement.profile}
-			<h3 class="mt-4 mb-1 text-sm font-medium text-muted-foreground">Profil terenu</h3>
+			<h3 class="group-label mt-4 mb-1">Profil terenu</h3>
 			<ProfileChart
 				samples={profile.samples}
 				minimumHeight={profile.minimumHeight}
@@ -126,16 +118,10 @@
 
 	{#if pointCount > 0}
 		<div class="mt-3 flex gap-2">
-			<button
-				class="rounded-sm border border-border px-3 py-1.5 text-sm hover:border-primary/60"
-				onclick={() => geoportal.removeLastMeasurementPoint()}
-			>
+			<button class="button-iron" onclick={() => geoportal.removeLastMeasurementPoint()}>
 				Cofnij punkt
 			</button>
-			<button
-				class="rounded-sm border border-border px-3 py-1.5 text-sm hover:border-primary/60"
-				onclick={() => geoportal.clearMeasurement()}
-			>
+			<button class="button-iron" onclick={() => geoportal.clearMeasurement()}>
 				Wyczyść pomiar
 			</button>
 		</div>
@@ -152,7 +138,7 @@
 				<dl class="mt-0.5 grid grid-cols-3 gap-2 text-sm">
 					{#each system.readings as reading (reading.axis)}
 						<div>
-							<dt class="text-xs text-muted-foreground">{reading.axis}</dt>
+							<dt class="text-caption text-muted-foreground">{reading.axis}</dt>
 							<dd>{reading.value}</dd>
 						</div>
 					{/each}
@@ -167,13 +153,10 @@
 			class="mt-4 flex items-center justify-between gap-2 rounded-sm border border-dashed border-border px-3 py-2 text-sm"
 		>
 			<span>
-				<span class="block text-xs text-muted-foreground">Teleport w grze (tryb Marvina)</span>
+				<span class="block text-caption text-muted-foreground">Teleport w grze (tryb Marvina)</span>
 				<code class="font-sans">{command}</code>
 			</span>
-			<button
-				class="shrink-0 rounded-sm border border-border px-3 py-1.5 hover:border-primary/60"
-				onclick={() => copyMarvinCommand(command)}
-			>
+			<button class="button-iron shrink-0" onclick={() => copyMarvinCommand(command)}>
 				{copiedCommand === command ? 'Skopiowano' : 'Kopiuj'}
 			</button>
 		</div>

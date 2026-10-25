@@ -13,64 +13,68 @@
 {#if appState.identifiedFeature}
 	{@const feature = appState.identifiedFeature}
 	<aside
-		class="material-leather material-leather-riveted fixed inset-x-0 bottom-(--bottom-nav-height) z-30 max-h-[50dvh] overflow-y-auto rounded-t-2xl p-4 pt-3 pr-1.5 md:top-[calc(var(--top-bar-height)+var(--gutter))] md:right-(--map-controls-width) md:bottom-auto md:left-auto md:max-h-[60dvh] md:w-68 md:rounded-md lg:w-80"
+		class="parchment-note-shadow fixed inset-x-1.5 bottom-[calc(var(--bottom-nav-height)+0.375rem)] z-30 md:top-[calc(var(--top-bar-height)+var(--gutter))] md:right-(--map-controls-width) md:bottom-auto md:left-auto md:w-68 lg:w-80"
 		aria-label="Informacje o obiekcie"
 	>
-		<div class="flex items-start justify-between gap-2">
-			<div class="min-w-0 pt-1">
-				<p class="text-xs text-muted-foreground">{feature.layerName}</p>
-				<h3 class="font-serif text-xl leading-tight">{feature.title}</h3>
-				<p class="text-sm text-muted-foreground">{feature.subtitle}</p>
+		<div class="parchment-note max-h-[50dvh] overflow-y-auto px-5 pt-5 pb-4 md:max-h-[60dvh]">
+			<div class="flex items-start justify-between gap-2">
+				<div class="min-w-0 pt-1">
+					<p class="note-faded text-caption font-medium">{feature.layerName}</p>
+					<h3 class="font-heading text-display break-words">{feature.title}</h3>
+					<p class="note-faded font-serif italic">{feature.subtitle}</p>
+				</div>
+				<button
+					class="note-faded -mt-2 -mr-3 grid size-11 shrink-0 place-items-center rounded-sm hover:bg-ink/10 hover:text-ink"
+					aria-label="Zamknij informacje o obiekcie"
+					onclick={() => geoportal.closeFeatureIdentification()}
+				>
+					<XIcon class="size-5" />
+				</button>
 			</div>
-			<button
-				class="grid size-11 shrink-0 place-items-center rounded-sm text-muted-foreground hover:bg-hover-surface hover:text-foreground"
-				aria-label="Zamknij informacje o obiekcie"
-				onclick={() => geoportal.closeFeatureIdentification()}
-			>
-				<XIcon class="size-4" />
-			</button>
+
+			{#if feature.facts.length > 0}
+				<dl class="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-0.5">
+					{#each feature.facts as fact (fact.label)}
+						<dt class="note-faded">{fact.label}</dt>
+						<dd class="min-w-0 font-medium break-words">{fact.value}</dd>
+					{/each}
+				</dl>
+			{/if}
+
+			{#if feature.listTitle}
+				<h4 class="note-faded mt-3 text-label font-medium">{feature.listTitle}</h4>
+				<ul class="mt-1 font-serif">
+					{#each feature.listItems as item, index (index)}
+						<li class="border-t border-ink-faded/30 py-1">{item}</li>
+					{/each}
+				</ul>
+			{/if}
+
+			{#if feature.searchQuery || feature.encyclopediaUrl}
+				<hr class="note-rule my-3" />
+			{/if}
+
+			{#if feature.searchQuery}
+				{@const query = feature.searchQuery}
+				<button class="button-ink" onclick={() => searchForIdentifiedFeature(query)}>
+					Pokaż wszystkie wystąpienia
+				</button>
+			{/if}
+
+			{#if feature.encyclopediaUrl}
+				<!-- eslint-disable svelte/no-navigation-without-resolve -- zewnętrzny adres Gothicpedii, nie ścieżka aplikacji -->
+				<a
+					class="mt-2 flex min-h-11 items-center gap-1.5 font-medium"
+					href={feature.encyclopediaUrl}
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					<ExternalLinkIcon class="size-4" />
+					Zobacz na Gothicpedii
+					<span class="sr-only">(otwiera się w nowej karcie)</span>
+				</a>
+				<!-- eslint-enable svelte/no-navigation-without-resolve -->
+			{/if}
 		</div>
-
-		{#if feature.facts.length > 0}
-			<dl class="mt-2.5 mr-2.5 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-				{#each feature.facts as fact (fact.label)}
-					<dt class="text-muted-foreground">{fact.label}</dt>
-					<dd class="min-w-0 break-words">{fact.value}</dd>
-				{/each}
-			</dl>
-		{/if}
-
-		{#if feature.listTitle}
-			<h4 class="mt-3 text-sm text-muted-foreground">{feature.listTitle}</h4>
-			<ul class="mt-1 text-sm">
-				{#each feature.listItems as item, index (index)}
-					<li class="border-t border-border/60 py-1">{item}</li>
-				{/each}
-			</ul>
-		{/if}
-
-		{#if feature.searchQuery}
-			{@const query = feature.searchQuery}
-			<button
-				class="mt-3 rounded-sm border border-border px-3 py-1.5 text-sm hover:border-primary/60"
-				onclick={() => searchForIdentifiedFeature(query)}
-			>
-				Pokaż wszystkie wystąpienia
-			</button>
-		{/if}
-
-		{#if feature.encyclopediaUrl}
-			<!-- eslint-disable svelte/no-navigation-without-resolve -- zewnętrzny adres Gothicpedii, nie ścieżka aplikacji -->
-			<a
-				class="mt-3 flex items-center gap-1.5 text-sm text-primary hover:underline"
-				href={feature.encyclopediaUrl}
-				target="_blank"
-				rel="noopener noreferrer"
-			>
-				<ExternalLinkIcon class="size-4" />
-				Zobacz na Gothicpedii
-			</a>
-			<!-- eslint-enable svelte/no-navigation-without-resolve -->
-		{/if}
 	</aside>
 {/if}

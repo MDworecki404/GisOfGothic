@@ -33,18 +33,13 @@
 >
 	<input
 		type="text"
-		class="min-w-0 flex-1 rounded-sm border border-input bg-background px-3 py-2 text-sm"
+		class="field min-w-0 flex-1"
 		placeholder="Nazwa zakładki"
 		aria-label="Nazwa zakładki"
 		maxlength="60"
 		bind:value={bookmarkName}
 	/>
-	<button
-		type="submit"
-		class="shrink-0 rounded-sm border border-primary bg-secondary px-3 py-2 text-sm hover:bg-primary hover:text-primary-foreground"
-	>
-		Zapisz widok
-	</button>
+	<button type="submit" class="button-ochre shrink-0"> Zapisz widok </button>
 </form>
 
 {#if appState.bookmarkStorageFailed}
@@ -54,7 +49,7 @@
 	</p>
 {/if}
 
-<h3 class="mt-5 mb-1 text-sm font-medium text-muted-foreground">Zapisane widoki</h3>
+<h3 class="group-label mt-5 mb-1">Zapisane widoki</h3>
 {#if appState.bookmarks.length === 0}
 	<p class="text-sm text-muted-foreground">
 		Nic jeszcze nie zapisano. Ustaw mapę tak, jak chcesz do niej wrócić, i kliknij „Zapisz widok”.
@@ -62,27 +57,24 @@
 {:else}
 	<ul class="space-y-2" aria-label="Zapisane widoki">
 		{#each appState.bookmarks as bookmark (bookmark.id)}
-			<li class="rounded-sm border border-border p-2.5">
+			<li class="rounded-md border border-border bg-black/15 p-2.5">
 				<button
-					class="block w-full text-left"
+					class="list-row block w-full px-1 py-1 text-left"
 					aria-label="Przywróć widok „{bookmark.name}”"
 					onclick={() => geoportal.restoreBookmark(bookmark.id)}
 				>
-					<span class="block font-serif text-[17px]">{bookmark.name}</span>
-					<span class="block text-xs text-muted-foreground">{bookmark.details}</span>
-					<span class="block text-xs text-muted-foreground tabular-nums">
+					<span class="block font-serif text-lead">{bookmark.name}</span>
+					<span class="block text-caption text-muted-foreground">{bookmark.details}</span>
+					<span class="block text-caption text-muted-foreground tabular-nums">
 						{bookmark.savedAtLabel}
 					</span>
 				</button>
 				<div class="mt-2 flex gap-2">
-					<button
-						class="rounded-sm border border-border px-2.5 py-1 text-sm hover:border-primary/60"
-						onclick={() => copyLink(bookmark)}
-					>
+					<button class="button-quiet" onclick={() => copyLink(bookmark)}>
 						{copiedBookmarkId === bookmark.id ? 'Skopiowano' : 'Kopiuj link'}
 					</button>
 					<button
-						class="rounded-sm border border-border px-2.5 py-1 text-sm hover:border-primary/60"
+						class="button-quiet"
 						aria-label="Usuń zakładkę „{bookmark.name}”"
 						onclick={() => geoportal.deleteBookmark(bookmark.id)}
 					>

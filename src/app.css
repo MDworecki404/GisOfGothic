@@ -305,6 +305,376 @@
 		border-radius: var(--radius-sm);
 	}
 
+	/* Przyciski. Kuty (zwykła akcja), ochrowy (jedna główna akcja w widoku), cichy (pomocnicza). */
+	.button-iron,
+	.button-ochre,
+	.button-quiet {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		min-height: var(--touch-target);
+		padding: 0 1rem;
+		border-radius: var(--radius);
+		font-size: var(--text-body);
+		font-weight: 500;
+		white-space: nowrap;
+		transition:
+			box-shadow 120ms,
+			color 120ms,
+			background-color 120ms;
+	}
+
+	.button-iron {
+		color: var(--bone);
+		background: linear-gradient(180deg, #5d6164, #3f4245 48%, #34373a 52%, #2b2d2f);
+		border: 1px solid #111;
+		box-shadow: var(--shadow-raised);
+		text-shadow: 0 1px 0 #000;
+	}
+
+	.button-ochre {
+		color: var(--primary-foreground);
+		background: linear-gradient(180deg, #d8ab55, #b0812f 50%, var(--ochre-dark));
+		border: 1px solid #3a2608;
+		box-shadow: var(--shadow-raised);
+	}
+
+	.button-quiet {
+		color: var(--foreground);
+		background: transparent;
+		border: 1px solid rgb(201 154 69 / 0.35);
+	}
+
+	.button-iron:hover,
+	.button-ochre:hover {
+		box-shadow: var(--shadow-raised), var(--glow-torch);
+	}
+
+	.button-iron:hover {
+		color: #fff4e0;
+	}
+
+	.button-quiet:hover {
+		color: var(--hover);
+		border-color: var(--hover);
+		background: var(--hover-surface);
+	}
+
+	.button-iron:active,
+	.button-ochre:active {
+		transform: translateY(1px);
+		box-shadow: var(--shadow-well);
+	}
+
+	.button-iron:disabled,
+	.button-ochre:disabled,
+	.button-quiet:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+		box-shadow: none;
+	}
+
+	/* Przełącznik z wyborem jednej opcji (pigułka) — stan z aria-pressed */
+	.chip {
+		display: inline-flex;
+		align-items: center;
+		min-height: var(--touch-target);
+		padding: 0 0.875rem;
+		border-radius: 999px;
+		border: 1px solid var(--border);
+		color: var(--muted-foreground);
+		font-size: var(--text-label);
+		background: rgb(0 0 0 / 0.15);
+	}
+
+	.chip:hover {
+		color: var(--foreground);
+		border-color: rgb(232 145 58 / 0.6);
+	}
+
+	.chip[aria-pressed='true'] {
+		color: var(--foreground);
+		border-color: var(--active);
+		background: var(--active-surface);
+		box-shadow: inset 0 0 0 1px rgb(108 195 232 / 0.25);
+	}
+
+	/* Karta wyboru trybu (Pomiary, Analizy) — stan z aria-pressed */
+	.choice-card {
+		display: flex;
+		flex-direction: column;
+		min-height: var(--touch-target);
+		padding: 0.5rem 0.625rem;
+		border-radius: var(--radius);
+		border: 1px solid var(--border);
+		text-align: left;
+		background: rgb(0 0 0 / 0.15);
+	}
+
+	.choice-card:hover {
+		border-color: rgb(232 145 58 / 0.6);
+	}
+
+	.choice-card[aria-pressed='true'] {
+		border-color: var(--active);
+		background: var(--active-surface);
+		box-shadow: inset 0 0 0 1px rgb(108 195 232 / 0.25);
+	}
+
+	/* Pole tekstowe jak wyżłobienie w drewnie */
+	.field {
+		width: 100%;
+		min-height: var(--touch-target);
+		padding: 0 0.75rem;
+		border-radius: var(--radius);
+		border: 1px solid var(--iron);
+		background: rgb(10 7 4 / 0.7);
+		color: var(--foreground);
+		box-shadow: var(--shadow-well);
+	}
+
+	.field::placeholder {
+		color: var(--muted-foreground);
+	}
+
+	.field:focus-visible {
+		outline: none;
+		border-color: var(--active);
+		box-shadow: var(--shadow-well), var(--glow-ore);
+	}
+
+	/* Pole wyboru i opcja: kute okucie z zaznaczeniem w kolorze rudy */
+	.check-forged {
+		appearance: none;
+		flex-shrink: 0;
+		display: inline-grid;
+		place-content: center;
+		width: 1.375rem;
+		height: 1.375rem;
+		margin: 0;
+		border-radius: var(--radius-sm);
+		border: 1px solid var(--iron-light);
+		background: linear-gradient(#1a130d, #241a12);
+		box-shadow: var(--shadow-well);
+		cursor: pointer;
+	}
+
+	.check-forged[type='radio'] {
+		border-radius: 999px;
+	}
+
+	.check-forged::after {
+		content: '';
+		width: 0.7rem;
+		height: 0.38rem;
+		border-left: 2.5px solid var(--active);
+		border-bottom: 2.5px solid var(--active);
+		transform: rotate(-45deg) translate(1px, -1px);
+		opacity: 0;
+	}
+
+	.check-forged[type='radio']::after {
+		width: 0.55rem;
+		height: 0.55rem;
+		border: 0;
+		border-radius: 999px;
+		background: var(--active);
+		transform: none;
+	}
+
+	.check-forged:checked {
+		border-color: var(--active);
+		box-shadow: var(--shadow-well), var(--glow-ore);
+	}
+
+	.check-forged:checked::after {
+		opacity: 1;
+	}
+
+	.check-forged:disabled {
+		cursor: wait;
+		opacity: 0.6;
+	}
+
+	/* Suwak: rowek w drewnie i kuty uchwyt; wysokość 44 px dla palca */
+	.range-forged {
+		appearance: none;
+		width: 100%;
+		height: var(--touch-target);
+		background: transparent;
+		cursor: pointer;
+	}
+
+	.range-forged::-webkit-slider-runnable-track {
+		height: 6px;
+		border-radius: 3px;
+		background: linear-gradient(90deg, var(--ochre-dark), var(--ochre)) 0 0 / var(--range-fill, 0%)
+				100% no-repeat,
+			#120d08;
+		box-shadow: var(--shadow-well);
+	}
+
+	.range-forged::-moz-range-track {
+		height: 6px;
+		border-radius: 3px;
+		background: #120d08;
+		box-shadow: var(--shadow-well);
+	}
+
+	.range-forged::-moz-range-progress {
+		height: 6px;
+		border-radius: 3px;
+		background: var(--ochre);
+	}
+
+	.range-forged::-webkit-slider-thumb {
+		appearance: none;
+		width: 22px;
+		height: 22px;
+		margin-top: -8px;
+		border-radius: 999px;
+		border: 1px solid #111;
+		background: radial-gradient(circle at 35% 35%, #c9ced1, var(--iron) 60%, #222);
+		box-shadow: 0 2px 3px rgb(0 0 0 / 0.6);
+	}
+
+	.range-forged::-moz-range-thumb {
+		width: 22px;
+		height: 22px;
+		border-radius: 999px;
+		border: 1px solid #111;
+		background: radial-gradient(circle at 35% 35%, #c9ced1, var(--iron) 60%, #222);
+		box-shadow: 0 2px 3px rgb(0 0 0 / 0.6);
+	}
+
+	.range-forged:hover::-webkit-slider-thumb {
+		box-shadow:
+			0 2px 3px rgb(0 0 0 / 0.6),
+			var(--glow-torch);
+	}
+
+	.range-forged:focus-visible {
+		outline: none;
+	}
+
+	.range-forged:focus-visible::-webkit-slider-thumb {
+		outline: 2px solid var(--ring);
+		outline-offset: 2px;
+	}
+
+	.range-forged:focus-visible::-moz-range-thumb {
+		outline: 2px solid var(--ring);
+		outline-offset: 2px;
+	}
+
+	/* Wiersz listy, który coś robi po kliknięciu */
+	.list-row {
+		min-height: var(--touch-target);
+		border-radius: var(--radius-sm);
+	}
+
+	.list-row:hover {
+		background: var(--hover-surface);
+	}
+
+	/* Nagłówek grupy w panelu */
+	.group-label {
+		font-size: var(--text-label);
+		font-weight: 500;
+		color: var(--muted-foreground);
+	}
+
+	/* Notatka na pergaminie przybita gwoździem (karta obiektu) */
+	.parchment-note {
+		position: relative;
+		color: var(--ink);
+		background:
+			radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(92 58 22 / 0.35) 100%),
+			radial-gradient(rgb(90 60 20 / 0.08) 1px, transparent 1.4px) 0 0 / 4px 4px,
+			var(--parchment);
+		clip-path: polygon(
+			0 1.2%,
+			6% 0,
+			22% 0.8%,
+			40% 0,
+			61% 0.6%,
+			78% 0,
+			94% 1%,
+			100% 0,
+			99.4% 22%,
+			100% 48%,
+			99.4% 74%,
+			100% 99%,
+			92% 100%,
+			70% 99.2%,
+			48% 100%,
+			27% 99.2%,
+			8% 100%,
+			0 99%,
+			0.6% 70%,
+			0 44%,
+			0.5% 18%
+		);
+	}
+
+	/* Cień notatki na elemencie nadrzędnym, bo clip-path notatki przyciąłby cień */
+	.parchment-note-shadow {
+		filter: drop-shadow(0 8px 14px rgb(0 0 0 / 0.7));
+	}
+
+	.parchment-note::before {
+		content: '';
+		position: absolute;
+		top: 8px;
+		left: 50%;
+		width: 12px;
+		height: 12px;
+		margin-left: -6px;
+		border-radius: 999px;
+		background: radial-gradient(circle at 35% 35%, #c9ced1, #55595c 60%, #222);
+		box-shadow: 0 2px 2px rgb(0 0 0 / 0.5);
+	}
+
+	.parchment-note .note-faded {
+		color: var(--ink-faded);
+	}
+
+	.parchment-note .note-rule {
+		height: 1px;
+		border: 0;
+		background: linear-gradient(90deg, transparent, var(--ink-faded), transparent);
+		opacity: 0.5;
+	}
+
+	.parchment-note a {
+		color: var(--ink-red);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+	}
+
+	.parchment-note :focus-visible {
+		outline-color: var(--ore-deep);
+	}
+
+	.button-ink {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		min-height: var(--touch-target);
+		padding: 0 0.875rem;
+		border-radius: var(--radius-sm);
+		border: 1.5px solid var(--ink-faded);
+		color: var(--ink);
+		font-weight: 500;
+	}
+
+	.button-ink:hover {
+		background: rgb(42 28 15 / 0.1);
+		border-color: var(--ink);
+	}
+
 	/* Mapa z ekwipunku: pergamin pod przezroczystym płótnem Cesium (widać go poza modelem świata) */
 	.map-parchment {
 		background:
