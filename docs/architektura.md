@@ -302,7 +302,7 @@ Wymiary układu też są tokenami: `--top-bar-height`, `--bottom-nav-height`, `-
 ładowania liczą z nich położenie zamiast stałych. Decyzja: [ADR 0019](adr/0019-motyw-mapa-z-sakwy-i-tokeny-ukladu.md).
 
 Mapa wygląda jak arkusz pergaminu: płótno Cesium ma przezroczyste tło (`withTransparentBackground`),
-a pod nim `MapView` rysuje pergamin (`.map-parchment`) i nad nim przypalone brzegi (`.map-parchment-frame`,
+a pod nim `MapView` rysuje ciemny, przydymiony pergamin (`.map-parchment`, kolor `--map-backdrop`) i nad nim przypalone brzegi (`.map-parchment-frame`,
 bez przechwytywania kliknięć). Cesium wpisuje atrybucje do elementu z komponentu `MapAttribution`
 (`attachMapTo(kontener, atrybucje)`, `withCreditsIn`), który obok logo Cesium ion pokazuje prawa do świata
 gry. Kontrolki mapy (`MapControls`) mają przyciski 44 px, a podziałka w pasku stanu wygląda jak linijka.
