@@ -133,9 +133,10 @@ export class GeoportalFacade {
 		void this.showCurrentWorldOnMap();
 	}
 
-	attachMapTo(container: HTMLElement): void {
+	/** Tworzy mapę w `container`; atrybucje źródeł danych (wymagane przez Cesium ion) trafiają do `creditContainer`. */
+	attachMapTo(container: HTMLElement, creditContainer: HTMLElement): void {
 		this.isWorldShownOnMap = false;
-		this.mapService = new MapService(container, this.createMapViewListeners());
+		this.mapService = new MapService(container, creditContainer, this.createMapViewListeners());
 		this.mapService.setViewInsets(this.mapViewInsets);
 		void this.showCurrentWorldOnMap();
 		this.searchCoordinator.showSelectedEntryOnMap(false);

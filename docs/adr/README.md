@@ -23,3 +23,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0017](0017-szczegoly-questow-ladowane-leniwie.md)             | Szczegóły questów ładowane leniwie z `quests.json`   | przyjęta |
 | [0018](0018-nazwy-gildii-z-danych-swiata.md)                   | Nazwy gildii z danych świata, nie z kodu aplikacji   | przyjęta |
 | [0019](0019-motyw-mapa-z-sakwy-i-tokeny-ukladu.md)             | Motyw „Mapa z sakwy kopacza” i tokeny układu         | przyjęta |
+| [0020](0020-pergamin-pod-plotnem-i-widoczne-atrybucje.md)      | Pergamin pod płótnem i widoczne atrybucje            | przyjęta |
