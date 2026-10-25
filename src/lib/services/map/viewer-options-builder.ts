@@ -28,8 +28,16 @@ export class ViewerOptionsBuilder {
 		return this;
 	}
 
-	withHiddenCredits(): this {
-		this.options = { ...this.options, creditContainer: document.createElement('div') };
+	withCreditsIn(creditContainer: HTMLElement): this {
+		this.options = { ...this.options, creditContainer };
+		return this;
+	}
+
+	withTransparentBackground(): this {
+		this.options = {
+			...this.options,
+			contextOptions: { ...this.options.contextOptions, webgl: { alpha: true } }
+		};
 		return this;
 	}
 

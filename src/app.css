@@ -120,7 +120,7 @@
 		--top-bar-height: 3.5rem;
 		--bottom-nav-height: 0px;
 		--rail-width: 4.5rem;
-		--status-bar-height: 2.25rem;
+		--status-bar-height: 2.75rem;
 		--panel-width: 20rem;
 		--map-controls-width: 5.5rem;
 	}
@@ -304,6 +304,69 @@
 		border-radius: var(--radius-sm);
 	}
 
+	/* Mapa z ekwipunku: pergamin pod przezroczystym płótnem Cesium (widać go poza modelem świata) */
+	.map-parchment {
+		background:
+			radial-gradient(
+				ellipse at 50% 45%,
+				transparent 35%,
+				rgb(60 36 14 / 0.4) 80%,
+				rgb(30 16 6 / 0.85) 100%
+			),
+			radial-gradient(circle at 18% 28%, rgb(110 70 25 / 0.14), transparent 22%),
+			radial-gradient(circle at 78% 72%, rgb(110 70 25 / 0.12), transparent 18%),
+			radial-gradient(rgb(90 60 20 / 0.12) 1px, transparent 1.4px) 0 0 / 4px 4px,
+			var(--parchment-dark);
+	}
+
+	/* Przypalone brzegi arkusza nad mapą; nie przechwytuje kliknięć */
+	.map-parchment-frame {
+		box-shadow:
+			inset 0 0 0 1px var(--edge),
+			inset 0 0 70px 16px rgb(30 16 6 / 0.7);
+	}
+
+	/* Kompas: kuty pierścień na skórzanej tarczy */
+	.map-compass {
+		background: radial-gradient(circle, var(--leather), #1a130d);
+		border: 2px solid var(--edge);
+		box-shadow:
+			inset 0 0 0 3px var(--iron),
+			inset 0 0 0 4px rgb(0 0 0 / 0.5),
+			0 6px 14px rgb(0 0 0 / 0.6);
+	}
+
+	.map-compass:hover {
+		box-shadow:
+			inset 0 0 0 3px var(--iron-light),
+			inset 0 0 0 4px rgb(0 0 0 / 0.5),
+			0 6px 14px rgb(0 0 0 / 0.6),
+			var(--glow-torch);
+	}
+
+	.map-control-button + .map-control-button {
+		border-top: 1px solid var(--divider);
+		box-shadow: inset 0 1px 0 var(--divider-highlight);
+	}
+
+	/* Podziałka jak linijka: naprzemienne odcinki atramentu i pergaminu */
+	.scale-ruler {
+		height: 7px;
+		border: 1.5px solid var(--bone);
+		background: repeating-linear-gradient(
+			90deg,
+			var(--bone) 0 25%,
+			transparent 25% 50%
+		);
+	}
+
+	/* Atrybucja jak dopisek atramentem na brzegu mapy */
+	.map-attribution {
+		color: var(--ink);
+		background: rgb(216 195 154 / 0.85);
+		box-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
+	}
+
 	/* Listwa przyrządu na dole ekranu */
 	.instrument-bar {
 		background: linear-gradient(180deg, var(--oak-light), #17110b);
@@ -351,6 +414,35 @@
 			height: auto;
 		}
 	}
+}
+
+/* Atrybucje Cesium w naszym stylu; poza warstwą, bo widgets.css z Cesium nie jest w @layer */
+.map-credits .cesium-widget-credits {
+	position: static;
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	padding: 0;
+	font-size: inherit;
+	color: var(--ink);
+}
+
+.map-credits .cesium-credit-logoContainer img {
+	display: block;
+	height: 16px;
+	width: auto;
+	filter: brightness(0.25) sepia(0.6);
+}
+
+.map-credits .cesium-credit-textContainer,
+.map-credits .cesium-credit-expand-link {
+	color: var(--ink);
+}
+
+.map-credits a {
+	color: var(--ink-red);
+	text-decoration: underline;
+	text-underline-offset: 2px;
 }
 
 input[type='search']::-webkit-search-cancel-button {

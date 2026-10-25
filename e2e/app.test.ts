@@ -238,6 +238,15 @@ test('na telefonie pole wyszukiwania rozwija arkusz, a okna otwiera menu „Wię
 	await expect(handle).toBeVisible();
 });
 
+test('mapa pokazuje atrybucję Cesium ion i praw do świata gry', async ({ page }) => {
+	await page.goto('/g2nk/khorinis');
+	const attribution = page.getByRole('complementary', { name: 'Źródła i prawa autorskie' });
+	await expect(attribution).toContainText('Piranha Bytes');
+	await expect(attribution.getByRole('img', { name: 'Cesium ion' })).toBeVisible({
+		timeout: 30_000
+	});
+});
+
 test('analiza „Widoczność” prosi o punkt na mapie i ma suwak promienia', async ({ page }) => {
 	await page.goto('/g2nk/khorinis?narzedzie=analysis');
 	await page.getByRole('button', { name: /^Widoczność/ }).click();

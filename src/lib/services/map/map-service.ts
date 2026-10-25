@@ -29,7 +29,6 @@ import { MeasurementRenderer } from './measurement-renderer.js';
 import { PlaceMarkersLayer, type PlaceMarker } from './place-markers-layer.js';
 import { ViewerOptionsBuilder } from './viewer-options-builder.js';
 
-const BACKGROUND_COLOR = '#14110d';
 const LIGHT_DIRECTION_FROM_ABOVE = new Cartesian3(-1, 0.35, -0.25);
 const OVERVIEW_PITCH_DEGREES = -50;
 const CLOSE_UP_PITCH_DEGREES = -55;
@@ -75,13 +74,15 @@ export class MapService {
 
 	constructor(
 		container: HTMLElement,
+		creditContainer: HTMLElement,
 		private readonly listeners: MapViewListeners
 	) {
 		const options = new ViewerOptionsBuilder()
 			.withoutIonBaseLayer()
 			.withoutToolbarWidgets()
 			.withoutFeatureInfoPopups()
-			.withHiddenCredits()
+			.withCreditsIn(creditContainer)
+			.withTransparentBackground()
 			.build();
 		this.viewer = new Viewer(container, options);
 		this.configureSceneForWorldBelowSeaLevel();
@@ -483,12 +484,13 @@ export class MapService {
 
 	/**
 	 * Teren leży częściowo poniżej 0 m, więc globus jest wyłączony. W lon/lat 0,0 oś +X ECEF
-	 * wskazuje „górę”, dlatego światło kierunkowe ma kierunek zbliżony do -X.
+	 * wskazuje „górę”, dlatego światło kierunkowe ma kierunek zbliżony do -X. Tło sceny jest
+	 * przezroczyste: poza modelem świata widać pergamin narysowany w CSS pod płótnem.
 	 */
 	private configureSceneForWorldBelowSeaLevel(): void {
 		const scene = this.viewer.scene;
 		scene.globe.show = false;
-		scene.backgroundColor = Color.fromCssColorString(BACKGROUND_COLOR);
+		scene.backgroundColor = Color.TRANSPARENT;
 		scene.fog.enabled = false;
 		if (scene.skyBox) scene.skyBox.show = false;
 		if (scene.skyAtmosphere) scene.skyAtmosphere.show = false;

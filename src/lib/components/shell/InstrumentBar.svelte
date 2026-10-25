@@ -3,20 +3,18 @@
 
 	const cell = 'instrument-cell flex items-center gap-2 px-3.5 whitespace-nowrap';
 	const readingWidths = ['md:w-32', 'md:w-32', 'md:w-40'];
-	const statusText = $derived(
-		`${appState.statusText} · Świat gry © Piranha Bytes, THQ Nordic · projekt fanowski`
-	);
+	const statusText = $derived(appState.statusText);
 </script>
 
 <footer
-	class="instrument-bar fixed bottom-[calc(var(--bottom-nav-height)+var(--sheet-occupied-height)+var(--gutter))] left-(--gutter) z-20 h-8 items-stretch rounded-sm text-caption tabular-nums md:inset-x-0 md:bottom-0 md:h-(--status-bar-height) md:rounded-none {appState.cursorReadings
+	class="instrument-bar fixed bottom-[calc(var(--bottom-nav-height)+var(--sheet-occupied-height)+var(--gutter)+2.25rem)] left-(--gutter) z-20 h-8 items-stretch rounded-sm text-caption tabular-nums md:inset-x-0 md:bottom-0 md:h-(--status-bar-height) md:rounded-none {appState.cursorReadings
 		? 'flex'
 		: 'hidden md:flex'}"
 	aria-label="Pozycja kursora, skala i stan"
 >
-	<div class="{cell} hidden md:flex">
+	<div class="{cell} hidden px-0 md:flex">
 		<button
-			class="text-primary underline decoration-primary/50 decoration-dotted underline-offset-3"
+			class="h-full px-3.5 text-primary underline decoration-primary/50 decoration-dotted underline-offset-3 hover:bg-hover-surface hover:text-hover"
 			title="{appState.coordinateSystem.description}. Kliknij, aby zmienić układ."
 			onclick={() => geoportal.switchToNextCoordinateSystem()}
 		>
@@ -24,10 +22,10 @@
 		</button>
 	</div>
 
-	<div class="{cell} hidden md:flex">
+	<div class="{cell} hidden pr-0 md:flex">
 		<span class="text-muted-foreground">Godzina</span>
 		<button
-			class="hover:text-primary"
+			class="h-full px-2 hover:bg-hover-surface hover:text-hover"
 			title="Zmień porę dnia"
 			onclick={() => geoportal.selectTool('time')}
 		>
@@ -49,10 +47,7 @@
 
 	<div class="{cell} hidden md:flex md:w-44" aria-label="Skala {appState.scaleBar?.label ?? ''}">
 		{#if appState.scaleBar}
-			<span
-				class="h-1.5 border border-t-0 border-foreground"
-				style:width="{appState.scaleBar.widthPixels}px"
-			></span>
+			<span class="scale-ruler" style:width="{appState.scaleBar.widthPixels}px"></span>
 			<span>{appState.scaleBar.label}</span>
 		{/if}
 	</div>

@@ -56,7 +56,7 @@ sequenceDiagram
     participant B as EventBus
     participant S as AppState
 
-    V->>F: attachMapTo(kontener)
+    V->>F: attachMapTo(kontener, atrybucje)
     F->>M: new MapService (Viewer)
     P->>F: openWorld(świat)
     F->>B: world-opened
@@ -300,6 +300,13 @@ Wymiary układu też są tokenami: `--top-bar-height`, `--bottom-nav-height`, `-
 `ToolPanel` ustawia w biegu na `:root` `--sheet-occupied-height` (wysokość arkusza na telefonie) oraz
 `--panel-occupied-width` (szerokość panelu na większych ekranach). Pasek stanu, joysticki i plakietka
 ładowania liczą z nich położenie zamiast stałych. Decyzja: [ADR 0019](adr/0019-motyw-mapa-z-sakwy-i-tokeny-ukladu.md).
+
+Mapa wygląda jak arkusz pergaminu: płótno Cesium ma przezroczyste tło (`withTransparentBackground`),
+a pod nim `MapView` rysuje pergamin (`.map-parchment`) i nad nim przypalone brzegi (`.map-parchment-frame`,
+bez przechwytywania kliknięć). Cesium wpisuje atrybucje do elementu z komponentu `MapAttribution`
+(`attachMapTo(kontener, atrybucje)`, `withCreditsIn`), który obok logo Cesium ion pokazuje prawa do świata
+gry. Kontrolki mapy (`MapControls`) mają przyciski 44 px, a podziałka w pasku stanu wygląda jak linijka.
+Decyzja: [ADR 0020](adr/0020-pergamin-pod-plotnem-i-widoczne-atrybucje.md).
 
 ## Podgląd modelu przedmiotu
 
