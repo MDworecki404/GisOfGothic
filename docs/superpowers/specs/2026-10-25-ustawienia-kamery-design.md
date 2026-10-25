@@ -50,19 +50,20 @@ przełączenie (perspektywa ↔ ortogonalny) ma kosztować 1–2 kliknięcia.
 6. Skala w ortho: `metry na piksel = frustum.width / szerokość płótna` (zgodne z pomiarem przez
    `pickPosition`). W perspektywie zostaje pomiar przez `pickPosition`.
 7. Bez zmian działają: pick i `pickPosition` (odczyt E/N/H kursora), `setView`, `flyTo`,
-   `flyToBoundingSphere`, wheel i przeciąganie, 3D Tiles, cienie (po włączeniu z UI aplikacji,
-   także przy wielokrotnym przełączaniu).
-8. Jednorazowy błąd renderowania (`fov, aspectRatio, near, or far parameters are not set`) pojawił się
-   przy programowym włączaniu cieni w spike'u, także w czystej perspektywie. Z UI aplikacji nie wystąpił.
-   Scenariusz e2e „cienie włączone + przełączanie rzutu” jest wymagany, żeby to potwierdzić.
+   `flyToBoundingSphere`, wheel i przeciąganie, 3D Tiles.
+8. **Poprawka po implementacji:** cienie nie działają w ortho. `ShadowMap.computeCascades` w Cesium używa
+   perspektywicznego `scratchFrustum` i przy kamerze ortogonalnej przerywa renderowanie błędem
+   `fov, aspectRatio, near, or far parameters are not set` (odtworzone w aplikacji: `?rzut=o` + włączone Cienie).
+   Wcześniejsze „działa” ze spike'a było przypadkiem (mapa cieni nie była przeliczana). Decyzja: w ortho cienie
+   są wyłączone (`MapService.applyShadows`), a po powrocie do perspektywy wracają; panel Czas to wyjaśnia.
 
 ## Podejścia i wybór
 
-| Podejście | Za | Przeciw |
-|---|---|---|
+| Podejście                                                    | Za                                            | Przeciw                                                                    |
+| ------------------------------------------------------------ | --------------------------------------------- | -------------------------------------------------------------------------- |
 | **A. Wbudowany ortho Cesium + korekta odległości (wybrane)** | Mało kodu, wheel/drag/flyTo działają natywnie | Szerokość sprzężona z odległością; trzeba obsłużyć rozjazd po `look` i Q/E |
-| B. Własne zarządzanie szerokością | Pełna kontrola skali | Przepisanie wheel/pinch/przycisków; prywatne API Cesium lub asercje |
-| C. Pseudo-ortho przez małe FOV i daleką kamerę | Zero zmian frustum | Zniekształcenia, kłopoty z near/far i z głębią, nie jest to prawdziwy plan |
+| B. Własne zarządzanie szerokością                            | Pełna kontrola skali                          | Przepisanie wheel/pinch/przycisków; prywatne API Cesium lub asercje        |
+| C. Pseudo-ortho przez małe FOV i daleką kamerę               | Zero zmian frustum                            | Zniekształcenia, kłopoty z near/far i z głębią, nie jest to prawdziwy plan |
 
 Wybór: **A** — spike potwierdził, że nic z podstawowych funkcji nie psuje się natywnie.
 
@@ -85,7 +86,8 @@ przełączeniu ortho → perspektywa w tej samej sesji.
 - `CameraProjectionConverter` — czysta, testowana w Vitest. Przelicza: odległość perspektywy ↔ widoczna
   szerokość (wzór z pkt 2), przycina FOV do 30–100°, wyznacza dolną granicę odległości przy powrocie do
   perspektywy. Przyjmuje `fovy`/`fov` i proporcje płótna jako liczby.
-- `OrthographicScaleCalculator` — czysta; `metresPerPixel(frustumWidth, canvasWidth)`.
+- Skala w ortho to metoda `CameraProjectionConverter.calculateMetresPerPixel(frustumWidth, canvasWidth)`
+  (osobna klasa `OrthographicScaleCalculator` byłaby jednowzorowym opakowaniem).
 - `CameraPresetBuilder` (budowniczy) — składa cel presetu (`top` | `oblique`): nachylenie, kierunek
   (top: północ u góry, nachylenie −89,99° przeciw osobliwości), zakres dobrany do bieżącej skali.
   Czysta część testowana; wywołanie przelotu przez `CameraFramer`.
@@ -99,7 +101,7 @@ przełączeniu ortho → perspektywa w tej samej sesji.
   na odległość kamery tym samym wzorem, więc rozmiar celu jest taki jak w perspektywie.
 - `CameraFlightController` — w ortho krok „wysokość” (Q/E, przyciski) zamienia na zoom (zmiana
   odległości zmienia szerokość), prędkość z bieżącej szerokości; po `look` odświeża szerokość.
-- `MapViewObserver` — w ortho skala = `OrthographicScaleCalculator`, bez `pickPosition`; nie ponawia
+- `MapViewObserver` — w ortho skala z `calculateMetresPerPixel`, bez `pickPosition`; nie ponawia
   pomiaru co 30 klatek (skala jest znana od razu).
 
 ### Fasada, zdarzenia, stan
@@ -150,7 +152,7 @@ w dokumentacji jako cechę rzutu, nie błąd.
 ## Testy
 
 - **Vitest (czyste klasy):** `CameraProjectionConverter` (wzór korekty, odwrotność, przycięcie FOV, dolna
-  granica), `OrthographicScaleCalculator`, `CameraPresetBuilder`, kodek `rzut` w `ViewLinkCodec`
+  granica, metry na piksel), `CameraPresetBuilder`, kodek `rzut` w `ViewLinkCodec`
   (`o`, `p_75`, brak, błędny, FOV poza zakresem), `BookmarkStore` z i bez pola `projection`,
   `KeyboardProjectionListener` (mapowanie P, pomijanie pól tekstowych).
 - **Playwright:** przełączenie rzutu przyciskiem i klawiszem P; widok z góry w ortho (podziałka
@@ -175,9 +177,18 @@ Tabela skrótów klawiszowych: P.
 
 ## Ryzyka
 
-- Rozjazd szerokości i odległości po `look` (pkt 4) — mitigacja: skala i kadrowanie z frustum, odświeżenie
-  szerokości po obrocie.
+- Rozjazd szerokości i odległości po `look` (pkt 4) — mitigacja: skala i kadrowanie z frustum. Po obrocie (`look`)
+  szerokość nie jest odświeżana; następny zoom może skoczyć (do ok. 12%), a powrót do perspektywy odbiegać od
+  pozycji sprzed przełączenia.
 - Wejście kamery w teren przy powrocie do perspektywy — dolna granica odległości.
 - Wydajność na telefonie nie zmierzona (tylko komputer, tylko liczba kafli i trójkątów).
-- Błąd renderowania z cieniami (pkt 8) — scenariusz e2e; jeśli się powtórzy w aplikacji, osobne
-  badanie przed wydaniem.
+- Cienie w ortho wyłączone (pkt 8); zmiana Cesium może to odblokować — sprawdzić przy aktualizacji.
+
+## Wyniki implementacji
+
+- Zrealizowane zgodnie z planem `docs/superpowers/plans/2026-10-25-ustawienia-kamery.md`; odchylenia z uzasadnieniem są w opisach commitów.
+- Odchylenia: stan okienka ustawień lokalny w `MapControls` (bez `CameraSettingsState`); oszacowanie odległości
+  (rzut środka świata na oś patrzenia), gdy pod środkiem ekranu nie ma powierzchni; powrót do perspektywy liczy
+  odległość z szerokości widoku; poprawka porównania adresu w `+page.svelte` (`window.location.search`).
+- Sprawdzone ręcznie: 360, 1024 i 1440 px (okienko, przełączanie, widok Z góry, link, skrót P); e2e: 35 scenariuszy zielonych.
+- Niesprawdzone: 768 px osobno, dotyk (pinch) na prawdziwym telefonie, wydajność na telefonie.
