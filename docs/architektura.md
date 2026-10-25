@@ -231,6 +231,9 @@ parametry adresu i z powrotem: `?wpis=item:…&widok=E_N_H_kierunek_nachylenie&n
 (parametry domyślne są pomijane, zamknięty panel to `narzedzie=zamkniete`). Kamerę koduje
 `CameraViewCodec` w metrach od kotwicy i stopniach, więc link nie zależy od globusa Cesium; uszkodzony
 parametr jest ignorowany, a reszta widoku odtwarzana.
+Rzut kamery (`CameraProjectionCodec`) to opcjonalny parametr `rzut`: `o` dla rzutu ortogonalnego albo `p_<fov>` dla
+perspektywy z niedomyślnym kątem widzenia; brak parametru oznacza perspektywę 60°, więc starsze linki działają bez zmian,
+a parametr spoza zakresu jest ignorowany.
 
 Strona (`+page.svelte`) tylko przekazuje fasadzie surowe `location.search` (`openSharedView`) i po każdej
 zmianie `AppState.sharedViewQuery` podmienia adres (`replaceState`). `MapViewObserver` zgłasza zatrzymanie

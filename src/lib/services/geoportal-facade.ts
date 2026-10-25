@@ -173,6 +173,7 @@ export class GeoportalFacade {
 			{
 				entryId: bookmark.entryId,
 				camera: bookmark.camera,
+				projection: null,
 				toolId: bookmark.toolId,
 				chapter: bookmark.chapter
 			},
@@ -420,6 +421,7 @@ export class GeoportalFacade {
 		return {
 			entryId: this.searchCoordinator.selectedEntryReference?.id ?? null,
 			camera: this.mapService?.readCameraView() ?? null,
+			projection: null,
 			toolId: this.activeToolId,
 			chapter: this.selectedChapter
 		};

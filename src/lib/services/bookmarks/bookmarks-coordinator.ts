@@ -120,6 +120,7 @@ export class BookmarksCoordinator {
 			linkQuery: this.linkCodec.buildQuery({
 				entryId: view.entryId,
 				camera: view.camera,
+				projection: null,
 				toolId: view.toolId,
 				chapter: view.chapter
 			})
