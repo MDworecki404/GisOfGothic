@@ -312,6 +312,7 @@ export class AppState {
 		return viewLinkCodec.buildQuery({
 			entryId: this.selectedEntry?.id ?? null,
 			camera: this.cameraView,
+			projection: null,
 			toolId: this.activeToolId,
 			chapter: this.selectedChapter
 		});

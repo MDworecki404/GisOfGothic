@@ -1,33 +1,40 @@
 import { isToolId, type ToolId } from '#lib/services/tools/tool-id.js';
 import { isChapterNumber, type ChapterNumber } from '#lib/services/chapters/chapter-filter.js';
+import { CameraProjectionCodec } from '#lib/services/camera/camera-projection-codec.js';
+import type { CameraProjectionSetting } from '#lib/services/camera/camera-projection.js';
 import { CameraViewCodec, type CameraView } from './camera-view-codec.js';
 
-/** To, co odtwarza link: wybrany wpis, kamera, otwarte narzędzie (`null` = panel zamknięty) i rozdział (`null` = wszystkie). */
+/** To, co odtwarza link: wybrany wpis, kamera, rzut (`null` = domyślny), otwarte narzędzie (`null` = panel zamknięty) i rozdział (`null` = wszystkie). */
 export interface SharedViewState {
 	entryId: string | null;
 	camera: CameraView | null;
+	projection: CameraProjectionSetting | null;
 	toolId: ToolId | null;
 	chapter: ChapterNumber | null;
 }
 
 const ENTRY_PARAMETER = 'wpis';
 const CAMERA_PARAMETER = 'widok';
+const PROJECTION_PARAMETER = 'rzut';
 const TOOL_PARAMETER = 'narzedzie';
 const CHAPTER_PARAMETER = 'rozdzial';
 const CLOSED_TOOL_VALUE = 'zamkniete';
 export const DEFAULT_TOOL_ID: ToolId = 'search';
 
 /**
- * Zamienia widok na parametry adresu (`?wpis=…&widok=…&narzedzie=…&rozdzial=…`) i z powrotem. Parametry
- * z wartością domyślną (brak wpisu, kamery, rozdziału, otwarte wyszukiwanie) są pomijane, żeby adres był krótki.
+ * Zamienia widok na parametry adresu (`?wpis=…&widok=…&rzut=…&narzedzie=…&rozdzial=…`) i z powrotem. Parametry
+ * z wartością domyślną (brak wpisu, kamery, rzutu domyślnego, rozdziału, otwarte wyszukiwanie) są pomijane, żeby adres był krótki.
  */
 export class ViewLinkCodec {
 	private readonly cameraCodec = new CameraViewCodec();
+	private readonly projectionCodec = new CameraProjectionCodec();
 
 	buildQuery(state: SharedViewState): string {
 		const parameters = new URLSearchParams();
 		if (state.entryId) parameters.set(ENTRY_PARAMETER, state.entryId);
 		if (state.camera) parameters.set(CAMERA_PARAMETER, this.cameraCodec.serialize(state.camera));
+		const projectionText = state.projection ? this.projectionCodec.serialize(state.projection) : null;
+		if (projectionText !== null) parameters.set(PROJECTION_PARAMETER, projectionText);
 		if (state.toolId === null) parameters.set(TOOL_PARAMETER, CLOSED_TOOL_VALUE);
 		else if (state.toolId !== DEFAULT_TOOL_ID) parameters.set(TOOL_PARAMETER, state.toolId);
 		if (state.chapter !== null) parameters.set(CHAPTER_PARAMETER, String(state.chapter));
@@ -38,11 +45,13 @@ export class ViewLinkCodec {
 	parseQuery(query: string): SharedViewState {
 		const parameters = new URLSearchParams(query);
 		const cameraText = parameters.get(CAMERA_PARAMETER);
+		const projectionText = parameters.get(PROJECTION_PARAMETER);
 		const toolText = parameters.get(TOOL_PARAMETER);
 		const chapter = Number(parameters.get(CHAPTER_PARAMETER));
 		return {
 			entryId: parameters.get(ENTRY_PARAMETER) || null,
 			camera: cameraText ? this.cameraCodec.parse(cameraText) : null,
+			projection: projectionText ? this.projectionCodec.parse(projectionText) : null,
 			toolId:
 				toolText === CLOSED_TOOL_VALUE ? null : isToolId(toolText) ? toolText : DEFAULT_TOOL_ID,
 			chapter: isChapterNumber(chapter) ? chapter : null
