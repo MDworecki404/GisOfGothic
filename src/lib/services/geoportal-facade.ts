@@ -135,7 +135,7 @@ export class GeoportalFacade {
 			hasApproximateRoutineTimes: world.hasApproximateRoutineTimes
 		});
 		this.searchCoordinator.useModelNamespace(world.modelNamespace);
-		this.staticObjectsCoordinator.useWorld(world.staticObjectsTilesetUrl);
+		this.staticObjectsCoordinator.useWorld(world.staticObjectsTilesetUrls);
 		this.searchCoordinator.useIndex(null);
 		guildNameBook.useGuildNames(undefined);
 		const questDataLoader = this.currentDataLoader;

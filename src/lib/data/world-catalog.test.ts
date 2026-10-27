@@ -10,7 +10,7 @@ const khorinis: WorldDefinition = {
 	modelNamespace: 'g2nk/khorinis',
 	protectedModelsUrl: 'https://modele.example/g2nk/khorinis/items',
 	worldTilesetUrl: 'https://bramka.example/ion/1/tileset.json',
-	staticObjectsTilesetUrl: 'https://bramka.example/ion/2/tileset.json',
+	staticObjectsTilesetUrls: ['https://bramka.example/ion/2/tileset.json'],
 	hasChapters: true,
 	hasApproximateRoutineTimes: false
 };
@@ -55,7 +55,7 @@ describe('worldCatalog', () => {
 		const worlds = worldCatalog.listAllWorlds();
 		const tilesets = worlds.flatMap((world) => [
 			world.worldTilesetUrl,
-			world.staticObjectsTilesetUrl
+			...world.staticObjectsTilesetUrls
 		]);
 		expect(new Set(tilesets).size).toBe(tilesets.length);
 		expect(new Set(worlds.map((world) => world.modelNamespace)).size).toBe(worlds.length);

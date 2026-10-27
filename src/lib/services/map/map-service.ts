@@ -69,7 +69,8 @@ export class MapService {
 	private readonly presetBuilder = new CameraPresetBuilder();
 	private readonly flightController: CameraFlightController;
 	private worldTileset: Cesium3DTileset | null = null;
-	private staticObjectsTileset: Cesium3DTileset | null = null;
+	private staticObjectsTilesets: Cesium3DTileset[] = [];
+	private readonly pendingTilesByStaticObjectsTileset = new Map<Cesium3DTileset, number>();
 	private latestStaticObjectsRequest = 0;
 	private worldFrame: WorldFrame | null = null;
 	private isDestroyed = false;
@@ -319,7 +320,7 @@ export class MapService {
 		this.viewer.resolutionScale = profile.resolutionScale;
 		if (scene.msaaSupported) scene.msaaSamples = profile.msaaSamples;
 		scene.postProcessStages.fxaa.enabled = profile.isFxaaEnabled;
-		for (const tileset of [this.worldTileset, this.staticObjectsTileset]) {
+		for (const tileset of [this.worldTileset, ...this.staticObjectsTilesets]) {
 			if (tileset) this.applyTileDetailTo(tileset);
 		}
 		this.applyShadows();
@@ -437,28 +438,36 @@ export class MapService {
 	 * Statyczne obiekty świata (voby) to osobny tileset w tym samym układzie co model świata,
 	 * więc używa tej samej macierzy kotwicy. Wymaga wczytanego świata.
 	 */
-	async showStaticObjectsTileset(tilesetUrl: string): Promise<void> {
+	async showStaticObjectsTilesets(tilesetUrls: readonly string[]): Promise<void> {
 		const frame = this.worldFrame;
 		if (!frame) throw new Error('Obiekty świata można pokazać dopiero po wczytaniu świata');
 		this.hideStaticObjectsTileset();
 		const request = this.latestStaticObjectsRequest;
-		const tileset = await Cesium3DTileset.fromUrl(tilesetUrl, { modelMatrix: frame.anchorToEcef });
+		const tilesets = await Promise.all(
+			tilesetUrls.map((tilesetUrl) =>
+				Cesium3DTileset.fromUrl(tilesetUrl, { modelMatrix: frame.anchorToEcef })
+			)
+		);
 		if (this.isDestroyed || request !== this.latestStaticObjectsRequest) {
-			tileset.destroy();
+			for (const tileset of tilesets) tileset.destroy();
 			return;
 		}
-		this.staticObjectsTileset = tileset;
-		this.applyTileDetailTo(tileset);
-		this.reportTileLoadingOf(tileset, 'static-objects');
-		this.viewer.scene.primitives.add(tileset);
+		this.staticObjectsTilesets = tilesets;
+		for (const tileset of tilesets) {
+			this.applyTileDetailTo(tileset);
+			this.reportStaticObjectsTileLoadingOf(tileset);
+			this.viewer.scene.primitives.add(tileset);
+		}
 	}
 
 	hideStaticObjectsTileset(): void {
 		this.latestStaticObjectsRequest++;
+		this.pendingTilesByStaticObjectsTileset.clear();
 		this.reportPendingTiles('static-objects', 0);
-		if (!this.staticObjectsTileset) return;
-		this.viewer.scene.primitives.remove(this.staticObjectsTileset);
-		this.staticObjectsTileset = null;
+		for (const tileset of this.staticObjectsTilesets) {
+			this.viewer.scene.primitives.remove(tileset);
+		}
+		this.staticObjectsTilesets = [];
 	}
 
 	removeWorldTileset(): void {
@@ -488,6 +497,18 @@ export class MapService {
 		tileset.loadProgress.addEventListener((pendingRequests, tilesProcessing) =>
 			this.reportPendingTiles(layer, pendingRequests + tilesProcessing)
 		);
+	}
+
+	/** Obiekty świata to kilka zestawów kafli, więc postęp wczytywania sumujemy po wszystkich. */
+	private reportStaticObjectsTileLoadingOf(tileset: Cesium3DTileset): void {
+		tileset.loadProgress.addEventListener((pendingRequests, tilesProcessing) => {
+			this.pendingTilesByStaticObjectsTileset.set(tileset, pendingRequests + tilesProcessing);
+			let totalPending = 0;
+			for (const pending of this.pendingTilesByStaticObjectsTileset.values()) {
+				totalPending += pending;
+			}
+			this.reportPendingTiles('static-objects', totalPending);
+		});
 	}
 
 	private reportPendingTiles(layer: TileLayerId, pendingTiles: number): void {

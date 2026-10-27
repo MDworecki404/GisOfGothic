@@ -73,7 +73,8 @@ zasobów przepuszcza podglądy przedmiotów ze ścieżek `/g1/…` i `/g2nk/…`
 
 Gra `g3` ma jeden świat `myrtana` (cały kontynent; nazwa robocza). Kod jest w `src/lib/data/world-catalog.ts`,
 ale świat trafia do katalogu dopiero po wpisaniu identyfikatorów assetów ion w `MYRTANA_ION_ASSETS`
-(`world.glb` ok. 152 MB i `vobs.glb` ok. 376 MB wgrywane jak w „Jak dodać nowy świat”; oba assety dopuścić
+(`world.glb` ok. 152 MB wgrywany jak w „Jak dodać nowy świat”; `vobs.glb` ok. 376 MB ion odrzucił, więc dzielimy go
+`node scripts/split-vobs-glb.mjs <vobs.glb> <folder> 4` i wgrywamy części jako osobne assety, [ADR 0023](adr/0023-voby-dzielone-na-kilka-assetow-ion.md); wszystkie dopuścić
 w `ALLOWED_ION_ASSETS`). Różnice względem G1/G2, które obsługuje aplikacja:
 
 - brak rozdziałów (`WorldDefinition.hasChapters: false` ukrywa wybór rozdziału);

@@ -9,8 +9,11 @@ export interface WorldDefinition {
 	protectedModelsUrl: string;
 	/** Adres `tileset.json` modelu świata w bramce zasobów (kafle z Cesium ion, ADR 0013). */
 	worldTilesetUrl: string;
-	/** Adres `tileset.json` statycznych obiektów świata (voby) w bramce zasobów. */
-	staticObjectsTilesetUrl: string;
+	/**
+	 * Adresy `tileset.json` statycznych obiektów świata (voby) w bramce zasobów. Zwykle jeden;
+	 * duże światy dzielimy na kilka assetów ion, które aplikacja ładuje razem.
+	 */
+	staticObjectsTilesetUrls: readonly string[];
 	/** `false` w grze bez rozdziałów (Gothic 3): UI ukrywa wybór rozdziału. */
 	hasChapters: boolean;
 	/** `true`, gdy godziny rutyn są robocze, a nie zapisane w grze (Gothic 3): UI pokazuje je jako orientacyjne. */
@@ -65,8 +68,9 @@ const KHORINIS: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g2nk/khorinis/items',
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6033666/tileset.json',
-	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045068/tileset.json',
+	staticObjectsTilesetUrls: [
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045068/tileset.json'
+	],
 	hasChapters: true,
 	hasApproximateRoutineTimes: false
 };
@@ -82,8 +86,9 @@ const GORNICZA_DOLINA: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g2nk/gornicza-dolina/items',
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6044750/tileset.json',
-	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045072/tileset.json',
+	staticObjectsTilesetUrls: [
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045072/tileset.json'
+	],
 	hasChapters: true,
 	hasApproximateRoutineTimes: false
 };
@@ -99,8 +104,9 @@ const JARKENDAR: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g2nk/jarkendar/items',
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045115/tileset.json',
-	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045113/tileset.json',
+	staticObjectsTilesetUrls: [
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045113/tileset.json'
+	],
 	hasChapters: true,
 	hasApproximateRoutineTimes: false
 };
@@ -116,8 +122,9 @@ const IRDORATH: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g2nk/irdorath/items',
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6047295/tileset.json',
-	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6047297/tileset.json',
+	staticObjectsTilesetUrls: [
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6047297/tileset.json'
+	],
 	hasChapters: true,
 	hasApproximateRoutineTimes: false
 };
@@ -133,8 +140,9 @@ const KOLONIA: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g1/kolonia/items',
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067772/tileset.json',
-	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067768/tileset.json',
+	staticObjectsTilesetUrls: [
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067768/tileset.json'
+	],
 	hasChapters: true,
 	hasApproximateRoutineTimes: false
 };
@@ -150,8 +158,9 @@ const WOLNA_KOPALNIA: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g1/wolna-kopalnia/items',
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067744/tileset.json',
-	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067746/tileset.json',
+	staticObjectsTilesetUrls: [
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067746/tileset.json'
+	],
 	hasChapters: true,
 	hasApproximateRoutineTimes: false
 };
@@ -167,8 +176,9 @@ const STARA_KOPALNIA: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g1/stara-kopalnia/items',
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067752/tileset.json',
-	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067750/tileset.json',
+	staticObjectsTilesetUrls: [
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067750/tileset.json'
+	],
 	hasChapters: true,
 	hasApproximateRoutineTimes: false
 };
@@ -184,8 +194,9 @@ const CMENTARZYSKO_ORKOW: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g1/cmentarzysko-orkow/items',
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067756/tileset.json',
-	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067758/tileset.json',
+	staticObjectsTilesetUrls: [
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067758/tileset.json'
+	],
 	hasChapters: true,
 	hasApproximateRoutineTimes: false
 };
@@ -201,19 +212,21 @@ const SWIATYNIA_ORKOW: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g1/swiatynia-orkow/items',
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067766/tileset.json',
-	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067764/tileset.json',
+	staticObjectsTilesetUrls: [
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067764/tileset.json'
+	],
 	hasChapters: true,
 	hasApproximateRoutineTimes: false
 };
 
 /**
- * Identyfikatory assetów Cesium ion modelu Myrtany (`world.glb`, `vobs.glb`). Gdy ich brak (`null`), Gothic 3
+ * Identyfikatory assetów Cesium ion modelu Myrtany: `world.glb` i części `vobs.glb` (ion odrzucił całość,
+ * ADR 0023). Gdy ich brak (`null`), Gothic 3
  * nie trafia do katalogu: bez kafli świat byłby pustą mapą. Wgranie assetów opisuje `docs/dane.md`.
  */
-const MYRTANA_ION_ASSETS: { world: number; staticObjects: number } | null = {
+const MYRTANA_ION_ASSETS: { world: number; staticObjects: readonly number[] } | null = {
 	world: 6088791,
-	staticObjects: 6088793
+	staticObjects: []
 };
 
 function buildMyrtanaWorlds(): WorldDefinition[] {
@@ -229,7 +242,10 @@ function buildMyrtanaWorlds(): WorldDefinition[] {
 			protectedModelsUrl:
 				'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g3/myrtana/items',
 			worldTilesetUrl: `https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/${MYRTANA_ION_ASSETS.world}/tileset.json`,
-			staticObjectsTilesetUrl: `https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/${MYRTANA_ION_ASSETS.staticObjects}/tileset.json`,
+			staticObjectsTilesetUrls: MYRTANA_ION_ASSETS.staticObjects.map(
+				(assetId) =>
+					`https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/${assetId}/tileset.json`
+			),
 			hasChapters: false,
 			hasApproximateRoutineTimes: true
 		}
