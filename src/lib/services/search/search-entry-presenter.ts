@@ -1,4 +1,5 @@
 import { describeCategory } from '#lib/data/category-names.js';
+import { LootPresenter } from '#lib/services/loot/loot-presenter.js';
 import { EncyclopediaLinkBuilder } from '#lib/services/encyclopedia/encyclopedia-link-builder.js';
 import type {
 	Place,
@@ -28,8 +29,12 @@ export const QUEST_ROLE_PRESENTATION: Readonly<Record<QuestPlaceRole, PlaceKindP
 	stage: { label: 'Miejsce etapu', color: '#8aa3a0' }
 };
 
-/** Kolor znacznika miejsca: questy barwi rola miejsca, pozostałe wpisy rodzaj miejsca. */
+/** Miejsca, w których przedmiot tylko może się wylosować (Gothic 3), mają osobny, przygaszony kolor. */
+export const RANDOM_LOOT_COLOR = '#7d8f6a';
+
+/** Kolor znacznika miejsca: łup losowy ma własny, questy barwi rola miejsca, pozostałe wpisy rodzaj miejsca. */
 export function pickPlaceColor(place: Place): string {
+	if (place.set) return RANDOM_LOOT_COLOR;
 	return place.role
 		? QUEST_ROLE_PRESENTATION[place.role].color
 		: PLACE_KIND_PRESENTATION[place.kind].color;
@@ -56,6 +61,8 @@ export interface PlaceSummary {
 	color: string;
 	quantity: string | null;
 	isUncertain: boolean;
+	/** Miejsce zestawu losowego łupu: przedmiot może się tu wylosować, ale nie musi. */
+	isRandomLoot: boolean;
 }
 
 export interface SearchEntryDetails {
@@ -67,6 +74,8 @@ export interface SearchEntryDetails {
 	/** Logiczna ścieżka podglądu 3D (np. `g2nk/khorinis/previews/x.glb`), nie adres pliku. */
 	modelPath: string | null;
 	facts: EntryFact[];
+	/** Gothic 3: skąd przedmiot może wypaść z losowego łupu. */
+	lootSources: string[];
 	encyclopediaUrl: string | null;
 	places: PlaceSummary[];
 }
@@ -76,12 +85,13 @@ function capitalize(text: string): string {
 }
 
 function sumAmounts(places: readonly Place[]): number {
-	return places.reduce((sum, place) => sum + (place.amount ?? 1), 0);
+	return places.filter((place) => !place.set).reduce((sum, place) => sum + (place.amount ?? 1), 0);
 }
 
 /** Zamienia surowe wpisy indeksu na teksty i liczby gotowe do pokazania w UI. */
 export class SearchEntryPresenter {
 	private readonly encyclopediaLinkBuilder = new EncyclopediaLinkBuilder();
+	private readonly lootPresenter = new LootPresenter();
 
 	presentResult(entry: SearchEntry): SearchResult {
 		return {
@@ -103,6 +113,7 @@ export class SearchEntryPresenter {
 			categoryLabel: describeCategory(entry.category),
 			modelPath: entry.model ? `${modelNamespace}/${entry.model}` : null,
 			facts: this.listFacts(entry),
+			lootSources: this.lootPresenter.describeLootSources(entry.loot ?? []),
 			encyclopediaUrl:
 				entry.type !== 'item' ? this.encyclopediaLinkBuilder.buildSearchUrl(entry.name) : null,
 			places: entry.places.map((place, index) => this.presentPlace(place, index))
@@ -116,7 +127,10 @@ export class SearchEntryPresenter {
 	}
 
 	private summarizeEntry(entry: SearchEntry): string {
-		if (entry.type === 'item') return `${entry.total ?? sumAmounts(entry.places)} szt.`;
+		if (entry.type === 'item') {
+			const total = entry.total ?? sumAmounts(entry.places);
+			return total === 0 && entry.loot && entry.loot.length > 0 ? 'tylko łup' : `${total} szt.`;
+		}
 		if (entry.type === 'quest') {
 			return entry.chapter === undefined || entry.chapter === null ? '' : `rozdz. ${entry.chapter}`;
 		}
@@ -144,7 +158,7 @@ export class SearchEntryPresenter {
 		];
 		const kinds: PlaceKind[] = ['ground', 'script', 'container', 'npc'];
 		for (const kind of kinds) {
-			const places = entry.places.filter((place) => place.kind === kind);
+			const places = entry.places.filter((place) => place.kind === kind && !place.set);
 			if (places.length === 0) continue;
 			facts.push({
 				label: PLACE_KIND_PRESENTATION[kind].label.toLocaleLowerCase('pl-PL'),
@@ -170,10 +184,11 @@ export class SearchEntryPresenter {
 		return {
 			index,
 			description: capitalize(place.label),
-			kindLabel: presentation.label,
-			color: presentation.color,
+			kindLabel: place.set ? 'Losowy łup' : presentation.label,
+			color: pickPlaceColor(place),
 			quantity: place.amount === undefined ? null : `${place.amount} szt.`,
-			isUncertain: place.certainty === 'possible'
+			isUncertain: place.certainty === 'possible' && !place.set,
+			isRandomLoot: place.set !== undefined
 		};
 	}
 }

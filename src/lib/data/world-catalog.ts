@@ -11,6 +11,10 @@ export interface WorldDefinition {
 	worldTilesetUrl: string;
 	/** Adres `tileset.json` statycznych obiektów świata (voby) w bramce zasobów. */
 	staticObjectsTilesetUrl: string;
+	/** `false` w grze bez rozdziałów (Gothic 3): UI ukrywa wybór rozdziału. */
+	hasChapters: boolean;
+	/** `true`, gdy godziny rutyn są robocze, a nie zapisane w grze (Gothic 3): UI pokazuje je jako orientacyjne. */
+	hasApproximateRoutineTimes: boolean;
 }
 
 export interface GameDefinition {
@@ -62,7 +66,9 @@ const KHORINIS: WorldDefinition = {
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6033666/tileset.json',
 	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045068/tileset.json'
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045068/tileset.json',
+	hasChapters: true,
+	hasApproximateRoutineTimes: false
 };
 
 const GORNICZA_DOLINA: WorldDefinition = {
@@ -77,7 +83,9 @@ const GORNICZA_DOLINA: WorldDefinition = {
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6044750/tileset.json',
 	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045072/tileset.json'
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045072/tileset.json',
+	hasChapters: true,
+	hasApproximateRoutineTimes: false
 };
 
 const JARKENDAR: WorldDefinition = {
@@ -92,7 +100,9 @@ const JARKENDAR: WorldDefinition = {
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045115/tileset.json',
 	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045113/tileset.json'
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045113/tileset.json',
+	hasChapters: true,
+	hasApproximateRoutineTimes: false
 };
 
 const IRDORATH: WorldDefinition = {
@@ -107,7 +117,9 @@ const IRDORATH: WorldDefinition = {
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6047295/tileset.json',
 	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6047297/tileset.json'
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6047297/tileset.json',
+	hasChapters: true,
+	hasApproximateRoutineTimes: false
 };
 
 const KOLONIA: WorldDefinition = {
@@ -122,7 +134,9 @@ const KOLONIA: WorldDefinition = {
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067772/tileset.json',
 	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067768/tileset.json'
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067768/tileset.json',
+	hasChapters: true,
+	hasApproximateRoutineTimes: false
 };
 
 const WOLNA_KOPALNIA: WorldDefinition = {
@@ -137,7 +151,9 @@ const WOLNA_KOPALNIA: WorldDefinition = {
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067744/tileset.json',
 	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067746/tileset.json'
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067746/tileset.json',
+	hasChapters: true,
+	hasApproximateRoutineTimes: false
 };
 
 const STARA_KOPALNIA: WorldDefinition = {
@@ -152,7 +168,9 @@ const STARA_KOPALNIA: WorldDefinition = {
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067752/tileset.json',
 	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067750/tileset.json'
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067750/tileset.json',
+	hasChapters: true,
+	hasApproximateRoutineTimes: false
 };
 
 const CMENTARZYSKO_ORKOW: WorldDefinition = {
@@ -167,7 +185,9 @@ const CMENTARZYSKO_ORKOW: WorldDefinition = {
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067756/tileset.json',
 	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067758/tileset.json'
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067758/tileset.json',
+	hasChapters: true,
+	hasApproximateRoutineTimes: false
 };
 
 const SWIATYNIA_ORKOW: WorldDefinition = {
@@ -182,8 +202,38 @@ const SWIATYNIA_ORKOW: WorldDefinition = {
 	worldTilesetUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067766/tileset.json',
 	staticObjectsTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067764/tileset.json'
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067764/tileset.json',
+	hasChapters: true,
+	hasApproximateRoutineTimes: false
 };
+
+/**
+ * Identyfikatory assetów Cesium ion modelu Myrtany (`world.glb`, `vobs.glb`). Dopóki `null`, Gothic 3
+ * nie trafia do katalogu: bez kafli świat byłby pustą mapą. Wgranie assetów opisuje `docs/dane.md`.
+ */
+const MYRTANA_ION_ASSETS: { world: number; staticObjects: number } | null = null;
+
+function buildMyrtanaWorlds(): WorldDefinition[] {
+	if (!MYRTANA_ION_ASSETS) return [];
+	return [
+		{
+			id: 'myrtana',
+			gameId: 'g3',
+			name: 'Myrtana',
+			localCoordinateSystemName: 'Układ Myrtany 1992',
+			dataBaseUrl: '/data/g3/myrtana',
+			modelNamespace: 'g3/myrtana',
+			protectedModelsUrl:
+				'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g3/myrtana/items',
+			worldTilesetUrl: `https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/${MYRTANA_ION_ASSETS.world}/tileset.json`,
+			staticObjectsTilesetUrl: `https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/${MYRTANA_ION_ASSETS.staticObjects}/tileset.json`,
+			hasChapters: false,
+			hasApproximateRoutineTimes: true
+		}
+	];
+}
+
+const GOTHIC_3_WORLDS = buildMyrtanaWorlds();
 
 export const worldCatalog = new WorldCatalog(
 	[
@@ -196,7 +246,8 @@ export const worldCatalog = new WorldCatalog(
 			id: 'g2nk',
 			name: 'Gothic 2: Noc Kruka',
 			worlds: [KHORINIS, GORNICZA_DOLINA, JARKENDAR, IRDORATH]
-		}
+		},
+		...(GOTHIC_3_WORLDS.length > 0 ? [{ id: 'g3', name: 'Gothic 3', worlds: GOTHIC_3_WORLDS }] : [])
 	],
 	KHORINIS
 );

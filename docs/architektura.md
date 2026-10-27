@@ -81,7 +81,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 
 | Zdarzenie                    | Dane                                                                                     | Kiedy                                                                                |
 | ---------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `world-opened`               | `worldName`, `localCoordinateSystemName`                                                 | fasada przełączyła świat                                                             |
+| `world-opened`               | `worldName`, `localCoordinateSystemName`, `hasChapters`, `hasApproximateRoutineTimes`    | fasada przełączyła świat                                                             |
 | `world-load-started`         | —                                                                                        | start wczytywania modelu świata                                                      |
 | `world-loaded`               | —                                                                                        | tileset świata dodany do sceny                                                       |
 | `world-load-failed`          | `message`                                                                                | błąd wczytywania modelu świata (np. brak sieci)                                      |

@@ -25,7 +25,13 @@ import type { ToolId } from '#lib/services/tools/tool-id.js';
 import { EventBus } from './event-bus.js';
 
 export type AppEvent =
-	| { type: 'world-opened'; worldName: string; localCoordinateSystemName: string }
+	| {
+			type: 'world-opened';
+			worldName: string;
+			localCoordinateSystemName: string;
+			hasChapters: boolean;
+			hasApproximateRoutineTimes: boolean;
+	  }
 	| { type: 'world-load-started' }
 	| { type: 'world-loaded' }
 	| { type: 'world-load-failed'; message: string }

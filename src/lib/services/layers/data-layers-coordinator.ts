@@ -1,6 +1,8 @@
 import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
 import { ChapterFilter } from '#lib/services/chapters/chapter-filter.js';
+import { LootPresenter } from '#lib/services/loot/loot-presenter.js';
+import type { TreasureSetBook } from '#lib/services/loot/treasure-set-book.js';
 import { MAP_ICON_NODES } from './map-icon-shapes.js';
 import type { MapIconNode } from './map-icons.js';
 import type { DataLayerPoint, FeaturePick } from '#lib/services/map/data-layers-renderer.js';
@@ -8,6 +10,7 @@ import {
 	DATA_LAYERS,
 	type DataLayerDefinition,
 	type DataLayerId,
+	type FeatureIdentification,
 	type IdentifiableFeature
 } from './data-layer-catalog.js';
 
@@ -49,10 +52,13 @@ export class DataLayersCoordinator {
 	private featureCounts: Record<string, number> = {};
 	private chapterFilter = new ChapterFilter(null);
 	private dataLoader: GeoportalDataLoader | null = null;
+	private latestIdentification = 0;
+	private readonly lootPresenter = new LootPresenter();
 
 	constructor(
 		private readonly eventBus: AppEventBus,
-		private readonly getDisplay: () => DataLayersDisplay | null
+		private readonly getDisplay: () => DataLayersDisplay | null,
+		private readonly treasureSetBook: TreasureSetBook
 	) {}
 
 	useWorld(dataLoader: GeoportalDataLoader | null, featureCounts: Record<string, number>): void {
@@ -63,6 +69,7 @@ export class DataLayersCoordinator {
 		this.shownFeatures.clear();
 		this.pendingLoads.clear();
 		this.statuses.clear();
+		this.cancelPendingIdentification();
 		this.publishLayers();
 	}
 
@@ -120,9 +127,32 @@ export class DataLayersCoordinator {
 	identifyFeature(pick: FeaturePick): void {
 		const layer = DATA_LAYERS.find((definition) => definition.id === pick.layerId);
 		const feature = layer ? this.shownFeatures.get(layer.id)?.at(pick.featureIndex) : undefined;
+		const identification = feature ? feature.identification : null;
+		const request = ++this.latestIdentification;
+		this.eventBus.publish({ type: 'feature-identified', identification });
+		if (identification && identification.treasureSetCodes.length > 0) {
+			void this.addPossibleItems(identification, request);
+		}
+	}
+
+	/** Unieważnia dopisywanie zawartości do karty, która została już zamknięta albo zastąpiona inną. */
+	cancelPendingIdentification(): void {
+		this.latestIdentification++;
+	}
+
+	private async addPossibleItems(
+		identification: FeatureIdentification,
+		request: number
+	): Promise<void> {
+		const catalog = await this.treasureSetBook.loadCatalog();
+		if (!catalog || request !== this.latestIdentification) return;
+		const possibleItems = this.lootPresenter.describePossibleContents(
+			identification.treasureSetCodes,
+			catalog
+		);
 		this.eventBus.publish({
 			type: 'feature-identified',
-			identification: feature ? feature.identification : null
+			identification: { ...identification, possibleItems }
 		});
 	}
 

@@ -25,6 +25,7 @@ const STAGE_STATUSES: readonly QuestStageStatus[] = ['RUNNING', 'SUCCESS', 'FAIL
 const PERSON_ROLES: readonly QuestPersonRole[] = [
 	'giver',
 	'giver_candidate',
+	'target',
 	'stage',
 	'insert',
 	'routine'

@@ -1,7 +1,12 @@
 <script lang="ts">
 	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
 	import XIcon from '@lucide/svelte/icons/x';
+	import type { Attachment } from 'svelte/attachments';
 	import { appState, geoportal } from '#lib/composition-root.js';
+
+	function showPreview(modelFile: string): Attachment<HTMLElement> {
+		return (container) => geoportal.showWorldModelPreview(container, modelFile);
+	}
 
 	function searchForIdentifiedFeature(query: string): void {
 		geoportal.search(query);
@@ -32,6 +37,15 @@
 				</button>
 			</div>
 
+			{#if feature.modelFile}
+				<div
+					class="my-3 h-36 overflow-hidden rounded-sm border border-ink-faded/30"
+					aria-label="Podgląd 3D: {feature.title}"
+					role="img"
+					{@attach showPreview(feature.modelFile)}
+				></div>
+			{/if}
+
 			{#if feature.facts.length > 0}
 				<dl class="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-0.5">
 					{#each feature.facts as fact (fact.label)}
@@ -48,6 +62,19 @@
 						<li class="border-t border-ink-faded/30 py-1">{item}</li>
 					{/each}
 				</ul>
+			{/if}
+
+			{#if feature.treasureSetCodes.length > 0}
+				<h4 class="note-faded mt-3 text-label font-medium">Może zawierać (losowo)</h4>
+				{#if feature.possibleItems.length > 0}
+					<ul class="mt-1 font-serif">
+						{#each feature.possibleItems as item, index (index)}
+							<li class="border-t border-ink-faded/30 py-1">{item}</li>
+						{/each}
+					</ul>
+				{:else}
+					<p class="note-faded mt-1" role="status">Wczytuję możliwą zawartość…</p>
+				{/if}
 			{/if}
 
 			{#if feature.searchQuery || feature.encyclopediaUrl}

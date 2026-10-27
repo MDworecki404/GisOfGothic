@@ -53,6 +53,7 @@ export class TimeCoordinator {
 	private chapterFilter = new ChapterFilter(null);
 	private placesOnMap: RoutinePlace[] = [];
 	private dataLoader: GeoportalDataLoader | null = null;
+	private areRoutineTimesApproximate = false;
 	private shadows: ShadowSettings = { areEnabled: false, areSoft: true };
 
 	constructor(
@@ -68,6 +69,11 @@ export class TimeCoordinator {
 		this.placesOnMap = [];
 		this.status = 'hidden';
 		this.publish();
+	}
+
+	/** Gothic 3 zapisuje tylko punkty rutyn, więc godziny w danych są robocze i karta oznacza je jako orientacyjne. */
+	useApproximateRoutineTimes(areApproximate: boolean): void {
+		this.areRoutineTimesApproximate = areApproximate;
 	}
 
 	useChapterFilter(chapterFilter: ChapterFilter): void {
@@ -126,15 +132,26 @@ export class TimeCoordinator {
 				title: properties.characterName,
 				subtitle: action ? describeRoutineAction(action) : 'przebywa tutaj',
 				facts: [
-					{ label: 'Tutaj', value: currentRange ?? '—' },
+					{
+						label: 'Tutaj',
+						value: this.describeRoutineRange(currentRange)
+					},
 					{ label: 'Miejsce', value: properties.waypoint }
 				],
 				listTitle: null,
 				listItems: [],
 				searchQuery: properties.characterName,
-				encyclopediaUrl: this.encyclopediaLinkBuilder.buildSearchUrl(properties.characterName)
+				encyclopediaUrl: this.encyclopediaLinkBuilder.buildSearchUrl(properties.characterName),
+				treasureSetCodes: [],
+				possibleItems: [],
+				modelFile: null
 			}
 		});
+	}
+
+	private describeRoutineRange(range: string | undefined): string {
+		if (range === undefined) return '—';
+		return this.areRoutineTimesApproximate ? `${range} (orientacyjnie)` : range;
 	}
 
 	private async loadSchedule(): Promise<boolean> {

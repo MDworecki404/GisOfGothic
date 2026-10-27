@@ -1,5 +1,6 @@
 import {
 	isRecord,
+	readStringList,
 	readOptionalBoolean,
 	readOptionalNumber,
 	readOptionalString,
@@ -28,6 +29,8 @@ export interface ItemProperties {
 	category: string | null;
 	amount: number;
 	isInsertedByScript: boolean;
+	/** Dla przedmiotów wstawianych skryptem: nazwa sektora lub miejsca wstawienia. */
+	spot: string | null;
 }
 
 export interface ContainerProperties {
@@ -36,6 +39,10 @@ export interface ContainerProperties {
 	keyName: string | null;
 	lockCombination: string | null;
 	contents: InventoryLine[];
+	/** Gothic 3: zestawy losowego łupu skrzyni. */
+	treasureSetCodes: string[];
+	/** Plik podglądu 3D względem adresu modeli świata albo `null`. */
+	model: string | null;
 }
 
 export interface CharacterProperties {
@@ -46,6 +53,8 @@ export interface CharacterProperties {
 	level: number | null;
 	chapter: number | null;
 	waypoint: string | null;
+	/** Gothic 3: zestawy losowego łupu i towaru postaci. */
+	treasureSetCodes: string[];
 }
 
 function parseInventoryLine(value: unknown): InventoryLine | null {
@@ -129,7 +138,8 @@ export function parseItemProperties(
 		),
 		category: readOptionalString(properties, 'category') ?? null,
 		amount: readOptionalNumber(properties, 'amount') ?? 1,
-		isInsertedByScript: readOptionalString(properties, 'source') === 'script'
+		isInsertedByScript: readOptionalString(properties, 'source') === 'script',
+		spot: readOptionalString(properties, 'spot') ?? null
 	};
 }
 
@@ -142,7 +152,9 @@ export function parseContainerProperties(
 		isLocked: readOptionalBoolean(properties, 'locked') ?? false,
 		keyName: readOptionalString(properties, 'key') ?? null,
 		lockCombination: readOptionalString(properties, 'pick_string') ?? null,
-		contents: parseInventory(properties.contents)
+		contents: parseInventory(properties.contents),
+		treasureSetCodes: readStringList(properties, 'treasure_sets') ?? [],
+		model: readOptionalString(properties, 'model') ?? null
 	};
 }
 
@@ -157,6 +169,7 @@ export function parseCharacterProperties(
 		guild: readOptionalString(properties, 'guild_name') ?? null,
 		level: readOptionalNumber(properties, 'level') ?? null,
 		chapter: readOptionalNumber(properties, 'chapter') ?? null,
-		waypoint: readOptionalString(properties, 'insert_waypoint') ?? null
+		waypoint: readOptionalString(properties, 'insert_waypoint') ?? null,
+		treasureSetCodes: readStringList(properties, 'treasure_sets') ?? []
 	};
 }
