@@ -48,6 +48,7 @@ describe('worldCatalog', () => {
 		expect(colony?.modelNamespace).toBe('g1/kolonia');
 		expect(worldCatalog.findGame('g1')?.worlds).toHaveLength(5);
 		expect(worldCatalog.findGame('g2nk')?.worlds).toHaveLength(4);
+		expect(worldCatalog.findGame('g3')?.worlds).toHaveLength(1);
 	});
 
 	it('każdy świat ma własne zasoby: żadne dwa światy nie dzielą kafli ani przestrzeni modeli', () => {
