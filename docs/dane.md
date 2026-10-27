@@ -69,6 +69,22 @@ zasobów przepuszcza podglądy przedmiotów ze ścieżek `/g1/…` i `/g2nk/…`
    poprawnie ustawiony, znaczniki na terenie, podglądy przedmiotów, brak błędów w konsoli. Na produkcję
    świat trafia z najbliższym wydaniem.
 
+## Gothic 3 (Myrtana)
+
+Gra `g3` ma jeden świat `myrtana` (cały kontynent; nazwa robocza). Kod jest w `src/lib/data/world-catalog.ts`,
+ale świat trafia do katalogu dopiero po wpisaniu identyfikatorów assetów ion w `MYRTANA_ION_ASSETS`
+(`world.glb` ok. 152 MB i `vobs.glb` ok. 376 MB wgrywane jak w „Jak dodać nowy świat”; oba assety dopuścić
+w `ALLOWED_ION_ASSETS`). Różnice względem G1/G2, które obsługuje aplikacja:
+
+- brak rozdziałów (`WorldDefinition.hasChapters: false` ukrywa wybór rozdziału);
+- stronnictwa zamiast gildii: kody bez polskiej nazwy (`OUT`, `SLAVE`) pokazujemy jako kod;
+- godziny rutyn są robocze (`hasApproximateRoutineTimes`), karta oznacza je „orientacyjnie”;
+- losowy łup: `treasure_sets.json`, pole `treasure_sets` w skrzyniach i postaciach, `loot` i miejsca `set`
+  w indeksie ([ADR 0022](adr/0022-losowy-lup-gothic-3.md));
+- `quests.json` ma rolę postaci `target` (cel zadania);
+- skrzynie mają podgląd 3D (`model` w `containers.geojson`), widoczny w karcie skrzyni;
+- kody mają oryginalną wielkość liter, a wiele przedmiotów ma wspólną nazwę (np. „Amulet”), więc odróżnia je kod.
+
 ## Indeks wyszukiwania
 
 `search_index.json` to lista wpisów `item` (przedmiot), `character` (unikatowa postać) i `quest` (temat dziennika)

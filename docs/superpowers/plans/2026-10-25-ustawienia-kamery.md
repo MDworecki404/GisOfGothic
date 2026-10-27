@@ -46,10 +46,12 @@ Zmieniane: `view-link-codec.ts`, `bookmark-store.ts`, `bookmarks-coordinator.ts`
 ### Task 1: Ustawienie rzutu i jego kodek
 
 **Files:**
+
 - Create: `src/lib/services/camera/camera-projection.ts`, `src/lib/services/camera/camera-projection-codec.ts`
 - Test: `src/lib/services/camera/camera-projection-codec.test.ts`
 
 **Interfaces:**
+
 - Produces (`camera-projection.ts`): `type CameraProjectionSetting = { kind: 'perspective'; fovDegrees: number } | { kind: 'orthographic' }`; `const MINIMUM_FIELD_OF_VIEW_DEGREES = 30`, `MAXIMUM_FIELD_OF_VIEW_DEGREES = 100`, `DEFAULT_FIELD_OF_VIEW_DEGREES = 60`; `const DEFAULT_CAMERA_PROJECTION: CameraProjectionSetting` (perspektywa 60°); `clampFieldOfViewDegrees(degrees: number): number` (przycina do 30–100, zaokrągla do całości); `isDefaultCameraProjection(setting): boolean`; `isCameraProjectionSetting(value: unknown): value is CameraProjectionSetting` (waliduje strukturę i zakres FOV, do odczytu z `localStorage`).
 - Produces (`camera-projection-codec.ts`): `class CameraProjectionCodec { serialize(setting): string | null; parse(text: string): CameraProjectionSetting | null }` — `null` z `serialize` dla ustawienia domyślnego; `o` dla ortho; `p_<fov>` dla perspektywy z niedomyślnym FOV.
 
@@ -64,10 +66,12 @@ Zmieniane: `view-link-codec.ts`, `bookmark-store.ts`, `bookmarks-coordinator.ts`
 ### Task 2: Konwerter rzutu (wzory ze spike'a)
 
 **Files:**
+
 - Create: `src/lib/services/camera/camera-projection-converter.ts`
 - Test: `src/lib/services/camera/camera-projection-converter.test.ts`
 
 **Interfaces:**
+
 - Consumes: `MINIMUM_FIELD_OF_VIEW_DEGREES` itd. z Task 1 (nie potrzebne bezpośrednio; tylko liczby).
 - Produces: `class CameraProjectionConverter` z metodami (wszystkie czyste, kąty w radianach, `aspectRatio` = szerokość/wysokość płótna):
   - `calculateVerticalFieldOfView(fieldOfViewRadians: number, aspectRatio: number): number` — `fov` Cesium to większy z dwóch kątów: dla `aspectRatio >= 1` `2·atan(tan(fov/2)/aspectRatio)`, w przeciwnym razie `fov`.
@@ -87,10 +91,12 @@ Zmieniane: `view-link-codec.ts`, `bookmark-store.ts`, `bookmarks-coordinator.ts`
 ### Task 3: Budowniczy widoków „Z góry” i „Skos”
 
 **Files:**
+
 - Create: `src/lib/services/camera/camera-preset-builder.ts`
 - Test: `src/lib/services/camera/camera-preset-builder.test.ts`
 
 **Interfaces:**
+
 - Produces: `type CameraPreset = 'top' | 'oblique'`; `interface CameraPresetOrientation { headingRadians: number; pitchRadians: number }`; `class CameraPresetBuilder { build(preset: CameraPreset, currentHeadingRadians: number): CameraPresetOrientation }`. `top` → kierunek 0 (północ u góry), nachylenie −89,99° (przeciw osobliwości w `lookAt`); `oblique` → kierunek bez zmian, nachylenie −50°.
 
 - [ ] **Step 1: Write the failing test** — `build('top', 1.2)` daje `headingRadians === 0` i `pitchRadians ≈ −89.99° w radianach` (`toBeCloseTo`); `build('oblique', 1.2)` daje `headingRadians === 1.2` i `pitchRadians ≈ −50°`.
@@ -104,12 +110,14 @@ Zmieniane: `view-link-codec.ts`, `bookmark-store.ts`, `bookmarks-coordinator.ts`
 ### Task 4: Rzut w linku (`?rzut=…`)
 
 **Files:**
+
 - Modify: `src/lib/services/bookmarks/view-link-codec.ts`
 - Test: `src/lib/services/bookmarks/view-link-codec.test.ts` (rozszerzyć istniejący plik)
 - Modify (konsekwencje typu): `src/lib/state/app-state.svelte.ts` (w `sharedViewQuery` przekaż `projection: null` tymczasowo), `src/lib/services/geoportal-facade.ts` (`captureViewState`, `restoreBookmark`: `projection: null`), `src/lib/services/bookmarks/bookmarks-coordinator.ts` (`presentBookmark`: `projection: null`)
 - Modify: `docs/architektura.md` (akapit o linku i `CameraViewCodec`: dopisz parametr `rzut`)
 
 **Interfaces:**
+
 - Consumes: `CameraProjectionCodec`, `CameraProjectionSetting` (Task 1).
 - Produces: `SharedViewState` dostaje pole `projection: CameraProjectionSetting | null` (`null` = domyślny). `buildQuery` dopisuje `rzut=<serialize>` tylko gdy kodek zwróci tekst; `parseQuery` zwraca `projection: null` dla braku i dla uszkodzonego `rzut`.
 
@@ -124,10 +132,12 @@ Zmieniane: `view-link-codec.ts`, `bookmark-store.ts`, `bookmarks-coordinator.ts`
 ### Task 5: Rzut w zakładkach
 
 **Files:**
+
 - Modify: `src/lib/services/bookmarks/bookmark-store.ts`, `src/lib/services/bookmarks/bookmarks-coordinator.ts`
 - Test: `src/lib/services/bookmarks/bookmark-store.test.ts`, `src/lib/services/bookmarks/bookmarks-coordinator.test.ts` (rozszerzyć)
 
 **Interfaces:**
+
 - Consumes: `CameraProjectionSetting`, `isCameraProjectionSetting` (Task 1).
 - Produces: `SavedView.projection: CameraProjectionSetting | null`; `NewBookmark.projection: SavedView['projection']`; `BookmarkView.details` zawiera „Rzut ortogonalny” dla ortho; `BookmarkView.linkQuery` buduje się z `projection` zakładki. Klucz `gisofgothic:bookmarks:v1` bez zmian (zmiana addytywna).
 
@@ -142,11 +152,13 @@ Zmieniane: `view-link-codec.ts`, `bookmark-store.ts`, `bookmarks-coordinator.ts`
 ### Task 6: Nasłuch klawisza P
 
 **Files:**
+
 - Create: `src/lib/services/input/keyboard-focus-guard.ts`, `src/lib/services/camera/keyboard-projection-listener.ts`
 - Modify: `src/lib/services/flight/keyboard-flight-listener.ts` (użyj wspólnego strażnika)
 - Test: `src/lib/services/camera/keyboard-projection-listener.test.ts`
 
 **Interfaces:**
+
 - Produces: `isKeyboardTargetUsingKeysItself(target: EventTarget | null): boolean` (ten sam selektor co dziś: `input, textarea, select, [contenteditable], [role="slider"], [role="dialog"], [role="listbox"], [role="menu"]`); `class KeyboardProjectionListener { constructor(eventSource: Window, requestToggle: () => void); start(): () => void }` — reaguje na `keydown` z `code === 'KeyP'`, pomija Ctrl/Alt/Meta, powtórzenia (`event.repeat`) i cele zwracające `true` ze strażnika; wywołuje `preventDefault` tylko gdy przełącza.
 
 - [ ] **Step 1: Write the failing test** — z `EventTarget`-podobnym oknem (np. `new EventTarget()` rzutowanie niedozwolone → użyj `window` z `jsdom`/`happy-dom`, jeśli konfiguracja Vitest je daje; w przeciwnym razie wstrzyknij minimalny obiekt spełniający interfejs `Pick<Window, 'addEventListener' | 'removeEventListener'>` i zmień typ parametru konstruktora na ten `Pick`): `KeyP` wywołuje `requestToggle` raz; `KeyP` z `ctrlKey` nie; `KeyP` z `repeat: true` nie; zdarzenie z celem w `<input>` nie; `KeyQ` nie; po wywołaniu funkcji zwróconej przez `start()` nic nie reaguje.
@@ -160,12 +172,14 @@ Zmieniane: `view-link-codec.ts`, `bookmark-store.ts`, `bookmarks-coordinator.ts`
 ### Task 7: Koordynator rzutu, zdarzenie, stan i fasada
 
 **Files:**
+
 - Create: `src/lib/services/camera/camera-projection-coordinator.ts`
 - Test: `src/lib/services/camera/camera-projection-coordinator.test.ts`
 - Modify: `src/lib/events/app-events.ts`, `src/lib/state/app-state.svelte.ts`, `src/lib/services/geoportal-facade.ts`
 - Modify: `src/lib/services/map/map-service.ts` (tylko metody-zaślepki z Interfaces poniżej, żeby fasada się kompilowała; prawdziwa logika w Task 8)
 
 **Interfaces:**
+
 - Consumes: Task 1 (typy, `clampFieldOfViewDegrees`), Task 3 (`CameraPreset`), Task 6 (`KeyboardProjectionListener`).
 - Produces:
   - `interface CameraProjectionDisplay { showCameraProjection(setting: CameraProjectionSetting): void }`.
@@ -186,6 +200,7 @@ Zmieniane: `view-link-codec.ts`, `bookmark-store.ts`, `bookmarks-coordinator.ts`
 ### Task 8: Rzut na mapie (warstwa Cesium)
 
 **Files:**
+
 - Create: `src/lib/services/map/camera-projection-controller.ts`
 - Modify: `src/lib/services/map/map-service.ts`, `src/lib/services/map/camera-framer.ts`, `src/lib/services/map/camera-flight-controller.ts`, `src/lib/services/map/map-view-observer.ts`
 - Modify: `docs/architektura.md` (nowa sekcja „Rzut kamery”; poprawki w „Kadrowanie kamery” i „Lot kamerą”), create `docs/adr/0021-rzut-kamery.md`, `docs/adr/README.md` (wiersz 0021)
@@ -193,6 +208,7 @@ Zmieniane: `view-link-codec.ts`, `bookmark-store.ts`, `bookmarks-coordinator.ts`
 Ta warstwa jest zależna od Cesium i nie ma testów jednostkowych; weryfikacja w przeglądarce (Step 4) i w Task 10.
 
 **Interfaces:**
+
 - Consumes: `CameraProjectionConverter`, `MINIMUM_PERSPECTIVE_DISTANCE_METRES` (Task 2), `CameraProjectionSetting` (Task 1), `CameraPresetBuilder` (Task 3).
 - Produces:
   - `interface CameraViewGeometry { readVerticalFieldOfViewRadians(): number; convertViewRangeToCameraDistance(viewRangeMetres: number): number; convertCameraDistanceToViewRange(cameraDistanceMetres: number): number }` (w `camera-projection-controller.ts`).
@@ -212,10 +228,12 @@ Ta warstwa jest zależna od Cesium i nie ma testów jednostkowych; weryfikacja w
 ### Task 9: Interfejs: przycisk, okienko, status
 
 **Files:**
+
 - Create: `src/lib/state/camera-settings-state.svelte.ts`, `src/lib/components/shell/CameraSettingsPopover.svelte`
 - Modify: `src/lib/composition-root.ts`, `src/lib/components/shell/MapControls.svelte`, `src/lib/components/MapView.svelte`, `src/lib/components/shell/InstrumentBar.svelte`, `docs/architektura.md` (akapit UI + skrót P w „Lot kamerą”)
 
 **Interfaces:**
+
 - Consumes: metody fasady z Task 7 (`selectCameraProjection`, `setCameraFieldOfView`, `showCameraPreset`, `listenToProjectionKeyboard`), `appState.cameraProjection`, `appState.fieldOfViewDegrees`.
 - Produces: `class CameraSettingsState { isOpen: boolean; toggle(): void; close(): void }` (stan UI jak `FlightControlsState`, eksport `cameraSettings` w `composition-root.ts`).
 
@@ -230,9 +248,11 @@ Ta warstwa jest zależna od Cesium i nie ma testów jednostkowych; weryfikacja w
 ### Task 10: Scenariusze Playwright i przegląd responsywny
 
 **Files:**
+
 - Create: `e2e/camera.test.ts`
 
 **Interfaces:**
+
 - Consumes: UI z Task 9 (przycisk „Rzut kamery”, chip „Ortogonalny”/„Perspektywa”, przyciski „Z góry”/„Skos”, etykieta „rzut ortogonalny”, `getByTestId('status-bar')`), `?rzut=o` z Task 4.
 
 - [ ] **Step 1: Write the tests** (wzorem `e2e/app.test.ts`, z kontrolą błędów konsoli): (a) otwórz mapę, przycisk „Rzut kamery” → chip „Ortogonalny” → `aria-pressed=true`, etykieta „rzut ortogonalny” widoczna, adres zawiera `rzut=o` po zatrzymaniu kamery; (b) klawisz P przełącza z powrotem (adres bez `rzut`); (c) wejście bezpośrednio na `/g2nk/khorinis?rzut=o` otwiera ortogonalny (przycisk `aria-pressed`); (d) „Z góry” w ortho: podziałka w pasku stanu widoczna i zmienia się po zoomie (przycisk „Przybliż”); (e) cienie włączone w panelu „Czas” + przełączenie rzutu dwa razy: brak błędów konsoli i `pageerror`; (f) zakładka zapisana w ortho po przywróceniu daje `rzut=o` w adresie; (g) pomiar: w panelu „Pomiary” dwa kliknięcia w mapę w ortho dodają punkty (długość ≠ 0); (h) Review Focus: `?rzut=p_5` ładuje się bez błędów jako perspektywa (przycisk nie jest `aria-pressed`).

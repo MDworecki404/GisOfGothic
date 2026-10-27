@@ -98,6 +98,15 @@
 			</dl>
 		{/if}
 
+		{#if entry.lootSources.length > 0}
+			<h4 class="group-label mt-4 mb-1">Może wypaść z (losowy łup)</h4>
+			<ul class="text-sm">
+				{#each entry.lootSources as source (source)}
+					<li class="border-t border-border/60 px-1 py-1.5">{source}</li>
+				{/each}
+			</ul>
+		{/if}
+
 		{#if entry.type === 'quest'}
 			{#if questDetails?.status === 'loading' || !questDetails}
 				<div class="mt-3" role="status" aria-label="Wczytuję szczegóły questa">
@@ -194,6 +203,8 @@
 							{place.description}
 							{#if place.isUncertain}
 								<span class="text-caption text-muted-foreground">(nie zawsze)</span>
+							{:else if place.isRandomLoot}
+								<span class="text-caption text-muted-foreground">(losowy łup)</span>
 							{/if}
 						</span>
 						<span class="text-muted-foreground">{place.quantity ?? ''}</span>

@@ -19,6 +19,7 @@ import type { FlightInput } from './flight/flight-input.js';
 import { KeyboardFlightListener } from './flight/keyboard-flight-listener.js';
 import { StickDeflectionCalculator } from './flight/stick-deflection-calculator.js';
 import { StaticObjectsCoordinator } from './layers/static-objects-coordinator.js';
+import { TreasureSetBook } from './loot/treasure-set-book.js';
 import { DataLayersCoordinator } from './layers/data-layers-coordinator.js';
 import type { DataLayerId } from './layers/data-layer-catalog.js';
 import { MapService } from './map/map-service.js';
@@ -77,6 +78,7 @@ export class GeoportalFacade {
 	private pendingCameraView: CameraView | null = null;
 	private isWorldShownOnMap = false;
 	private mapViewInsets: MapViewInsets = { leftPixels: 0, bottomPixels: 0 };
+	private readonly treasureSetBook = new TreasureSetBook();
 	private readonly dataLayersCoordinator: DataLayersCoordinator;
 	private readonly staticObjectsCoordinator: StaticObjectsCoordinator;
 	private readonly measurementCoordinator: MeasurementCoordinator;
@@ -99,7 +101,11 @@ export class GeoportalFacade {
 			() => this.mapService,
 			(layerId) => this.dataLayersCoordinator.loadLayerFeatures(layerId)
 		);
-		this.dataLayersCoordinator = new DataLayersCoordinator(eventBus, () => this.mapService);
+		this.dataLayersCoordinator = new DataLayersCoordinator(
+			eventBus,
+			() => this.mapService,
+			this.treasureSetBook
+		);
 		this.staticObjectsCoordinator = new StaticObjectsCoordinator(eventBus, () => this.mapService);
 		this.measurementCoordinator = new MeasurementCoordinator(eventBus, () => this.mapService);
 		this.timeCoordinator = new TimeCoordinator(eventBus, () => this.mapService);
@@ -124,7 +130,9 @@ export class GeoportalFacade {
 		this.eventBus.publish({
 			type: 'world-opened',
 			worldName: world.name,
-			localCoordinateSystemName: world.localCoordinateSystemName
+			localCoordinateSystemName: world.localCoordinateSystemName,
+			hasChapters: world.hasChapters,
+			hasApproximateRoutineTimes: world.hasApproximateRoutineTimes
 		});
 		this.searchCoordinator.useModelNamespace(world.modelNamespace);
 		this.staticObjectsCoordinator.useWorld(world.staticObjectsTilesetUrl);
@@ -133,9 +141,11 @@ export class GeoportalFacade {
 		const questDataLoader = this.currentDataLoader;
 		this.searchCoordinator.useQuestCatalogSource(() => questDataLoader.loadQuestCatalog());
 		this.analysisCoordinator.resetForNewWorld();
+		this.treasureSetBook.useWorld(this.currentDataLoader);
 		this.dataLayersCoordinator.useWorld(this.currentDataLoader, {});
 		this.measurementCoordinator.clear();
 		this.timeCoordinator.useWorld(this.currentDataLoader);
+		this.timeCoordinator.useApproximateRoutineTimes(world.hasApproximateRoutineTimes);
 		this.selectChapter(null);
 		void this.loadSearchIndexOfCurrentWorld();
 		void this.showCurrentWorldOnMap();
@@ -238,6 +248,7 @@ export class GeoportalFacade {
 	}
 
 	closeFeatureIdentification(): void {
+		this.dataLayersCoordinator.cancelPendingIdentification();
 		this.eventBus.publish({ type: 'feature-identified', identification: null });
 	}
 
@@ -422,6 +433,13 @@ export class GeoportalFacade {
 		return () => preview.destroy();
 	}
 
+	/** Podgląd 3D modelu z paczki świata (np. skrzyni); `modelFile` jest względem adresu modeli świata. */
+	showWorldModelPreview(container: HTMLElement, modelFile: string): () => void {
+		const world = this.currentWorld;
+		if (!world) return () => {};
+		return this.showModelPreview(container, `${world.modelNamespace}/${modelFile}`);
+	}
+
 	detachMap(): void {
 		this.worldLoadGeneration++;
 		this.isWorldShownOnMap = false;
@@ -506,9 +524,10 @@ export class GeoportalFacade {
 		}
 		const pick = click.featurePick;
 		if (!pick) this.closeFeatureIdentification();
-		else if (pick.layerId === ROUTINE_LAYER_ID)
+		else if (pick.layerId === ROUTINE_LAYER_ID) {
+			this.dataLayersCoordinator.cancelPendingIdentification();
 			this.timeCoordinator.identifyCharacter(pick.featureIndex);
-		else this.dataLayersCoordinator.identifyFeature(pick);
+		} else this.dataLayersCoordinator.identifyFeature(pick);
 	}
 
 	private async loadSearchIndexOfCurrentWorld(): Promise<void> {

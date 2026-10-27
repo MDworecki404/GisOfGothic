@@ -42,6 +42,7 @@ const STATUS_LABELS: Readonly<Record<QuestStageStatus, string>> = {
 const PERSON_ROLE_LABELS = {
 	giver: 'zleceniodawca',
 	giver_candidate: 'możliwy zleceniodawca',
+	target: 'cel zadania',
 	stage: 'występuje w etapach',
 	insert: 'pojawia się w trakcie questa',
 	routine: 'zmienia rutynę'
@@ -57,6 +58,7 @@ const ITEM_ROLE_LABELS = {
 const PERSON_ROLE_PRIORITY: readonly QuestPersonRole[] = [
 	'giver',
 	'giver_candidate',
+	'target',
 	'stage',
 	'insert',
 	'routine'

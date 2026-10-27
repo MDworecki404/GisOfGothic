@@ -4,6 +4,7 @@ import { EventBus } from '#lib/events/event-bus.js';
 import type { AppEvent } from '#lib/events/app-events.js';
 import { ChapterFilter } from '#lib/services/chapters/chapter-filter.js';
 import type { DataLayerPoint } from '#lib/services/map/data-layers-renderer.js';
+import { TreasureSetBook } from '#lib/services/loot/treasure-set-book.js';
 import { DataLayersCoordinator, type DataLayersDisplay } from './data-layers-coordinator.js';
 
 function characterFeature(name: string, chapter: number | null): unknown {
@@ -46,7 +47,7 @@ async function createCoordinatorWithCharactersShown(): Promise<{
 	eventBus.subscribe('feature-identified', ({ identification }) =>
 		identifiedTitles.push(identification?.title ?? null)
 	);
-	const coordinator = new DataLayersCoordinator(eventBus, () => display);
+	const coordinator = new DataLayersCoordinator(eventBus, () => display, new TreasureSetBook());
 	coordinator.useWorld(
 		new GeoportalDataLoader(
 			'/dane',
@@ -77,5 +78,84 @@ describe('DataLayersCoordinator — rozdział', () => {
 		coordinator.useChapterFilter(new ChapterFilter(4));
 		coordinator.identifyFeature({ layerId: 'characters', featureIndex: 1 });
 		expect(identifiedTitles).toEqual(['Talbin']);
+	});
+});
+
+const CONTAINERS_JSON = {
+	type: 'FeatureCollection',
+	features: [
+		{
+			type: 'Feature',
+			geometry: { type: 'Point', coordinates: [0, 0, 0] },
+			properties: { id: 'container-0', treasure_sets: ['TS_Small'], model: 'previews/chest.glb' }
+		}
+	]
+};
+
+const TREASURE_SETS_JSON = {
+	version: 1,
+	sets: {
+		TS_Small: {
+			kind: 'chest',
+			min_stacks: 1,
+			max_stacks: 1,
+			holders: 1,
+			items: [{ code: 'It_Gold', name: 'Złoto', category: null, amount: 30 }]
+		}
+	}
+};
+
+describe('DataLayersCoordinator — losowy łup', () => {
+	async function identifyContainer(treasureSetsStatus: number): Promise<(string[] | null)[]> {
+		const eventBus = new EventBus<AppEvent>();
+		const display = new RecordingDisplay();
+		const possibleItemsHistory: (string[] | null)[] = [];
+		eventBus.subscribe('feature-identified', ({ identification }) =>
+			possibleItemsHistory.push(identification?.possibleItems ?? null)
+		);
+		const loader = new GeoportalDataLoader('/dane', async (url) =>
+			url.endsWith('treasure_sets.json')
+				? new Response(JSON.stringify(TREASURE_SETS_JSON), { status: treasureSetsStatus })
+				: new Response(JSON.stringify(CONTAINERS_JSON), { status: 200 })
+		);
+		const treasureSetBook = new TreasureSetBook();
+		treasureSetBook.useWorld(loader);
+		const coordinator = new DataLayersCoordinator(eventBus, () => display, treasureSetBook);
+		coordinator.useWorld(loader, {});
+		await coordinator.toggleLayer('containers');
+		coordinator.identifyFeature({ layerId: 'containers', featureIndex: 0 });
+		await new Promise((resolve) => setTimeout(resolve, 0));
+		return possibleItemsHistory;
+	}
+
+	it('najpierw pokazuje kartę, potem dopisuje możliwą zawartość z zestawów', async () => {
+		expect(await identifyContainer(200)).toEqual([[], ['Złoto ×30']]);
+	});
+
+	it('zostawia samą kartę, gdy zestawów nie da się pobrać', async () => {
+		expect(await identifyContainer(404)).toEqual([[]]);
+	});
+
+	it('nie dopisuje zawartości do zamkniętej karty', async () => {
+		const eventBus = new EventBus<AppEvent>();
+		const display = new RecordingDisplay();
+		const history: (string[] | null)[] = [];
+		eventBus.subscribe('feature-identified', ({ identification }) =>
+			history.push(identification?.possibleItems ?? null)
+		);
+		const loader = new GeoportalDataLoader('/dane', async (url) =>
+			url.endsWith('treasure_sets.json')
+				? new Response(JSON.stringify(TREASURE_SETS_JSON), { status: 200 })
+				: new Response(JSON.stringify(CONTAINERS_JSON), { status: 200 })
+		);
+		const treasureSetBook = new TreasureSetBook();
+		treasureSetBook.useWorld(loader);
+		const coordinator = new DataLayersCoordinator(eventBus, () => display, treasureSetBook);
+		coordinator.useWorld(loader, {});
+		await coordinator.toggleLayer('containers');
+		coordinator.identifyFeature({ layerId: 'containers', featureIndex: 0 });
+		coordinator.cancelPendingIdentification();
+		await new Promise((resolve) => setTimeout(resolve, 0));
+		expect(history).toEqual([[]]);
 	});
 });

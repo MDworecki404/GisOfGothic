@@ -1,5 +1,6 @@
 import type {
 	Anchor,
+	LootSource,
 	Metadata,
 	MovementSpeeds,
 	Place,
@@ -7,7 +8,8 @@ import type {
 	QuestPlaceRole,
 	SearchEntry,
 	SearchEntryType,
-	SearchIndex
+	SearchIndex,
+	TreasureSetKind
 } from './types.js';
 import { stonePlateNameResolver } from './stone-plate-names.js';
 
@@ -18,6 +20,13 @@ const PLACE_KINDS: readonly PlaceKind[] = [
 	'npc',
 	'spawn',
 	'routine'
+];
+export const TREASURE_SET_KINDS: readonly TreasureSetKind[] = [
+	'chest',
+	'npc',
+	'monster',
+	'trader',
+	'mining'
 ];
 const ENTRY_TYPES: readonly SearchEntryType[] = ['item', 'character', 'quest'];
 const QUEST_PLACE_ROLES: readonly QuestPlaceRole[] = ['giver', 'target', 'stage'];
@@ -32,6 +41,10 @@ function isPlaceKind(value: unknown): value is PlaceKind {
 
 function readQuestPlaceRole(record: Record<string, unknown>): QuestPlaceRole | undefined {
 	return QUEST_PLACE_ROLES.find((role) => role === record.role);
+}
+
+export function findTreasureSetKind(value: unknown): TreasureSetKind | undefined {
+	return TREASURE_SET_KINDS.find((kind) => kind === value);
 }
 
 function isSearchEntryType(value: unknown): value is SearchEntryType {
@@ -191,8 +204,25 @@ function parsePlace(value: unknown, description: string): Place {
 		routine: readOptionalString(record, 'routine'),
 		is_default: readOptionalBoolean(record, 'is_default'),
 		actions: readStringList(record, 'actions'),
-		role: readQuestPlaceRole(record)
+		role: readQuestPlaceRole(record),
+		set: readOptionalString(record, 'set')
 	};
+}
+
+function parseLootSources(value: unknown, description: string): LootSource[] | undefined {
+	if (!Array.isArray(value)) return undefined;
+	return value.flatMap((source, index) => {
+		const record = requireRecord(source, `${description}, łup #${index}`);
+		const kind = findTreasureSetKind(record.kind);
+		if (!kind) return [];
+		return [
+			{
+				set: requireString(record, 'set', `${description}, łup #${index}`),
+				kind,
+				holders: readOptionalNumber(record, 'holders') ?? 0
+			}
+		];
+	});
 }
 
 function parseSearchEntry(value: unknown, position: number): SearchEntry {
@@ -215,6 +245,7 @@ function parseSearchEntry(value: unknown, position: number): SearchEntry {
 		total: readOptionalNumber(record, 'total'),
 		level: readOptionalNumber(record, 'level'),
 		codes: readStringList(record, 'codes'),
+		loot: parseLootSources(record.loot, description),
 		giver: record.giver === null ? null : readOptionalString(record, 'giver'),
 		chapter: readOptionalChapter(record),
 		places: record.places.map((place, index) =>

@@ -92,6 +92,8 @@ export class AppState {
 	bookmarks = $state.raw<BookmarkView[]>([]);
 	bookmarkStorageFailed = $state(false);
 	selectedChapter = $state<ChapterNumber | null>(null);
+	areChaptersAvailable = $state(true);
+	areRoutineTimesApproximate = $state(false);
 	minuteOfDay = $state(12 * 60);
 	routineLayerStatus = $state<RoutineLayerStatus>('hidden');
 	charactersAtTimeOfDay = $state<number | null>(null);
@@ -199,9 +201,11 @@ export class AppState {
 		eventBus.subscribe('coordinate-system-changed', ({ systemId }) => {
 			this.coordinateSystemId = systemId;
 		});
-		eventBus.subscribe('world-opened', ({ worldName, localCoordinateSystemName }) => {
-			this.openedWorldName = worldName;
-			this.localCoordinateSystemName = localCoordinateSystemName;
+		eventBus.subscribe('world-opened', (event) => {
+			this.openedWorldName = event.worldName;
+			this.localCoordinateSystemName = event.localCoordinateSystemName;
+			this.areChaptersAvailable = event.hasChapters;
+			this.areRoutineTimesApproximate = event.hasApproximateRoutineTimes;
 			this.indexCounts = null;
 		});
 		eventBus.subscribe('world-load-started', () => {

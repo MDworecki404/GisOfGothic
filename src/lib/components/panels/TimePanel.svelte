@@ -34,29 +34,31 @@
 	{/each}
 </div>
 
-<h3 class="group-label mt-5 mb-1">Rozdział</h3>
-<div class="flex flex-wrap gap-1.5" role="group" aria-label="Rozdział gry">
-	<button
-		class="chip tabular-nums"
-		aria-pressed={appState.selectedChapter === null}
-		onclick={() => geoportal.selectChapter(null)}
-	>
-		Wszystkie
-	</button>
-	{#each appState.chapterOptions as option (option.chapter)}
+{#if appState.areChaptersAvailable}
+	<h3 class="group-label mt-5 mb-1">Rozdział</h3>
+	<div class="flex flex-wrap gap-1.5" role="group" aria-label="Rozdział gry">
 		<button
 			class="chip tabular-nums"
-			aria-pressed={appState.selectedChapter === option.chapter}
-			onclick={() => geoportal.selectChapter(option.chapter)}
+			aria-pressed={appState.selectedChapter === null}
+			onclick={() => geoportal.selectChapter(null)}
 		>
-			{option.label}
+			Wszystkie
 		</button>
-	{/each}
-</div>
-<p class="mt-1 text-caption text-muted-foreground">
-	Wybrany rozdział pokazuje postacie, które do niego pojawiły się w świecie (warstwy postaci i
-	„postacie o tej godzinie”).
-</p>
+		{#each appState.chapterOptions as option (option.chapter)}
+			<button
+				class="chip tabular-nums"
+				aria-pressed={appState.selectedChapter === option.chapter}
+				onclick={() => geoportal.selectChapter(option.chapter)}
+			>
+				{option.label}
+			</button>
+		{/each}
+	</div>
+	<p class="mt-1 text-caption text-muted-foreground">
+		Wybrany rozdział pokazuje postacie, które do niego pojawiły się w świecie (warstwy postaci i
+		„postacie o tej godzinie”).
+	</p>
+{/if}
 
 <label class="mt-5 flex cursor-pointer items-start gap-2.5 border-t border-border/60 pt-3">
 	<input
@@ -76,6 +78,9 @@
 				robi.
 			{:else}
 				Według codziennych rutyn unikatowych postaci.
+			{/if}
+			{#if appState.areRoutineTimesApproximate}
+				Gothic 3 zapisuje tylko miejsca pracy, odpoczynku i snu, więc godziny są orientacyjne.
 			{/if}
 		</span>
 	</span>

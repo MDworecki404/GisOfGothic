@@ -1,6 +1,13 @@
 import { parseMetadata, parseSearchIndex } from './parsers.js';
 import { parseQuestCatalog } from './quest-parsers.js';
-import type { IndexCounts, Metadata, QuestCatalog, SearchIndex } from './types.js';
+import { parseTreasureSetCatalog } from './treasure-set-parsers.js';
+import type {
+	IndexCounts,
+	Metadata,
+	QuestCatalog,
+	SearchIndex,
+	TreasureSetCatalog
+} from './types.js';
 
 export type ResourceFetcher = (url: string) => Promise<Response>;
 
@@ -29,6 +36,10 @@ export class GeoportalDataLoader {
 
 	async loadQuestCatalog(): Promise<QuestCatalog> {
 		return parseQuestCatalog(await this.fetchJson('quests.json'));
+	}
+
+	async loadTreasureSetCatalog(): Promise<TreasureSetCatalog> {
+		return parseTreasureSetCatalog(await this.fetchJson('treasure_sets.json'));
 	}
 
 	async loadLayerFile(fileName: string): Promise<unknown> {

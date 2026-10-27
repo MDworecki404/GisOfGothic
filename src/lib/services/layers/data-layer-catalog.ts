@@ -34,6 +34,11 @@ export interface FeatureIdentification {
 	listItems: string[];
 	searchQuery: string | null;
 	encyclopediaUrl: string | null;
+	/** Kody zestawów losowego łupu (Gothic 3); koordynator zamienia je na `possibleItems`. */
+	treasureSetCodes: string[];
+	possibleItems: string[];
+	/** Plik podglądu 3D względem adresu modeli świata albo `null`. */
+	modelFile: string | null;
 }
 
 export interface IdentifiableFeature {
@@ -63,22 +68,31 @@ function describeInventoryLine(line: InventoryLine): string {
 }
 
 function presentItem(properties: ItemProperties): FeatureIdentification {
+	const facts: FeatureFact[] = [
+		{ label: 'Sztuk', value: String(properties.amount) },
+		{
+			label: 'Pochodzenie',
+			value: properties.isInsertedByScript
+				? 'wstawiany skryptem, w trakcie fabuły'
+				: 'leży od początku gry'
+		}
+	];
+	if (properties.isInsertedByScript && properties.spot) {
+		facts.push({ label: 'Miejsce wstawienia', value: properties.spot });
+	}
+	facts.push({ label: 'Kod', value: properties.code });
 	return {
 		layerName: 'Przedmioty w świecie',
 		title: properties.name,
 		subtitle: describeCategory(properties.category),
-		facts: [
-			{ label: 'Sztuk', value: String(properties.amount) },
-			{
-				label: 'Pochodzenie',
-				value: properties.isInsertedByScript ? 'wstawiany skryptem' : 'leży od początku gry'
-			},
-			{ label: 'Kod', value: properties.code }
-		],
+		facts,
 		listTitle: null,
 		listItems: [],
 		searchQuery: properties.name,
-		encyclopediaUrl: null
+		encyclopediaUrl: null,
+		treasureSetCodes: [],
+		possibleItems: [],
+		modelFile: null
 	};
 }
 
@@ -103,7 +117,10 @@ function presentContainer(properties: ContainerProperties): FeatureIdentificatio
 		listTitle: properties.contents.length > 0 ? 'Zawartość' : null,
 		listItems: properties.contents.map(describeInventoryLine),
 		searchQuery: null,
-		encyclopediaUrl: null
+		encyclopediaUrl: null,
+		treasureSetCodes: properties.treasureSetCodes,
+		possibleItems: [],
+		modelFile: properties.model
 	};
 }
 
@@ -128,7 +145,10 @@ function presentCharacter(layerName: string) {
 			searchQuery: isUniqueCharacter ? properties.name : null,
 			encyclopediaUrl: isUniqueCharacter
 				? encyclopediaLinkBuilder.buildSearchUrl(properties.name)
-				: null
+				: null,
+			treasureSetCodes: properties.treasureSetCodes,
+			possibleItems: [],
+			modelFile: null
 		};
 	};
 }

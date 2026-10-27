@@ -58,6 +58,18 @@ export interface Place {
 	actions?: string[];
 	/** Questy: rola miejsca. */
 	role?: QuestPlaceRole;
+	/** Gothic 3: kod zestawu losowego łupu, z którego przedmiot może wypaść w tym miejscu (`certainty: 'possible'`). */
+	set?: string;
+}
+
+/** Rodzaj zestawu losowego łupu (Gothic 3): skrzynia, postać, potwór, handlarz albo wydobycie. */
+export type TreasureSetKind = 'chest' | 'npc' | 'monster' | 'trader' | 'mining';
+
+/** Gothic 3: zestaw łupu, z którego przedmiot może wypaść; `holders` to liczba skrzyń i postaci z tym zestawem. */
+export interface LootSource {
+	set: string;
+	kind: TreasureSetKind;
+	holders: number;
 }
 
 export type SearchEntryType = 'item' | 'character' | 'quest';
@@ -77,6 +89,8 @@ export interface SearchEntry {
 	level?: number;
 	/** Postać może mieć kilka kodów instancji. */
 	codes?: string[];
+	/** Przedmioty (Gothic 3): zestawy losowego łupu, z których przedmiot może wypaść. */
+	loot?: LootSource[];
 	/** Questy: imię zleceniodawcy albo `null`, gdy go nie ustalono. */
 	giver?: string | null;
 	/** Questy: rozdział startu albo `null`, gdy nieznany. */
@@ -97,7 +111,8 @@ export interface IndexCounts {
 
 export type QuestSection = 'mission' | 'note';
 export type QuestStageStatus = 'RUNNING' | 'SUCCESS' | 'FAILED' | 'OBSOLETE';
-export type QuestPersonRole = 'giver' | 'giver_candidate' | 'stage' | 'insert' | 'routine';
+export type QuestPersonRole =
+	'giver' | 'giver_candidate' | 'target' | 'stage' | 'insert' | 'routine';
 export type QuestItemRole = 'reward' | 'handover' | 'placed';
 
 /** Etap questu: wpis dziennika (`entry`) albo zmiana statusu (`status`). Kolejność wg skryptów, nie chronologia. */
@@ -145,3 +160,21 @@ export interface QuestCatalog {
 	version: number;
 	quests: QuestRecord[];
 }
+
+export interface TreasureSetItem {
+	code: string;
+	name: string;
+	category: string | null;
+	amount: number;
+}
+
+/** Zestaw losowego łupu z `treasure_sets.json`; gra losuje od `minStacks` do `maxStacks` pozycji z `items`. */
+export interface TreasureSet {
+	kind: TreasureSetKind;
+	minStacks: number;
+	maxStacks: number;
+	holders: number;
+	items: TreasureSetItem[];
+}
+
+export type TreasureSetCatalog = ReadonlyMap<string, TreasureSet>;
