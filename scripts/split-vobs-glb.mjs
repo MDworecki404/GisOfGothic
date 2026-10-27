@@ -18,6 +18,15 @@ if (!inputPath || !outputDirectory || !Number.isInteger(Math.log2(partCount))) {
 fs.mkdirSync(outputDirectory, { recursive: true });
 const io = new NodeIO();
 
+const MAXIMUM_COORDINATE_METRES = 1e6;
+
+/** Źródłowy plik ma kilka węzłów z macierzami rzędu 10^13 m; ion nie liczy dla nich bryły brzegowej. */
+function isCorruptedPosition(node) {
+	return node
+		.getTranslation()
+		.some((value) => !Number.isFinite(value) || Math.abs(value) > MAXIMUM_COORDINATE_METRES);
+}
+
 function readNodePositions(document) {
 	return document
 		.getRoot()
@@ -65,6 +74,12 @@ for (const [partIndex, group] of groups.entries()) {
 		.listNodes()
 		.forEach((node, index) => {
 			if (!keptIndexes.has(index)) node.dispose();
+			else if (isCorruptedPosition(node)) {
+				console.log(
+					`  pominięto uszkodzony węzeł #${index}: ${node.getMesh()?.getName() ?? node.getName()}`
+				);
+				node.dispose();
+			}
 		});
 	disposeUnusedProperties(document);
 	const outputPath = path.join(outputDirectory, `vobs_czesc_${partIndex + 1}.glb`);
