@@ -226,7 +226,7 @@ const SWIATYNIA_ORKOW: WorldDefinition = {
  */
 const MYRTANA_ION_ASSETS: { world: number; staticObjects: readonly number[] } | null = {
 	world: 6088791,
-	staticObjects: []
+	staticObjects: [6088836, 6088838, 6088842]
 };
 
 function buildMyrtanaWorlds(): WorldDefinition[] {
