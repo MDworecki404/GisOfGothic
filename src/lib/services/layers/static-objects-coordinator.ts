@@ -3,7 +3,7 @@ import type { AppEventBus } from '#lib/events/app-events.js';
 export type StaticObjectsStatus = 'hidden' | 'loading' | 'visible' | 'error';
 
 export interface StaticObjectsDisplay {
-	showStaticObjectsTileset(tilesetUrl: string): Promise<void>;
+	showStaticObjectsTilesets(tilesetUrls: readonly string[]): Promise<void>;
 	hideStaticObjectsTileset(): void;
 }
 
@@ -16,7 +16,7 @@ function describeError(error: unknown): string {
  * leżące na ziemi). Jest wyłączona po otwarciu świata i wczytuje się dopiero po włączeniu.
  */
 export class StaticObjectsCoordinator {
-	private tilesetUrl: string | null = null;
+	private tilesetUrls: readonly string[] = [];
 	private status: StaticObjectsStatus = 'hidden';
 	private request = 0;
 
@@ -25,10 +25,10 @@ export class StaticObjectsCoordinator {
 		private readonly getDisplay: () => StaticObjectsDisplay | null
 	) {}
 
-	useWorld(tilesetUrl: string): void {
+	useWorld(tilesetUrls: readonly string[]): void {
 		this.request++;
 		this.getDisplay()?.hideStaticObjectsTileset();
-		this.tilesetUrl = tilesetUrl;
+		this.tilesetUrls = tilesetUrls;
 		this.setStatus('hidden');
 	}
 
@@ -50,12 +50,16 @@ export class StaticObjectsCoordinator {
 
 	private async show(): Promise<void> {
 		const display = this.getDisplay();
-		const tilesetUrl = this.tilesetUrl;
-		if (!display || !tilesetUrl) return;
+		const tilesetUrls = this.tilesetUrls;
+		if (!display) return;
+		if (tilesetUrls.length === 0) {
+			this.setStatus('error', 'Obiekty tego świata nie są jeszcze dostępne');
+			return;
+		}
 		const request = ++this.request;
 		this.setStatus('loading');
 		try {
-			await display.showStaticObjectsTileset(tilesetUrl);
+			await display.showStaticObjectsTilesets(tilesetUrls);
 			if (request === this.request) this.setStatus('visible');
 		} catch (error) {
 			if (request !== this.request) return;

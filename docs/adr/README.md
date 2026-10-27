@@ -26,3 +26,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0020](0020-pergamin-pod-plotnem-i-widoczne-atrybucje.md)      | Pergamin pod płótnem i widoczne atrybucje            | przyjęta |
 | [0021](0021-rzut-kamery.md)                                    | Rzut kamery: wbudowany ortogonalny Cesium z korektą  | przyjęta |
 | [0022](0022-losowy-lup-gothic-3.md)                            | Losowy łup Gothica 3 z osobnego pliku, na żądanie    | przyjęta |
+| [0023](0023-voby-dzielone-na-kilka-assetow-ion.md)             | Voby dużych światów dzielone na kilka assetów ion    | przyjęta |
