@@ -49,6 +49,30 @@ function splitIntoGroups(entries, groupCount, axis) {
 	];
 }
 
+/**
+ * Oryginalny `vobs.glb` ma siatkę (G3_Myrtana_Rivermesh_24_PART_02) z wartościami NaN w TEXCOORD_0;
+ * ion odrzuca przez to cały plik, więc zastępujemy każdą nieskończoną wartość zerem.
+ */
+function replaceNonFiniteVertexValues(document) {
+	let replacedCount = 0;
+	for (const mesh of document.getRoot().listMeshes()) {
+		for (const primitive of mesh.listPrimitives()) {
+			for (const accessor of primitive.listAttributes()) {
+				const values = accessor.getArray();
+				let isCorrupted = false;
+				for (let index = 0; index < values.length; index++) {
+					if (Number.isFinite(values[index])) continue;
+					values[index] = 0;
+					replacedCount++;
+					isCorrupted = true;
+				}
+				if (isCorrupted) accessor.setArray(values);
+			}
+		}
+	}
+	return replacedCount;
+}
+
 function isUnused(property) {
 	return property.listParents().every((parent) => parent.propertyType === PropertyType.ROOT);
 }
@@ -82,6 +106,8 @@ for (const [partIndex, group] of groups.entries()) {
 			}
 		});
 	disposeUnusedProperties(document);
+	const replacedCount = replaceNonFiniteVertexValues(document);
+	if (replacedCount > 0) console.log(`  zastąpiono ${replacedCount} wartości NaN/Inf zerami`);
 	const outputPath = path.join(outputDirectory, `vobs_czesc_${partIndex + 1}.glb`);
 	await io.write(outputPath, document);
 	const megabytes = (fs.statSync(outputPath).size / 1e6).toFixed(0);
