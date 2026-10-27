@@ -208,10 +208,13 @@ const SWIATYNIA_ORKOW: WorldDefinition = {
 };
 
 /**
- * Identyfikatory assetów Cesium ion modelu Myrtany (`world.glb`, `vobs.glb`). Dopóki `null`, Gothic 3
+ * Identyfikatory assetów Cesium ion modelu Myrtany (`world.glb`, `vobs.glb`). Gdy ich brak (`null`), Gothic 3
  * nie trafia do katalogu: bez kafli świat byłby pustą mapą. Wgranie assetów opisuje `docs/dane.md`.
  */
-const MYRTANA_ION_ASSETS: { world: number; staticObjects: number } | null = null;
+const MYRTANA_ION_ASSETS: { world: number; staticObjects: number } | null = {
+	world: 6088791,
+	staticObjects: 6088793
+};
 
 function buildMyrtanaWorlds(): WorldDefinition[] {
 	if (!MYRTANA_ION_ASSETS) return [];
