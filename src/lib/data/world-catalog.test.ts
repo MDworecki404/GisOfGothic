@@ -12,7 +12,8 @@ const khorinis: WorldDefinition = {
 	worldTilesetUrl: 'https://bramka.example/ion/1/tileset.json',
 	staticObjectsTilesetUrls: ['https://bramka.example/ion/2/tileset.json'],
 	hasChapters: true,
-	hasApproximateRoutineTimes: false
+	hasApproximateRoutineTimes: false,
+	tileColorGrade: null
 };
 const oldCamp: WorldDefinition = { ...khorinis, id: 'colony', gameId: 'g1', name: 'Kolonia' };
 
