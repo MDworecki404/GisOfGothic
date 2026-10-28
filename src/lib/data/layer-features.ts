@@ -59,9 +59,9 @@ export interface CharacterProperties {
 
 function parseInventoryLine(value: unknown): InventoryLine | null {
 	if (!isRecord(value)) return null;
-	const name = readOptionalString(value, 'name');
-	if (!name) return null;
 	const code = readOptionalString(value, 'code');
+	const name = readOptionalString(value, 'name') ?? code;
+	if (!name) return null;
 	return {
 		name: code ? readItemNames(value, code, name).displayName : name,
 		category: readOptionalString(value, 'category') ?? null,
