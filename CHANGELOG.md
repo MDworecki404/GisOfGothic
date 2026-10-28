@@ -2,6 +2,19 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.7.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.6.1...v0.7.0) (2026-10-28)
+
+### Nowe funkcje
+
+* filtr kategorii w wyszukiwarce ([39a8544](https://github.com/MDworecki404/GisOfGothic/commit/39a85441af5afcfbde665fa7b93954076130cf4f))
+* korekcja koloru kafli rozjaśnia Myrtanę ([975a673](https://github.com/MDworecki404/GisOfGothic/commit/975a673ef527008408e298201ce318410ecf5634))
+* przeglądanie wszystkich wpisów w wyszukiwarce bez wpisywania frazy ([1e6f66f](https://github.com/MDworecki404/GisOfGothic/commit/1e6f66f25a9c6bb30683234493a5cfad43b1d7b8))
+* zasięg cieni dopasowany do odległości kamery ([5f59ee9](https://github.com/MDworecki404/GisOfGothic/commit/5f59ee9358c9cf4a0538eb208602df749bebb8d0))
+
+### Poprawki błędów
+
+* nocą nie ma cieni dynamicznych, a przy wschodzie i zachodzie narastają płynnie ([4915244](https://github.com/MDworecki404/GisOfGothic/commit/4915244e6c2dc048a0975596663f60994406c7a5))
+
 ## [0.6.1](https://github.com/MDworecki404/GisOfGothic/compare/v0.6.0...v0.6.1) (2026-10-28)
 
 ## [0.6.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.5.0...v0.6.0) (2026-10-28)
