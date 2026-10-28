@@ -2,6 +2,13 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.8.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.7.2...v0.8.0) (2026-10-28)
+
+### Nowe funkcje
+
+* ekran ładowania aplikacji ([8477be1](https://github.com/MDworecki404/GisOfGothic/commit/8477be1431a39c85b0090c6ede76130a5468e74d))
+* przełącznik światów jako lista gier z listą światów po najechaniu ([017df59](https://github.com/MDworecki404/GisOfGothic/commit/017df59c8ac9039d14dd7883b61cdea1b724dae6))
+
 ## [0.7.2](https://github.com/MDworecki404/GisOfGothic/compare/v0.7.1...v0.7.2) (2026-10-28)
 
 ## [0.7.1](https://github.com/MDworecki404/GisOfGothic/compare/v0.7.0...v0.7.1) (2026-10-28)
