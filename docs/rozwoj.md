@@ -49,7 +49,10 @@ Pełne zasady: [`CLAUDE.md`](../CLAUDE.md). Najważniejsze:
 
 - **Vitest** — logika bez przeglądarki: parsery, loader, katalog światów. Zależności (np. `fetch`)
   wstrzykujemy konstruktorem, więc testy nie potrzebują sieci.
-- **Playwright** (`e2e/`) — strona się ładuje, jest canvas Cesium i panel wyszukiwania, brak błędów
+- **Playwright** (`e2e/`) — testy nie zależą od prawdziwej sieci: fixture `e2e/support/test.ts` podstawia za bramkę
+  zasobów pusty tileset 3D Tiles (zapytania o `tileset.json` nadal wychodzą ze strony). Prawdziwe kafle z ion mają
+  „ogon” czasu odpowiedzi od 1 s do ponad minuty, przez co testy czekające na nie padały losowo. Gotowość świata
+  sprawdzamy atrybutem `data-world-status` na mapie, nie migającym wskaźnikiem ładowania. Strona się ładuje, jest canvas Cesium i panel wyszukiwania, brak błędów
   w konsoli, nieznany świat daje stronę 404.
 
 ## Commity i wydania
