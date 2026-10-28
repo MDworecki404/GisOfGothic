@@ -2,6 +2,16 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.9.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.8.0...v0.9.0) (2026-10-28)
+
+### Nowe funkcje
+
+* opis przedmiotu z gry jako nazwa widoczna ([96796a5](https://github.com/MDworecki404/GisOfGothic/commit/96796a5f26223e91ec3455a99ee10c41375118eb))
+
+### Poprawki błędów
+
+* pozycja skrzyni bez nazwy pokazuje kod zamiast znikać ([23733a8](https://github.com/MDworecki404/GisOfGothic/commit/23733a857a6bf2bb4b8f5f6cdf990c2858ecadb0))
+
 ## [0.8.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.7.2...v0.8.0) (2026-10-28)
 
 ### Nowe funkcje
