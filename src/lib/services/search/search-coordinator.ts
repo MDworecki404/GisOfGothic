@@ -3,7 +3,7 @@ import type { AppEventBus } from '#lib/events/app-events.js';
 import type { PlaceMarker } from '#lib/services/map/place-markers-layer.js';
 import { QuestPresenter, type QuestLinkView } from './quest-presenter.js';
 import { pickPlaceColor, SearchEntryPresenter } from './search-entry-presenter.js';
-import { SearchService, type SearchTypeFilter } from './search-service.js';
+import { SearchService, type CategoryOption, type SearchTypeFilter } from './search-service.js';
 
 export interface PlaceMarkersDisplay {
 	showPlaceMarkers(markers: readonly PlaceMarker[], shouldFlyToMarkers: boolean): void;
@@ -20,6 +20,7 @@ export class SearchCoordinator {
 	private readonly presenter = new SearchEntryPresenter();
 	private query = '';
 	private typeFilter: SearchTypeFilter = 'all';
+	private categoryFilter: string | null = null;
 	private selectedEntry: SearchEntry | null = null;
 	private entryIdAwaitingIndex: string | null = null;
 	private shouldFlyToAwaitedEntry = true;
@@ -65,8 +66,15 @@ export class SearchCoordinator {
 		this.publishResults();
 	}
 
+	/** Kategorie zależą od rodzaju wpisu (rośliny to nie gildie), więc zmiana rodzaju czyści filtr kategorii. */
 	filterByType(typeFilter: SearchTypeFilter): void {
 		this.typeFilter = typeFilter;
+		this.categoryFilter = null;
+		this.publishResults();
+	}
+
+	filterByCategory(categoryLabel: string | null): void {
+		this.categoryFilter = categoryLabel;
 		this.publishResults();
 	}
 
@@ -178,8 +186,13 @@ export class SearchCoordinator {
 	private findEntriesToList(): SearchEntry[] {
 		if (!this.searchService) return [];
 		return this.query.trim().length === 0
-			? this.searchService.listAll(this.typeFilter)
-			: this.searchService.search(this.query, this.typeFilter);
+			? this.searchService.listAll(this.typeFilter, this.categoryFilter)
+			: this.searchService.search(this.query, this.typeFilter, this.categoryFilter);
+	}
+
+	private listCategories(): CategoryOption[] {
+		if (this.typeFilter === 'all') return [];
+		return this.searchService?.listCategories(this.typeFilter) ?? [];
 	}
 
 	private publishResults(): void {
@@ -188,6 +201,8 @@ export class SearchCoordinator {
 			type: 'search-results-changed',
 			query: this.query,
 			typeFilter: this.typeFilter,
+			categoryFilter: this.categoryFilter,
+			categories: this.listCategories(),
 			results: entries.map((entry) => this.presenter.presentResult(entry))
 		});
 	}

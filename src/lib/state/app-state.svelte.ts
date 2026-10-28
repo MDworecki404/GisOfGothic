@@ -28,7 +28,7 @@ import type {
 	SearchEntryDetails,
 	SearchResult
 } from '#lib/services/search/search-entry-presenter.js';
-import type { SearchTypeFilter } from '#lib/services/search/search-service.js';
+import type { CategoryOption, SearchTypeFilter } from '#lib/services/search/search-service.js';
 import type { FeatureIdentification } from '#lib/services/layers/data-layer-catalog.js';
 import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator.js';
 import type { MeasurementView } from '#lib/services/measurement/measurement-coordinator.js';
@@ -69,6 +69,8 @@ export class AppState {
 	coordinateSystemId = $state<CoordinateSystemId>('khorinis-1992');
 	searchQuery = $state('');
 	searchTypeFilter = $state<SearchTypeFilter>('all');
+	searchCategoryFilter = $state<string | null>(null);
+	searchCategories = $state.raw<CategoryOption[]>([]);
 	searchResults = $state.raw<SearchResult[]>([]);
 	questDetails = $state.raw<{
 		entryId: string;
@@ -131,9 +133,12 @@ export class AppState {
 		eventBus.subscribe('app-installability-changed', ({ canInstall }) => {
 			this.canInstallApp = canInstall;
 		});
-		eventBus.subscribe('search-results-changed', ({ query, typeFilter, results }) => {
+		eventBus.subscribe('search-results-changed', (event) => {
+			const { query, typeFilter, results } = event;
 			this.searchQuery = query;
 			this.searchTypeFilter = typeFilter;
+			this.searchCategoryFilter = event.categoryFilter;
+			this.searchCategories = event.categories;
 			this.searchResults = results;
 		});
 		eventBus.subscribe('data-layers-changed', ({ layers }) => {
