@@ -118,6 +118,20 @@ describe('SearchService', () => {
 	});
 });
 
+describe('SearchService — przeglądanie wszystkich wpisów', () => {
+	it('listAll zwraca wszystkie wpisy alfabetycznie po polsku', () => {
+		const names = service.listAll('all').map((entry) => entry.name);
+		expect(names).toHaveLength(8);
+		expect(names).toEqual([...names].sort((first, second) => first.localeCompare(second, 'pl')));
+	});
+
+	it('listAll filtruje po rodzaju wpisu', () => {
+		expect(service.listAll('character').map((entry) => entry.name)).toEqual(['Harad']);
+		expect(service.listAll('quest')).toHaveLength(1);
+		expect(service.listAll('item')).toHaveLength(6);
+	});
+});
+
 describe('SearchEntryPresenter', () => {
 	const presenter = new SearchEntryPresenter();
 
