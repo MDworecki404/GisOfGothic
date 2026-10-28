@@ -2,6 +2,20 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.6.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.5.0...v0.6.0) (2026-10-28)
+
+### Nowe funkcje
+
+* czwarta część obiektów Myrtany w katalogu i bramce ([7dabf5d](https://github.com/MDworecki404/GisOfGothic/commit/7dabf5da191887f7b45eb679751e132b996fa390))
+* obiekty świata z kilku assetów ion i skrypt dzielący vobs.glb ([6945c56](https://github.com/MDworecki404/GisOfGothic/commit/6945c561333186118c37140aa6a19752d4663ee4))
+* obsługa paczki Gothic 3 — losowy łup, brak rozdziałów, cele questów ([718ab32](https://github.com/MDworecki404/GisOfGothic/commit/718ab328b0889170562b9407bb341da06cee2fae))
+* świat Myrtana (Gothic 3) w katalogu światów ([6433292](https://github.com/MDworecki404/GisOfGothic/commit/6433292dc2d063b5c3462aabcfa62c5b4fc0c1c2))
+
+### Poprawki błędów
+
+* dzielenie vobs pomija węzły z uszkodzonymi pozycjami ([7f0448c](https://github.com/MDworecki404/GisOfGothic/commit/7f0448cf5bc2b7f42bfdc6c22fed0250d800b420))
+* dzielenie vobs zastępuje NaN w siatkach; trzy części obiektów Myrtany w katalogu ([1c82591](https://github.com/MDworecki404/GisOfGothic/commit/1c8259162bc12ae5471698f95e1cbdc78c98d8c2))
+
 ## [0.5.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.4.1...v0.5.0) (2026-10-25)
 
 ### Nowe funkcje
