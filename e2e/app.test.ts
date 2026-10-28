@@ -277,10 +277,10 @@ test('przełącznik światów przenosi do Górniczej Doliny z jej danymi', async
 	await page.goto('/g2nk/khorinis');
 	await expect(page.getByText(/312 przedmiotów/)).toBeVisible({ timeout: 30_000 });
 	await page.getByTitle('Zmień świat').click();
-	await page
-		.getByRole('navigation', { name: 'Światy' })
-		.getByRole('link', { name: 'Górnicza Dolina' })
-		.click();
+	const worldMenu = page.getByRole('navigation', { name: 'Światy' });
+	await expect(worldMenu.getByRole('link')).toHaveCount(0);
+	await worldMenu.getByRole('button', { name: 'Gothic 2: Noc Kruka' }).hover();
+	await worldMenu.getByRole('link', { name: 'Górnicza Dolina' }).click();
 	await expect(page).toHaveURL(/\/g2nk\/gornicza-dolina(\?|$)/);
 	await expect(page).toHaveTitle('Górnicza Dolina — GIS of Gothic');
 	await expect(page.getByText(/214 przedmiotów/)).toBeVisible({ timeout: 30_000 });
@@ -346,4 +346,28 @@ test('po błędzie wczytania model świata ekran ładowania ustępuje karcie bł
 		timeout: 30_000
 	});
 	await expect(page.getByTestId('launch-screen')).toHaveCount(0, { timeout: 5_000 });
+});
+
+test('lista gier pokazuje światy dopiero po najechaniu i zamyka się klawiszem Escape', async ({
+	page
+}) => {
+	await page.goto('/g2nk/khorinis');
+	await page.getByTitle('Zmień świat').click();
+	const worldMenu = page.getByRole('navigation', { name: 'Światy' });
+	await expect(worldMenu.getByRole('button')).toHaveText([
+		/^Gothic\s*$/,
+		/Gothic 2: Noc Kruka/,
+		/Gothic 3/
+	]);
+
+	await worldMenu.getByRole('button', { name: 'Gothic 3' }).hover();
+	await expect(worldMenu.getByRole('link', { name: 'Myrtana' })).toBeVisible();
+	await expect(worldMenu.getByRole('link', { name: 'Khorinis' })).toHaveCount(0);
+
+	await worldMenu.getByRole('button', { name: /^Gothic$/ }).hover();
+	await expect(worldMenu.getByRole('link', { name: 'Kolonia Karna' })).toBeVisible();
+	await expect(worldMenu.getByRole('link', { name: 'Myrtana' })).toHaveCount(0);
+
+	await page.keyboard.press('Escape');
+	await expect(worldMenu).toHaveCount(0);
 });

@@ -64,7 +64,7 @@ zasobów przepuszcza podglądy przedmiotów ze ścieżek `/g1/…` i `/g2nk/…`
    `dataBaseUrl`, `modelNamespace`, `protectedModelsUrl`, `worldTilesetUrl` i `staticObjectsTilesetUrl`
    (bramka `/ion/<asset>/tileset.json`; drugi adres to `vobs.glb` świata wgrany na ion jako osobny asset,
    oba assety trzeba dopuścić w `ALLOWED_ION_ASSETS`).
-   Przełącznik światów w pasku górnym pokaże go sam.
+   Przełącznik światów w pasku górnym (lista gier, po najechaniu albo stuknięciu lista ich światów) pokaże go sam.
 7. **Sprawdź** `npm run deploy:preview` → `https://podglad.gis-of-gothic.pages.dev/<gra>/<świat>`: model
    poprawnie ustawiony, znaczniki na terenie, podglądy przedmiotów, brak błędów w konsoli. Na produkcję
    świat trafia z najbliższym wydaniem.
