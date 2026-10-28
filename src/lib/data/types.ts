@@ -79,6 +79,8 @@ export interface SearchEntry {
 	type: SearchEntryType;
 	code: string;
 	name: string;
+	/** Przedmioty: nazwa ogólna z gry (np. „Mikstura”), gdy `name` pochodzi z opisu (np. „Esencja lecznicza”). */
+	genericName?: string;
 	/** Dane zawierają wpisy bez kategorii (np. ITFO_MUTTON), stąd `null`. */
 	category: string | null;
 	/** Przedmioty: plik modelu podglądu względem adresu modeli świata albo `null`. */

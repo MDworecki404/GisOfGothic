@@ -119,6 +119,18 @@ Znane odstępstwa od kontraktu, które parser dopuszcza:
   składa z niego nazwę, np. „Kamienna tablica siły II”, przy parsowaniu indeksu, warstwy przedmiotów
   i zawartości skrzyń, oraz podaje wyszukiwarce słowa kluczowe (`siła`, `zręczność`, `jednoręczna`…).
 
+## Opis przedmiotu (`description`)
+
+Wiele przedmiotów ma w grze tę samą ogólną nazwę (`name`: „Mikstura”, „Zwój”, „Pierścień”, „Klucz”), a różni je opis ze
+skryptów (`description`: „Esencja lecznicza”). Paczka może go podać jako **opcjonalne** pole przy przedmiocie: we wpisie
+`search_index.json`, w `items.geojson`, w liniach `contents` (`containers.geojson`) i `inventory` (`npcs.geojson`,
+`characters.geojson`), w `items` z `treasure_sets.json` oraz w `items` z `quests.json`. Aplikacja pokazuje wtedy opis jako
+nazwę, a ogólną nazwę zostawia w wyszukiwaniu ([ADR 0025](adr/0025-opis-przedmiotu-jako-nazwa-widoczna.md)).
+
+Do zrobienia w ekstraktorze: w G1 i G2 pole `description` instancji przedmiotu (`C_ITEM.description`), np. `ITPO_HEALTH_01`
+→ „Esencja lecznicza”; w G3 pierwszy tekst opisujący przedmiot, jeśli różni się od `name` (do sprawdzenia, bo duplikatów
+„Amulet”, „Pierścień” i „Kostur maga” nie rozróżnia nic poza kodem). Wartość pusta albo równa `name` można pominąć.
+
 ## Modele przedmiotów
 
 Wpis przedmiotu w `search_index.json` ma pole `model`: ścieżka pliku podglądu względem `modelsBaseUrl`

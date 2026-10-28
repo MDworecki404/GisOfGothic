@@ -1,5 +1,6 @@
 import {
 	findTreasureSetKind,
+	readItemNames,
 	readOptionalNumber,
 	readOptionalString,
 	requireNumber,
@@ -10,9 +11,10 @@ import type { TreasureSet, TreasureSetCatalog, TreasureSetItem } from './types.j
 
 function parseTreasureSetItem(value: unknown, description: string): TreasureSetItem {
 	const record = requireRecord(value, description);
+	const code = requireString(record, 'code', description);
 	return {
-		code: requireString(record, 'code', description),
-		name: requireString(record, 'name', description),
+		code,
+		name: readItemNames(record, code, requireString(record, 'name', description)).displayName,
 		category: readOptionalString(record, 'category') ?? null,
 		amount: readOptionalNumber(record, 'amount') ?? 1
 	};

@@ -1,5 +1,6 @@
 import {
 	readCertainty,
+	readItemNames,
 	readOptionalBoolean,
 	readOptionalChapter,
 	readOptionalNumber,
@@ -80,8 +81,10 @@ function parseItem(value: unknown, description: string): QuestItem | null {
 	const record = requireRecord(value, description);
 	const role = ITEM_ROLES.find((candidate) => candidate === record.role);
 	if (!role) return null;
+	const person = parseNamedPerson(record, description);
 	return {
-		...parseNamedPerson(record, description),
+		...person,
+		name: readItemNames(record, person.code, person.name).displayName,
 		role,
 		amount: readOptionalNumber(record, 'amount') ?? 1,
 		certainty: readCertainty(record) ?? 'always',
