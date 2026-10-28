@@ -31,6 +31,7 @@ import { CameraProjectionController } from './camera-projection-controller.js';
 import type { MapViewInsets } from './free-area-calculator.js';
 import { DataLayersRenderer, type DataLayerPoint } from './data-layers-renderer.js';
 import { ShadowRangeCalculator } from './shadow-range-calculator.js';
+import { ShadowStrengthCalculator } from './shadow-strength-calculator.js';
 import { MapViewObserver, type MapViewListeners, type TileLayerId } from './map-view-observer.js';
 import { MeasurementRenderer } from './measurement-renderer.js';
 import { PlaceMarkersLayer, type PlaceMarker } from './place-markers-layer.js';
@@ -50,7 +51,6 @@ const HIDDEN_TERRAIN_COLOR = '#8b3a2b';
 const DAY_LIGHT_COLOR = new Color(1, 0.96, 0.88);
 const NIGHT_LIGHT_COLOR = new Color(0.62, 0.7, 1);
 const MINIMUM_SUN_ELEVATION = 0.25;
-const SHADOW_DARKNESS = 0.45;
 const SHARP_SHADOW_MAP_SIZE = 2048;
 const SOFT_SHADOW_MAP_SIZE = 4096;
 
@@ -62,6 +62,8 @@ export class MapService {
 	private readonly viewer: Viewer;
 	private readonly viewObserver: MapViewObserver;
 	private readonly shadowRangeCalculator = new ShadowRangeCalculator();
+	private readonly shadowStrengthCalculator = new ShadowStrengthCalculator();
+	private sunElevation = 1;
 	private readonly placeMarkers: PlaceMarkersLayer;
 	private readonly dataLayers: DataLayersRenderer;
 	private readonly measurement: MeasurementRenderer;
@@ -285,6 +287,7 @@ export class MapService {
 		const sunAngle = ((minuteOfDay - 6 * 60) / (12 * 60)) * Math.PI;
 		const sunElevation = Math.sin(sunAngle);
 		const isDay = sunElevation > 0;
+		this.sunElevation = sunElevation;
 		const sign = isDay ? 1 : -1;
 		const towardsLightSource = new Cartesian3(
 			sign * Math.cos(sunAngle),
@@ -301,6 +304,7 @@ export class MapService {
 			color: isDay ? DAY_LIGHT_COLOR : NIGHT_LIGHT_COLOR,
 			intensity: isDay ? 0.55 + 0.6 * sunElevation : 0.4
 		});
+		this.applyShadows();
 	}
 
 	/**
@@ -529,13 +533,17 @@ export class MapService {
 	private applyShadows(): void {
 		const limit = this.performanceProfile?.shadowQualityLimit ?? 'soft';
 		const { areEnabled, areSoft } = this.shadowSettings;
-		const areShown = areEnabled && limit !== 'off' && !this.projectionController.isOrthographic();
+		const areShown =
+			areEnabled &&
+			limit !== 'off' &&
+			!this.projectionController.isOrthographic() &&
+			this.shadowStrengthCalculator.areShadowsVisible(this.sunElevation);
 		const areShownSoft = areSoft && limit === 'soft';
 		this.viewer.shadows = areShown;
 		const shadowMap = this.viewer.scene.shadowMap;
 		shadowMap.softShadows = areShownSoft;
 		shadowMap.size = areShownSoft ? SOFT_SHADOW_MAP_SIZE : SHARP_SHADOW_MAP_SIZE;
-		shadowMap.darkness = SHADOW_DARKNESS;
+		shadowMap.darkness = this.shadowStrengthCalculator.calculateDarkness(this.sunElevation);
 		this.applyShadowRange();
 	}
 
