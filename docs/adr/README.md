@@ -28,3 +28,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0022](0022-losowy-lup-gothic-3.md)                            | Losowy łup Gothica 3 z osobnego pliku, na żądanie    | przyjęta |
 | [0023](0023-voby-dzielone-na-kilka-assetow-ion.md)             | Voby dużych światów dzielone na kilka assetów ion    | przyjęta |
 | [0024](0024-ekran-ladowania-aplikacji.md)                      | Ekran ładowania: statyczny przed JS i komponent      | przyjęta |
+| [0025](0025-opis-przedmiotu-jako-nazwa-widoczna.md)            | Opis przedmiotu z gry jako nazwa widoczna            | przyjęta |

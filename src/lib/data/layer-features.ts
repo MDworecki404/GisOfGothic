@@ -3,11 +3,11 @@ import {
 	readStringList,
 	readOptionalBoolean,
 	readOptionalNumber,
+	readItemNames,
 	readOptionalString,
 	requireRecord,
 	requireString
 } from './parsers.js';
-import { stonePlateNameResolver } from './stone-plate-names.js';
 
 export interface PointFeature<P> {
 	lon: number;
@@ -63,7 +63,7 @@ function parseInventoryLine(value: unknown): InventoryLine | null {
 	if (!name) return null;
 	const code = readOptionalString(value, 'code');
 	return {
-		name: code ? stonePlateNameResolver.resolveDisplayName(code, name) : name,
+		name: code ? readItemNames(value, code, name).displayName : name,
 		category: readOptionalString(value, 'category') ?? null,
 		amount: readOptionalNumber(value, 'amount') ?? 1
 	};
@@ -132,10 +132,8 @@ export function parseItemProperties(
 	return {
 		id: requireString(properties, 'id', description),
 		code,
-		name: stonePlateNameResolver.resolveDisplayName(
-			code,
-			requireString(properties, 'name', description)
-		),
+		name: readItemNames(properties, code, requireString(properties, 'name', description))
+			.displayName,
 		category: readOptionalString(properties, 'category') ?? null,
 		amount: readOptionalNumber(properties, 'amount') ?? 1,
 		isInsertedByScript: readOptionalString(properties, 'source') === 'script',

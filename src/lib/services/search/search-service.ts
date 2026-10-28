@@ -61,7 +61,7 @@ export class SearchService {
 				categoryLabel: describeCategory(entry.category),
 				code: entry.code,
 				keywords:
-					`${stonePlateNameResolver.describeSearchKeywords(entry.code)} ${entry.giver ?? ''}`.trim(),
+					`${stonePlateNameResolver.describeSearchKeywords(entry.code)} ${entry.giver ?? ''} ${entry.genericName ?? ''}`.trim(),
 				type: entry.type
 			}))
 		);

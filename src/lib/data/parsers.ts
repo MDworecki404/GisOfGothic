@@ -112,6 +112,33 @@ export function readOptionalChapter(record: Record<string, unknown>): number | n
 	return typeof value === 'number' ? value : undefined;
 }
 
+/** Nazwa przedmiotu z danych: ogólna (`name`, np. „Mikstura”) i opcjonalny opis z gry (`description`, np. „Esencja lecznicza”). */
+export interface ItemNames {
+	/** Nazwa widoczna w aplikacji: opis z gry, a bez niego nazwa ogólna (kamienne tablice dostają jeszcze atrybut z kodu). */
+	displayName: string;
+	/** Nazwa ogólna, gdy opis ją zastąpił; wyszukiwarka dalej znajduje przedmiot po niej. */
+	genericName: string | undefined;
+}
+
+/**
+ * Wiele przedmiotów w grze ma tę samą nazwę ogólną i różni się tylko opisem (mikstury, pierścienie, zwoje),
+ * dlatego opis z danych, jeśli jest, zastępuje nazwę. Pusty opis albo równy nazwie jest ignorowany.
+ */
+export function readItemNames(
+	record: Record<string, unknown>,
+	code: string,
+	name: string
+): ItemNames {
+	const description = readOptionalString(record, 'description')?.trim();
+	if (description && description !== name) {
+		return { displayName: description, genericName: name };
+	}
+	return {
+		displayName: stonePlateNameResolver.resolveDisplayName(code, name),
+		genericName: undefined
+	};
+}
+
 export function readCertainty(record: Record<string, unknown>): Place['certainty'] {
 	const value = record.certainty;
 	return value === 'always' || value === 'possible' ? value : undefined;
@@ -232,14 +259,13 @@ function parseSearchEntry(value: unknown, position: number): SearchEntry {
 	if (!isSearchEntryType(type)) throw new Error(`${description}: nieznany typ wpisu`);
 	if (!Array.isArray(record.places)) throw new Error(`${description}: brak listy miejsc`);
 	const code = requireString(record, 'code', description);
+	const names = readItemNames(record, code, requireString(record, 'name', description));
 	return {
 		id: requireString(record, 'id', description),
 		type,
 		code,
-		name: stonePlateNameResolver.resolveDisplayName(
-			code,
-			requireString(record, 'name', description)
-		),
+		name: names.displayName,
+		genericName: names.genericName,
 		category: readOptionalString(record, 'category') ?? null,
 		model: readOptionalString(record, 'model') ?? null,
 		total: readOptionalNumber(record, 'total'),
