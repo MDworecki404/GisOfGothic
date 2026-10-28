@@ -2,6 +2,12 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.7.1](https://github.com/MDworecki404/GisOfGothic/compare/v0.7.0...v0.7.1) (2026-10-28)
+
+### Poprawki błędów
+
+* lista w wyszukiwarce nie gubi liczników świata, a testy e2e nie zakładają adresu bez widoku ([d78c038](https://github.com/MDworecki404/GisOfGothic/commit/d78c038b0a4048e499767e530fef7c648bc70f2e))
+
 ## [0.7.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.6.1...v0.7.0) (2026-10-28)
 
 ### Nowe funkcje
