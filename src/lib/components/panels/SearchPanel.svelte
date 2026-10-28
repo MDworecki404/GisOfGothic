@@ -286,6 +286,10 @@
 			<p class="mt-3 text-sm text-muted-foreground">
 				Przeglądasz wszystko po kolei (A–Z). Wpisz nazwę w polu u góry, np. „ziele”, „Harad” albo
 				„Bennet”, żeby zawęzić listę.
+				{#if appState.indexCounts}
+					W tym świecie jest {appState.indexCounts.items} przedmiotów, {appState.indexCounts
+						.characters} unikatowych postaci i {appState.indexCounts.quests} questów.
+				{/if}
 			</p>
 		{/if}
 		<p class="mt-3 mb-1 text-sm text-muted-foreground">

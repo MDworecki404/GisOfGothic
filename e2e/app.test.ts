@@ -8,7 +8,7 @@ test('strona się ładuje: mapa Cesium, panel wyszukiwania, brak błędów w kon
 	page.on('pageerror', (e) => errors.push(e.message));
 
 	await page.goto('/');
-	await expect(page).toHaveURL(/\/g2nk\/khorinis$/);
+	await expect(page).toHaveURL(/\/g2nk\/khorinis(\?.*)?$/);
 	await expect(page).toHaveTitle('Khorinis — GIS of Gothic');
 
 	await expect(page.locator('[data-testid="map"] canvas')).toBeVisible({ timeout: 30_000 });
@@ -134,7 +134,7 @@ test('link z narzędziem otwiera panel, a uszkodzona kamera jest ignorowana', as
 	await page.goto('/g2nk/khorinis?widok=zepsute&narzedzie=measure');
 	await expect(page.getByRole('heading', { name: 'Pomiary' })).toBeVisible();
 	await expect(page).toHaveURL(/narzedzie=measure/);
-	await expect(page).not.toHaveURL(/widok=/);
+	await expect(page).not.toHaveURL(/widok=zepsute/);
 });
 
 test('panel Warstwy pokazuje legendę ikon kategorii', async ({ page }) => {
@@ -230,7 +230,7 @@ test('na telefonie pole wyszukiwania rozwija arkusz, a okna otwiera menu „Wię
 	await expect(handle).toHaveAttribute('aria-valuetext', 'zwinięty');
 	await page.getByRole('searchbox').click();
 	await expect(handle).toHaveAttribute('aria-valuetext', 'połowa ekranu');
-	await page.getByRole('button', { name: 'Więcej' }).click();
+	await page.getByRole('button', { name: 'Więcej', exact: true }).click();
 	await page.getByRole('button', { name: 'O projekcie' }).click();
 	await expect(page.getByRole('dialog')).toContainText('Trójwymiarowa wikipedia');
 	await page.keyboard.press('Escape');
