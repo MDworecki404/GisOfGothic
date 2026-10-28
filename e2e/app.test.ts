@@ -23,7 +23,7 @@ test('strona się ładuje: mapa Cesium, panel wyszukiwania, brak błędów w kon
 });
 
 test('nieznany świat pokazuje stronę błędu z linkiem do Khorinis', async ({ page }) => {
-	await page.goto('/g3/myrtana');
+	await page.goto('/g3/nie-ma-takiego-swiata');
 	await expect(page.getByText('Nie ma takiego świata.')).toBeVisible();
 	await page.getByRole('link', { name: 'Otwórz Khorinis' }).click();
 	await expect(page).toHaveURL(/\/g2nk\/khorinis$/);
