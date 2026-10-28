@@ -56,6 +56,8 @@ export type LoadStatus = 'loading' | 'ready' | 'error';
 
 export class AppState {
 	worldStatus = $state<LoadStatus>('loading');
+	/** `true` po pierwszym wczytaniu aplikacji (model świata i indeks gotowe albo któryś zawiódł); już nie wraca do `false`. */
+	isLaunchFinished = $state(false);
 	worldErrorMessage = $state<string | null>(null);
 	searchIndexStatus = $state<LoadStatus>('loading');
 	searchIndexErrorMessage = $state<string | null>(null);
@@ -219,10 +221,12 @@ export class AppState {
 		});
 		eventBus.subscribe('world-loaded', () => {
 			this.worldStatus = 'ready';
+			this.finishLaunchWhenEverythingIsLoaded();
 		});
 		eventBus.subscribe('world-load-failed', ({ message }) => {
 			this.worldStatus = 'error';
 			this.worldErrorMessage = message;
+			this.finishLaunchWhenEverythingIsLoaded();
 		});
 		eventBus.subscribe('search-index-load-started', () => {
 			this.searchIndexStatus = 'loading';
@@ -231,11 +235,20 @@ export class AppState {
 		eventBus.subscribe('search-index-loaded', ({ counts }) => {
 			this.searchIndexStatus = 'ready';
 			this.indexCounts = counts;
+			this.finishLaunchWhenEverythingIsLoaded();
 		});
 		eventBus.subscribe('search-index-load-failed', ({ message }) => {
 			this.searchIndexStatus = 'error';
 			this.searchIndexErrorMessage = message;
+			this.finishLaunchWhenEverythingIsLoaded();
 		});
+	}
+
+	/** Ekran ładowania znika, gdy oba wczytania się udały, albo od razu po błędzie (kartę błędu ma być widać). */
+	private finishLaunchWhenEverythingIsLoaded(): void {
+		const hasFailure = this.worldStatus === 'error' || this.searchIndexStatus === 'error';
+		const isEverythingReady = this.worldStatus === 'ready' && this.searchIndexStatus === 'ready';
+		if (hasFailure || isEverythingReady) this.isLaunchFinished = true;
 	}
 
 	get statusText(): string {
