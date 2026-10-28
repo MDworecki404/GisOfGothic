@@ -1,11 +1,14 @@
-import { expect, test, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect, test } from './support/test.js';
 
 const SEEN_FROM_ABOVE_ISLAND_LINK = '/g2nk/khorinis?widok=72.7_13.3_800_0_-45&narzedzie=zamkniete';
 
 async function waitForMapToSettle(page: Page): Promise<void> {
 	await expect(page.locator('[data-testid="map"] canvas')).toBeVisible({ timeout: 30_000 });
-	await expect(page.getByTestId('tiles-loading-badge')).toBeVisible({ timeout: 30_000 });
-	await expect(page.getByTestId('tiles-loading-badge')).toBeHidden({ timeout: 90_000 });
+	await expect(page.getByTestId('map')).toHaveAttribute('data-world-status', 'ready', {
+		timeout: 30_000
+	});
+	await expect(page.getByTestId('tiles-loading-badge')).toBeHidden({ timeout: 30_000 });
 }
 
 function collectPageErrors(page: Page): string[] {

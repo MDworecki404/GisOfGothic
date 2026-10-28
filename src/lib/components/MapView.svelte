@@ -27,6 +27,7 @@
 			? 'cursor-crosshair'
 			: ''}"
 		data-testid="map"
+		data-world-status={appState.worldStatus}
 	></div>
 	<div class="map-parchment-frame pointer-events-none absolute inset-0" aria-hidden="true"></div>
 </div>
