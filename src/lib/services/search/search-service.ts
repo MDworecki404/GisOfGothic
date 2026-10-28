@@ -5,6 +5,12 @@ import type { SearchEntry, SearchEntryType, SearchIndex } from '#lib/data/types.
 
 export type SearchTypeFilter = 'all' | SearchEntryType;
 
+/** Kategoria widoczna dla użytkownika (np. „Rośliny”, nazwa gildii) i liczba wpisów w niej. */
+export interface CategoryOption {
+	label: string;
+	count: number;
+}
+
 interface IndexedDocument {
 	id: string;
 	name: string;
@@ -12,6 +18,7 @@ interface IndexedDocument {
 	code: string;
 	keywords: string;
 	type: SearchEntryType;
+	categoryLabel: string;
 }
 
 const MAXIMUM_RESULTS = 60;
@@ -37,7 +44,7 @@ export class SearchService {
 		);
 		this.miniSearch = new MiniSearch<IndexedDocument>({
 			fields: ['name', 'category', 'code', 'keywords'],
-			storeFields: ['type'],
+			storeFields: ['type', 'categoryLabel'],
 			processTerm: normalizeSearchTerm,
 			searchOptions: {
 				boost: { name: 3, category: 1, code: 0.5, keywords: 1 },
@@ -51,6 +58,7 @@ export class SearchService {
 				id: entry.id,
 				name: entry.name,
 				category: describeCategory(entry.category),
+				categoryLabel: describeCategory(entry.category),
 				code: entry.code,
 				keywords:
 					`${stonePlateNameResolver.describeSearchKeywords(entry.code)} ${entry.giver ?? ''}`.trim(),
@@ -59,12 +67,18 @@ export class SearchService {
 		);
 	}
 
-	search(query: string, typeFilter: SearchTypeFilter): SearchEntry[] {
+	search(
+		query: string,
+		typeFilter: SearchTypeFilter,
+		categoryLabel: string | null = null
+	): SearchEntry[] {
 		const trimmedQuery = query.trim();
 		if (trimmedQuery.length === 0) return [];
 		return this.miniSearch
 			.search(trimmedQuery, {
-				filter: (result) => typeFilter === 'all' || result.type === typeFilter
+				filter: (result) =>
+					(typeFilter === 'all' || result.type === typeFilter) &&
+					(categoryLabel === null || result.categoryLabel === categoryLabel)
 			})
 			.slice(0, MAXIMUM_RESULTS)
 			.flatMap((result) => {
@@ -74,9 +88,28 @@ export class SearchService {
 	}
 
 	/** Wszystkie wpisy (z filtrem rodzaju) w kolejności alfabetycznej — do przeglądania bez wpisywania frazy. */
-	listAll(typeFilter: SearchTypeFilter): SearchEntry[] {
-		if (typeFilter === 'all') return this.entriesSortedByName;
-		return this.entriesSortedByName.filter((entry) => entry.type === typeFilter);
+	listAll(typeFilter: SearchTypeFilter, categoryLabel: string | null = null): SearchEntry[] {
+		return this.entriesSortedByName.filter(
+			(entry) =>
+				(typeFilter === 'all' || entry.type === typeFilter) &&
+				(categoryLabel === null || describeCategory(entry.category) === categoryLabel)
+		);
+	}
+
+	/** Kategorie wpisów danego rodzaju od najliczniejszej; do listy rozwijanej filtra kategorii. */
+	listCategories(typeFilter: SearchTypeFilter): CategoryOption[] {
+		const countByLabel = new Map<string, number>();
+		for (const entry of this.entriesSortedByName) {
+			if (typeFilter !== 'all' && entry.type !== typeFilter) continue;
+			const label = describeCategory(entry.category);
+			countByLabel.set(label, (countByLabel.get(label) ?? 0) + 1);
+		}
+		return [...countByLabel.entries()]
+			.map(([label, count]) => ({ label, count }))
+			.sort(
+				(first, second) =>
+					second.count - first.count || first.label.localeCompare(second.label, 'pl')
+			);
 	}
 
 	findEntry(entryId: string): SearchEntry | undefined {

@@ -132,6 +132,25 @@ describe('SearchService — przeglądanie wszystkich wpisów', () => {
 	});
 });
 
+describe('SearchService — kategorie', () => {
+	it('listCategories liczy kategorie danego rodzaju od najliczniejszej', () => {
+		expect(service.listCategories('item')).toEqual([
+			{ label: 'Dokumenty', count: 3 },
+			{ label: 'Rośliny', count: 2 },
+			{ label: 'Różne', count: 1 }
+		]);
+		expect(service.listCategories('character')).toEqual([{ label: 'Mieszczanin', count: 1 }]);
+	});
+
+	it('listAll i search zawężają wyniki do kategorii', () => {
+		expect(service.listAll('item', 'Rośliny')).toHaveLength(2);
+		expect(
+			service.search('tablica', 'all', 'Dokumenty').every((entry) => entry.category === 'Dokumenty')
+		).toBe(true);
+		expect(service.search('tablica', 'all', 'Rośliny')).toEqual([]);
+	});
+});
+
 describe('SearchEntryPresenter', () => {
 	const presenter = new SearchEntryPresenter();
 

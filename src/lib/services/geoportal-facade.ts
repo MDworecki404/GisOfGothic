@@ -260,6 +260,10 @@ export class GeoportalFacade {
 		this.searchCoordinator.filterByType(typeFilter);
 	}
 
+	filterSearchByCategory(categoryLabel: string | null): void {
+		this.searchCoordinator.filterByCategory(categoryLabel);
+	}
+
 	selectSearchEntry(entryId: string): void {
 		this.searchCoordinator.selectEntry(entryId);
 	}

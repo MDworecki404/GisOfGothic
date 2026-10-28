@@ -33,6 +33,7 @@
 	$effect(() => {
 		void appState.searchQuery;
 		void appState.searchTypeFilter;
+		void appState.searchCategoryFilter;
 		visibleResultsCount = RESULTS_PAGE_SIZE;
 	});
 
@@ -236,6 +237,22 @@
 		{/each}
 	</div>
 
+	{#if appState.searchCategories.length > 1}
+		<label class="mt-2 block">
+			<span class="sr-only">Kategoria</span>
+			<select
+				class="field w-full"
+				value={appState.searchCategoryFilter ?? ''}
+				onchange={(event) => geoportal.filterSearchByCategory(event.currentTarget.value || null)}
+			>
+				<option value="">Wszystkie kategorie</option>
+				{#each appState.searchCategories as category (category.label)}
+					<option value={category.label}>{category.label} ({category.count})</option>
+				{/each}
+			</select>
+		</label>
+	{/if}
+
 	{#if appState.searchIndexStatus === 'loading'}
 		<div class="mt-4" role="status" aria-label="Wczytuję przedmioty i postacie świata">
 			{#each [0, 1, 2] as row (row)}
@@ -253,6 +270,10 @@
 				<p class="mt-1 text-muted-foreground">Szukasz tylko w jednym rodzaju wyników.</p>
 				<button class="button-quiet mt-3" onclick={() => geoportal.filterSearchByType('all')}>
 					Szukaj we wszystkich rodzajach
+				</button>
+			{:else if appState.searchCategoryFilter !== null}
+				<button class="button-quiet mt-3" onclick={() => geoportal.filterSearchByCategory(null)}>
+					Pokaż wszystkie kategorie
 				</button>
 			{:else if hasQuery}
 				<p class="mt-1 text-muted-foreground">

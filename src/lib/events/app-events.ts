@@ -7,7 +7,7 @@ import type {
 	SearchEntryDetails,
 	SearchResult
 } from '#lib/services/search/search-entry-presenter.js';
-import type { SearchTypeFilter } from '#lib/services/search/search-service.js';
+import type { CategoryOption, SearchTypeFilter } from '#lib/services/search/search-service.js';
 import type { AnalysisView } from '#lib/services/analysis/analysis-coordinator.js';
 import type { BookmarkView } from '#lib/services/bookmarks/bookmarks-coordinator.js';
 import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
@@ -47,6 +47,8 @@ export type AppEvent =
 			type: 'search-results-changed';
 			query: string;
 			typeFilter: SearchTypeFilter;
+			categoryFilter: string | null;
+			categories: CategoryOption[];
 			results: SearchResult[];
 	  }
 	| { type: 'search-entry-selected'; details: SearchEntryDetails | null }
