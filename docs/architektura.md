@@ -361,6 +361,8 @@ Stany interfejsu:
 - **Błędy**: warstwa, której nie udało się wczytać, ma w panelu przycisk „Spróbuj ponownie” (ponowne
   `toggleDataLayer`). Błąd modelu świata albo indeksu pokazuje kartę `MapLoadError` z przyciskiem
   „Wczytaj ponownie” (przeładowanie strony), bo fasada nie ma osobnego ponawiania tych wczytań.
+- **Ekran ładowania** ([ADR 0024](adr/0024-ekran-ladowania-aplikacji.md)): statyczny `#app-splash` z `app.html` działa przed JavaScriptem,
+  `LaunchScreen` pokazuje kroki wczytywania do pierwszego wczytania świata (`AppState.isLaunchFinished`) i gaśnie.
 - **Brak wyników**: wyszukiwarka nazywa wpisaną frazę i, gdy działa filtr rodzaju, proponuje szukanie
   we wszystkich rodzajach.
 - Na telefonie odczyt położenia kursora jest w lewym górnym rogu mapy, bo dół zajmują legenda i atrybucja.

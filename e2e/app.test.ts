@@ -26,7 +26,7 @@ test('nieznany świat pokazuje stronę błędu z linkiem do Khorinis', async ({ 
 	await page.goto('/g3/nie-ma-takiego-swiata');
 	await expect(page.getByText('Nie ma takiego świata.')).toBeVisible();
 	await page.getByRole('link', { name: 'Otwórz Khorinis' }).click();
-	await expect(page).toHaveURL(/\/g2nk\/khorinis$/);
+	await expect(page).toHaveURL(/\/g2nk\/khorinis(\?.*)?$/);
 });
 
 test('szyna narzędzi przełącza i zamyka panele', async ({ page }) => {
@@ -302,4 +302,48 @@ test('warstwa obiektów świata wczytuje tileset voba z bramki', async ({ page }
 	await checkbox.check();
 	await expect(checkbox).toBeChecked({ timeout: 60_000 });
 	expect(tilesetRequests.length).toBeGreaterThan(0);
+});
+
+test('ekran ładowania trwa do wczytania modelu świata, a potem znika', async ({ page }) => {
+	let releaseTileset: () => void = () => {};
+	const tilesetHeld = new Promise<void>((resolve) => (releaseTileset = resolve));
+	await page.route(/\/ion\/\d+\/tileset\.json/, async (route) => {
+		await tilesetHeld;
+		await route.fulfill({
+			status: 200,
+			contentType: 'application/json',
+			headers: { 'access-control-allow-origin': '*' },
+			body: JSON.stringify({
+				asset: { version: '1.0' },
+				geometricError: 1000,
+				root: { boundingVolume: { sphere: [0, 0, 0, 6000] }, geometricError: 0, refine: 'ADD' }
+			})
+		});
+	});
+
+	await page.goto('/g2nk/khorinis');
+	const launchScreen = page.getByTestId('launch-screen');
+	await expect(launchScreen).toBeVisible();
+	await expect(launchScreen).toContainText('GIS of Gothic');
+	await expect(launchScreen).toContainText('Khorinis');
+	await expect(page.locator('#app-splash')).toHaveCount(0);
+	await expect(launchScreen.getByText('Model świata')).toBeVisible();
+	await expect(launchScreen.getByText('wczytuję').first()).toBeAttached();
+
+	releaseTileset();
+	await expect(launchScreen).toHaveCount(0, { timeout: 15_000 });
+	await expect(page.getByRole('searchbox')).toBeVisible();
+});
+
+test('po błędzie wczytania model świata ekran ładowania ustępuje karcie błędu', async ({
+	page
+}) => {
+	await page.route(/\/ion\/\d+\/tileset\.json/, (route) =>
+		route.fulfill({ status: 500, body: '' })
+	);
+	await page.goto('/g2nk/khorinis');
+	await expect(page.getByRole('alert')).toContainText('Nie udało się wczytać modelu świata', {
+		timeout: 30_000
+	});
+	await expect(page.getByTestId('launch-screen')).toHaveCount(0, { timeout: 5_000 });
 });

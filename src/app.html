@@ -13,9 +13,50 @@
 		<meta name="apple-mobile-web-app-title" content="GIS of Gothic" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="text-scale" content="scale" />
+		<style>
+			html {
+				background: #14110d;
+			}
+			#app-splash {
+				position: fixed;
+				inset: 0;
+				z-index: 99;
+				display: grid;
+				place-items: center;
+				background: #14110d;
+				color: #c99a45;
+				font:
+					600 1.75rem/1.1 Georgia,
+					serif;
+			}
+			#app-splash i {
+				display: block;
+				width: 22px;
+				height: 22px;
+				margin: 1rem auto 0;
+				border: 3px solid rgb(201 154 69 / 0.3);
+				border-top-color: #e8913a;
+				border-radius: 50%;
+				animation: app-splash-spin 0.9s linear infinite;
+			}
+			@keyframes app-splash-spin {
+				to {
+					transform: rotate(360deg);
+				}
+			}
+			@media (prefers-reduced-motion: reduce) {
+				#app-splash i {
+					animation: none;
+					border-color: #e8913a;
+				}
+			}
+		</style>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
+		<div id="app-splash" role="status" aria-label="Wczytywanie aplikacji">
+			<div style="text-align: center">GIS of Gothic<i></i></div>
+		</div>
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>

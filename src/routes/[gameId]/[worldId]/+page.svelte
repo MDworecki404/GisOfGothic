@@ -2,6 +2,7 @@
 	import MapView from '#lib/components/MapView.svelte';
 	import ActiveLayersLegend from '#lib/components/shell/ActiveLayersLegend.svelte';
 	import IdentifyCard from '#lib/components/shell/IdentifyCard.svelte';
+	import LaunchScreen from '#lib/components/shell/LaunchScreen.svelte';
 	import InstrumentBar from '#lib/components/shell/InstrumentBar.svelte';
 	import MapInsetsReporter from '#lib/components/shell/MapInsetsReporter.svelte';
 	import MapLoadError from '#lib/components/shell/MapLoadError.svelte';
@@ -56,3 +57,5 @@
 	<IdentifyCard />
 	<InstrumentBar />
 </main>
+
+<LaunchScreen />
