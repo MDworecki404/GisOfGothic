@@ -30,6 +30,7 @@ import { CameraFramer } from './camera-framer.js';
 import { CameraProjectionController } from './camera-projection-controller.js';
 import type { MapViewInsets } from './free-area-calculator.js';
 import { DataLayersRenderer, type DataLayerPoint } from './data-layers-renderer.js';
+import { ShadowRangeCalculator } from './shadow-range-calculator.js';
 import { MapViewObserver, type MapViewListeners, type TileLayerId } from './map-view-observer.js';
 import { MeasurementRenderer } from './measurement-renderer.js';
 import { PlaceMarkersLayer, type PlaceMarker } from './place-markers-layer.js';
@@ -60,6 +61,7 @@ const SOFT_SHADOW_MAP_SIZE = 4096;
 export class MapService {
 	private readonly viewer: Viewer;
 	private readonly viewObserver: MapViewObserver;
+	private readonly shadowRangeCalculator = new ShadowRangeCalculator();
 	private readonly placeMarkers: PlaceMarkersLayer;
 	private readonly dataLayers: DataLayersRenderer;
 	private readonly measurement: MeasurementRenderer;
@@ -119,6 +121,7 @@ export class MapService {
 		this.viewer.scene.postRender.addEventListener(() =>
 			listeners.onFrameRendered(performance.now())
 		);
+		this.viewer.camera.moveEnd.addEventListener(() => this.applyShadowRange());
 	}
 
 	/**
@@ -533,6 +536,15 @@ export class MapService {
 		shadowMap.softShadows = areShownSoft;
 		shadowMap.size = areShownSoft ? SOFT_SHADOW_MAP_SIZE : SHARP_SHADOW_MAP_SIZE;
 		shadowMap.darkness = SHADOW_DARKNESS;
+		this.applyShadowRange();
+	}
+
+	/** Dopasowuje zasięg cieni do odległości od kamery do punktu pod środkiem ekranu (bez zbędnego odpytywania, gdy cieni nie ma). */
+	private applyShadowRange(): void {
+		if (!this.viewer.shadows) return;
+		this.viewer.scene.shadowMap.maximumDistance = this.shadowRangeCalculator.calculateRangeMetres(
+			this.measureDistanceToScreenCentreIfKnown()
+		);
 	}
 
 	private pickPointAtScreenCentre(): Cartesian3 | null {

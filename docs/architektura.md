@@ -417,6 +417,8 @@ nad mapą (`TilesLoadingBadge`) z liczbą kafli; przy `prefers-reduced-motion` p
 kierunkowe: słońce od wschodu (6:00) przez południe do zachodu (18:00), nocą słabsze, chłodne światło.
 Cienie (`MapService.showShadows`) są domyślnie wyłączone; mapa cieni Cesium korzysta z kierunku światła
 sceny, więc cienie podążają za porą dnia. Gładkie cienie to `softShadows` i mapa 4096 px zamiast 2048 px.
+Zasięg cieni (`ShadowMap.maximumDistance`) dopasowuje `ShadowRangeCalculator` (`services/map/`) przy każdym zatrzymaniu kamery:
+to trzykrotność odległości do punktu pod środkiem ekranu, w granicach 400 m – 15 km (domyślny stały zasięg 5 km rozmywał cienie z bliska i obcinał je z dużej wysokości).
 Warstwa „postacie o tej godzinie” czyta `character_places.geojson` przy pierwszym włączeniu, bierze
 tylko rutyny domyślne i przez `DailySchedule` wybiera miejsca, których przedział godzin obejmuje
 wybraną minutę (przedziały przez północ, np. „22:00–07:00”, są obsługiwane).
