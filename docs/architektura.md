@@ -139,6 +139,8 @@ aplikacji w `AppState`.
 Mieszczanin) i kod; wyszukiwanie po początku słowa, z tolerancją literówek w dłuższych słowach i bez
 polskich znaków (`normalizeSearchTerm`). `SearchEntryPresenter` zamienia wpisy na teksty dla UI,
 a `PlaceMarkersLayer` rysuje miejsca wybranego wpisu jako jedną kolekcję punktów Cesium.
+Bez wpisanej frazy panel pokazuje wszystkie wpisy świata alfabetycznie (`SearchService.listAll`, z filtrem rodzaju), po 60 na stronę
+z przyciskiem „Pokaż więcej”; fraza zawęża listę do trafień wyszukiwarki.
 
 Wpisy `quest` mają ten sam przepływ co postacie: filtr „Questy”, wynik z kategorią „Misja” albo „Notatka”, imię zleceniodawcy
 dopisane do słów kluczowych (wyszukanie „Hodges” znajduje jego questy), znaczniki miejsc barwione rolą

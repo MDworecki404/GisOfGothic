@@ -174,8 +174,16 @@ export class SearchCoordinator {
 		return this.questCatalogLoading;
 	}
 
+	/** Bez frazy pokazujemy wszystkie wpisy alfabetycznie, z frazą — trafienia wyszukiwarki. */
+	private findEntriesToList(): SearchEntry[] {
+		if (!this.searchService) return [];
+		return this.query.trim().length === 0
+			? this.searchService.listAll(this.typeFilter)
+			: this.searchService.search(this.query, this.typeFilter);
+	}
+
 	private publishResults(): void {
-		const entries = this.searchService?.search(this.query, this.typeFilter) ?? [];
+		const entries = this.findEntriesToList();
 		this.eventBus.publish({
 			type: 'search-results-changed',
 			query: this.query,

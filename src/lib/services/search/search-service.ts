@@ -28,9 +28,13 @@ export function normalizeSearchTerm(term: string): string {
 export class SearchService {
 	private readonly miniSearch: MiniSearch<IndexedDocument>;
 	private readonly entriesById: Map<string, SearchEntry>;
+	private readonly entriesSortedByName: SearchEntry[];
 
 	constructor(index: SearchIndex) {
 		this.entriesById = new Map(index.entries.map((entry) => [entry.id, entry]));
+		this.entriesSortedByName = [...index.entries].sort((first, second) =>
+			first.name.localeCompare(second.name, 'pl')
+		);
 		this.miniSearch = new MiniSearch<IndexedDocument>({
 			fields: ['name', 'category', 'code', 'keywords'],
 			storeFields: ['type'],
@@ -67,6 +71,12 @@ export class SearchService {
 				const entry = this.entriesById.get(String(result.id));
 				return entry ? [entry] : [];
 			});
+	}
+
+	/** Wszystkie wpisy (z filtrem rodzaju) w kolejności alfabetycznej — do przeglądania bez wpisywania frazy. */
+	listAll(typeFilter: SearchTypeFilter): SearchEntry[] {
+		if (typeFilter === 'all') return this.entriesSortedByName;
+		return this.entriesSortedByName.filter((entry) => entry.type === typeFilter);
 	}
 
 	findEntry(entryId: string): SearchEntry | undefined {

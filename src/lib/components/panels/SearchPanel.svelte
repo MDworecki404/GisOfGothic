@@ -26,6 +26,16 @@
 
 	const hasQuery = $derived(appState.searchQuery.trim().length > 0);
 
+	const RESULTS_PAGE_SIZE = 60;
+	let visibleResultsCount = $state(RESULTS_PAGE_SIZE);
+	const visibleResults = $derived(appState.searchResults.slice(0, visibleResultsCount));
+
+	$effect(() => {
+		void appState.searchQuery;
+		void appState.searchTypeFilter;
+		visibleResultsCount = RESULTS_PAGE_SIZE;
+	});
+
 	function showPreview(modelPath: string): Attachment<HTMLElement> {
 		return (container) => geoportal.showModelPreview(container, modelPath);
 	}
@@ -69,7 +79,7 @@
 		onclick={() => geoportal.clearSearchSelection()}
 	>
 		<ArrowLeftIcon class="size-4" />
-		{hasQuery ? 'Wróć do wyników' : 'Wróć do wyszukiwarki'}
+		{hasQuery ? 'Wróć do wyników' : 'Wróć do listy'}
 	</button>
 
 	<article aria-labelledby="entry-name">
@@ -226,15 +236,7 @@
 		{/each}
 	</div>
 
-	{#if !hasQuery}
-		<p class="mt-4 text-sm text-muted-foreground">
-			Wpisz nazwę przedmiotu, postaci albo questa w polu u góry, np. „ziele”, „Harad” albo „Bennet”.
-			{#if appState.indexCounts}
-				W tym świecie jest {appState.indexCounts.items} przedmiotów i {appState.indexCounts
-					.characters} unikatowych postaci i {appState.indexCounts.quests} questów.
-			{/if}
-		</p>
-	{:else if appState.searchIndexStatus === 'loading'}
+	{#if appState.searchIndexStatus === 'loading'}
 		<div class="mt-4" role="status" aria-label="Wczytuję przedmioty i postacie świata">
 			{#each [0, 1, 2] as row (row)}
 				<span class="skeleton mt-3 w-full"></span>
@@ -242,24 +244,34 @@
 		</div>
 	{:else if appState.searchResults.length === 0}
 		<div class="mt-4 text-sm" role="status">
-			<p>Nic nie pasuje do „{appState.searchQuery.trim()}”.</p>
+			{#if hasQuery}
+				<p>Nic nie pasuje do „{appState.searchQuery.trim()}”.</p>
+			{:else}
+				<p>Nie ma tu jeszcze nic do pokazania.</p>
+			{/if}
 			{#if appState.searchTypeFilter !== 'all'}
 				<p class="mt-1 text-muted-foreground">Szukasz tylko w jednym rodzaju wyników.</p>
 				<button class="button-quiet mt-3" onclick={() => geoportal.filterSearchByType('all')}>
 					Szukaj we wszystkich rodzajach
 				</button>
-			{:else}
+			{:else if hasQuery}
 				<p class="mt-1 text-muted-foreground">
 					Spróbuj krótszej nazwy albo samego początku słowa, np. „miecz” zamiast „mieczyk”.
 				</p>
 			{/if}
 		</div>
 	{:else}
+		{#if !hasQuery}
+			<p class="mt-3 text-sm text-muted-foreground">
+				Przeglądasz wszystko po kolei (A–Z). Wpisz nazwę w polu u góry, np. „ziele”, „Harad” albo
+				„Bennet”, żeby zawęzić listę.
+			</p>
+		{/if}
 		<p class="mt-3 mb-1 text-sm text-muted-foreground">
-			Wyniki: {appState.searchResults.length}
+			{hasQuery ? 'Wyniki' : 'Wszystko'}: {appState.searchResults.length}
 		</p>
 		<ul>
-			{#each appState.searchResults as result (result.id)}
+			{#each visibleResults as result (result.id)}
 				<li>
 					<button
 						class="list-row grid w-full grid-cols-[12px_1fr_auto] items-center gap-2.5 px-2 py-1.5 text-left"
@@ -275,5 +287,13 @@
 				</li>
 			{/each}
 		</ul>
+		{#if appState.searchResults.length > visibleResultsCount}
+			<button
+				class="button-quiet mt-2 w-full"
+				onclick={() => (visibleResultsCount += RESULTS_PAGE_SIZE)}
+			>
+				Pokaż więcej ({appState.searchResults.length - visibleResultsCount} pozostało)
+			</button>
+		{/if}
 	{/if}
 {/if}
