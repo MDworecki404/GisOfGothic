@@ -136,4 +136,22 @@ describe('opis przedmiotu w danych świata', () => {
 		});
 		expect(quests.quests[0].items[0].name).toBe('Esencja lecznicza');
 	});
+
+	it('pozycja skrzyni bez nazwy (kodu nie ma w skryptach gry) pokazuje kod zamiast zniknąć', () => {
+		const containersLayer = DATA_LAYERS.find((layer) => layer.id === 'containers');
+		const container = containersLayer?.readFeatures({
+			type: 'FeatureCollection',
+			features: [
+				{
+					type: 'Feature',
+					geometry: { type: 'Point', coordinates: [0, 0, 0] },
+					properties: {
+						id: 'c',
+						contents: [{ code: 'ITFO_MUTTON', name: null, category: null, amount: 5 }]
+					}
+				}
+			]
+		});
+		expect(container?.[0].identification.listItems).toEqual(['ITFO_MUTTON ×5']);
+	});
 });
