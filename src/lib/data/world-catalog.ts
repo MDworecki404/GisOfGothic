@@ -1,3 +1,10 @@
+/** Korekcja koloru kafli świata: gamma < 1 rozjaśnia cienie, nasycenie i jasność 1 nie zmieniają obrazu. */
+export interface TileColorGrade {
+	gamma: number;
+	saturation: number;
+	brightness: number;
+}
+
 export interface WorldDefinition {
 	id: string;
 	gameId: string;
@@ -18,6 +25,8 @@ export interface WorldDefinition {
 	hasChapters: boolean;
 	/** `true`, gdy godziny rutyn są robocze, a nie zapisane w grze (Gothic 3): UI pokazuje je jako orientacyjne. */
 	hasApproximateRoutineTimes: boolean;
+	/** `null` zostawia kolory modelu bez zmian. */
+	tileColorGrade: TileColorGrade | null;
 }
 
 export interface GameDefinition {
@@ -72,7 +81,8 @@ const KHORINIS: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045068/tileset.json'
 	],
 	hasChapters: true,
-	hasApproximateRoutineTimes: false
+	hasApproximateRoutineTimes: false,
+	tileColorGrade: null
 };
 
 const GORNICZA_DOLINA: WorldDefinition = {
@@ -90,7 +100,8 @@ const GORNICZA_DOLINA: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045072/tileset.json'
 	],
 	hasChapters: true,
-	hasApproximateRoutineTimes: false
+	hasApproximateRoutineTimes: false,
+	tileColorGrade: null
 };
 
 const JARKENDAR: WorldDefinition = {
@@ -108,7 +119,8 @@ const JARKENDAR: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6045113/tileset.json'
 	],
 	hasChapters: true,
-	hasApproximateRoutineTimes: false
+	hasApproximateRoutineTimes: false,
+	tileColorGrade: null
 };
 
 const IRDORATH: WorldDefinition = {
@@ -126,7 +138,8 @@ const IRDORATH: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6047297/tileset.json'
 	],
 	hasChapters: true,
-	hasApproximateRoutineTimes: false
+	hasApproximateRoutineTimes: false,
+	tileColorGrade: null
 };
 
 const KOLONIA: WorldDefinition = {
@@ -144,7 +157,8 @@ const KOLONIA: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067768/tileset.json'
 	],
 	hasChapters: true,
-	hasApproximateRoutineTimes: false
+	hasApproximateRoutineTimes: false,
+	tileColorGrade: null
 };
 
 const WOLNA_KOPALNIA: WorldDefinition = {
@@ -162,7 +176,8 @@ const WOLNA_KOPALNIA: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067746/tileset.json'
 	],
 	hasChapters: true,
-	hasApproximateRoutineTimes: false
+	hasApproximateRoutineTimes: false,
+	tileColorGrade: null
 };
 
 const STARA_KOPALNIA: WorldDefinition = {
@@ -180,7 +195,8 @@ const STARA_KOPALNIA: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067750/tileset.json'
 	],
 	hasChapters: true,
-	hasApproximateRoutineTimes: false
+	hasApproximateRoutineTimes: false,
+	tileColorGrade: null
 };
 
 const CMENTARZYSKO_ORKOW: WorldDefinition = {
@@ -198,7 +214,8 @@ const CMENTARZYSKO_ORKOW: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067758/tileset.json'
 	],
 	hasChapters: true,
-	hasApproximateRoutineTimes: false
+	hasApproximateRoutineTimes: false,
+	tileColorGrade: null
 };
 
 const SWIATYNIA_ORKOW: WorldDefinition = {
@@ -216,7 +233,8 @@ const SWIATYNIA_ORKOW: WorldDefinition = {
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067764/tileset.json'
 	],
 	hasChapters: true,
-	hasApproximateRoutineTimes: false
+	hasApproximateRoutineTimes: false,
+	tileColorGrade: null
 };
 
 /**
@@ -247,7 +265,8 @@ function buildMyrtanaWorlds(): WorldDefinition[] {
 					`https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/${assetId}/tileset.json`
 			),
 			hasChapters: false,
-			hasApproximateRoutineTimes: true
+			hasApproximateRoutineTimes: true,
+			tileColorGrade: { gamma: 0.72, saturation: 1.25, brightness: 1.15 }
 		}
 	];
 }

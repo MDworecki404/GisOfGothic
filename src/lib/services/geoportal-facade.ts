@@ -572,6 +572,7 @@ export class GeoportalFacade {
 			this.dataLayersCoordinator.updateFeatureCounts(metadata.package.counts);
 			this.analysisCoordinator.useAnchor(metadata.anchor);
 			this.measurementCoordinator.useMovementSpeeds(metadata.movement_speeds_m_s ?? null);
+			mapService.useTileColorGrade(world.tileColorGrade);
 			await mapService.showWorldTileset(world.worldTilesetUrl, metadata.anchor);
 			if (!isStillCurrent()) return;
 			this.isWorldShownOnMap = true;

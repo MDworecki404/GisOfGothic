@@ -11,6 +11,7 @@ import {
 	Viewer
 } from 'cesium';
 import type { Anchor } from '#lib/data/types.js';
+import type { TileColorGrade } from '#lib/data/world-catalog.js';
 import { WorldFrame } from '#lib/services/geodesy/world-frame.js';
 import type { CameraProjectionSetting } from '#lib/services/camera/camera-projection.js';
 import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
@@ -30,6 +31,7 @@ import { CameraFramer } from './camera-framer.js';
 import { CameraProjectionController } from './camera-projection-controller.js';
 import type { MapViewInsets } from './free-area-calculator.js';
 import { DataLayersRenderer, type DataLayerPoint } from './data-layers-renderer.js';
+import { TileColorGrader } from './tile-color-grader.js';
 import { ShadowRangeCalculator } from './shadow-range-calculator.js';
 import { ShadowStrengthCalculator } from './shadow-strength-calculator.js';
 import { MapViewObserver, type MapViewListeners, type TileLayerId } from './map-view-observer.js';
@@ -64,6 +66,8 @@ export class MapService {
 	private readonly shadowRangeCalculator = new ShadowRangeCalculator();
 	private readonly shadowStrengthCalculator = new ShadowStrengthCalculator();
 	private sunElevation = 1;
+	private readonly tileColorGrader = new TileColorGrader();
+	private tileColorGrade: TileColorGrade | null = null;
 	private readonly placeMarkers: PlaceMarkersLayer;
 	private readonly dataLayers: DataLayersRenderer;
 	private readonly measurement: MeasurementRenderer;
@@ -124,6 +128,11 @@ export class MapService {
 			listeners.onFrameRendered(performance.now())
 		);
 		this.viewer.camera.moveEnd.addEventListener(() => this.applyShadowRange());
+	}
+
+	/** Korekcja koloru dla kafli następnych wczytań (model świata i obiekty); `null` zostawia kolory modelu. */
+	useTileColorGrade(grade: TileColorGrade | null): void {
+		this.tileColorGrade = grade;
 	}
 
 	/**
@@ -525,6 +534,9 @@ export class MapService {
 	}
 
 	private applyTileDetailTo(tileset: Cesium3DTileset): void {
+		if (this.tileColorGrade) {
+			tileset.customShader = this.tileColorGrader.createShader(this.tileColorGrade);
+		}
 		if (this.performanceProfile) {
 			tileset.maximumScreenSpaceError = this.performanceProfile.maximumScreenSpaceError;
 		}

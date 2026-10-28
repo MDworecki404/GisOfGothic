@@ -84,6 +84,8 @@ w `ALLOWED_ION_ASSETS`). Różnice względem G1/G2, które obsługuje aplikacja:
   w indeksie ([ADR 0022](adr/0022-losowy-lup-gothic-3.md));
 - `quests.json` ma rolę postaci `target` (cel zadania);
 - skrzynie mają podgląd 3D (`model` w `containers.geojson`), widoczny w karcie skrzyni;
+- kolory kafli są rozjaśnione: `WorldDefinition.tileColorGrade` (gamma 0,72, nasycenie 1,25, jasność 1,15) nakłada shader `TileColorGrader`
+  (`services/map/`) na teren i obiekty; inne światy mają `null` i zostają bez korekty;
 - kody mają oryginalną wielkość liter, a wiele przedmiotów ma wspólną nazwę (np. „Amulet”), więc odróżnia je kod.
 
 ## Indeks wyszukiwania
