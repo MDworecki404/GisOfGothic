@@ -338,6 +338,16 @@ który przycina bieżące cięcie (`clampSliceHeight`). Koordynator woła `ViewM
 `AppState.viewMode`, `sliceHeightMetres` i `sliceHeightRange` wynikają ze zdarzeń `view-mode-changed`
 i `slice-height-range-changed`. Link i zakładki: sekcja „Widok w adresie i zakładki”.
 
+Po stronie mapy `MapService` implementuje `ViewModeDisplay`: w 2D wyłącza `enableTilt` i `enableLook` kontrolera
+kamery Cesium, blokuje kierunek i nachylenie przelotów (`CameraFramer.lockOrientation`, więc „Pokaż cały świat” i
+przeloty do znaczników zostają widokiem z góry), a `CameraFlightController` pomija obrót i przechył (zostaje
+przesuwanie i zoom). Powrót do 3D odblokowuje sterowanie i leci do widoku „Skos”. `WorldSliceController` jest jedynym
+miejscem, które dotyka `clippingPlanes` tilesetów (model świata i obiekty): pozioma płaszczyzna z normalną w dół
+(`SlicePlaneCalculator`) zostawia część poniżej wysokości cięcia (Cesium zostawia punkty, dla których normalna razy
+punkt plus odległość jest większa od zera). Układ płaszczyzny tilesetu to rama kotwicy świata, więc odległość równa się
+wysokości cięcia w ramie świata; kolekcja powstaje raz na tileset i jest wyłączana zamiast usuwana, a nowy tileset
+po zmianie świata dostaje bieżące cięcie. Zakres suwaka wynika z kuli granicznej modelu świata.
+
 Decyzja: [ADR 0026](adr/0026-widok-2d.md).
 
 ## Arkusz mobilny

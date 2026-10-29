@@ -1,4 +1,5 @@
 import { Cartesian3, Matrix4, Transforms, type Viewer } from 'cesium';
+import type { CameraPresetOrientation } from '#lib/services/camera/camera-preset-builder.js';
 import type { CameraViewGeometry } from './camera-projection-controller.js';
 import { FreeAreaCalculator, type MapViewInsets } from './free-area-calculator.js';
 
@@ -18,6 +19,7 @@ export interface FramedFlight {
 export class CameraFramer {
 	private readonly freeAreaCalculator = new FreeAreaCalculator();
 	private insets: MapViewInsets = { leftPixels: 0, bottomPixels: 0 };
+	private lockedOrientation: CameraPresetOrientation | null = null;
 
 	constructor(
 		private readonly viewer: Viewer,
@@ -26,6 +28,11 @@ export class CameraFramer {
 
 	setInsets(insets: MapViewInsets): void {
 		this.insets = insets;
+	}
+
+	/** Dopóki kierunek i nachylenie są zablokowane (widok 2D), każdy przelot używa ich zamiast własnych. */
+	lockOrientation(orientation: CameraPresetOrientation | null): void {
+		this.lockedOrientation = orientation;
 	}
 
 	/** Odległość kamery, przy której obiekt mieszczący się w całym płótnie zmieści się w wolnym obszarze. */
@@ -48,7 +55,8 @@ export class CameraFramer {
 		const metresPerPixel =
 			(2 * flight.rangeMetres * Math.tan(verticalFieldOfView / 2)) / canvasSize.heightPixels;
 
-		const { headingRadians: heading, pitchRadians: pitch, rangeMetres: range } = flight;
+		const { rangeMetres: range } = flight;
+		const { headingRadians: heading, pitchRadians: pitch } = this.lockedOrientation ?? flight;
 		const cameraDistance = this.viewGeometry.convertViewRangeToCameraDistance(range);
 		const forward = new Cartesian3(
 			Math.sin(heading) * Math.cos(pitch),
