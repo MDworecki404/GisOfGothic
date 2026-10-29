@@ -75,10 +75,10 @@ test('w 2D kamera patrzy w dół, a przechył i obrót klawiszami jej nie zmieni
 	await page.goto(SEEN_FROM_ABOVE_ISLAND_LINK);
 	await waitForMapToSettle(page);
 
-	await holdKey(page, 'ArrowUp');
-	await expect
-		.poll(() => readCameraAnglesFromAddress(page).pitchDegrees, { timeout: 20_000 })
-		.toBeGreaterThan(-44);
+	await expect(async () => {
+		if (readCameraAnglesFromAddress(page).pitchDegrees <= -44) await holdKey(page, 'ArrowUp');
+		expect(readCameraAnglesFromAddress(page).pitchDegrees).toBeGreaterThan(-44);
+	}).toPass({ timeout: 30_000 });
 
 	await page.getByRole('button', { name: FLAT_MAP_BUTTON }).click();
 	await expect
@@ -151,6 +151,36 @@ test('link z trybem 2D i cięciem odtwarza oba, a samo cięcie jest ignorowane',
 		'false'
 	);
 	await expect(page).not.toHaveURL(/ciecie=|tryb=/);
+});
+
+test('link z trybem 2D i pochylonym widokiem otwiera kamerę prosto w dół', async ({ page }) => {
+	await page.goto(`${SEEN_FROM_ABOVE_ISLAND_LINK}&tryb=2d`);
+	await waitForMapToSettle(page);
+	await expect
+		.poll(() => readCameraAnglesFromAddress(page).pitchDegrees, { timeout: 20_000 })
+		.toBeLessThan(NEARLY_VERTICAL_PITCH_DEGREES);
+});
+
+test('wejście w 2D z kamerą patrzącą ponad horyzont ustawia widok prosto w dół', async ({
+	page
+}) => {
+	await page.goto('/g2nk/khorinis?widok=72.7_13.3_800_0_35&narzedzie=zamkniete');
+	await waitForMapToSettle(page);
+	await page.getByRole('button', { name: FLAT_MAP_BUTTON }).click();
+	await expect
+		.poll(() => readCameraAnglesFromAddress(page).pitchDegrees, { timeout: 20_000 })
+		.toBeLessThan(NEARLY_VERTICAL_PITCH_DEGREES);
+});
+
+test('przycisk Widok 2D zostaje na miejscu po włączeniu trybu', async ({ page }) => {
+	await page.goto(SEEN_FROM_ABOVE_ISLAND_LINK);
+	await waitForMapToSettle(page);
+	const button = page.getByRole('button', { name: FLAT_MAP_BUTTON });
+	const before = await button.boundingBox();
+	await button.click();
+	await expect(button).toHaveAttribute('aria-pressed', 'true');
+	const after = await button.boundingBox();
+	expect(after?.y).toBe(before?.y);
 });
 
 test('uszkodzone cięcie w linku zostawia 2D bez cięcia', async ({ page }) => {

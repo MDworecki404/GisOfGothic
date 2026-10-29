@@ -115,6 +115,15 @@ describe('ViewModeCoordinator', () => {
 		expect(shownSliceHeights.at(-1)).toBe(40);
 	});
 
+	it('odtworzenie 2D bez cięcia, gdy trwa 2D z cięciem, zdejmuje cięcie z mapy', () => {
+		const { coordinator, shownSliceHeights } = setUp();
+		coordinator.selectMode('view-2d');
+		coordinator.setSliceHeight(100);
+		coordinator.restore({ mode: 'view-2d', sliceHeightMetres: null }, null);
+		expect(coordinator.currentSliceHeightMetres).toBeNull();
+		expect(shownSliceHeights.at(-1)).toBeNull();
+	});
+
 	it('odtworzenie 3D ignoruje cięcie i ustawia podany rzut', () => {
 		const { coordinator, projection } = setUp();
 		coordinator.restore(

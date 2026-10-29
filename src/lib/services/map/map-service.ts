@@ -192,16 +192,20 @@ export class MapService implements ViewModeDisplay {
 		};
 	}
 
-	/** Ustawia kamerę w zapisanym widoku; czas 0 oznacza przeskok bez animacji. */
+	/** Ustawia kamerę w zapisanym widoku; czas 0 oznacza przeskok bez animacji. W widoku 2D kierunek i nachylenie zostają z góry. */
 	moveCameraToView(view: CameraView, flightDurationSeconds: number): void {
 		const frame = this.worldFrame;
 		if (!frame) return;
 		const destination = frame.toSceneCartesian(view.east, view.north, view.height);
-		const orientation = {
-			heading: CesiumMath.toRadians(view.headingDegrees),
-			pitch: CesiumMath.toRadians(view.pitchDegrees),
-			roll: 0
-		};
+		const topOrientation = this.presetBuilder.build('top', 0);
+		const orientation =
+			this.viewMode === 'view-2d'
+				? { heading: topOrientation.headingRadians, pitch: topOrientation.pitchRadians, roll: 0 }
+				: {
+						heading: CesiumMath.toRadians(view.headingDegrees),
+						pitch: CesiumMath.toRadians(view.pitchDegrees),
+						roll: 0
+					};
 		if (flightDurationSeconds <= 0) {
 			this.viewer.camera.setView({ destination, orientation });
 			this.projectionController.synchronizeWidthWhenSurfaceKnown();
@@ -254,9 +258,12 @@ export class MapService implements ViewModeDisplay {
 		return this.sliceController.readHeightRange();
 	}
 
-	/** Leci do widoku „Z góry” albo „Skos” nad punktem pod środkiem ekranu, zachowując bieżący rozmiar widoku. */
+	/**
+	 * Leci do widoku „Z góry” albo „Skos” nad punktem pod środkiem ekranu, zachowując bieżący rozmiar widoku.
+	 * Gdy kamera patrzy poza model (np. ponad horyzont) i nie ma takiego punktu, celem jest środek modelu świata.
+	 */
 	showCameraPreset(preset: CameraPreset, flightSeconds = 1): void {
-		const target = this.findViewTarget();
+		const target = this.findViewTarget() ?? this.worldTileset?.boundingSphere.center;
 		if (!target) return;
 		const camera = this.viewer.camera;
 		const orientation = this.presetBuilder.build(preset, camera.heading);
