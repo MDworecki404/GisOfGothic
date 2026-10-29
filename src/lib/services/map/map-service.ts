@@ -16,7 +16,7 @@ import { WorldFrame } from '#lib/services/geodesy/world-frame.js';
 import type { CameraProjectionSetting } from '#lib/services/camera/camera-projection.js';
 import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
 import type { ViewModeDisplay } from '#lib/services/camera/view-mode-coordinator.js';
-import type { SliceHeightRange } from '#lib/services/camera/view-mode.js';
+import type { SliceHeightRange, ViewMode } from '#lib/services/camera/view-mode.js';
 import type { ViewshedCell } from '#lib/services/analysis/viewshed-calculator.js';
 import type { DensityCell } from '#lib/services/analysis/density-grid-builder.js';
 import type { LocalPoint } from '#lib/services/measurement/measurement-calculator.js';
@@ -40,6 +40,7 @@ import { MapViewObserver, type MapViewListeners, type TileLayerId } from './map-
 import { MeasurementRenderer } from './measurement-renderer.js';
 import { PlaceMarkersLayer, type PlaceMarker } from './place-markers-layer.js';
 import { ViewerOptionsBuilder } from './viewer-options-builder.js';
+import { WorldSliceController } from './world-slice-controller.js';
 
 const LIGHT_DIRECTION_FROM_ABOVE = new Cartesian3(-1, 0.35, -0.25);
 const OVERVIEW_PITCH_DEGREES = -50;
@@ -78,6 +79,12 @@ export class MapService implements ViewModeDisplay {
 	private readonly projectionController: CameraProjectionController;
 	private readonly presetBuilder = new CameraPresetBuilder();
 	private readonly flightController: CameraFlightController;
+	private readonly sliceController = new WorldSliceController(
+		() => this.worldTileset,
+		() => this.staticObjectsTilesets,
+		() => this.worldFrame
+	);
+	private viewMode: ViewMode = 'view-3d';
 	private worldTileset: Cesium3DTileset | null = null;
 	private staticObjectsTilesets: Cesium3DTileset[] = [];
 	private readonly pendingTilesByStaticObjectsTileset = new Map<Cesium3DTileset, number>();
@@ -123,7 +130,8 @@ export class MapService implements ViewModeDisplay {
 		this.flightController = new CameraFlightController(
 			this.viewer,
 			() => this.measureDistanceToScreenCentreIfKnown(),
-			() => this.projectionController.isOrthographic()
+			() => this.projectionController.isOrthographic(),
+			() => this.viewMode === 'view-2d'
 		);
 		this.placeMarkers = new PlaceMarkersLayer(this.viewer, this.cameraFramer);
 		this.viewer.scene.postRender.addEventListener(() =>
@@ -156,6 +164,7 @@ export class MapService implements ViewModeDisplay {
 		}
 		this.worldTileset = tileset;
 		this.applyTileDetailTo(tileset);
+		this.sliceController.applyTo(tileset);
 		this.reportTileLoadingOf(tileset, 'world');
 		this.worldFrame = frame;
 		this.viewer.scene.primitives.add(tileset);
@@ -222,16 +231,31 @@ export class MapService implements ViewModeDisplay {
 		if (this.worldFrame) this.listeners.onCameraSettled();
 	}
 
-	showViewMode(): void {}
+	/**
+	 * W widoku 2D kamera patrzy prosto w dół, a przechył i obrót są zablokowane (także w przelotach i locie z klawiatury).
+	 * Powrót do 3D odblokowuje sterowanie i leci do widoku „Skos”.
+	 */
+	showViewMode(mode: ViewMode, flightSeconds: number): void {
+		this.viewMode = mode;
+		const isFlatMap = mode === 'view-2d';
+		const cameraController = this.viewer.scene.screenSpaceCameraController;
+		cameraController.enableTilt = !isFlatMap;
+		cameraController.enableLook = !isFlatMap;
+		this.cameraFramer.lockOrientation(isFlatMap ? this.presetBuilder.build('top', 0) : null);
+		this.showCameraPreset(isFlatMap ? 'top' : 'oblique', flightSeconds);
+	}
 
-	showSliceHeight(): void {}
+	/** Ucina model świata i obiekty powyżej wysokości w metrach (rama świata); `null` pokazuje wszystko. */
+	showSliceHeight(metres: number | null): void {
+		this.sliceController.showHeight(metres);
+	}
 
 	readSliceHeightRange(): SliceHeightRange | null {
-		return null;
+		return this.sliceController.readHeightRange();
 	}
 
 	/** Leci do widoku „Z góry” albo „Skos” nad punktem pod środkiem ekranu, zachowując bieżący rozmiar widoku. */
-	showCameraPreset(preset: CameraPreset): void {
+	showCameraPreset(preset: CameraPreset, flightSeconds = 1): void {
 		const target = this.findViewTarget();
 		if (!target) return;
 		const camera = this.viewer.camera;
@@ -242,7 +266,7 @@ export class MapService implements ViewModeDisplay {
 			rangeMetres: this.projectionController.convertCameraDistanceToViewRange(
 				Cartesian3.distance(camera.position, target)
 			),
-			flightSeconds: 1
+			flightSeconds
 		});
 	}
 
@@ -481,6 +505,7 @@ export class MapService implements ViewModeDisplay {
 		this.staticObjectsTilesets = tilesets;
 		for (const tileset of tilesets) {
 			this.applyTileDetailTo(tileset);
+			this.sliceController.applyTo(tileset);
 			this.reportStaticObjectsTileLoadingOf(tileset);
 			this.viewer.scene.primitives.add(tileset);
 		}

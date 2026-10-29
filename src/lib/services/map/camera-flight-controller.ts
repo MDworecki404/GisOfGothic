@@ -31,11 +31,13 @@ export class CameraFlightController {
 	/**
 	 * @param measureReferenceDistance odległość kamery od oglądanej powierzchni; `null`, gdy nieznana
 	 * @param isOrthographic w rzucie ortogonalnym odległość kamery nie zmienia rozmiaru obrazu, więc „wysokość” działa jak zoom
+	 * @param isOrientationLocked w widoku 2D obrót i przechył są pomijane (zostaje przesuwanie i zoom)
 	 */
 	constructor(
 		private readonly viewer: Viewer,
 		private readonly measureReferenceDistance: () => number | null,
-		private readonly isOrthographic: () => boolean
+		private readonly isOrthographic: () => boolean,
+		private readonly isOrientationLocked: () => boolean
 	) {
 		this.stopListeningToRender = viewer.scene.preRender.addEventListener(() =>
 			this.moveCameraForThisFrame(performance.now())
@@ -89,6 +91,7 @@ export class CameraFlightController {
 			if (this.isOrthographic()) camera.move(camera.directionWC, -step.riseMetres);
 			else camera.move(surfaceUp, step.riseMetres);
 		}
+		if (this.isOrientationLocked()) return;
 		if (step.turnRadians !== 0) camera.look(surfaceUp, step.turnRadians);
 		if (step.tiltRadians !== 0) {
 			const tiltedPitch = CesiumMath.clamp(
