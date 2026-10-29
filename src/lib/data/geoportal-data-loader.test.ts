@@ -57,6 +57,13 @@ describe('parsery danych', () => {
 		expect(index.entries[1].places[0].chapter).toBeNull();
 	});
 
+	it('pomija wpis bez nazwy i bez kodu, a wpis z samym kodem zostawia', () => {
+		const nameless = { ...searchIndexJson.entries[0], id: 'item:', code: '', name: '' };
+		const codeOnly = { ...searchIndexJson.entries[0], id: 'item:Z', code: 'Z', name: '' };
+		const { entries } = parseSearchIndex({ version: 1, entries: [nameless, codeOnly] });
+		expect(entries.map((entry) => entry.code)).toEqual(['Z']);
+	});
+
 	it('dopuszcza wpis bez kategorii', () => {
 		const entry = { ...searchIndexJson.entries[0], category: null };
 		expect(parseSearchIndex({ version: 1, entries: [entry] }).entries[0].category).toBeNull();

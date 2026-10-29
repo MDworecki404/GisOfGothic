@@ -271,6 +271,82 @@ function buildMyrtanaWorlds(): WorldDefinition[] {
 	];
 }
 
+interface ArcholosWorldSpecification {
+	id: string;
+	name: string;
+	localCoordinateSystemName: string;
+	hasChapters: boolean;
+	worldIonAssetId: number;
+	staticObjectsIonAssetId: number;
+}
+
+/**
+ * Światy Archolosa (Kroniki Myrtany, modyfikacja Gothica 2 NK). Nazwy są robocze, bo mod nie nadaje nazw
+ * światom. Rozdziały ma tylko kontynent; pozostałe światy mod otwiera komendami i teleportami.
+ */
+const ARCHOLOS_WORLD_SPECIFICATIONS: readonly ArcholosWorldSpecification[] = [
+	{
+		id: 'archolos',
+		name: 'Archolos',
+		localCoordinateSystemName: 'Układ Archolos 1992',
+		hasChapters: true,
+		worldIonAssetId: 6100029,
+		staticObjectsIonAssetId: 6100031
+	},
+	{
+		id: 'finalowy-etap',
+		name: 'Finałowy etap',
+		localCoordinateSystemName: 'Układ Finałowego etapu 1992',
+		hasChapters: false,
+		worldIonAssetId: 6100033,
+		staticObjectsIonAssetId: 6100035
+	},
+	{
+		id: 'kanaly',
+		name: 'Kanały Archolos',
+		localCoordinateSystemName: 'Układ Kanałów Archolos 1992',
+		hasChapters: false,
+		worldIonAssetId: 6100039,
+		staticObjectsIonAssetId: 6100041
+	},
+	{
+		id: 'srebrna-kopalnia',
+		name: 'Srebrna Kopalnia',
+		localCoordinateSystemName: 'Układ Srebrnej Kopalni 1992',
+		hasChapters: false,
+		worldIonAssetId: 6100043,
+		staticObjectsIonAssetId: 6100045
+	},
+	{
+		id: 'volfzacke',
+		name: 'Volfzacke',
+		localCoordinateSystemName: 'Układ Volfzacke 1992',
+		hasChapters: false,
+		worldIonAssetId: 6100049,
+		staticObjectsIonAssetId: 6100047
+	}
+];
+
+function buildArcholosWorlds(): WorldDefinition[] {
+	const gateUrl = 'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev';
+	return ARCHOLOS_WORLD_SPECIFICATIONS.map((specification) => ({
+		id: specification.id,
+		gameId: 'archolos',
+		name: specification.name,
+		localCoordinateSystemName: specification.localCoordinateSystemName,
+		dataBaseUrl: `/data/archolos/${specification.id}`,
+		modelNamespace: `archolos/${specification.id}`,
+		protectedModelsUrl: `${gateUrl}/archolos/${specification.id}/items`,
+		worldTilesetUrl: `${gateUrl}/ion/${specification.worldIonAssetId}/tileset.json`,
+		staticObjectsTilesetUrls: [
+			`${gateUrl}/ion/${specification.staticObjectsIonAssetId}/tileset.json`
+		],
+		hasChapters: specification.hasChapters,
+		hasApproximateRoutineTimes: false,
+		tileColorGrade: null
+	}));
+}
+
 const GOTHIC_3_WORLDS = buildMyrtanaWorlds();
 
 export const worldCatalog = new WorldCatalog(
@@ -285,6 +361,7 @@ export const worldCatalog = new WorldCatalog(
 			name: 'Gothic 2: Noc Kruka',
 			worlds: [KHORINIS, GORNICZA_DOLINA, JARKENDAR, IRDORATH]
 		},
+		{ id: 'archolos', name: 'Archolos', worlds: buildArcholosWorlds() },
 		...(GOTHIC_3_WORLDS.length > 0 ? [{ id: 'g3', name: 'Gothic 3', worlds: GOTHIC_3_WORLDS }] : [])
 	],
 	KHORINIS

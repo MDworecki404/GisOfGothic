@@ -50,6 +50,7 @@ describe('worldCatalog', () => {
 		expect(worldCatalog.findGame('g1')?.worlds).toHaveLength(5);
 		expect(worldCatalog.findGame('g2nk')?.worlds).toHaveLength(4);
 		expect(worldCatalog.findGame('g3')?.worlds).toHaveLength(1);
+		expect(worldCatalog.findGame('archolos')?.worlds).toHaveLength(5);
 	});
 
 	it('każdy świat ma własne zasoby: żadne dwa światy nie dzielą kafli ani przestrzeni modeli', () => {
@@ -60,5 +61,15 @@ describe('worldCatalog', () => {
 		]);
 		expect(new Set(tilesets).size).toBe(tilesets.length);
 		expect(new Set(worlds.map((world) => world.modelNamespace)).size).toBe(worlds.length);
+	});
+
+	it('Archolos: rozdziały ma tylko kontynent, a ścieżki danych i modeli idą z identyfikatora świata', () => {
+		const worlds = worldCatalog.findGame('archolos')?.worlds ?? [];
+		expect(worlds.filter((world) => world.hasChapters).map((world) => world.id)).toEqual([
+			'archolos'
+		]);
+		const sewers = worldCatalog.findWorld('archolos', 'kanaly');
+		expect(sewers?.dataBaseUrl).toBe('/data/archolos/kanaly');
+		expect(sewers?.modelNamespace).toBe('archolos/kanaly');
 	});
 });

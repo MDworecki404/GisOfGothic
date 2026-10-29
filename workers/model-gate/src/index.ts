@@ -31,7 +31,7 @@ interface Environment {
 
 declare const caches: { default: EdgeCache };
 
-const PROTECTED_MODEL_PATH = /^\/(?:g1|g2nk)\/[a-z0-9_-]+\/items\/[0-9a-f]{32}\.bin$/;
+const PROTECTED_MODEL_PATH = /^\/(?:g1|g2nk|archolos)\/[a-z0-9_-]+\/items\/[0-9a-f]{32}\.bin$/;
 const ION_TILE_PATH = /^\/ion\/(\d+)\/(.+)$/;
 
 let ionTileProxy: IonTileProxy | null = null;
