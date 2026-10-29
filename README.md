@@ -4,12 +4,14 @@ Trójwymiarowa wikipedia świata Gothic. Wyszukujesz przedmiot albo unikatową p
 na modelu 3D świata gry, gdzie leży, kto go ma i gdzie ktoś przebywa o danej porze.
 
 Gothic 2: Noc Kruka — Khorinis, Górnicza Dolina, Jarkendar i Irdorath. Gothic 1 — Kolonia Karna, Wolna Kopalnia,
-Stara Kopalnia, Cmentarzysko orków i Świątynia orków. Archolos (mod do Gothica 2 NK) — kontynent, Finałowy etap, Kanały, Srebrna Kopalnia i Volfzacke. Przedmioty, unikatowe postacie i questy. Dalsze plany —
+Stara Kopalnia, Cmentarzysko orków i Świątynia orków. Archolos (mod do Gothica 2 NK) — kontynent, Finałowy etap, Kanały, Srebrna Kopalnia i Volfzacke.
+Gothic 3 — Myrtana. Przedmioty, unikatowe postacie i questy. Dalsze plany —
 zobacz [wizję projektu](docs/wizja.md).
 
-> Projekt w budowie. Działa: mapa 3D świata, wyszukiwarka przedmiotów i postaci z podglądem 3D,
-> warstwy z identyfikacją obiektów, pomiary, analizy GIS, pora dnia z rutynami postaci, zakładki
-> oraz instalacja jako aplikacja (PWA) z pracą bez sieci.
+> Projekt w budowie. Działa: mapa 3D świata, widok 2D z cięciem wysokości modelu, wyszukiwarka
+> przedmiotów i postaci z podglądem 3D, warstwy z identyfikacją obiektów (punkty ukryte pod
+> terenem widać jako szare, przezroczyste duchy), pomiary, analizy GIS, pora dnia z rutynami postaci,
+> zakładki oraz instalacja jako aplikacja (PWA) z pracą bez sieci.
 
 **Wersja na żywo: https://gisofgothic.dworecki.dev**
 
@@ -38,7 +40,7 @@ UI po polsku.
 | [docs/dane.md](docs/dane.md)                 | dane świata, układ współrzędnych, jak dodać nowy świat   |
 | [docs/rozwoj.md](docs/rozwoj.md)             | środowisko, skrypty, testy, konwencje, commity i wydania |
 | [docs/adr/](docs/adr/)                       | zapisy decyzji architektonicznych                        |
-| [CHANGELOG.md](CHANGELOG.md)                 | historia wersji (po pierwszym wydaniu)                   |
+| [CHANGELOG.md](CHANGELOG.md)                 | historia wersji (generowana z commitów)                  |
 
 ## Licencja i prawa
 
