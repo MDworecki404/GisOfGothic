@@ -26,6 +26,12 @@ function readCameraAnglesFromAddress(page: Page): { headingDegrees: number; pitc
 	return { headingDegrees: parts[3] ?? Number.NaN, pitchDegrees: parts[4] ?? Number.NaN };
 }
 
+function readCameraPlaceFromAddress(page: Page): { east: number; north: number } {
+	const camera = new URL(page.url()).searchParams.get('widok');
+	const parts = camera?.split('_').map(Number) ?? [];
+	return { east: parts[0] ?? Number.NaN, north: parts[1] ?? Number.NaN };
+}
+
 async function openCameraSettings(page: Page): Promise<void> {
 	await page.getByRole('button', { name: 'Rzut kamery' }).click();
 	await expect(page.getByRole('group', { name: 'Widok kamery' })).toBeVisible();
@@ -93,6 +99,40 @@ test('w 2D kamera patrzy w dół, a przechył i obrót klawiszami jej nie zmieni
 	const angles = readCameraAnglesFromAddress(page);
 	expect(angles.pitchDegrees).toBeLessThan(NEARLY_VERTICAL_PITCH_DEGREES);
 	expect(Math.abs(Math.sin((angles.headingDegrees * Math.PI) / 180))).toBeLessThan(0.02);
+});
+
+test('w 2D przeciągnięcie po pustym tle przesuwa mapę i nie obraca ani nie pochyla kamery', async ({
+	page
+}) => {
+	await page.goto(`${SEEN_FROM_ABOVE_ISLAND_LINK}&tryb=2d`);
+	await waitForMapToSettle(page);
+	await expect
+		.poll(() => readCameraAnglesFromAddress(page).pitchDegrees, { timeout: 20_000 })
+		.toBeLessThan(NEARLY_VERTICAL_PITCH_DEGREES);
+	await page.waitForTimeout(1_000);
+	const before = readCameraPlaceFromAddress(page);
+
+	for (const [deltaX, deltaY] of [
+		[240, 0],
+		[-120, 160],
+		[0, -200],
+		[180, 140]
+	]) {
+		await page.mouse.move(640, 400);
+		await page.mouse.down();
+		await page.mouse.move(640 + deltaX, 400 + deltaY, { steps: 10 });
+		await page.mouse.up();
+		await page.waitForTimeout(600);
+	}
+	await page.waitForTimeout(1_000);
+
+	const angles = readCameraAnglesFromAddress(page);
+	expect(angles.pitchDegrees).toBeLessThan(NEARLY_VERTICAL_PITCH_DEGREES);
+	expect(Math.abs(Math.sin((angles.headingDegrees * Math.PI) / 180))).toBeLessThan(0.02);
+	const after = readCameraPlaceFromAddress(page);
+	const movedMetres = Math.hypot(after.east - before.east, after.north - before.north);
+	expect(movedMetres).toBeGreaterThan(1);
+	expect(movedMetres).toBeLessThan(20_000);
 });
 
 test('okienko kamery w 2D ma poziom cięcia: suwak dopisuje ciecie do adresu, Bez cięcia je zdejmuje', async ({
