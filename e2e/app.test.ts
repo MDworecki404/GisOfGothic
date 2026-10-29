@@ -357,6 +357,7 @@ test('lista gier pokazuje światy dopiero po najechaniu i zamyka się klawiszem 
 	await expect(worldMenu.getByRole('button')).toHaveText([
 		/^Gothic\s*$/,
 		/Gothic 2: Noc Kruka/,
+		/Archolos/,
 		/Gothic 3/
 	]);
 
