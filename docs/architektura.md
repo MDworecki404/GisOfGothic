@@ -79,36 +79,38 @@ odpięcie mapy) jest pomijany, a niepotrzebny tileset niszczony.
 Lista w `src/lib/events/app-events.ts`. Zdarzenie to obiekt z polem `type` (unia dyskryminowana),
 więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez asercji.
 
-| Zdarzenie                    | Dane                                                                                     | Kiedy                                                                                |
-| ---------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `world-opened`               | `worldName`, `localCoordinateSystemName`, `hasChapters`, `hasApproximateRoutineTimes`    | fasada przełączyła świat                                                             |
-| `world-load-started`         | —                                                                                        | start wczytywania modelu świata                                                      |
-| `world-loaded`               | —                                                                                        | tileset świata dodany do sceny                                                       |
-| `world-load-failed`          | `message`                                                                                | błąd wczytywania modelu świata (np. brak sieci)                                      |
-| `search-index-load-started`  | —                                                                                        | start wczytywania indeksu                                                            |
-| `search-index-loaded`        | `counts`                                                                                 | indeks wczytany; liczba przedmiotów i postaci                                        |
-| `search-index-load-failed`   | `message`                                                                                | błąd pobrania lub walidacji indeksu                                                  |
-| `tool-selected`              | `toolId` lub `null`                                                                      | otwarto albo zamknięto narzędzie na szynie                                           |
-| `cursor-moved`               | `position` (E, N, H, lon, lat) lub `null`                                                | kursor nad terenem (najwyżej raz na klatkę)                                          |
-| `camera-heading-changed`     | `headingDegrees`                                                                         | obrót kamery — kompas                                                                |
-| `map-scale-changed`          | `metresPerPixel` lub `null`                                                              | zmiana skali w środku ekranu — podziałka                                             |
-| `coordinate-system-changed`  | `systemId`                                                                               | zmiana układu współrzędnych w pasku przyrządu                                        |
-| `search-results-changed`     | `query`, `typeFilter`, `results`                                                         | zmiana zapytania, filtra albo wczytanie indeksu                                      |
-| `search-entry-selected`      | `details` lub `null`                                                                     | wybrano wpis (karta szczegółów, znaczniki na mapie) albo wrócono do wyników          |
-| `data-layers-changed`        | `layers` (nazwa, kolor, liczność, stan)                                                  | włączenie, wczytywanie albo błąd warstwy danych                                      |
-| `data-layer-load-failed`     | `layerName`, `message`                                                                   | nie udało się pobrać lub sprawdzić pliku warstwy                                     |
-| `feature-identified`         | `identification` lub `null`                                                              | kliknięto punkt warstwy (karta informacji) albo puste miejsce                        |
-| `analysis-changed`           | `analysis` (tryb, temat, punkt odniesienia, wyniki)                                      | zmiana tematu, punktu albo wyniku analizy w narzędziu Analizy                        |
-| `camera-view-changed`        | `view` (E, N, H, kierunek, nachylenie) lub `null`                                        | kamera się zatrzymała (`moveEnd`) albo odtworzono widok z linku                      |
-| `camera-projection-changed`  | `projection` (perspektywa z FOV albo ortogonalny), `fieldOfViewDegrees`                  | wybór rzutu, zmiana kąta widzenia albo odtworzenie rzutu z linku lub zakładki        |
-| `bookmarks-changed`          | `bookmarks`, `hasStorageError`                                                           | wczytano, dodano albo usunięto zakładkę (lista dotyczy otwartego świata)             |
-| `measurement-changed`        | `measurement` (tryb, wierzchołki, podsumowanie, profil, czasy przejścia, wskazany punkt) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie             |
-| `chapter-changed`            | `chapter` (1–6) lub `null`                                                               | wybór rozdziału w panelu Czas albo odtworzenie go z linku lub zakładki               |
-| `time-of-day-changed`        | `minuteOfDay`, `routineLayerStatus`, `charactersOnMap`                                   | zmiana pory dnia albo warstwy postaci o tej godzinie                                 |
-| `app-installability-changed` | `canInstall`                                                                             | przeglądarka pozwala zainstalować aplikację albo instalacja się zakończyła           |
-| `static-objects-changed`     | `status`, `errorMessage`                                                                 | włączenie, wczytywanie albo błąd warstwy obiektów świata                             |
-| `performance-changed`        | `preference`, `effectiveLevel`, `wasLoweredAutomatically`, `measuredFramesPerSecond`     | wybór jakości przez użytkownika, automatyczne obniżenie jakości albo nowy pomiar FPS |
-| `tiles-load-progress`        | `layer`, `pendingTiles`                                                                  | zmiana liczby kafli 3D Tiles w trakcie wczytywania (0 = gotowe)                      |
+| Zdarzenie                    | Dane                                                                                     | Kiedy                                                                                             |
+| ---------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `world-opened`               | `worldName`, `localCoordinateSystemName`, `hasChapters`, `hasApproximateRoutineTimes`    | fasada przełączyła świat                                                                          |
+| `world-load-started`         | —                                                                                        | start wczytywania modelu świata                                                                   |
+| `world-loaded`               | —                                                                                        | tileset świata dodany do sceny                                                                    |
+| `world-load-failed`          | `message`                                                                                | błąd wczytywania modelu świata (np. brak sieci)                                                   |
+| `search-index-load-started`  | —                                                                                        | start wczytywania indeksu                                                                         |
+| `search-index-loaded`        | `counts`                                                                                 | indeks wczytany; liczba przedmiotów i postaci                                                     |
+| `search-index-load-failed`   | `message`                                                                                | błąd pobrania lub walidacji indeksu                                                               |
+| `tool-selected`              | `toolId` lub `null`                                                                      | otwarto albo zamknięto narzędzie na szynie                                                        |
+| `cursor-moved`               | `position` (E, N, H, lon, lat) lub `null`                                                | kursor nad terenem (najwyżej raz na klatkę)                                                       |
+| `camera-heading-changed`     | `headingDegrees`                                                                         | obrót kamery — kompas                                                                             |
+| `map-scale-changed`          | `metresPerPixel` lub `null`                                                              | zmiana skali w środku ekranu — podziałka                                                          |
+| `coordinate-system-changed`  | `systemId`                                                                               | zmiana układu współrzędnych w pasku przyrządu                                                     |
+| `search-results-changed`     | `query`, `typeFilter`, `results`                                                         | zmiana zapytania, filtra albo wczytanie indeksu                                                   |
+| `search-entry-selected`      | `details` lub `null`                                                                     | wybrano wpis (karta szczegółów, znaczniki na mapie) albo wrócono do wyników                       |
+| `data-layers-changed`        | `layers` (nazwa, kolor, liczność, stan)                                                  | włączenie, wczytywanie albo błąd warstwy danych                                                   |
+| `data-layer-load-failed`     | `layerName`, `message`                                                                   | nie udało się pobrać lub sprawdzić pliku warstwy                                                  |
+| `feature-identified`         | `identification` lub `null`                                                              | kliknięto punkt warstwy (karta informacji) albo puste miejsce                                     |
+| `analysis-changed`           | `analysis` (tryb, temat, punkt odniesienia, wyniki)                                      | zmiana tematu, punktu albo wyniku analizy w narzędziu Analizy                                     |
+| `camera-view-changed`        | `view` (E, N, H, kierunek, nachylenie) lub `null`                                        | kamera się zatrzymała (`moveEnd`) albo odtworzono widok z linku                                   |
+| `camera-projection-changed`  | `projection` (perspektywa z FOV albo ortogonalny), `fieldOfViewDegrees`                  | wybór rzutu, zmiana kąta widzenia albo odtworzenie rzutu z linku lub zakładki                     |
+| `view-mode-changed`          | `mode` (`view-3d` albo `view-2d`), `sliceHeightMetres` lub `null`                        | wejście w tryb 2D albo wyjście z niego, zmiana wysokości cięcia, odtworzenie z linku lub zakładki |
+| `slice-height-range-changed` | `range` (`minimumMetres`, `maximumMetres`) lub `null`                                    | po wczytaniu modelu świata (zakres suwaka cięcia wynika z granic modelu)                          |
+| `bookmarks-changed`          | `bookmarks`, `hasStorageError`                                                           | wczytano, dodano albo usunięto zakładkę (lista dotyczy otwartego świata)                          |
+| `measurement-changed`        | `measurement` (tryb, wierzchołki, podsumowanie, profil, czasy przejścia, wskazany punkt) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie                          |
+| `chapter-changed`            | `chapter` (1–6) lub `null`                                                               | wybór rozdziału w panelu Czas albo odtworzenie go z linku lub zakładki                            |
+| `time-of-day-changed`        | `minuteOfDay`, `routineLayerStatus`, `charactersOnMap`                                   | zmiana pory dnia albo warstwy postaci o tej godzinie                                              |
+| `app-installability-changed` | `canInstall`                                                                             | przeglądarka pozwala zainstalować aplikację albo instalacja się zakończyła                        |
+| `static-objects-changed`     | `status`, `errorMessage`                                                                 | włączenie, wczytywanie albo błąd warstwy obiektów świata                                          |
+| `performance-changed`        | `preference`, `effectiveLevel`, `wasLoweredAutomatically`, `measuredFramesPerSecond`     | wybór jakości przez użytkownika, automatyczne obniżenie jakości albo nowy pomiar FPS              |
+| `tiles-load-progress`        | `layer`, `pendingTiles`                                                                  | zmiana liczby kafli 3D Tiles w trakcie wczytywania (0 = gotowe)                                   |
 
 ## Cesium a reaktywność Svelte
 
@@ -239,6 +241,9 @@ parametr jest ignorowany, a reszta widoku odtwarzana.
 Rzut kamery (`CameraProjectionCodec`) to opcjonalny parametr `rzut`: `o` dla rzutu ortogonalnego albo `p_<fov>` dla
 perspektywy z niedomyślnym kątem widzenia; brak parametru oznacza perspektywę 60°, więc starsze linki działają bez zmian,
 a parametr spoza zakresu jest ignorowany.
+Tryb widoku to parametr `tryb=2d` (brak = 3D), a wysokość cięcia modelu (w metrach nad elipsoidą, zaokrąglona do 0,1 m)
+`ciecie=<metry>`; cięcie obowiązuje tylko z `tryb=2d`, więc `ciecie` bez trybu albo z wartością spoza liczb skończonych
+jest ignorowane. Zakładka ma opcjonalne `viewMode` i `sliceHeightMetres`; stary zapis bez nich otwiera się jako 3D bez cięcia.
 
 Strona (`+page.svelte`) tylko przekazuje fasadzie surowe `location.search` (`openSharedView`) i po każdej
 zmianie `AppState.sharedViewQuery` podmienia adres (`replaceState`; porównuje z `window.location.search`, bo `page.url`
@@ -320,6 +325,20 @@ widoki „Z góry”/„Skos” szacują odległość rzutem środka świata na 
 (`MapService.estimateDistanceAlongViewToWorldCentre`).
 
 Decyzja i wyniki spike'a: [ADR 0021](adr/0021-rzut-kamery.md).
+
+## Widok 2D
+
+Widok 2D to tryb wyświetlania: płaska mapa z góry (północ u góry), w której działają te same znaczniki,
+wyszukiwarka, pomiary, zakładki i linki co w 3D. `ViewModeCoordinator` (`services/camera/`) trzyma tryb
+(`ViewMode`: `view-3d` albo `view-2d`) i wysokość cięcia modelu. Wejście w 2D wymusza rzut ortogonalny przez
+`CameraProjectionCoordinator` (rzut i kąt widzenia sprzed wejścia wracają po wyjściu), a w 2D wybór rzutu
+w fasadzie i klawisz P nic nie robią. Cięcie (`sliceHeightMetres`, `null` = bez cięcia) należy do trybu 2D i znika
+razem z nim. Zakres suwaka (`SliceHeightRange`) fasada pobiera z mapy po wczytaniu świata i przekazuje koordynatorowi,
+który przycina bieżące cięcie (`clampSliceHeight`). Koordynator woła `ViewModeDisplay` (implementuje go `MapService`);
+`AppState.viewMode`, `sliceHeightMetres` i `sliceHeightRange` wynikają ze zdarzeń `view-mode-changed`
+i `slice-height-range-changed`. Link i zakładki: sekcja „Widok w adresie i zakładki”.
+
+Decyzja: [ADR 0026](adr/0026-widok-2d.md).
 
 ## Arkusz mobilny
 

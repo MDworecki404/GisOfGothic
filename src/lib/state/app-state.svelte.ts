@@ -6,6 +6,7 @@ import {
 	DEFAULT_FIELD_OF_VIEW_DEGREES,
 	type CameraProjectionSetting
 } from '#lib/services/camera/camera-projection.js';
+import type { SliceHeightRange, ViewMode } from '#lib/services/camera/view-mode.js';
 import { ViewLinkCodec } from '#lib/services/bookmarks/view-link-codec.js';
 import type { AnalysisView } from '#lib/services/analysis/analysis-coordinator.js';
 import {
@@ -93,6 +94,9 @@ export class AppState {
 	cameraView = $state.raw<CameraView | null>(null);
 	cameraProjection = $state.raw<CameraProjectionSetting>(DEFAULT_CAMERA_PROJECTION);
 	fieldOfViewDegrees = $state(DEFAULT_FIELD_OF_VIEW_DEGREES);
+	viewMode = $state<ViewMode>('view-3d');
+	sliceHeightMetres = $state<number | null>(null);
+	sliceHeightRange = $state.raw<SliceHeightRange | null>(null);
 	bookmarks = $state.raw<BookmarkView[]>([]);
 	bookmarkStorageFailed = $state(false);
 	selectedChapter = $state<ChapterNumber | null>(null);
@@ -171,6 +175,13 @@ export class AppState {
 		eventBus.subscribe('camera-projection-changed', ({ projection, fieldOfViewDegrees }) => {
 			this.cameraProjection = projection;
 			this.fieldOfViewDegrees = fieldOfViewDegrees;
+		});
+		eventBus.subscribe('view-mode-changed', ({ mode, sliceHeightMetres }) => {
+			this.viewMode = mode;
+			this.sliceHeightMetres = sliceHeightMetres;
+		});
+		eventBus.subscribe('slice-height-range-changed', ({ range }) => {
+			this.sliceHeightRange = range;
 		});
 		eventBus.subscribe('bookmarks-changed', ({ bookmarks, hasStorageError }) => {
 			this.bookmarks = bookmarks;
@@ -346,6 +357,8 @@ export class AppState {
 			entryId: this.selectedEntry?.id ?? null,
 			camera: this.cameraView,
 			projection: this.cameraProjection,
+			viewMode: this.viewMode,
+			sliceHeightMetres: this.sliceHeightMetres,
 			toolId: this.activeToolId,
 			chapter: this.selectedChapter
 		});

@@ -15,6 +15,8 @@ import type { TileColorGrade } from '#lib/data/world-catalog.js';
 import { WorldFrame } from '#lib/services/geodesy/world-frame.js';
 import type { CameraProjectionSetting } from '#lib/services/camera/camera-projection.js';
 import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
+import type { ViewModeDisplay } from '#lib/services/camera/view-mode-coordinator.js';
+import type { SliceHeightRange } from '#lib/services/camera/view-mode.js';
 import type { ViewshedCell } from '#lib/services/analysis/viewshed-calculator.js';
 import type { DensityCell } from '#lib/services/analysis/density-grid-builder.js';
 import type { LocalPoint } from '#lib/services/measurement/measurement-calculator.js';
@@ -60,7 +62,7 @@ const SOFT_SHADOW_MAP_SIZE = 4096;
  * Serwis mapy 3D. Obiekty Cesium trzyma w zwykłych polach — nigdy w `$state`,
  * bo proxy Svelte psuje Cesium.
  */
-export class MapService {
+export class MapService implements ViewModeDisplay {
 	private readonly viewer: Viewer;
 	private readonly viewObserver: MapViewObserver;
 	private readonly shadowRangeCalculator = new ShadowRangeCalculator();
@@ -218,6 +220,14 @@ export class MapService {
 		this.applyShadows();
 		this.viewObserver.requestRefresh();
 		if (this.worldFrame) this.listeners.onCameraSettled();
+	}
+
+	showViewMode(): void {}
+
+	showSliceHeight(): void {}
+
+	readSliceHeightRange(): SliceHeightRange | null {
+		return null;
 	}
 
 	/** Leci do widoku „Z góry” albo „Skos” nad punktem pod środkiem ekranu, zachowując bieżący rozmiar widoku. */

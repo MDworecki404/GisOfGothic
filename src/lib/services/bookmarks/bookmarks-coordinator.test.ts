@@ -27,7 +27,9 @@ const newBookmark: NewBookmark = {
 	toolId: 'measure',
 	camera: { east: 10, north: 20, height: 300, headingDegrees: 90, pitchDegrees: -45 },
 	chapter: null,
-	projection: null
+	projection: null,
+	viewMode: 'view-3d',
+	sliceHeightMetres: null
 };
 
 function createCoordinator(storage = new FakeStorage()): {
@@ -81,6 +83,21 @@ describe('BookmarksCoordinator', () => {
 		const [bookmark] = latestBookmarks();
 		expect(bookmark.details).toBe('Narzędzie: Pomiary · Wpis: Szczaw królewski · Rzut ortogonalny');
 		expect(bookmark.linkQuery).toContain('rzut=o');
+	});
+
+	it('zakładka w widoku 2D ma tryb w linku i opis „Widok 2D” zamiast rzutu', () => {
+		const { coordinator, latestBookmarks } = createCoordinator();
+		coordinator.useWorld('g2nk', 'khorinis');
+		coordinator.addBookmark({
+			...newBookmark,
+			projection: { kind: 'orthographic' },
+			viewMode: 'view-2d',
+			sliceHeightMetres: 30
+		});
+		const [bookmark] = latestBookmarks();
+		expect(bookmark.details).toBe('Narzędzie: Pomiary · Wpis: Szczaw królewski · Widok 2D');
+		expect(bookmark.linkQuery).toContain('tryb=2d');
+		expect(bookmark.linkQuery).toContain('ciecie=30');
 	});
 
 	it('zakładka w perspektywie 60° nie dodaje rzutu do linku ani opisu', () => {
