@@ -52,7 +52,9 @@
 		{/if}
 	</div>
 
-	{#if appState.cameraProjection.kind === 'orthographic'}
+	{#if appState.viewMode === 'view-2d'}
+		<div class="{cell} hidden text-muted-foreground md:flex">widok 2D</div>
+	{:else if appState.cameraProjection.kind === 'orthographic'}
 		<div class="{cell} hidden text-muted-foreground md:flex">rzut ortogonalny</div>
 	{/if}
 
