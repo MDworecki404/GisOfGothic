@@ -184,6 +184,9 @@ importowania logiki do komponentu.
 `DataLayersRenderer` rysuje każdą warstwę jako kolekcję, której identyfikatorem jest
 `{ layerId, featureIndex }`; kliknięcie mapy (`MapViewObserver` → `onMapClicked`) wskazuje obiekt
 w danych bez dodatkowych map, a fasada publikuje `feature-identified`.
+Każda warstwa to dwie kolekcje: „duchy” (szare, przezroczyste, bez testu głębi) i zwykłe punkty z testem
+głębi rysowane nad nimi. Punkt pod tilesetem świata jest więc widoczny jako wyszarzony duch, a nad
+powierzchnią zakrywa swojego ducha. Oba warianty niosą ten sam `FeaturePick`, więc da się kliknąć też ducha.
 
 Nazwy gildii (kategoria postaci) pochodzą z `metadata.json` świata: fasada wczytuje metadane razem z indeksem wyszukiwania
 i ustawia `guildNameBook` (`data/category-names.ts`) przed zbudowaniem indeksu, bo MiniSearch indeksuje już opisaną kategorię.

@@ -26,6 +26,13 @@ const POINT_OUTLINE_COLOR = Color.fromCssColorString('#14110d');
 const SCALE_BY_DISTANCE = new NearFarScalar(50, 1.4, 3000, 0.75);
 const ICON_SIZE_PIXELS = 26;
 const ICON_OUTLINE_COLOR = '#14110d';
+const OCCLUDED_ICON_CSS_COLOR = '#8a8f94';
+const OCCLUDED_ALPHA = 0.4;
+const OCCLUDED_POINT_COLOR = Color.fromCssColorString(OCCLUDED_ICON_CSS_COLOR).withAlpha(
+	OCCLUDED_ALPHA
+);
+const OCCLUDED_POINT_OUTLINE_COLOR = POINT_OUTLINE_COLOR.withAlpha(OCCLUDED_ALPHA);
+const OCCLUDED_ICON_TINT = Color.WHITE.withAlpha(OCCLUDED_ALPHA);
 
 export function isFeaturePick(value: unknown): value is FeaturePick {
 	return (
@@ -41,9 +48,13 @@ export function isFeaturePick(value: unknown): value is FeaturePick {
 /**
  * Warstwy danych jako osobne kolekcje punktów. Identyfikator każdego punktu to `FeaturePick`,
  * dzięki czemu kliknięty punkt da się wskazać w danych bez dodatkowych map.
+ *
+ * Każda warstwa to dwie kolekcje: „duchy” (wyszarzone, półprzezroczyste, bez testu głębi) rysowane
+ * jako pierwsze oraz zwykłe punkty z testem głębi na wierzchu. Punkt nad powierzchnią zakrywa
+ * swojego ducha, a punkt pod tilesetem zostaje widoczny wyłącznie jako duch.
  */
 export class DataLayersRenderer {
-	private readonly collections = new Map<string, PointPrimitiveCollection | BillboardCollection>();
+	private readonly collections = new Map<string, (PointPrimitiveCollection | BillboardCollection)[]>();
 	private readonly iconImages = new Map<string, string>();
 
 	constructor(private readonly viewer: Viewer) {}
@@ -54,13 +65,25 @@ export class DataLayersRenderer {
 			this.showIconLayer(layerId, points, cssColor);
 			return;
 		}
+		const occludedCollection = new PointPrimitiveCollection();
 		const collection = new PointPrimitiveCollection();
 		const color = Color.fromCssColorString(cssColor);
 		points.forEach((point, featureIndex) => {
 			const id: FeaturePick = { layerId, featureIndex };
+			const position = Cartesian3.fromDegrees(point.lon, point.lat, point.h);
+			occludedCollection.add({
+				id,
+				position,
+				color: OCCLUDED_POINT_COLOR,
+				pixelSize: POINT_PIXEL_SIZE,
+				outlineColor: OCCLUDED_POINT_OUTLINE_COLOR,
+				outlineWidth: 1.5,
+				scaleByDistance: SCALE_BY_DISTANCE,
+				disableDepthTestDistance: Number.POSITIVE_INFINITY
+			});
 			collection.add({
 				id,
-				position: Cartesian3.fromDegrees(point.lon, point.lat, point.h),
+				position,
 				color,
 				pixelSize: POINT_PIXEL_SIZE,
 				outlineColor: POINT_OUTLINE_COLOR,
@@ -68,15 +91,22 @@ export class DataLayersRenderer {
 				scaleByDistance: SCALE_BY_DISTANCE
 			});
 		});
-		this.viewer.scene.primitives.add(collection);
-		this.collections.set(layerId, collection);
+		this.addCollections(layerId, [occludedCollection, collection]);
 	}
 
 	hideLayer(layerId: string): void {
-		const collection = this.collections.get(layerId);
-		if (!collection) return;
-		this.viewer.scene.primitives.remove(collection);
+		const collections = this.collections.get(layerId);
+		if (!collections) return;
+		for (const collection of collections) this.viewer.scene.primitives.remove(collection);
 		this.collections.delete(layerId);
+	}
+
+	private addCollections(
+		layerId: string,
+		collections: (PointPrimitiveCollection | BillboardCollection)[]
+	): void {
+		for (const collection of collections) this.viewer.scene.primitives.add(collection);
+		this.collections.set(layerId, collections);
 	}
 
 	/**
@@ -88,20 +118,32 @@ export class DataLayersRenderer {
 		points: readonly DataLayerPoint[],
 		cssColor: string
 	): void {
+		const occludedCollection = new BillboardCollection();
 		const collection = new BillboardCollection();
 		points.forEach((point, featureIndex) => {
 			const id: FeaturePick = { layerId, featureIndex };
+			const position = Cartesian3.fromDegrees(point.lon, point.lat, point.h);
+			const iconId = point.iconId ?? 'misc';
+			occludedCollection.add({
+				id,
+				position,
+				image: this.buildIconImage(iconId, OCCLUDED_ICON_CSS_COLOR),
+				color: OCCLUDED_ICON_TINT,
+				width: ICON_SIZE_PIXELS,
+				height: ICON_SIZE_PIXELS,
+				scaleByDistance: SCALE_BY_DISTANCE,
+				disableDepthTestDistance: Number.POSITIVE_INFINITY
+			});
 			collection.add({
 				id,
-				position: Cartesian3.fromDegrees(point.lon, point.lat, point.h),
-				image: this.buildIconImage(point.iconId ?? 'misc', cssColor),
+				position,
+				image: this.buildIconImage(iconId, cssColor),
 				width: ICON_SIZE_PIXELS,
 				height: ICON_SIZE_PIXELS,
 				scaleByDistance: SCALE_BY_DISTANCE
 			});
 		});
-		this.viewer.scene.primitives.add(collection);
-		this.collections.set(layerId, collection);
+		this.addCollections(layerId, [occludedCollection, collection]);
 	}
 
 	private renderNodes(nodes: readonly MapIconNode[]): string {
