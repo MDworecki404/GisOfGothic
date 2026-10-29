@@ -348,6 +348,12 @@ punkt plus odległość jest większa od zera). Układ płaszczyzny tilesetu to 
 wysokości cięcia w ramie świata; kolekcja powstaje raz na tileset i jest wyłączana zamiast usuwana, a nowy tileset
 po zmianie świata dostaje bieżące cięcie. Zakres suwaka wynika z kuli granicznej modelu świata.
 
+Interfejs: przycisk „Widok 2D” stoi w kolumnie `MapControls` po przycisku „Rzut kamery” (`aria-pressed` w 2D),
+a w 2D kompas jest ukryty, bo północ jest zawsze u góry. Okienko `CameraSettingsPopover` w 2D przyciemnia i wyłącza
+(`inert`) rzut, kąt widzenia i widoki „Z góry”/„Skos” z podpowiedzią, że ustawiają się automatycznie, a pokazuje sekcję
+„Poziom cięcia”: chip „Bez cięcia” i suwak wysokości (`ForgedRange`) w zakresie `AppState.sliceHeightRange`; przeciągnięcie
+suwaka włącza cięcie. Pasek stanu pokazuje „widok 2D” (a w 3D z ortho nadal „rzut ortogonalny”).
+
 Decyzja: [ADR 0026](adr/0026-widok-2d.md).
 
 ## Arkusz mobilny
