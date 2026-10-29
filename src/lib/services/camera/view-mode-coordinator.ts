@@ -101,7 +101,9 @@ export class ViewModeCoordinator {
 		this.projection.selectKind('orthographic');
 		const display = this.getDisplay();
 		display?.showViewMode('view-2d', flightSeconds);
-		if (this.sliceHeightMetres !== null) display?.showSliceHeight(this.sliceHeightMetres);
+		if (this.sliceHeightMetres !== null || wasFlatMap) {
+			display?.showSliceHeight(this.sliceHeightMetres);
+		}
 		this.publishMode();
 	}
 

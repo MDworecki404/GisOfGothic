@@ -322,7 +322,7 @@ nieaktywny w ortho, oraz przyciski „Z góry” i „Skos”). Okienko zamyka E
 narzędzi się nie zmienia. W ortho pasek stanu pokazuje „rzut ortogonalny”, a panel Czas informuje, że cienie
 są wyłączone. Gdy pod środkiem ekranu nie ma powierzchni (woda, niewczytane kafle), przełączenie rzutu i
 widoki „Z góry”/„Skos” szacują odległość rzutem środka świata na kierunek patrzenia
-(`MapService.estimateDistanceAlongViewToWorldCentre`).
+(`MapService.estimateDistanceAlongViewToWorldCentre`); gdy nie ma i takiego punktu (kamera patrzy poza model, np. ponad horyzont), celem jest środek modelu świata.
 
 Decyzja i wyniki spike'a: [ADR 0021](adr/0021-rzut-kamery.md).
 
@@ -349,7 +349,7 @@ wysokości cięcia w ramie świata; kolekcja powstaje raz na tileset i jest wył
 po zmianie świata dostaje bieżące cięcie. Zakres suwaka wynika z kuli granicznej modelu świata.
 
 Interfejs: przycisk „Widok 2D” stoi w kolumnie `MapControls` po przycisku „Rzut kamery” (`aria-pressed` w 2D),
-a w 2D kompas jest ukryty, bo północ jest zawsze u góry. Okienko `CameraSettingsPopover` w 2D przyciemnia i wyłącza
+a w 2D kompas jest ukryty (`invisible`, zachowuje miejsce, żeby kolumna przycisków nie skakała), bo północ jest zawsze u góry. Okienko `CameraSettingsPopover` w 2D przyciemnia i wyłącza
 (`inert`) rzut, kąt widzenia i widoki „Z góry”/„Skos” z podpowiedzią, że ustawiają się automatycznie, a pokazuje sekcję
 „Poziom cięcia”: chip „Bez cięcia” i suwak wysokości (`ForgedRange`) w zakresie `AppState.sliceHeightRange`; przeciągnięcie
 suwaka włącza cięcie, a przyciski −5, −1, +1 i +5 pod nim przesuwają wysokość o krok (zakres suwaka obejmuje całą kulę graniczną
