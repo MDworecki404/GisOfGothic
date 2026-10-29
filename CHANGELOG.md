@@ -2,6 +2,29 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.10.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.9.0...v0.10.0) (2026-10-29)
+
+### Nowe funkcje
+
+* gra Archolos z pięcioma światami ([c99418d](https://github.com/MDworecki404/GisOfGothic/commit/c99418de088118a920484220d44c45af6a62f011))
+* koordynator trybu widoku 2D i 3D ([1a307c2](https://github.com/MDworecki404/GisOfGothic/commit/1a307c22b725f7a5fda7695e19dcb860cc38abf9))
+* przełącznik widoku 2D i suwak poziomu cięcia ([b7240bb](https://github.com/MDworecki404/GisOfGothic/commit/b7240bbdd0fe71fddaaa5210a13e58c1d649bb2a))
+* przyciski kroku wysokości cięcia w widoku 2D ([670399e](https://github.com/MDworecki404/GisOfGothic/commit/670399e662c91cb6e3606b92d28232b5eb1a7087))
+* punkty pod tilesetem widoczne jako wyszarzone duchy ([aa15eef](https://github.com/MDworecki404/GisOfGothic/commit/aa15eefb9bf13eafe45da02ce275c5226f5806dc))
+* tryb widoku 2D w adresie, zakładkach i fasadzie ([8d5e6d1](https://github.com/MDworecki404/GisOfGothic/commit/8d5e6d11b9e2e5993f1964077b9256cc1905dbcd))
+* widok 2D z zablokowaną kamerą i cięciem wysokości modelu ([a2a76c1](https://github.com/MDworecki404/GisOfGothic/commit/a2a76c1c87cf002fc75cb7ab9ae185591337b2a4))
+
+### Poprawki błędów
+
+* przeciąganie pustego tła w widoku 2D nie obraca kamery ([2bdf8fa](https://github.com/MDworecki404/GisOfGothic/commit/2bdf8fa98c383cae3b988d80dddc75add6de1bc8))
+* widok 2D po przeglądzie końcowym ([83e1cd3](https://github.com/MDworecki404/GisOfGothic/commit/83e1cd3410d4808f6f98fe0ac1aaf6c166ba7648))
+
+### Dokumentacja
+
+* plan implementacji widoku 2D ([3d8419c](https://github.com/MDworecki404/GisOfGothic/commit/3d8419c74c750f2ad82c4bbb6f7d9a22934fb1be))
+* popraw numer ADR w projekcie widoku 2D ([81c04f2](https://github.com/MDworecki404/GisOfGothic/commit/81c04f2af23543167d5e38321070281e578bfd14))
+* projekt widoku 2D z cięciem wysokości ([0366bf5](https://github.com/MDworecki404/GisOfGothic/commit/0366bf5138758a5ee5ab1a357ac2edc3af96cbc6))
+
 ## [0.9.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.8.0...v0.9.0) (2026-10-28)
 
 ### Nowe funkcje
