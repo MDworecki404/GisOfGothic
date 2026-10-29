@@ -352,7 +352,8 @@ Interfejs: przycisk „Widok 2D” stoi w kolumnie `MapControls` po przycisku �
 a w 2D kompas jest ukryty, bo północ jest zawsze u góry. Okienko `CameraSettingsPopover` w 2D przyciemnia i wyłącza
 (`inert`) rzut, kąt widzenia i widoki „Z góry”/„Skos” z podpowiedzią, że ustawiają się automatycznie, a pokazuje sekcję
 „Poziom cięcia”: chip „Bez cięcia” i suwak wysokości (`ForgedRange`) w zakresie `AppState.sliceHeightRange`; przeciągnięcie
-suwaka włącza cięcie. Pasek stanu pokazuje „widok 2D” (a w 3D z ortho nadal „rzut ortogonalny”).
+suwaka włącza cięcie, a przyciski −5, −1, +1 i +5 pod nim przesuwają wysokość o krok (zakres suwaka obejmuje całą kulę graniczną
+modelu, więc sama mysz jest za gruba do dokładnej regulacji). Pasek stanu pokazuje „widok 2D” (a w 3D z ortho nadal „rzut ortogonalny”).
 
 Decyzja: [ADR 0026](adr/0026-widok-2d.md).
 
