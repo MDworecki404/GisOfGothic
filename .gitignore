@@ -28,3 +28,6 @@ vite.config.ts.timestamp-*
 /playwright-report
 screenshot.png
 logo-preview.png
+
+# Zaszyfrowane modele przedmiotów przygotowane do wgrania na R2
+/build-models
