@@ -11,6 +11,7 @@
 	const isFlatMap = $derived(appState.viewMode === 'view-2d');
 	const isOrthographic = $derived(appState.cameraProjection.kind === 'orthographic');
 	const sliceRange = $derived(appState.sliceHeightRange);
+	const sliceNudgeSteps = [-5, -1, 1, 5];
 	const sliceSliderValue = $derived(
 		appState.sliceHeightMetres ??
 			(sliceRange ? Math.round((sliceRange.minimumMetres + sliceRange.maximumMetres) / 2) : 0)
@@ -112,6 +113,21 @@
 					: `${appState.sliceHeightMetres} m`}
 				onValueChange={(value) => geoportal.setSliceHeight(value)}
 			/>
+			<div
+				class="mt-2 grid grid-cols-4 gap-2"
+				role="group"
+				aria-label="Dokładna regulacja wysokości cięcia"
+			>
+				{#each sliceNudgeSteps as step (step)}
+					<button
+						class="button-iron px-1 tabular-nums"
+						aria-label="{step > 0 ? 'Podnieś' : 'Obniż'} cięcie o {Math.abs(step)} m"
+						onclick={() => geoportal.setSliceHeight(sliceSliderValue + step)}
+					>
+						{step > 0 ? `+${step}` : `−${Math.abs(step)}`}
+					</button>
+				{/each}
+			</div>
 		</div>
 		<p class="mt-1 text-caption text-muted-foreground">
 			Ukrywa wszystko, co leży powyżej wybranej wysokości.
