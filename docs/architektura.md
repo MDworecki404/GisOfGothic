@@ -341,7 +341,7 @@ i `slice-height-range-changed`. Link i zakładki: sekcja „Widok w adresie i za
 Po stronie mapy `MapService` implementuje `ViewModeDisplay`: w 2D wyłącza `enableTilt` i `enableLook` kontrolera
 kamery Cesium, blokuje kierunek i nachylenie przelotów (`CameraFramer.lockOrientation`, więc „Pokaż cały świat” i
 przeloty do znaczników zostają widokiem z góry), a `CameraFlightController` pomija obrót i przechył (zostaje
-przesuwanie i zoom). Powrót do 3D odblokowuje sterowanie i leci do widoku „Skos”. `WorldSliceController` jest jedynym
+przesuwanie i zoom). W 2D wyłączony jest też `enableRotate`, bo lewy przycisk bez trafienia w kafel obraca kamerę wokół globu (zmienia północ i nachylenie); przeciąganie mapy zastępuje `FlatMapPanController`, który zamienia przesunięcie kursora na przesunięcie kamery w płaszczyźnie ekranu (w rzucie ortogonalnym piksel to stała liczba metrów). Powrót do 3D odblokowuje sterowanie i leci do widoku „Skos”. `WorldSliceController` jest jedynym
 miejscem, które dotyka `clippingPlanes` tilesetów (model świata i obiekty): pozioma płaszczyzna z normalną w dół
 (`SlicePlaneCalculator`) zostawia część poniżej wysokości cięcia (Cesium zostawia punkty, dla których normalna razy
 punkt plus odległość jest większa od zera). Układ płaszczyzny tilesetu to rama kotwicy świata, więc odległość równa się

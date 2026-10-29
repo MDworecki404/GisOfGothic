@@ -40,6 +40,7 @@ import { MapViewObserver, type MapViewListeners, type TileLayerId } from './map-
 import { MeasurementRenderer } from './measurement-renderer.js';
 import { PlaceMarkersLayer, type PlaceMarker } from './place-markers-layer.js';
 import { ViewerOptionsBuilder } from './viewer-options-builder.js';
+import { FlatMapPanController } from './flat-map-pan-controller.js';
 import { WorldSliceController } from './world-slice-controller.js';
 
 const LIGHT_DIRECTION_FROM_ABOVE = new Cartesian3(-1, 0.35, -0.25);
@@ -84,6 +85,7 @@ export class MapService implements ViewModeDisplay {
 		() => this.staticObjectsTilesets,
 		() => this.worldFrame
 	);
+	private readonly flatMapPanController: FlatMapPanController;
 	private viewMode: ViewMode = 'view-3d';
 	private worldTileset: Cesium3DTileset | null = null;
 	private staticObjectsTilesets: Cesium3DTileset[] = [];
@@ -132,6 +134,9 @@ export class MapService implements ViewModeDisplay {
 			() => this.measureDistanceToScreenCentreIfKnown(),
 			() => this.projectionController.isOrthographic(),
 			() => this.viewMode === 'view-2d'
+		);
+		this.flatMapPanController = new FlatMapPanController(this.viewer, () =>
+			this.projectionController.readOrthographicMetresPerPixel()
 		);
 		this.placeMarkers = new PlaceMarkersLayer(this.viewer, this.cameraFramer);
 		this.viewer.scene.postRender.addEventListener(() =>
@@ -245,6 +250,9 @@ export class MapService implements ViewModeDisplay {
 		const cameraController = this.viewer.scene.screenSpaceCameraController;
 		cameraController.enableTilt = !isFlatMap;
 		cameraController.enableLook = !isFlatMap;
+		cameraController.enableRotate = !isFlatMap;
+		if (isFlatMap) this.flatMapPanController.start();
+		else this.flatMapPanController.stop();
 		this.cameraFramer.lockOrientation(isFlatMap ? this.presetBuilder.build('top', 0) : null);
 		this.showCameraPreset(isFlatMap ? 'top' : 'oblique', flightSeconds);
 	}
@@ -540,6 +548,7 @@ export class MapService implements ViewModeDisplay {
 	destroy(): void {
 		this.isDestroyed = true;
 		this.flightController.destroy();
+		this.flatMapPanController.stop();
 		this.projectionController.destroy();
 		this.viewObserver.destroy();
 		if (!this.viewer.isDestroyed()) this.viewer.destroy();
