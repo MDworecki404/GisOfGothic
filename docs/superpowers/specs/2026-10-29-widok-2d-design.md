@@ -121,7 +121,7 @@ nie oczekuje obciętego świata; mój wybór).
 ## Dokumentacja
 
 W tym samym commicie co kod: `docs/architektura.md` (sekcja „Widok 2D”, poprawki w „Rzut kamery”,
-„Lot kamerą”, link i zakładki), nowy ADR `0022-widok-2d.md` (wybór A, odrzucone B i C, parametry `tryb`
+„Lot kamerą”, link i zakładki), nowy ADR `0026-widok-2d.md` (wybór A, odrzucone B i C, parametry `tryb`
 i `ciecie`) i wpis w `docs/adr/README.md`.
 
 ## Co zostaje decyzji wykonawcy
