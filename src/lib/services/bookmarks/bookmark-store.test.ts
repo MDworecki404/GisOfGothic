@@ -24,7 +24,9 @@ const view: SavedView = {
 	toolId: 'measure',
 	camera: { east: 1, north: 2, height: 3, headingDegrees: 4, pitchDegrees: -5 },
 	chapter: 2,
-	projection: null
+	projection: null,
+	viewMode: 'view-3d',
+	sliceHeightMetres: null
 };
 
 describe('BookmarkStore', () => {
@@ -99,5 +101,39 @@ describe('BookmarkStore', () => {
 			}
 		});
 		expect(store.saveAll([view])).toBe(false);
+	});
+});
+
+describe('BookmarkStore: widok 2D', () => {
+	const flatMapView: SavedView = {
+		...view,
+		projection: { kind: 'orthographic' },
+		viewMode: 'view-2d',
+		sliceHeightMetres: 42.5
+	};
+
+	it('zapisuje i odczytuje tryb 2D z cięciem', () => {
+		const store = new BookmarkStore(new FakeStorage());
+		store.saveAll([flatMapView]);
+		expect(store.loadAll()).toEqual([flatMapView]);
+	});
+
+	it('stary zapis bez pól trybu otwiera się jako 3D bez cięcia', () => {
+		const storage = new FakeStorage();
+		const legacy = JSON.stringify([view], (key, value: unknown) =>
+			key === 'viewMode' || key === 'sliceHeightMetres' ? undefined : value
+		);
+		storage.setItem('gisofgothic:bookmarks:v1', legacy);
+		expect(new BookmarkStore(storage).loadAll()).toEqual([view]);
+	});
+
+	it('nieprawidłowe pola trybu są zamieniane na 3D bez cięcia', () => {
+		const storage = new FakeStorage();
+		storage.setItem(
+			'gisofgothic:bookmarks:v1',
+			JSON.stringify([{ ...flatMapView, viewMode: 'hologram', sliceHeightMetres: 'x' }])
+		);
+		const [loaded] = new BookmarkStore(storage).loadAll();
+		expect(loaded).toMatchObject({ viewMode: 'view-3d', sliceHeightMetres: null });
 	});
 });

@@ -21,6 +21,8 @@ export interface NewBookmark {
 	toolId: SavedView['toolId'];
 	camera: SavedView['camera'];
 	projection: SavedView['projection'];
+	viewMode: SavedView['viewMode'];
+	sliceHeightMetres: SavedView['sliceHeightMetres'];
 	chapter: SavedView['chapter'];
 }
 
@@ -76,6 +78,8 @@ export class BookmarksCoordinator {
 				toolId: bookmark.toolId,
 				camera: bookmark.camera,
 				projection: bookmark.projection,
+				viewMode: bookmark.viewMode,
+				sliceHeightMetres: bookmark.sliceHeightMetres,
 				chapter: bookmark.chapter
 			}
 		];
@@ -98,6 +102,11 @@ export class BookmarksCoordinator {
 		);
 	}
 
+	private describeViewMode(view: SavedView): string | null {
+		if (view.viewMode === 'view-2d') return 'Widok 2D';
+		return view.projection?.kind === 'orthographic' ? 'Rzut ortogonalny' : null;
+	}
+
 	private publish(): void {
 		this.eventBus.publish({
 			type: 'bookmarks-changed',
@@ -111,7 +120,7 @@ export class BookmarksCoordinator {
 			view.toolId ? `Narzędzie: ${TOOL_LABELS[view.toolId]}` : 'Panel zamknięty',
 			view.entryName ? `Wpis: ${view.entryName}` : null,
 			view.chapter ? `Rozdział ${CHAPTER_LABELS[view.chapter]}` : null,
-			view.projection?.kind === 'orthographic' ? 'Rzut ortogonalny' : null
+			this.describeViewMode(view)
 		].filter((part) => part !== null);
 		return {
 			id: view.id,
@@ -124,6 +133,8 @@ export class BookmarksCoordinator {
 				entryId: view.entryId,
 				camera: view.camera,
 				projection: view.projection,
+				viewMode: view.viewMode,
+				sliceHeightMetres: view.sliceHeightMetres,
 				toolId: view.toolId,
 				chapter: view.chapter
 			})

@@ -33,6 +33,8 @@ import type { SearchTypeFilter } from './search/search-service.js';
 import { CameraProjectionCoordinator } from './camera/camera-projection-coordinator.js';
 import type { CameraPreset } from './camera/camera-preset-builder.js';
 import { KeyboardProjectionListener } from './camera/keyboard-projection-listener.js';
+import { ViewModeCoordinator } from './camera/view-mode-coordinator.js';
+import type { ViewMode } from './camera/view-mode.js';
 import { PerformanceCoordinator } from './performance/performance-coordinator.js';
 import type { PerformancePreferenceStore } from './performance/performance-preference-store.js';
 import type { PerformancePreference } from './performance/performance-profiles.js';
@@ -85,6 +87,7 @@ export class GeoportalFacade {
 	private readonly timeCoordinator: TimeCoordinator;
 	private readonly performanceCoordinator: PerformanceCoordinator;
 	private readonly cameraProjectionCoordinator: CameraProjectionCoordinator;
+	private readonly viewModeCoordinator: ViewModeCoordinator;
 
 	constructor(
 		private readonly eventBus: AppEventBus,
@@ -112,6 +115,11 @@ export class GeoportalFacade {
 		this.cameraProjectionCoordinator = new CameraProjectionCoordinator(
 			eventBus,
 			() => this.mapService
+		);
+		this.viewModeCoordinator = new ViewModeCoordinator(
+			eventBus,
+			() => this.mapService,
+			this.cameraProjectionCoordinator
 		);
 		this.performanceCoordinator = new PerformanceCoordinator(
 			eventBus,
@@ -181,6 +189,8 @@ export class GeoportalFacade {
 			toolId: viewState.toolId,
 			camera: viewState.camera,
 			projection: viewState.projection,
+			viewMode: viewState.viewMode,
+			sliceHeightMetres: viewState.sliceHeightMetres,
 			chapter: viewState.chapter
 		});
 	}
@@ -193,6 +203,8 @@ export class GeoportalFacade {
 				entryId: bookmark.entryId,
 				camera: bookmark.camera,
 				projection: bookmark.projection,
+				viewMode: bookmark.viewMode,
+				sliceHeightMetres: bookmark.sliceHeightMetres,
 				toolId: bookmark.toolId,
 				chapter: bookmark.chapter
 			},
@@ -386,11 +398,22 @@ export class GeoportalFacade {
 	}
 
 	selectCameraProjection(kind: 'perspective' | 'orthographic'): void {
+		if (this.viewModeCoordinator.currentMode === 'view-2d') return;
 		this.cameraProjectionCoordinator.selectKind(kind);
 	}
 
 	toggleCameraProjection(): void {
+		if (this.viewModeCoordinator.currentMode === 'view-2d') return;
 		this.cameraProjectionCoordinator.toggleKind();
+	}
+
+	selectViewMode(mode: ViewMode): void {
+		this.viewModeCoordinator.selectMode(mode);
+	}
+
+	/** Ustawia wysokość cięcia modelu w metrach (tylko w widoku 2D); `null` zdejmuje cięcie. */
+	setSliceHeight(metres: number | null): void {
+		this.viewModeCoordinator.setSliceHeight(metres);
 	}
 
 	/** Ustawia kąt widzenia kamery w stopniach (przycinany do 30–100°); w rzucie ortogonalnym tylko go zapamiętuje. */
@@ -400,9 +423,7 @@ export class GeoportalFacade {
 
 	/** Włącza przełączanie rzutu klawiszem P; zwraca funkcję wyłączającą. */
 	listenToProjectionKeyboard(eventSource: Window): () => void {
-		return new KeyboardProjectionListener(eventSource, () =>
-			this.cameraProjectionCoordinator.toggleKind()
-		).start();
+		return new KeyboardProjectionListener(eventSource, () => this.toggleCameraProjection()).start();
 	}
 
 	showCameraPreset(preset: CameraPreset): void {
@@ -477,6 +498,8 @@ export class GeoportalFacade {
 			entryId: this.searchCoordinator.selectedEntryReference?.id ?? null,
 			camera: this.mapService?.readCameraView() ?? null,
 			projection: this.cameraProjectionCoordinator.currentSetting,
+			viewMode: this.viewModeCoordinator.currentMode,
+			sliceHeightMetres: this.viewModeCoordinator.currentSliceHeightMetres,
 			toolId: this.activeToolId,
 			chapter: this.selectedChapter
 		};
@@ -485,7 +508,10 @@ export class GeoportalFacade {
 	private applyViewState(state: SharedViewState, isCameraAnimated: boolean): void {
 		this.activateTool(state.toolId);
 		this.selectChapter(state.chapter);
-		this.cameraProjectionCoordinator.restore(state.projection);
+		this.viewModeCoordinator.restore(
+			{ mode: state.viewMode, sliceHeightMetres: state.sliceHeightMetres },
+			state.projection
+		);
 		if (state.entryId) this.searchCoordinator.selectEntry(state.entryId, state.camera === null);
 		else this.searchCoordinator.clearSelection();
 		const camera = state.camera;
@@ -581,6 +607,8 @@ export class GeoportalFacade {
 			if (!isStillCurrent()) return;
 			this.isWorldShownOnMap = true;
 			this.cameraProjectionCoordinator.showOnMap();
+			this.viewModeCoordinator.useSliceRange(mapService.readSliceHeightRange());
+			this.viewModeCoordinator.showOnMap();
 			const cameraFromLink = this.pendingCameraView;
 			this.pendingCameraView = null;
 			if (cameraFromLink) mapService.moveCameraToView(cameraFromLink, 0);
