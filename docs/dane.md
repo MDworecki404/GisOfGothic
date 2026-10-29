@@ -69,6 +69,21 @@ zasobów przepuszcza podglądy przedmiotów ze ścieżek `/g1/…` i `/g2nk/…`
    poprawnie ustawiony, znaczniki na terenie, podglądy przedmiotów, brak błędów w konsoli. Na produkcję
    świat trafia z najbliższym wydaniem.
 
+## Archolos (Kroniki Myrtany)
+
+Gra `archolos` to modyfikacja Gothica 2 NK (silnik ZenGin, te same układy plików, osie i kotwica) z pięcioma światami:
+`archolos` (kontynent), `finalowy-etap`, `kanaly`, `srebrna-kopalnia` i `volfzacke`. Ich definicje (nazwy robocze, bo mod
+nie nadaje nazw światom) zapisuje `ARCHOLOS_WORLD_SPECIFICATIONS` w `world-catalog.ts`; nazwę zmienia się w jednym miejscu.
+Paczki v4 leżą w `static/data/archolos/<świat>/`, kotwica jest wspólna, więc światy ogląda się osobno. Różnice względem G2 NK:
+
+- rozdziały ma tylko kontynent (`hasChapters`); w pozostałych czterech światach UI ukrywa wybór rozdziału;
+- nazwy gildii wyłącznie z `metadata.guild_names` (kody G2 w nowych znaczeniach, np. `HUMAN` → „Paladyn”), także dziwne
+  (`BLOODFLY_RUNE` → „Z”, `YOUNGTROLL` → „Strażnik”); `ARENASNAKE` nie ma nazwy i wyświetla się jako kod;
+- brak `description` przedmiotów: lista pokazuje nazwę ogólną, kategorię i kod;
+- wpis przedmiotu bez nazwy i bez kodu (jeden w kontynencie) `parseSearchIndex` pomija;
+- bez losowego łupu; modele jak w G2 NK (skrzynie i obiekty MDS/ASC bez podglądu);
+- ion: `world.glb` i `vobs.glb` każdego świata to osobne assety, dopuszczone w `ALLOWED_ION_ASSETS`.
+
 ## Gothic 3 (Myrtana)
 
 Gra `g3` ma jeden świat `myrtana` (cały kontynent; nazwa robocza). Kod jest w `src/lib/data/world-catalog.ts`,

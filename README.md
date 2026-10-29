@@ -4,7 +4,7 @@ Trójwymiarowa wikipedia świata Gothic. Wyszukujesz przedmiot albo unikatową p
 na modelu 3D świata gry, gdzie leży, kto go ma i gdzie ktoś przebywa o danej porze.
 
 Gothic 2: Noc Kruka — Khorinis, Górnicza Dolina, Jarkendar i Irdorath. Gothic 1 — Kolonia Karna, Wolna Kopalnia,
-Stara Kopalnia, Cmentarzysko orków i Świątynia orków. Przedmioty, unikatowe postacie i questy. Dalsze plany —
+Stara Kopalnia, Cmentarzysko orków i Świątynia orków. Archolos (mod do Gothica 2 NK) — kontynent, Finałowy etap, Kanały, Srebrna Kopalnia i Volfzacke. Przedmioty, unikatowe postacie i questy. Dalsze plany —
 zobacz [wizję projektu](docs/wizja.md).
 
 > Projekt w budowie. Działa: mapa 3D świata, wyszukiwarka przedmiotów i postaci z podglądem 3D,

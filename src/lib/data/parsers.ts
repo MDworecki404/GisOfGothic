@@ -280,11 +280,16 @@ function parseSearchEntry(value: unknown, position: number): SearchEntry {
 	};
 }
 
+/** Wpis bez nazwy i bez kodu (przedmiot bez instancji w skryptach moda) nie ma czego pokazać na liście wyników. */
+function hasDisplayableIdentity(entry: SearchEntry): boolean {
+	return entry.name.trim() !== '' || entry.code.trim() !== '';
+}
+
 export function parseSearchIndex(json: unknown): SearchIndex {
 	const root = requireRecord(json, 'search_index.json');
 	if (!Array.isArray(root.entries)) throw new Error('search_index.json: brak listy wpisów');
 	return {
 		version: requireNumber(root, 'version', 'search_index.json'),
-		entries: root.entries.map(parseSearchEntry)
+		entries: root.entries.map(parseSearchEntry).filter(hasDisplayableIdentity)
 	};
 }
