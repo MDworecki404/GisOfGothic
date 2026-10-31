@@ -34,6 +34,8 @@ import { CameraProjectionCoordinator } from './camera/camera-projection-coordina
 import type { CameraPreset } from './camera/camera-preset-builder.js';
 import { KeyboardProjectionListener } from './camera/keyboard-projection-listener.js';
 import { ViewModeCoordinator } from './camera/view-mode-coordinator.js';
+import type { MapOverlayId } from './overlays/map-overlays.js';
+import { MapOverlaysCoordinator } from './overlays/map-overlays-coordinator.js';
 import type { ViewMode } from './camera/view-mode.js';
 import { PerformanceCoordinator } from './performance/performance-coordinator.js';
 import type { PerformancePreferenceStore } from './performance/performance-preference-store.js';
@@ -88,6 +90,7 @@ export class GeoportalFacade {
 	private readonly performanceCoordinator: PerformanceCoordinator;
 	private readonly cameraProjectionCoordinator: CameraProjectionCoordinator;
 	private readonly viewModeCoordinator: ViewModeCoordinator;
+	private readonly mapOverlaysCoordinator: MapOverlaysCoordinator;
 
 	constructor(
 		private readonly eventBus: AppEventBus,
@@ -121,6 +124,7 @@ export class GeoportalFacade {
 			() => this.mapService,
 			this.cameraProjectionCoordinator
 		);
+		this.mapOverlaysCoordinator = new MapOverlaysCoordinator(eventBus, () => this.mapService);
 		this.performanceCoordinator = new PerformanceCoordinator(
 			eventBus,
 			() => this.mapService,
@@ -407,6 +411,10 @@ export class GeoportalFacade {
 		this.cameraProjectionCoordinator.toggleKind();
 	}
 
+	toggleMapOverlay(overlayId: MapOverlayId): void {
+		this.mapOverlaysCoordinator.toggleOverlay(overlayId);
+	}
+
 	selectViewMode(mode: ViewMode): void {
 		this.viewModeCoordinator.selectMode(mode);
 	}
@@ -603,6 +611,7 @@ export class GeoportalFacade {
 			this.analysisCoordinator.useAnchor(metadata.anchor);
 			this.measurementCoordinator.useMovementSpeeds(metadata.movement_speeds_m_s ?? null);
 			mapService.useTileColorGrade(world.tileColorGrade);
+			this.mapOverlaysCoordinator.showOnMap();
 			await mapService.showWorldTileset(world.worldTilesetUrl, metadata.anchor);
 			if (!isStillCurrent()) return;
 			this.isWorldShownOnMap = true;
