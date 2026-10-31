@@ -135,6 +135,3 @@
 		</span>
 	</span>
 </label>
-
-<h3 class="group-label mt-5 mb-1">Wkrótce</h3>
-<p class="text-caption text-muted-foreground">Waypointy.</p>
