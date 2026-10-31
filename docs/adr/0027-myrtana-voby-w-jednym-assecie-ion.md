@@ -11,7 +11,7 @@ ADR 0023 dzielił `vobs.glb` Myrtany na 4 części, bo ion odrzucił cały plik.
 
 ## Decyzja
 
-- Myrtana: teren `6104039`, voby `6104032` (jeden asset); stare `6088791` i części `6088864`, `6088836`,
+- Myrtana: teren `6104068`, voby `6104066` (jeden asset; kolejny poprawiony eksport, który zastąpił `6104039` i `6104032`); stare `6088791` i części `6088864`, `6088836`,
   `6088838`, `6088842` zostają w bramce do końca weryfikacji.
 - Kolonia Karna: teren `6104037`; voby `6067768` bez zmian.
 - Lista `staticObjectsTilesetUrls` zostaje listą (jeden element); `scripts/split-vobs-glb.mjs` zostaje w repozytorium,

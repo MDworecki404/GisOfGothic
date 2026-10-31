@@ -243,8 +243,8 @@ const SWIATYNIA_ORKOW: WorldDefinition = {
  * nie trafia do katalogu: bez kafli świat byłby pustą mapą. Wgranie assetów opisuje `docs/dane.md`.
  */
 const MYRTANA_ION_ASSETS: { world: number; staticObjects: readonly number[] } | null = {
-	world: 6104039,
-	staticObjects: [6104032]
+	world: 6104068,
+	staticObjects: [6104066]
 };
 
 function buildMyrtanaWorlds(): WorldDefinition[] {
