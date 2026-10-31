@@ -26,7 +26,8 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0020](0020-pergamin-pod-plotnem-i-widoczne-atrybucje.md)      | Pergamin pod płótnem i widoczne atrybucje            | przyjęta |
 | [0021](0021-rzut-kamery.md)                                    | Rzut kamery: wbudowany ortogonalny Cesium z korektą  | przyjęta |
 | [0022](0022-losowy-lup-gothic-3.md)                            | Losowy łup Gothica 3 z osobnego pliku, na żądanie    | przyjęta |
-| [0023](0023-voby-dzielone-na-kilka-assetow-ion.md)             | Voby dużych światów dzielone na kilka assetów ion    | przyjęta |
+| [0023](0023-voby-dzielone-na-kilka-assetow-ion.md)             | Voby dużych światów dzielone na kilka assetów ion    | zastąpiona (0027) |
 | [0024](0024-ekran-ladowania-aplikacji.md)                      | Ekran ładowania: statyczny przed JS i komponent      | przyjęta |
 | [0025](0025-opis-przedmiotu-jako-nazwa-widoczna.md)            | Opis przedmiotu z gry jako nazwa widoczna            | przyjęta |
 | [0026](0026-widok-2d.md)                                       | Widok 2D: widok z góry i płaszczyzna cięcia          | przyjęta |
+| [0027](0027-myrtana-voby-w-jednym-assecie-ion.md)              | Myrtana: voby w jednym assecie ion, nowy eksport     | przyjęta |

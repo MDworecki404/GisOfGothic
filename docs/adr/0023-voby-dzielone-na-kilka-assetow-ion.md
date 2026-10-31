@@ -1,6 +1,6 @@
 # 0023. Voby dużych światów dzielone na kilka assetów ion
 
-Status: przyjęta
+Status: zastąpiona przez [ADR 0027](0027-myrtana-voby-w-jednym-assecie-ion.md) (dla Myrtany; sama obsługa listy `staticObjectsTilesetUrls` obowiązuje dalej)
 
 ## Kontekst
 
