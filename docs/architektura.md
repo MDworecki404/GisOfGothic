@@ -469,8 +469,10 @@ Wybór jest ustawieniem sesji: nie trafia do linku ani zakładek.
   z `positionEC` oraz uniformów `u_ecToEnu` i `u_cameraEnu`, które co klatkę ustawia `OverlayCameraUniformsUpdater`
   (obrót oko → świat i pozycja kamery liczone podwójną precyzją na CPU). Osie modelu (`positionMC`) są w kaflach z ion
   niespójne, a `positionWC` w float32 ma błąd ok. pół metra — stąd ten wybór ([ADR 0028](adr/0028-nakladki-terenu.md)).
-- Odstęp linii rośnie pięciokrotnie, gdy sąsiednie linie byłyby bliżej niż 14 px na ekranie, więc przy oddaleniu
-  kamery linie nie zlewają się w plamę. Grubość linii jest stała w pikselach (`fwidth`).
+- Odstęp linii rośnie pięciokrotnie, gdy byłby mniejszy niż 14 px (siatka) albo 5 px (poziomice) poziomej skali widoku,
+  więc przy oddaleniu kamery linie nie zlewają się w plamę. Skala nie zależy od nachylenia terenu, inaczej poziomice
+  znikałyby na stromych zboczach. Grubość linii jest stała w pikselach (`fwidth`), a linie gęstsze niż ich grubość
+  (pionowe ściany) zanikają. Poziomice są jasne bursztynowe, siatka jasnoniebieska, żeby były widoczne na ciemnym terenie.
 - Powierzchnia o stałej wysokości (morze) nie dostaje poziomic, bo nie ma na niej gradientu.
 
 ## Pora dnia
