@@ -366,7 +366,7 @@ test('lista gier pokazuje światy dopiero po najechaniu i zamyka się klawiszem 
 	await expect(worldMenu.getByRole('link', { name: 'Khorinis' })).toHaveCount(0);
 
 	await worldMenu.getByRole('button', { name: /^Gothic$/ }).hover();
-	await expect(worldMenu.getByRole('link', { name: 'Kolonia Karna' })).toBeVisible();
+	await expect(worldMenu.getByRole('link', { name: 'Górnicza Dolina' })).toBeVisible();
 	await expect(worldMenu.getByRole('link', { name: 'Myrtana' })).toHaveCount(0);
 
 	await page.keyboard.press('Escape');

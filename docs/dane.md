@@ -72,8 +72,8 @@ zasobów przepuszcza podglądy przedmiotów ze ścieżek `/g1/…` i `/g2nk/…`
 ## Archolos (Kroniki Myrtany)
 
 Gra `archolos` to modyfikacja Gothica 2 NK (silnik ZenGin, te same układy plików, osie i kotwica) z pięcioma światami:
-`archolos` (kontynent), `finalowy-etap`, `kanaly`, `srebrna-kopalnia` i `volfzacke`. Ich definicje (nazwy robocze, bo mod
-nie nadaje nazw światom) zapisuje `ARCHOLOS_WORLD_SPECIFICATIONS` w `world-catalog.ts`; nazwę zmienia się w jednym miejscu.
+`archolos` (kontynent), `finalowy-etap`, `kanaly`, `srebrna-kopalnia` i `volfzacke`. Ich definicje (mod nie nadaje nazw światom: „Twierdza Vardhal”
+i „Kopalnia srebra w Wilczym Leżu” pochodzą z Gothicpedii, pozostałe nazwy są robocze) zapisuje `ARCHOLOS_WORLD_SPECIFICATIONS` w `world-catalog.ts`; nazwę zmienia się w jednym miejscu.
 Paczki v4 leżą w `static/data/archolos/<świat>/`, kotwica jest wspólna, więc światy ogląda się osobno. Różnice względem G2 NK:
 
 - rozdziały ma tylko kontynent (`hasChapters`); w pozostałych czterech światach UI ukrywa wybór rozdziału;
@@ -128,7 +128,7 @@ dlatego nazwa zależy od świata, a nie od samego kodu; `NONE` aplikacja pokazuj
 Znane odstępstwa od kontraktu, które parser dopuszcza:
 
 - Warstwa przedmiotów w świecie (`items.geojson`) bywa z obiektami bez instancji (pusty `code`, `name: null`): kilka w ZEN-ach
-  Gothica 1 (Kolonia 2, Świątynia orków 1). `omitItemPlaceholders` pomija je przed parsowaniem, bo inaczej jeden taki obiekt
+  Gothica 1 (Górnicza Dolina 2, Świątynia Śniącego 1). `omitItemPlaceholders` pomija je przed parsowaniem, bo inaczej jeden taki obiekt
   przerywa wczytanie całej warstwy.
 - `category` bywa `null` (np. `ITFO_MUTTON`) — typ `string | null`.
 - Kamienne tablice z dodatku mają w danych jedną nazwę („Kamienna tablica”); atrybut i stopień wynikają
