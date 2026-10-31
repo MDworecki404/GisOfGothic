@@ -108,5 +108,5 @@
 
 <h3 class="group-label mt-5 mb-1">Wkrótce</h3>
 <p class="text-caption text-muted-foreground">
-	Podkłady Poziomice i Pergamin, siatka, waypointy, questy.
+	Podkład z poziomicami, siatka, waypointy, questy.
 </p>
