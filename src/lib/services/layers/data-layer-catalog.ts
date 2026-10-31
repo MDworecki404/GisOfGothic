@@ -185,12 +185,17 @@ function presentQuestPlace(
 	};
 }
 
-/** Każde miejsce każdego questu z indeksu wyszukiwania to osobny punkt, barwiony rolą miejsca (zleca, cel, etap). */
+/**
+ * Każde pewne miejsce każdego questu z indeksu wyszukiwania to osobny punkt, barwiony rolą miejsca (zleca, cel, etap).
+ * Miejsca „możliwe” pomijamy: to wstawienia zwykłych potworów i kandydatów na zleceniodawcę, a nie miejsca questa,
+ * więc mapa pokazywałaby np. wszystkich orków świata jako cele questa z innego świata.
+ */
 function readQuestPlaces(json: unknown): IdentifiableFeature[] {
 	const features: IdentifiableFeature[] = [];
 	for (const entry of parseSearchIndex(json).entries) {
 		if (entry.type !== 'quest') continue;
 		for (const place of entry.places) {
+			if (place.certainty === 'possible') continue;
 			const role = place.role ?? 'target';
 			features.push({
 				lon: place.lon,
@@ -308,7 +313,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 	{
 		id: 'quests',
 		name: 'Questy',
-		description: 'zleceniodawcy, cele i miejsca etapów',
+		description: 'pewni zleceniodawcy, cele i miejsca etapów',
 		fileName: 'search_index.json',
 		metadataCountKey: null,
 		color: QUEST_ROLE_PRESENTATION.giver.color,

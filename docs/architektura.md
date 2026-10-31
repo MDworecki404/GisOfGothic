@@ -193,11 +193,13 @@ Nazwy gildii (kategoria postaci) pochodzą z `metadata.json` świata: fasada wcz
 i ustawia `guildNameBook` (`data/category-names.ts`) przed zbudowaniem indeksu, bo MiniSearch indeksuje już opisaną kategorię.
 `describeCategory` zamienia kod na nazwę; przy zmianie świata księga jest czyszczona.
 
-Warstwa „Questy” nie ma własnego pliku: jej `fileName` to `search_index.json`, a `readFeatures` zamienia każde miejsce
-każdego wpisu `quest` na punkt (ikona `quest`, kolor roli z `QUEST_ROLE_PRESENTATION`: zleca, cel, etap). Kolor punktu
+Warstwa „Questy” nie ma własnego pliku: jej `fileName` to `search_index.json`, a `readFeatures` zamienia każde pewne miejsce
+(`certainty` inne niż `possible`) każdego wpisu `quest` na punkt (ikona `quest`, kolor roli z `QUEST_ROLE_PRESENTATION`: zleca, cel, etap). Kolor punktu
 może więc różnić się od koloru warstwy (`IdentifiableFeature.cssColor`, `DataLayerPoint.cssColor`, a w legendzie
 `IconLegendEntry.color`). Liczba punktów jest większa niż liczba questów, więc warstwa nie ma `metadataCountKey`
 i pokazuje licznik dopiero po wczytaniu. `GeoportalDataLoader` pobiera `search_index.json` raz dla wyszukiwarki i warstwy.
+Miejsca „możliwe” (wstawienia zwykłych potworów, kandydaci na zleceniodawcę) są pomijane: w Khorinis to 379 z 568 punktów,
+i dawały cele questów z innych światów (np. Ur-Shak z Górniczej Doliny jako wszyscy orkowie Khorinis). Zostają w wyszukiwarce.
 Rozdział questu (`spawnChapter`) działa jak rozdział postaci: wybrany rozdział ukrywa questy, które zaczynają się później.
 
 ## Pomiary
