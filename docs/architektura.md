@@ -103,6 +103,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `camera-projection-changed`  | `projection` (perspektywa z FOV albo ortogonalny), `fieldOfViewDegrees`                  | wybór rzutu, zmiana kąta widzenia albo odtworzenie rzutu z linku lub zakładki                     |
 | `view-mode-changed`          | `mode` (`view-3d` albo `view-2d`), `sliceHeightMetres` lub `null`                        | wejście w tryb 2D albo wyjście z niego, zmiana wysokości cięcia, odtworzenie z linku lub zakładki |
 | `slice-height-range-changed` | `range` (`minimumMetres`, `maximumMetres`) lub `null`                                    | po wczytaniu modelu świata (zakres suwaka cięcia wynika z granic modelu)                          |
+| `map-overlays-changed`       | `overlays` (`areContoursVisible`, `isGridVisible`)                                       | przełączenie poziomic albo siatki w panelu Warstwy                                                |
 | `bookmarks-changed`          | `bookmarks`, `hasStorageError`                                                           | wczytano, dodano albo usunięto zakładkę (lista dotyczy otwartego świata)                          |
 | `measurement-changed`        | `measurement` (tryb, wierzchołki, podsumowanie, profil, czasy przejścia, wskazany punkt) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie                          |
 | `chapter-changed`            | `chapter` (1–6) lub `null`                                                               | wybór rozdziału w panelu Czas albo odtworzenie go z linku lub zakładki                            |
@@ -455,6 +456,22 @@ przy pierwszym włączeniu, a zmiana świata ją wyłącza. Stan publikuje zdarz
 i kafle w przetwarzaniu) i zgłasza zmiany jako `tiles-load-progress` (`layer`: `world` albo `static-objects`,
 `pendingTiles`). UI pokazuje mosiężny pierścień (`TileLoader`) przy przełączniku warstwy oraz pigułkę
 nad mapą (`TilesLoadingBadge`) z liczbą kafli; przy `prefers-reduced-motion` pierścień się nie obraca.
+
+## Nakładki na teren (poziomice i siatka)
+
+Panel Warstwy ma dwa przełączniki nakładek rysowanych na modelu świata: **poziomice** (linie równej wysokości co 5 m,
+co piąta pogrubiona) i **siatkę** (linie co 100 m na osiach wschód i północ układu świata). Wybór trzyma
+`MapOverlaysCoordinator` (`services/overlays/`), publikuje `map-overlays-changed`, a `MapService` (przez
+`MapOverlaysDisplay.showMapOverlays`) przebudowuje shader tilesetu świata. Obiekty świata (voby) zostają bez nakładek.
+Wybór jest ustawieniem sesji: nie trafia do linku ani zakładek.
+
+- Shader (`TileColorGrader`, kod GLSL w `terrain-overlay-glsl.ts`) liczy pozycję fragmentu w układzie świata
+  z `positionEC` oraz uniformów `u_ecToEnu` i `u_cameraEnu`, które co klatkę ustawia `OverlayCameraUniformsUpdater`
+  (obrót oko → świat i pozycja kamery liczone podwójną precyzją na CPU). Osie modelu (`positionMC`) są w kaflach z ion
+  niespójne, a `positionWC` w float32 ma błąd ok. pół metra — stąd ten wybór ([ADR 0028](adr/0028-nakladki-terenu.md)).
+- Odstęp linii rośnie pięciokrotnie, gdy sąsiednie linie byłyby bliżej niż 14 px na ekranie, więc przy oddaleniu
+  kamery linie nie zlewają się w plamę. Grubość linii jest stała w pikselach (`fwidth`).
+- Powierzchnia o stałej wysokości (morze) nie dostaje poziomic, bo nie ma na niej gradientu.
 
 ## Pora dnia
 

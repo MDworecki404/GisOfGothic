@@ -31,3 +31,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0025](0025-opis-przedmiotu-jako-nazwa-widoczna.md)            | Opis przedmiotu z gry jako nazwa widoczna            | przyjęta |
 | [0026](0026-widok-2d.md)                                       | Widok 2D: widok z góry i płaszczyzna cięcia          | przyjęta |
 | [0027](0027-myrtana-voby-w-jednym-assecie-ion.md)              | Myrtana: voby w jednym assecie ion, nowy eksport     | przyjęta |
+| [0028](0028-nakladki-terenu.md)                                | Poziomice i siatka rysowane shaderem z pozycji oka   | przyjęta |

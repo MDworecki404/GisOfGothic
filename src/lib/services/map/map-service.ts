@@ -33,7 +33,14 @@ import { CameraFramer } from './camera-framer.js';
 import { CameraProjectionController } from './camera-projection-controller.js';
 import type { MapViewInsets } from './free-area-calculator.js';
 import { DataLayersRenderer, type DataLayerPoint } from './data-layers-renderer.js';
+import { OverlayCameraUniformsUpdater } from './overlay-camera-uniforms-updater.js';
 import { TileColorGrader } from './tile-color-grader.js';
+import type { MapOverlaysDisplay } from '#lib/services/overlays/map-overlays-coordinator.js';
+import {
+	NO_MAP_OVERLAYS,
+	hasAnyMapOverlay,
+	type MapOverlays
+} from '#lib/services/overlays/map-overlays.js';
 import { ShadowRangeCalculator } from './shadow-range-calculator.js';
 import { ShadowStrengthCalculator } from './shadow-strength-calculator.js';
 import { MapViewObserver, type MapViewListeners, type TileLayerId } from './map-view-observer.js';
@@ -64,7 +71,7 @@ const SOFT_SHADOW_MAP_SIZE = 4096;
  * Serwis mapy 3D. Obiekty Cesium trzyma w zwykłych polach — nigdy w `$state`,
  * bo proxy Svelte psuje Cesium.
  */
-export class MapService implements ViewModeDisplay {
+export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 	private readonly viewer: Viewer;
 	private readonly viewObserver: MapViewObserver;
 	private readonly shadowRangeCalculator = new ShadowRangeCalculator();
@@ -72,6 +79,8 @@ export class MapService implements ViewModeDisplay {
 	private sunElevation = 1;
 	private readonly tileColorGrader = new TileColorGrader();
 	private tileColorGrade: TileColorGrade | null = null;
+	private mapOverlays: MapOverlays = NO_MAP_OVERLAYS;
+	private overlayCameraUniforms: OverlayCameraUniformsUpdater | null = null;
 	private readonly placeMarkers: PlaceMarkersLayer;
 	private readonly dataLayers: DataLayersRenderer;
 	private readonly measurement: MeasurementRenderer;
@@ -145,6 +154,12 @@ export class MapService implements ViewModeDisplay {
 		this.viewer.camera.moveEnd.addEventListener(() => this.applyShadowRange());
 	}
 
+	/** Pokazuje poziomice i siatkę na modelu świata (obiekty świata zostają bez nakładek); przebudowuje shader terenu. */
+	showMapOverlays(overlays: MapOverlays): void {
+		this.mapOverlays = overlays;
+		if (this.worldTileset) this.applyTileColoursTo(this.worldTileset);
+	}
+
 	/** Korekcja koloru dla kafli następnych wczytań (model świata i obiekty); `null` zostawia kolory modelu. */
 	useTileColorGrade(grade: TileColorGrade | null): void {
 		this.tileColorGrade = grade;
@@ -168,10 +183,11 @@ export class MapService implements ViewModeDisplay {
 			return;
 		}
 		this.worldTileset = tileset;
+		this.worldFrame = frame;
+		this.overlayCameraUniforms = new OverlayCameraUniformsUpdater(this.viewer.scene, frame);
 		this.applyTileDetailTo(tileset);
 		this.sliceController.applyTo(tileset);
 		this.reportTileLoadingOf(tileset, 'world');
-		this.worldFrame = frame;
 		this.viewer.scene.primitives.add(tileset);
 		if (this.minuteOfDay !== null) this.showTimeOfDay(this.minuteOfDay);
 		this.showWholeWorld(0);
@@ -540,6 +556,8 @@ export class MapService implements ViewModeDisplay {
 		this.hideStaticObjectsTileset();
 		this.reportPendingTiles('world', 0);
 		if (!this.worldTileset) return;
+		this.overlayCameraUniforms?.detach();
+		this.overlayCameraUniforms = null;
 		this.viewer.scene.primitives.remove(this.worldTileset);
 		this.worldTileset = null;
 		this.worldFrame = null;
@@ -584,10 +602,21 @@ export class MapService implements ViewModeDisplay {
 		this.listeners.onTilesLoadProgress(layer, pendingTiles);
 	}
 
-	private applyTileDetailTo(tileset: Cesium3DTileset): void {
-		if (this.tileColorGrade) {
-			tileset.customShader = this.tileColorGrader.createShader(this.tileColorGrade);
+	private applyTileColoursTo(tileset: Cesium3DTileset): void {
+		const isWorld = tileset === this.worldTileset;
+		const overlays = isWorld ? this.mapOverlays : NO_MAP_OVERLAYS;
+		if (isWorld) this.overlayCameraUniforms?.detach();
+		if (!this.tileColorGrade && !hasAnyMapOverlay(overlays)) {
+			tileset.customShader = undefined;
+			return;
 		}
+		const shader = this.tileColorGrader.createShader(this.tileColorGrade, overlays);
+		tileset.customShader = shader;
+		if (isWorld && hasAnyMapOverlay(overlays)) this.overlayCameraUniforms?.attachTo(shader);
+	}
+
+	private applyTileDetailTo(tileset: Cesium3DTileset): void {
+		this.applyTileColoursTo(tileset);
 		if (this.performanceProfile) {
 			tileset.maximumScreenSpaceError = this.performanceProfile.maximumScreenSpaceError;
 		}

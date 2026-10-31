@@ -23,7 +23,7 @@ const CENTIMETRES_PER_METRE = 100;
  */
 export class WorldFrame {
 	readonly anchorToEcef: Matrix4;
-	private readonly ecefToAnchor: Matrix4;
+	readonly ecefToAnchor: Matrix4;
 
 	constructor(anchor: Anchor) {
 		this.anchorToEcef = Transforms.eastNorthUpToFixedFrame(

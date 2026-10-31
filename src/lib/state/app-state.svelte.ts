@@ -7,6 +7,7 @@ import {
 	type CameraProjectionSetting
 } from '#lib/services/camera/camera-projection.js';
 import type { SliceHeightRange, ViewMode } from '#lib/services/camera/view-mode.js';
+import { NO_MAP_OVERLAYS, type MapOverlays } from '#lib/services/overlays/map-overlays.js';
 import { ViewLinkCodec } from '#lib/services/bookmarks/view-link-codec.js';
 import type { AnalysisView } from '#lib/services/analysis/analysis-coordinator.js';
 import {
@@ -97,6 +98,7 @@ export class AppState {
 	viewMode = $state<ViewMode>('view-3d');
 	sliceHeightMetres = $state<number | null>(null);
 	sliceHeightRange = $state.raw<SliceHeightRange | null>(null);
+	mapOverlays = $state.raw<MapOverlays>(NO_MAP_OVERLAYS);
 	bookmarks = $state.raw<BookmarkView[]>([]);
 	bookmarkStorageFailed = $state(false);
 	selectedChapter = $state<ChapterNumber | null>(null);
@@ -179,6 +181,9 @@ export class AppState {
 		eventBus.subscribe('view-mode-changed', ({ mode, sliceHeightMetres }) => {
 			this.viewMode = mode;
 			this.sliceHeightMetres = sliceHeightMetres;
+		});
+		eventBus.subscribe('map-overlays-changed', ({ overlays }) => {
+			this.mapOverlays = overlays;
 		});
 		eventBus.subscribe('slice-height-range-changed', ({ range }) => {
 			this.sliceHeightRange = range;

@@ -106,7 +106,35 @@
 	<p class="mt-2 text-caption text-destructive" role="alert">{appState.dataLayerErrorMessage}</p>
 {/if}
 
+<h3 class="group-label mt-5 mb-1">Nakładki na teren</h3>
+<label class="list-row grid cursor-pointer grid-cols-[22px_1fr] items-start gap-3 px-1 py-2.5">
+	<input
+		type="checkbox"
+		class="check-forged mt-px"
+		checked={appState.mapOverlays.areContoursVisible}
+		onchange={() => geoportal.toggleMapOverlay('areContoursVisible')}
+	/>
+	<span class="min-w-0">
+		Poziomice
+		<span class="block text-caption text-muted-foreground">
+			linie równej wysokości co 5 m, co piąta pogrubiona; przy oddaleniu rzednieją
+		</span>
+	</span>
+</label>
+<label class="list-row grid cursor-pointer grid-cols-[22px_1fr] items-start gap-3 px-1 py-2.5">
+	<input
+		type="checkbox"
+		class="check-forged mt-px"
+		checked={appState.mapOverlays.isGridVisible}
+		onchange={() => geoportal.toggleMapOverlay('isGridVisible')}
+	/>
+	<span class="min-w-0">
+		Siatka
+		<span class="block text-caption text-muted-foreground">
+			linie co 100 m w kierunku wschód–zachód i północ–południe, żeby oceniać odległości
+		</span>
+	</span>
+</label>
+
 <h3 class="group-label mt-5 mb-1">Wkrótce</h3>
-<p class="text-caption text-muted-foreground">
-	Podkład z poziomicami, siatka, waypointy, questy.
-</p>
+<p class="text-caption text-muted-foreground">Waypointy, questy.</p>

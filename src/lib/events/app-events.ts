@@ -22,6 +22,7 @@ import type {
 } from '#lib/services/performance/performance-profiles.js';
 import type { CameraProjectionSetting } from '#lib/services/camera/camera-projection.js';
 import type { SliceHeightRange, ViewMode } from '#lib/services/camera/view-mode.js';
+import type { MapOverlays } from '#lib/services/overlays/map-overlays.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 import { EventBus } from './event-bus.js';
 
@@ -78,6 +79,7 @@ export type AppEvent =
 	  }
 	| { type: 'view-mode-changed'; mode: ViewMode; sliceHeightMetres: number | null }
 	| { type: 'slice-height-range-changed'; range: SliceHeightRange | null }
+	| { type: 'map-overlays-changed'; overlays: MapOverlays }
 	| { type: 'chapter-changed'; chapter: ChapterNumber | null }
 	| { type: 'bookmarks-changed'; bookmarks: BookmarkView[]; hasStorageError: boolean }
 	| {
