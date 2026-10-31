@@ -85,3 +85,65 @@ describe('warstwy danych', () => {
 		).toThrow(/\[lon, lat, h\]/);
 	});
 });
+
+describe('warstwa questów', () => {
+	const questLayer = DATA_LAYERS.find((definition) => definition.id === 'quests');
+
+	function readQuestIndex() {
+		const place = (role: string, label: string, lon: number) => ({
+			kind: 'npc',
+			lon,
+			lat: 0.002,
+			h: 10,
+			label,
+			role
+		});
+		return questLayer?.readFeatures({
+			version: 4,
+			entries: [
+				{
+					id: 'item-0',
+					type: 'item',
+					code: 'ITFO_APPLE',
+					name: 'Jabłko',
+					category: 'Jedzenie',
+					places: [place('giver', 'nie dotyczy', 0.5)]
+				},
+				{
+					id: 'quest-0',
+					type: 'quest',
+					code: 'TOPIC_HERBS',
+					name: 'Zioła dla Leifa',
+					category: 'Misja',
+					giver: 'Leif',
+					chapter: 2,
+					places: [place('giver', 'Leif', 0.001), place('target', 'Polana', 0.002)]
+				}
+			]
+		});
+	}
+
+	it('tworzy punkt z każdego miejsca questu i pomija wpisy innych typów', () => {
+		expect(readQuestIndex()?.map((feature) => feature.identification.subtitle)).toEqual([
+			'Zleceniodawca',
+			'Cel questa'
+		]);
+	});
+
+	it('barwi punkt rolą miejsca i opisuje quest w karcie', () => {
+		const [giver, target] = readQuestIndex() ?? [];
+		expect(giver.cssColor).not.toBe(target.cssColor);
+		expect(giver).toMatchObject({ lon: 0.001, iconId: 'quest', spawnChapter: 2 });
+		expect(giver.identification).toMatchObject({
+			layerName: 'Questy',
+			title: 'Zioła dla Leifa',
+			searchQuery: 'Zioła dla Leifa'
+		});
+		expect(giver.identification.facts).toContainEqual({ label: 'Zleca', value: 'Leif' });
+		expect(giver.identification.facts).toContainEqual({ label: 'Rozdział startu', value: '2' });
+	});
+
+	it('nie podaje liczności z metadanych, bo punktów jest więcej niż questów', () => {
+		expect(questLayer?.metadataCountKey).toBeNull();
+	});
+});

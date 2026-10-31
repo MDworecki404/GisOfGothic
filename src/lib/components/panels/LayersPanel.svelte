@@ -67,7 +67,7 @@
 									class="size-4"
 									viewBox="0 0 24 24"
 									fill="none"
-									stroke={layer.color}
+									stroke={entry.color ?? layer.color}
 									stroke-width="2.2"
 									stroke-linecap="round"
 									stroke-linejoin="round"
@@ -137,4 +137,4 @@
 </label>
 
 <h3 class="group-label mt-5 mb-1">Wkrótce</h3>
-<p class="text-caption text-muted-foreground">Waypointy, questy.</p>
+<p class="text-caption text-muted-foreground">Waypointy.</p>

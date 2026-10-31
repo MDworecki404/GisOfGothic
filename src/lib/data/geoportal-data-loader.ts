@@ -9,6 +9,8 @@ import type {
 	TreasureSetCatalog
 } from './types.js';
 
+const SEARCH_INDEX_FILE_NAME = 'search_index.json';
+
 export type ResourceFetcher = (url: string) => Promise<Response>;
 
 export class GeoportalDataLoader {
@@ -18,6 +20,7 @@ export class GeoportalDataLoader {
 	) {}
 
 	private metadataLoading: Promise<Metadata> | null = null;
+	private searchIndexJsonLoading: Promise<unknown> | null = null;
 
 	/** Metadane są potrzebne kilku kolejnym krokom wczytywania świata, więc pobieramy je raz. */
 	loadMetadata(): Promise<Metadata> {
@@ -31,7 +34,7 @@ export class GeoportalDataLoader {
 	}
 
 	async loadSearchIndex(): Promise<SearchIndex> {
-		return parseSearchIndex(await this.fetchJson('search_index.json'));
+		return parseSearchIndex(await this.fetchSearchIndexJson());
 	}
 
 	async loadQuestCatalog(): Promise<QuestCatalog> {
@@ -43,7 +46,19 @@ export class GeoportalDataLoader {
 	}
 
 	async loadLayerFile(fileName: string): Promise<unknown> {
+		if (fileName === SEARCH_INDEX_FILE_NAME) return this.fetchSearchIndexJson();
 		return this.fetchJson(fileName);
+	}
+
+	/** Indeks bywa duży (kilka MB) i czyta go wyszukiwarka oraz warstwa questów, więc pobieramy go raz. */
+	private fetchSearchIndexJson(): Promise<unknown> {
+		this.searchIndexJsonLoading ??= this.fetchJson(SEARCH_INDEX_FILE_NAME).catch(
+			(error: unknown) => {
+				this.searchIndexJsonLoading = null;
+				throw error;
+			}
+		);
+		return this.searchIndexJsonLoading;
 	}
 
 	countEntriesByType(index: SearchIndex): IndexCounts {

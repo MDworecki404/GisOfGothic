@@ -11,7 +11,8 @@ export type MapIconId =
 	| 'magic'
 	| 'armor'
 	| 'chest'
-	| 'person';
+	| 'person'
+	| 'quest';
 
 /** Jeden element SVG ikony: nazwa znacznika i jego atrybuty (np. `['path', { d: '…' }]`). */
 export type MapIconNode = readonly [string, Readonly<Record<string, string>>];
@@ -19,6 +20,8 @@ export type MapIconNode = readonly [string, Readonly<Record<string, string>>];
 export interface IconLegendEntry {
 	label: string;
 	iconId: MapIconId;
+	/** Kolor wpisu legendy, gdy różni się od koloru warstwy (np. role w warstwie questów). */
+	color?: string;
 }
 
 const ICON_BY_ITEM_CATEGORY: ReadonlyMap<string, MapIconId> = new Map<string, MapIconId>([
