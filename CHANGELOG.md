@@ -2,6 +2,17 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.10.2](https://github.com/MDworecki404/GisOfGothic/compare/v0.10.1...v0.10.2) (2026-10-31)
+
+### Poprawki błędów
+
+* Myrtana korzysta z kolejnego poprawionego eksportu terenu i vobów ([9781313](https://github.com/MDworecki404/GisOfGothic/commit/97813131bd4e99a471eb51f13b1b62f2ce9f03f5))
+* poprawione modele Myrtany i Kolonii Karnej w nowych assetach ion ([a70b574](https://github.com/MDworecki404/GisOfGothic/commit/a70b574baeca5b28fd43d14deeb4037e32bf9319))
+
+### Dokumentacja
+
+* README uwzględnia Gothica 3, widok 2D i punkty pod terenem ([ca1e193](https://github.com/MDworecki404/GisOfGothic/commit/ca1e19370492673aebfe97d180c4381f924c0d32))
+
 ## [0.10.1](https://github.com/MDworecki404/GisOfGothic/compare/v0.10.0...v0.10.1) (2026-10-29)
 
 ## [0.10.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.9.0...v0.10.0) (2026-10-29)
