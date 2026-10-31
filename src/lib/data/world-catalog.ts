@@ -145,8 +145,8 @@ const IRDORATH: WorldDefinition = {
 const KOLONIA: WorldDefinition = {
 	id: 'kolonia',
 	gameId: 'g1',
-	name: 'Kolonia Karna',
-	localCoordinateSystemName: 'Układ Kolonii Karnej 1992',
+	name: 'Górnicza Dolina',
+	localCoordinateSystemName: 'Układ Górniczej Doliny 1992',
 	dataBaseUrl: '/data/g1/kolonia',
 	modelNamespace: 'g1/kolonia',
 	protectedModelsUrl:
@@ -221,8 +221,8 @@ const CMENTARZYSKO_ORKOW: WorldDefinition = {
 const SWIATYNIA_ORKOW: WorldDefinition = {
 	id: 'swiatynia-orkow',
 	gameId: 'g1',
-	name: 'Świątynia orków',
-	localCoordinateSystemName: 'Układ Świątyni orków 1992',
+	name: 'Świątynia Śniącego',
+	localCoordinateSystemName: 'Układ Świątyni Śniącego 1992',
 	dataBaseUrl: '/data/g1/swiatynia-orkow',
 	modelNamespace: 'g1/swiatynia-orkow',
 	protectedModelsUrl:
@@ -281,8 +281,8 @@ interface ArcholosWorldSpecification {
 }
 
 /**
- * Światy Archolosa (Kroniki Myrtany, modyfikacja Gothica 2 NK). Nazwy są robocze, bo mod nie nadaje nazw
- * światom. Rozdziały ma tylko kontynent; pozostałe światy mod otwiera komendami i teleportami.
+ * Światy Archolosa (Kroniki Myrtany, modyfikacja Gothica 2 NK). Mod nie nadaje nazw światom, więc nazwy
+ * pochodzą z Gothicpedii (Twierdza Vardhal, Kopalnia srebra w Wilczym Leżu) albo są robocze (pozostałe). Rozdziały ma tylko kontynent; pozostałe światy mod otwiera komendami i teleportami.
  */
 const ARCHOLOS_WORLD_SPECIFICATIONS: readonly ArcholosWorldSpecification[] = [
 	{
@@ -311,16 +311,16 @@ const ARCHOLOS_WORLD_SPECIFICATIONS: readonly ArcholosWorldSpecification[] = [
 	},
 	{
 		id: 'srebrna-kopalnia',
-		name: 'Srebrna Kopalnia',
-		localCoordinateSystemName: 'Układ Srebrnej Kopalni 1992',
+		name: 'Kopalnia srebra w Wilczym Leżu',
+		localCoordinateSystemName: 'Układ Kopalni srebra w Wilczym Leżu 1992',
 		hasChapters: false,
 		worldIonAssetId: 6100043,
 		staticObjectsIonAssetId: 6100045
 	},
 	{
 		id: 'volfzacke',
-		name: 'Volfzacke',
-		localCoordinateSystemName: 'Układ Volfzacke 1992',
+		name: 'Twierdza Vardhal',
+		localCoordinateSystemName: 'Układ Twierdzy Vardhal 1992',
 		hasChapters: false,
 		worldIonAssetId: 6100049,
 		staticObjectsIonAssetId: 6100047
