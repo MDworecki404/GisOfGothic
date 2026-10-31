@@ -117,13 +117,17 @@ describe('warstwa questów', () => {
 					category: 'Misja',
 					giver: 'Leif',
 					chapter: 2,
-					places: [place('giver', 'Leif', 0.001), place('target', 'Polana', 0.002)]
+					places: [
+						place('giver', 'Leif', 0.001),
+						place('target', 'Polana', 0.002),
+						{ ...place('target', 'Ork', 0.003), certainty: 'possible' }
+					]
 				}
 			]
 		});
 	}
 
-	it('tworzy punkt z każdego miejsca questu i pomija wpisy innych typów', () => {
+	it('tworzy punkt z każdego pewnego miejsca questu i pomija wpisy innych typów oraz miejsca możliwe', () => {
 		expect(readQuestIndex()?.map((feature) => feature.identification.subtitle)).toEqual([
 			'Zleceniodawca',
 			'Cel questa'
