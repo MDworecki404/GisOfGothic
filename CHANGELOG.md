@@ -2,6 +2,25 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.11.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.10.2...v0.11.0) (2026-10-31)
+
+### Nowe funkcje
+
+* nowe nazwy światów w menu zgodne z Gothicpedią ([01b5dd0](https://github.com/MDworecki404/GisOfGothic/commit/01b5dd001ce378a19694e2e43e2977a096955cf6))
+* poziomice i siatka jako nakładki na teren w panelu Warstwy ([a74876b](https://github.com/MDworecki404/GisOfGothic/commit/a74876b29b5f5d1a49ba788e17f2701c3b20758f))
+* warstwa Questy pokazuje na mapie zleceniodawców, cele i miejsca etapów ([4fdfd38](https://github.com/MDworecki404/GisOfGothic/commit/4fdfd3885fe2490994783f768e156178544318ef))
+
+### Poprawki błędów
+
+* poziomice są jaśniejsze i nie znikają na stromych zboczach ([86ce6f7](https://github.com/MDworecki404/GisOfGothic/commit/86ce6f76d2fa2153127d560840e4a3bb5c118f93))
+* questy pokazują postacie w ich stałych miejscach z rutyn zamiast w punktach wstawienia ([b3370ba](https://github.com/MDworecki404/GisOfGothic/commit/b3370ba4032fed655889d559740aca27cc7d1529))
+* warstwa Questy pokazuje tylko pewne miejsca questów ([6ca02b3](https://github.com/MDworecki404/GisOfGothic/commit/6ca02b307591cbe1c617e77c2e24d3d1ade609dc))
+
+### Dokumentacja
+
+* panel Warstwy nie zapowiada już waypointów ([418063e](https://github.com/MDworecki404/GisOfGothic/commit/418063e9fccd49d270c9d218732a8aac8b704b10))
+* Pergamin znika z zapowiedzi panelu Warstwy ([60ec439](https://github.com/MDworecki404/GisOfGothic/commit/60ec439bd8fc9844f137966340a6d96f07a5be6d))
+
 ## [0.10.2](https://github.com/MDworecki404/GisOfGothic/compare/v0.10.1...v0.10.2) (2026-10-31)
 
 ### Poprawki błędów
