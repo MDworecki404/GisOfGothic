@@ -200,6 +200,11 @@ może więc różnić się od koloru warstwy (`IdentifiableFeature.cssColor`, `D
 i pokazuje licznik dopiero po wczytaniu. `GeoportalDataLoader` pobiera `search_index.json` raz dla wyszukiwarki i warstwy.
 Miejsca „możliwe” (wstawienia zwykłych potworów, kandydaci na zleceniodawcę) są pomijane: w Khorinis to 379 z 568 punktów,
 i dawały cele questów z innych światów (np. Ur-Shak z Górniczej Doliny jako wszyscy orkowie Khorinis). Zostają w wyszukiwarce.
+Miejsce wstawienia postaci jest tylko jej punktem startowym, więc warstwa dostaje drugi plik (`companionFileName`:
+`character_places.geojson`) i `QuestPlaceLocator` (`services/layers/`) stawia postać w miejscu jej domyślnej rutyny
+(przy kilku miejscach: aktywnym w południe, inaczej pierwszym). Karta pisze wtedy „zwykle przebywa tu (waypoint)”,
+a postać występuje w danej roli questa raz, choćby była wstawiona w kilku punktach. Postacie bez rutyny (zwykłe
+potwory) zostają w miejscu wstawienia, a brak pliku rutyn nie blokuje warstwy.
 Rozdział questu (`spawnChapter`) działa jak rozdział postaci: wybrany rozdział ukrywa questy, które zaczynają się później.
 
 ## Pomiary

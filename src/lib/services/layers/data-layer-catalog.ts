@@ -1,5 +1,6 @@
 import { describeCategory } from '#lib/data/category-names.js';
 import { parseSearchIndex } from '#lib/data/parsers.js';
+import { QuestPlaceLocator } from './quest-place-locator.js';
 import type { QuestPlaceRole, SearchEntry } from '#lib/data/types.js';
 import { QUEST_ROLE_PRESENTATION } from '#lib/services/search/search-entry-presenter.js';
 import { EncyclopediaLinkBuilder } from '#lib/services/encyclopedia/encyclopedia-link-builder.js';
@@ -66,7 +67,9 @@ export interface DataLayerDefinition {
 	color: string;
 	legend: readonly IconLegendEntry[];
 	isFilteredByChapter: boolean;
-	readFeatures(json: unknown): IdentifiableFeature[];
+	/** Drugi plik potrzebny do zbudowania obiektów (np. rutyny dla questów); `null`, gdy warstwa go nie ma. */
+	companionFileName: string | null;
+	readFeatures(json: unknown, companionJson?: unknown): IdentifiableFeature[];
 }
 
 function describeInventoryLine(line: InventoryLine): string {
@@ -189,23 +192,43 @@ function presentQuestPlace(
  * Każde pewne miejsce każdego questu z indeksu wyszukiwania to osobny punkt, barwiony rolą miejsca (zleca, cel, etap).
  * Miejsca „możliwe” pomijamy: to wstawienia zwykłych potworów i kandydatów na zleceniodawcę, a nie miejsca questa,
  * więc mapa pokazywałaby np. wszystkich orków świata jako cele questa z innego świata.
+ *
+ * Miejsce wstawienia postaci jest tylko punktem startowym, z którego postać idzie do swojego stałego miejsca. Gdy
+ * dostaniemy plik rutyn (`routinePlacesJson`) i postać ma domyślną rutynę, punkt stoi w miejscu z rutyny, a postać
+ * występuje w queście w danej roli raz, nawet jeśli była wstawiona w kilku miejscach.
  */
-function readQuestPlaces(json: unknown): IdentifiableFeature[] {
+function readQuestPlaces(json: unknown, routinePlacesJson?: unknown): IdentifiableFeature[] {
+	const locator =
+		routinePlacesJson === undefined
+			? null
+			: QuestPlaceLocator.fromRoutinePlacesFile(routinePlacesJson);
 	const features: IdentifiableFeature[] = [];
 	for (const entry of parseSearchIndex(json).entries) {
 		if (entry.type !== 'quest') continue;
+		const placedCharacterRoles = new Set<string>();
 		for (const place of entry.places) {
 			if (place.certainty === 'possible') continue;
 			const role = place.role ?? 'target';
+			const usualPlace = place.npc_code ? locator?.locateUsualPlaceOf(place.npc_code) : null;
+			if (usualPlace && place.npc_code) {
+				const characterRole = `${role}:${place.npc_code}`;
+				if (placedCharacterRoles.has(characterRole)) continue;
+				placedCharacterRoles.add(characterRole);
+			}
+			const position = usualPlace ?? place;
 			features.push({
-				lon: place.lon,
-				lat: place.lat,
-				h: place.h,
+				lon: position.lon,
+				lat: position.lat,
+				h: position.h,
 				quantity: 1,
 				iconId: 'quest',
 				spawnChapter: entry.chapter ?? null,
 				cssColor: QUEST_ROLE_PRESENTATION[role].color,
-				identification: presentQuestPlace(entry, role, place.label)
+				identification: presentQuestPlace(
+					entry,
+					role,
+					usualPlace ? `zwykle przebywa tu (${usualPlace.waypoint})` : place.label
+				)
 			});
 		}
 	}
@@ -238,6 +261,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		name: 'Przedmioty w świecie',
 		description: 'leżące na ziemi i wstawiane skryptem',
 		fileName: 'items.geojson',
+		companionFileName: null,
 		metadataCountKey: 'items',
 		color: '#e0662f',
 		legend: ITEM_ICON_LEGEND,
@@ -257,6 +281,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		name: 'Skrzynie',
 		description: 'z zawartością i zamkiem',
 		fileName: 'containers.geojson',
+		companionFileName: null,
 		metadataCountKey: 'containers',
 		color: '#8aa3a0',
 		legend: [{ label: 'Skrzynia', iconId: 'chest' }],
@@ -275,6 +300,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		name: 'Unikatowe postacie',
 		description: 'miejsce pojawienia się',
 		fileName: 'characters.geojson',
+		companionFileName: null,
 		metadataCountKey: 'search_characters',
 		color: '#c9a24a',
 		legend: [{ label: 'Postać', iconId: 'person' }],
@@ -295,6 +321,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		name: 'Wszyscy NPC i potwory',
 		description: 'każde wstawienie do świata',
 		fileName: 'npcs.geojson',
+		companionFileName: null,
 		metadataCountKey: 'npcs',
 		color: '#b07ad0',
 		legend: [{ label: 'Postać lub potwór', iconId: 'person' }],
@@ -315,6 +342,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		name: 'Questy',
 		description: 'pewni zleceniodawcy, cele i miejsca etapów',
 		fileName: 'search_index.json',
+		companionFileName: 'character_places.geojson',
 		metadataCountKey: null,
 		color: QUEST_ROLE_PRESENTATION.giver.color,
 		legend: [
