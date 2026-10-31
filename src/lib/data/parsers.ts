@@ -232,6 +232,7 @@ function parsePlace(value: unknown, description: string): Place {
 		is_default: readOptionalBoolean(record, 'is_default'),
 		actions: readStringList(record, 'actions'),
 		role: readQuestPlaceRole(record),
+		npc_code: readOptionalString(record, 'npc_code'),
 		set: readOptionalString(record, 'set')
 	};
 }

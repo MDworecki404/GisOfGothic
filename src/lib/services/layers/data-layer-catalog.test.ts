@@ -151,3 +151,81 @@ describe('warstwa questów', () => {
 		expect(questLayer?.metadataCountKey).toBeNull();
 	});
 });
+
+describe('warstwa questów z rutynami postaci', () => {
+	const questLayer = DATA_LAYERS.find((definition) => definition.id === 'quests');
+
+	const spawn = (npcCode: string, role: string, lon: number, label: string) => ({
+		kind: 'spawn',
+		lon,
+		lat: 0.002,
+		h: 10,
+		label,
+		role,
+		npc_code: npcCode,
+		certainty: 'always'
+	});
+
+	const questIndex = {
+		version: 4,
+		entries: [
+			{
+				id: 'quest-1',
+				type: 'quest',
+				code: 'TOPIC_HAGEN',
+				name: 'Dowody',
+				category: 'Misja',
+				giver: 'Lord Hagen',
+				chapter: 3,
+				places: [
+					spawn('PAL_200_HAGEN', 'giver', 0.001, 'pojawia się (START_POINT)'),
+					spawn('PAL_200_HAGEN', 'giver', 0.0011, 'pojawia się (INNY_PUNKT)'),
+					spawn('BDT_1_BANDIT', 'target', 0.004, 'pojawia się (BANDIT_SPAWN)')
+				]
+			}
+		]
+	};
+
+	const routines = {
+		type: 'FeatureCollection',
+		features: [
+			{
+				type: 'Feature',
+				geometry: { type: 'Point', coordinates: [0.009, 0.002, 33] },
+				properties: {
+					id: 'PAL_200_HAGEN:START:NW_CITY_HAGEN',
+					npc_code: 'PAL_200_HAGEN',
+					npc_name: 'Lord Hagen',
+					routine: 'START',
+					is_default: true,
+					waypoint: 'NW_CITY_HAGEN',
+					times: ['08:00–20:00'],
+					actions: []
+				}
+			}
+		]
+	};
+
+	it('stawia postać w miejscu z rutyny i pokazuje ją w danej roli raz', () => {
+		const features = questLayer?.readFeatures(questIndex, routines) ?? [];
+		expect(features).toHaveLength(2);
+		expect(features[0]).toMatchObject({ lon: 0.009, h: 33 });
+		expect(features[0].identification.facts).toContainEqual({
+			label: 'Miejsce',
+			value: 'zwykle przebywa tu (NW_CITY_HAGEN)'
+		});
+	});
+
+	it('zostawia miejsce wstawienia postaci bez rutyny', () => {
+		const features = questLayer?.readFeatures(questIndex, routines) ?? [];
+		expect(features[1]).toMatchObject({ lon: 0.004 });
+		expect(features[1].identification.facts).toContainEqual({
+			label: 'Miejsce',
+			value: 'pojawia się (BANDIT_SPAWN)'
+		});
+	});
+
+	it('bez pliku rutyn pokazuje miejsca wstawienia', () => {
+		expect(questLayer?.readFeatures(questIndex)).toHaveLength(3);
+	});
+});

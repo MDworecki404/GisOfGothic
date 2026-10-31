@@ -190,7 +190,11 @@ export class DataLayersCoordinator {
 		const dataLoader = this.dataLoader;
 		if (!dataLoader) return null;
 		try {
-			const features = layer.readFeatures(await dataLoader.loadLayerFile(layer.fileName));
+			const [json, companionJson] = await Promise.all([
+				dataLoader.loadLayerFile(layer.fileName),
+				this.loadCompanionFile(dataLoader, layer)
+			]);
+			const features = layer.readFeatures(json, companionJson);
 			if (dataLoader !== this.dataLoader) return null;
 			this.loadedFeatures.set(layer.id, features);
 			this.publishLayers();
@@ -204,6 +208,20 @@ export class DataLayersCoordinator {
 				message: describeError(error)
 			});
 			return null;
+		}
+	}
+
+	/** Drugi plik warstwy tylko uzupełnia dane, więc jego brak nie blokuje warstwy (zostają dane z pliku głównego). */
+	private async loadCompanionFile(
+		dataLoader: GeoportalDataLoader,
+		layer: DataLayerDefinition
+	): Promise<unknown> {
+		if (layer.companionFileName === null) return undefined;
+		try {
+			return await dataLoader.loadLayerFile(layer.companionFileName);
+		} catch (error) {
+			console.error(error);
+			return undefined;
 		}
 	}
 

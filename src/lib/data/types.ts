@@ -58,6 +58,8 @@ export interface Place {
 	actions?: string[];
 	/** Questy: rola miejsca. */
 	role?: QuestPlaceRole;
+	/** Questy: kod instancji postaci albo potwora, od którego pochodzi miejsce. */
+	npc_code?: string;
 	/** Gothic 3: kod zestawu losowego łupu, z którego przedmiot może wypaść w tym miejscu (`certainty: 'possible'`). */
 	set?: string;
 }
