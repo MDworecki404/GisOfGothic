@@ -14,6 +14,8 @@ export interface DataLayerPoint {
 	lat: number;
 	h: number;
 	iconId?: MapIconId;
+	/** Kolor tego punktu zamiast koloru warstwy (ikony). */
+	cssColor?: string;
 }
 
 export interface FeaturePick {
@@ -137,7 +139,7 @@ export class DataLayersRenderer {
 			collection.add({
 				id,
 				position,
-				image: this.buildIconImage(iconId, cssColor),
+				image: this.buildIconImage(iconId, point.cssColor ?? cssColor),
 				width: ICON_SIZE_PIXELS,
 				height: ICON_SIZE_PIXELS,
 				scaleByDistance: SCALE_BY_DISTANCE

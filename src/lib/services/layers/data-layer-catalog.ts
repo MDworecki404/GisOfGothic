@@ -1,4 +1,7 @@
 import { describeCategory } from '#lib/data/category-names.js';
+import { parseSearchIndex } from '#lib/data/parsers.js';
+import type { QuestPlaceRole, SearchEntry } from '#lib/data/types.js';
+import { QUEST_ROLE_PRESENTATION } from '#lib/services/search/search-entry-presenter.js';
 import { EncyclopediaLinkBuilder } from '#lib/services/encyclopedia/encyclopedia-link-builder.js';
 import {
 	ITEM_ICON_LEGEND,
@@ -18,7 +21,7 @@ import {
 	type ItemProperties
 } from '#lib/data/layer-features.js';
 
-export type DataLayerId = 'items' | 'containers' | 'characters' | 'npcs';
+export type DataLayerId = 'items' | 'containers' | 'characters' | 'npcs' | 'quests';
 
 export interface FeatureFact {
 	label: string;
@@ -48,6 +51,8 @@ export interface IdentifiableFeature {
 	quantity: number;
 	iconId: MapIconId;
 	spawnChapter: number | null;
+	/** Kolor tego punktu zamiast koloru warstwy. */
+	cssColor?: string;
 	identification: FeatureIdentification;
 }
 
@@ -56,7 +61,8 @@ export interface DataLayerDefinition {
 	name: string;
 	description: string;
 	fileName: string;
-	metadataCountKey: string;
+	/** Klucz liczności w `metadata.json`; `null`, gdy liczby punktów nie da się z niego odczytać. */
+	metadataCountKey: string | null;
 	color: string;
 	legend: readonly IconLegendEntry[];
 	isFilteredByChapter: boolean;
@@ -151,6 +157,54 @@ function presentCharacter(layerName: string) {
 			modelFile: null
 		};
 	};
+}
+
+function presentQuestPlace(
+	entry: SearchEntry,
+	role: QuestPlaceRole,
+	placeLabel: string
+): FeatureIdentification {
+	const facts: FeatureFact[] = [];
+	if (entry.giver) facts.push({ label: 'Zleca', value: entry.giver });
+	if (entry.chapter !== null && entry.chapter !== undefined) {
+		facts.push({ label: 'Rozdział startu', value: String(entry.chapter) });
+	}
+	if (placeLabel) facts.push({ label: 'Miejsce', value: placeLabel });
+	return {
+		layerName: 'Questy',
+		title: entry.name,
+		subtitle: QUEST_ROLE_PRESENTATION[role].label,
+		facts,
+		listTitle: null,
+		listItems: [],
+		searchQuery: entry.name,
+		encyclopediaUrl: null,
+		treasureSetCodes: [],
+		possibleItems: [],
+		modelFile: null
+	};
+}
+
+/** Każde miejsce każdego questu z indeksu wyszukiwania to osobny punkt, barwiony rolą miejsca (zleca, cel, etap). */
+function readQuestPlaces(json: unknown): IdentifiableFeature[] {
+	const features: IdentifiableFeature[] = [];
+	for (const entry of parseSearchIndex(json).entries) {
+		if (entry.type !== 'quest') continue;
+		for (const place of entry.places) {
+			const role = place.role ?? 'target';
+			features.push({
+				lon: place.lon,
+				lat: place.lat,
+				h: place.h,
+				quantity: 1,
+				iconId: 'quest',
+				spawnChapter: entry.chapter ?? null,
+				cssColor: QUEST_ROLE_PRESENTATION[role].color,
+				identification: presentQuestPlace(entry, role, place.label)
+			});
+		}
+	}
+	return features;
 }
 
 function readPresentedFeatures<P>(
@@ -250,5 +304,20 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 				() => 1,
 				(properties) => properties.chapter
 			)
+	},
+	{
+		id: 'quests',
+		name: 'Questy',
+		description: 'zleceniodawcy, cele i miejsca etapów',
+		fileName: 'search_index.json',
+		metadataCountKey: null,
+		color: QUEST_ROLE_PRESENTATION.giver.color,
+		legend: [
+			{ label: 'Zleceniodawca', iconId: 'quest', color: QUEST_ROLE_PRESENTATION.giver.color },
+			{ label: 'Cel', iconId: 'quest', color: QUEST_ROLE_PRESENTATION.target.color },
+			{ label: 'Etap', iconId: 'quest', color: QUEST_ROLE_PRESENTATION.stage.color }
+		],
+		isFilteredByChapter: true,
+		readFeatures: readQuestPlaces
 	}
 ];

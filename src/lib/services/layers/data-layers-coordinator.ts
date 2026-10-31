@@ -24,6 +24,8 @@ export type DataLayerStatus = 'hidden' | 'loading' | 'visible' | 'error';
 export interface LayerLegendEntryView {
 	label: string;
 	nodes: readonly MapIconNode[];
+	/** Kolor ikony w legendzie, gdy różni się od koloru warstwy. */
+	color: string | null;
 }
 
 export interface DataLayerView {
@@ -218,7 +220,11 @@ export class DataLayersCoordinator {
 				name: layer.name,
 				description: layer.description,
 				color: layer.color,
-				legend: layer.legend.map(({ label, iconId }) => ({ label, nodes: MAP_ICON_NODES[iconId] })),
+				legend: layer.legend.map(({ label, iconId, color }) => ({
+					label,
+					nodes: MAP_ICON_NODES[iconId],
+					color: color ?? null
+				})),
 				featureCount: this.countFeatures(layer),
 				status: this.statuses.get(layer.id) ?? 'hidden'
 			}))
@@ -228,6 +234,7 @@ export class DataLayersCoordinator {
 	private countFeatures(layer: DataLayerDefinition): number | null {
 		const loaded = this.loadedFeatures.get(layer.id);
 		if (loaded) return this.filterByChapter(layer, loaded).length;
+		if (layer.metadataCountKey === null) return null;
 		return this.featureCounts[layer.metadataCountKey] ?? null;
 	}
 }
