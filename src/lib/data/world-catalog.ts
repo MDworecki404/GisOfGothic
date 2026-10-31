@@ -152,7 +152,7 @@ const KOLONIA: WorldDefinition = {
 	protectedModelsUrl:
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/g1/kolonia/items',
 	worldTilesetUrl:
-		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067772/tileset.json',
+		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6104037/tileset.json',
 	staticObjectsTilesetUrls: [
 		'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev/ion/6067768/tileset.json'
 	],
@@ -238,13 +238,13 @@ const SWIATYNIA_ORKOW: WorldDefinition = {
 };
 
 /**
- * Identyfikatory assetów Cesium ion modelu Myrtany: `world.glb` i części `vobs.glb` (ion odrzucił całość,
- * ADR 0023). Gdy ich brak (`null`), Gothic 3
+ * Identyfikatory assetów Cesium ion modelu Myrtany: `world.glb` i `vobs.glb` (po jednym assecie,
+ * ADR 0027; lista voby pozostaje listą, bo pozostałe światy i tak jej używają). Gdy ich brak (`null`), Gothic 3
  * nie trafia do katalogu: bez kafli świat byłby pustą mapą. Wgranie assetów opisuje `docs/dane.md`.
  */
 const MYRTANA_ION_ASSETS: { world: number; staticObjects: readonly number[] } | null = {
-	world: 6088791,
-	staticObjects: [6088864, 6088836, 6088838, 6088842]
+	world: 6104039,
+	staticObjects: [6104032]
 };
 
 function buildMyrtanaWorlds(): WorldDefinition[] {

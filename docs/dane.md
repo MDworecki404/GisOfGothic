@@ -88,9 +88,11 @@ Paczki v4 leżą w `static/data/archolos/<świat>/`, kotwica jest wspólna, wię
 
 Gra `g3` ma jeden świat `myrtana` (cały kontynent; nazwa robocza). Kod jest w `src/lib/data/world-catalog.ts`,
 ale świat trafia do katalogu dopiero po wpisaniu identyfikatorów assetów ion w `MYRTANA_ION_ASSETS`
-(`world.glb` ok. 152 MB wgrywany jak w „Jak dodać nowy świat”; `vobs.glb` ok. 376 MB ion odrzucił, więc dzielimy go
-`node scripts/split-vobs-glb.mjs <vobs.glb> <folder> 4` i wgrywamy części jako osobne assety, [ADR 0023](adr/0023-voby-dzielone-na-kilka-assetow-ion.md); wszystkie dopuścić
-w `ALLOWED_ION_ASSETS`). Różnice względem G1/G2, które obsługuje aplikacja:
+(`world.glb` i `vobs.glb` wgrywane jak w „Jak dodać nowy świat”, po jednym assecie; wszystkie dopuścić
+w `ALLOWED_ION_ASSETS`). Wcześniejszy model `vobs.glb` (336 MB) ion odrzucał i dzieliliśmy go na 4 części
+([ADR 0023](adr/0023-voby-dzielone-na-kilka-assetow-ion.md), zastąpiony przez [ADR 0027](adr/0027-myrtana-voby-w-jednym-assecie-ion.md));
+poprawiony eksport (`G3_Vobs_Full`, ok. 370 MB) ion przyjął w całości. `scripts/split-vobs-glb.mjs` zostaje w repozytorium,
+ale dla Myrtany nie jest już używany. Różnice względem G1/G2, które obsługuje aplikacja:
 
 - brak rozdziałów (`WorldDefinition.hasChapters: false` ukrywa wybór rozdziału);
 - stronnictwa zamiast gildii: kody bez polskiej nazwy (`OUT`, `SLAVE`) pokazujemy jako kod;
