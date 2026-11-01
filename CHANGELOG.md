@@ -2,6 +2,12 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.11.3](https://github.com/MDworecki404/GisOfGothic/compare/v0.11.2...v0.11.3) (2026-11-01)
+
+### Dokumentacja
+
+* nowe teksty w oknie O projekcie ([2fc0e30](https://github.com/MDworecki404/GisOfGothic/commit/2fc0e30c97773ee3851ad7430b23ba09819719ad))
+
 ## [0.11.2](https://github.com/MDworecki404/GisOfGothic/compare/v0.11.1...v0.11.2) (2026-11-01)
 
 ### Budowanie
