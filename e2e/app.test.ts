@@ -111,7 +111,7 @@ test('pomiar pola prosi o wierzchołki wielokąta', async ({ page }) => {
 		.click();
 	await page.getByRole('button', { name: /^Pole/ }).click();
 	await expect(page.getByRole('button', { name: /^Pole/ })).toHaveAttribute('aria-pressed', 'true');
-	await expect(page.getByText(/Od trzeciego policzymy pole i obwód/)).toBeVisible();
+	await expect(page.getByText(/Pole i obwód pojawią się od trzeciego/)).toBeVisible();
 });
 
 test('zakładki zapisują widok, przeżywają odświeżenie i dają się usunąć', async ({ page }) => {
@@ -127,7 +127,7 @@ test('zakładki zapisują widok, przeżywają odświeżenie i dają się usuną�
 	await page.reload();
 	await expect(page.getByRole('list', { name: 'Zapisane widoki' })).toContainText('Widok testowy');
 	await page.getByRole('button', { name: /Usuń zakładkę „Widok testowy”/ }).click();
-	await expect(page.getByText('Nic jeszcze nie zapisano.')).toBeVisible();
+	await expect(page.getByText('Brak zapisanych widoków.')).toBeVisible();
 });
 
 test('link z narzędziem otwiera panel, a uszkodzona kamera jest ignorowana', async ({ page }) => {
@@ -250,7 +250,7 @@ test('legenda włączonej warstwy otwiera panel Warstwy jednym kliknięciem', as
 
 test('pusty wynik w jednym rodzaju proponuje szukanie we wszystkich', async ({ page }) => {
 	await page.goto('/g2nk/khorinis');
-	await expect(page.getByText(/312 przedmiotów/)).toBeVisible({ timeout: 30_000 });
+	await expect(page.getByText(/Przedmioty: 312, unikatowe/)).toBeVisible({ timeout: 30_000 });
 	await page.getByRole('button', { name: 'Przedmioty', exact: true }).click();
 	await page.getByRole('searchbox').fill('harad');
 	await page.getByRole('button', { name: 'Szukaj we wszystkich rodzajach' }).click();
@@ -275,7 +275,7 @@ test('analiza „Widoczność” prosi o punkt na mapie i ma suwak promienia', a
 
 test('przełącznik światów przenosi do Górniczej Doliny z jej danymi', async ({ page }) => {
 	await page.goto('/g2nk/khorinis');
-	await expect(page.getByText(/312 przedmiotów/)).toBeVisible({ timeout: 30_000 });
+	await expect(page.getByText(/Przedmioty: 312, unikatowe/)).toBeVisible({ timeout: 30_000 });
 	await page.getByTitle('Zmień świat').click();
 	const worldMenu = page.getByRole('navigation', { name: 'Światy' });
 	await expect(worldMenu.getByRole('link')).toHaveCount(0);
@@ -283,7 +283,7 @@ test('przełącznik światów przenosi do Górniczej Doliny z jej danymi', async
 	await worldMenu.getByRole('link', { name: 'Górnicza Dolina' }).click();
 	await expect(page).toHaveURL(/\/g2nk\/gornicza-dolina(\?|$)/);
 	await expect(page).toHaveTitle('Górnicza Dolina — GIS of Gothic');
-	await expect(page.getByText(/214 przedmiotów/)).toBeVisible({ timeout: 30_000 });
+	await expect(page.getByText(/Przedmioty: 214, unikatowe/)).toBeVisible({ timeout: 30_000 });
 });
 
 test('warstwa obiektów świata wczytuje tileset voba z bramki', async ({ page }) => {
@@ -292,7 +292,7 @@ test('warstwa obiektów świata wczytuje tileset voba z bramki', async ({ page }
 		if (/\/ion\/6045068\/tileset\.json/.test(request.url())) tilesetRequests.push(request.url());
 	});
 	await page.goto('/g2nk/khorinis');
-	await expect(page.getByText(/312 przedmiotów/)).toBeVisible({ timeout: 30_000 });
+	await expect(page.getByText(/Przedmioty: 312, unikatowe/)).toBeVisible({ timeout: 30_000 });
 	await page
 		.getByRole('navigation', { name: 'Narzędzia' })
 		.getByRole('button', { name: 'Warstwy' })
@@ -328,7 +328,7 @@ test('ekran ładowania trwa do wczytania modelu świata, a potem znika', async (
 	await expect(launchScreen).toContainText('Khorinis');
 	await expect(page.locator('#app-splash')).toHaveCount(0);
 	await expect(launchScreen.getByText('Model świata')).toBeVisible();
-	await expect(launchScreen.getByText('wczytuję').first()).toBeAttached();
+	await expect(launchScreen.getByText('wczytywanie').first()).toBeAttached();
 
 	releaseTileset();
 	await expect(launchScreen).toHaveCount(0, { timeout: 15_000 });
