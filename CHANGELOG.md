@@ -2,6 +2,12 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.11.2](https://github.com/MDworecki404/GisOfGothic/compare/v0.11.1...v0.11.2) (2026-11-01)
+
+### Budowanie
+
+* polecenie publish-release wykonuje całe wydanie ([4461ef9](https://github.com/MDworecki404/GisOfGothic/commit/4461ef99f40b7498fd580e56a315afaa92c2ee22))
+
 ## [0.11.1](https://github.com/MDworecki404/GisOfGothic/compare/v0.11.0...v0.11.1) (2026-11-01)
 
 ### Refaktoryzacja
