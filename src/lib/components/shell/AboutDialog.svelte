@@ -47,16 +47,17 @@
 
 			<div class="mt-6 space-y-3 text-body leading-relaxed text-foreground/90">
 				<p>
-					Przedmioty i postacie są naniesione na model 3D świata gry, dzięki czemu widać ich dokładne
-					miejsce i można zaplanować drogę.
+					Atlas Gothica zbudowany na modelu 3D świata gry. Wybierasz przedmiot albo postać, a mapa
+					pokazuje, gdzie ich szukać.
 				</p>
 				<p>
-					Jest wyszukiwarka, pomiary odległości i profil terenu, zakładki oraz suwak czasu.
-					Aplikację można zainstalować na telefonie lub komputerze. Konto nie jest potrzebne.
+					Zmierzysz dystans między punktami, sprawdzisz profil terenu, odłożysz miejsca do zakładek
+					i przesuniesz suwak czasu. Instalujesz jak zwykłą aplikację, na telefonie albo komputerze.
+					Bez konta i rejestracji.
 				</p>
 				<p class="text-sm text-muted-foreground">
-					Opisy postaci i questów pochodzą z Gothicpedii (CC BY-SA), a ich karty prowadzą do jej
-					wyszukiwarki.
+					Opisy postaci i questów pochodzą z Gothicpedii, na licencji CC BY-SA. Z karty przejdziesz
+					do jej wyszukiwarki.
 				</p>
 			</div>
 
@@ -102,8 +103,8 @@
 			</ul>
 
 			<p class="mt-5 text-caption leading-relaxed text-muted-foreground">
-				Projekt fanowski, niekomercyjny. Gothic i powiązane nazwy należą do ich właścicieli; autor
-				nie jest związany z Piranha Bytes ani THQ Nordic.
+				Nieoficjalny projekt fanów, bez celów komercyjnych. Gothic i związane z nim nazwy należą do
+				ich właścicieli. Autor nie jest związany z Piranha Bytes ani THQ Nordic.
 			</p>
 		</div>
 	</Dialog.Content>
