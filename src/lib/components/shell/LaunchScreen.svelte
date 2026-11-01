@@ -31,7 +31,7 @@
 			<img class="size-16" src="/favicon.svg" alt="" width="64" height="64" />
 			<h1 class="font-heading text-hero text-primary">GIS of Gothic</h1>
 			<p class="font-serif text-muted-foreground italic">
-				{appState.openedWorldName ? `Otwieram: ${appState.openedWorldName}` : 'Przygotowuję mapę'}
+				{appState.openedWorldName ? `Otwieranie: ${appState.openedWorldName}` : 'Przygotowanie mapy'}
 			</p>
 			<ul class="mt-4 w-full text-left">
 				{#each steps as step (step.label)}
@@ -39,7 +39,7 @@
 						<span>{step.label}</span>
 						{#if step.status === 'loading'}
 							<span class="tile-loader-ring" aria-hidden="true"></span>
-							<span class="sr-only">wczytuję</span>
+							<span class="sr-only">wczytywanie</span>
 						{:else if step.status === 'ready'}
 							<span class="text-primary" aria-hidden="true">✓</span>
 							<span class="sr-only">gotowe</span>

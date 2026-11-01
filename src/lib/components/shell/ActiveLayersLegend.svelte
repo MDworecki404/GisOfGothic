@@ -25,7 +25,7 @@
 				<span class="truncate">{layer.name}</span>
 				<span class="ml-auto pl-2 text-muted-foreground tabular-nums">
 					{#if layer.status === 'loading'}
-						<TileLoader label="Wczytuję warstwę {layer.name}" />
+						<TileLoader label="Wczytywanie warstwy: {layer.name}" />
 					{:else}
 						{layer.featureCount ?? ''}
 					{/if}

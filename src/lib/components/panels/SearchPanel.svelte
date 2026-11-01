@@ -120,7 +120,7 @@
 
 		{#if entry.type === 'quest'}
 			{#if questDetails?.status === 'loading' || !questDetails}
-				<div class="mt-3" role="status" aria-label="Wczytuję szczegóły questa">
+				<div class="mt-3" role="status" aria-label="Wczytywanie szczegółów questa">
 					<span class="skeleton w-2/5"></span>
 					<span class="skeleton mt-3 w-full"></span>
 					<span class="skeleton mt-2 w-11/12"></span>
@@ -196,7 +196,7 @@
 		{/if}
 
 		<h4 class="group-label mt-4 mb-1">
-			Miejsca ({entry.places.length}) — kliknij, aby polecieć
+			Miejsca ({entry.places.length}): kliknij, aby polecieć
 		</h4>
 		<ul class="tabular-nums">
 			{#each entry.places as place (place.index)}
@@ -254,7 +254,7 @@
 	{/if}
 
 	{#if appState.searchIndexStatus === 'loading'}
-		<div class="mt-4" role="status" aria-label="Wczytuję przedmioty i postacie świata">
+		<div class="mt-4" role="status" aria-label="Wczytywanie przedmiotów i postaci świata">
 			{#each [0, 1, 2] as row (row)}
 				<span class="skeleton mt-3 w-full"></span>
 			{/each}
@@ -262,12 +262,12 @@
 	{:else if appState.searchResults.length === 0}
 		<div class="mt-4 text-sm" role="status">
 			{#if hasQuery}
-				<p>Nic nie pasuje do „{appState.searchQuery.trim()}”.</p>
+				<p>Brak wyników dla „{appState.searchQuery.trim()}”.</p>
 			{:else}
-				<p>Nie ma tu jeszcze nic do pokazania.</p>
+				<p>Brak wyników do wyświetlenia.</p>
 			{/if}
 			{#if appState.searchTypeFilter !== 'all'}
-				<p class="mt-1 text-muted-foreground">Szukasz tylko w jednym rodzaju wyników.</p>
+				<p class="mt-1 text-muted-foreground">Wyszukiwanie obejmuje jeden rodzaj wyników.</p>
 				<button class="button-quiet mt-3" onclick={() => geoportal.filterSearchByType('all')}>
 					Szukaj we wszystkich rodzajach
 				</button>
@@ -277,18 +277,18 @@
 				</button>
 			{:else if hasQuery}
 				<p class="mt-1 text-muted-foreground">
-					Spróbuj krótszej nazwy albo samego początku słowa, np. „miecz” zamiast „mieczyk”.
+					Wpisz krótszą nazwę lub początek słowa, np. „miecz” zamiast „mieczyk”.
 				</p>
 			{/if}
 		</div>
 	{:else}
 		{#if !hasQuery}
 			<p class="mt-3 text-sm text-muted-foreground">
-				Przeglądasz wszystko po kolei (A–Z). Wpisz nazwę w polu u góry, np. „ziele”, „Harad” albo
-				„Bennet”, żeby zawęzić listę.
+				Lista wszystkich wpisów w kolejności alfabetycznej (A–Z). Aby ją zawęzić, wpisz nazwę w polu
+				wyszukiwania, np. „ziele”, „Harad” albo „Bennet”.
 				{#if appState.indexCounts}
-					W tym świecie jest {appState.indexCounts.items} przedmiotów, {appState.indexCounts
-						.characters} unikatowych postaci i {appState.indexCounts.quests} questów.
+					Przedmioty: {appState.indexCounts.items}, unikatowe postacie: {appState.indexCounts
+						.characters}, questy: {appState.indexCounts.quests}.
 				{/if}
 			</p>
 		{/if}

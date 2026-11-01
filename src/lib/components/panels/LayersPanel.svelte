@@ -16,18 +16,18 @@
 	<span class="min-w-0">
 		Obiekty świata
 		<span class="block text-caption text-muted-foreground">
-			wszystkie statyczne voby: drzewa, budynki, rekwizyty i przedmioty leżące na ziemi
+			wszystkie statyczne obiekty (voby): drzewa, budynki, rekwizyty i przedmioty leżące na ziemi
 		</span>
 		{#if appState.staticObjectsErrorMessage}
 			<span class="block text-caption text-destructive" role="alert">
-				Nie udało się wczytać: {appState.staticObjectsErrorMessage}
+				Nie udało się wczytać obiektów: {appState.staticObjectsErrorMessage}
 			</span>
 		{/if}
 	</span>
 	<span class="text-caption text-muted-foreground">
 		{#if appState.staticObjectsStatus === 'loading' || (appState.staticObjectsStatus === 'visible' && appState.staticObjectsTilesPending > 0)}
 			<TileLoader
-				label="Wczytuję obiekty świata"
+				label="Wczytywanie obiektów świata"
 				count={appState.staticObjectsStatus === 'visible'
 					? appState.staticObjectsTilesPending
 					: null}
@@ -38,7 +38,7 @@
 
 <h3 class="group-label mb-1">Dane</h3>
 <p class="mb-2 text-caption text-muted-foreground">
-	Kliknij punkt na mapie, żeby zobaczyć, co to jest.
+	Kliknij punkt na mapie, aby zobaczyć jego opis.
 </p>
 
 <ul>
@@ -83,7 +83,7 @@
 					</span>
 					{#if layer.status === 'error'}
 						<span class="mt-2 block text-caption text-destructive">
-							Nie udało się wczytać tej warstwy. Sprawdź połączenie i spróbuj ponownie.
+							Nie udało się wczytać warstwy. Sprawdź połączenie i spróbuj ponownie.
 						</span>
 						<button class="button-iron mt-2" onclick={() => geoportal.toggleDataLayer(layer.id)}>
 							Spróbuj ponownie
@@ -92,7 +92,7 @@
 				</span>
 				<span class="text-caption text-muted-foreground tabular-nums">
 					{#if layer.status === 'loading'}
-						<TileLoader label="Wczytuję warstwę {layer.name}" />
+						<TileLoader label="Wczytywanie warstwy: {layer.name}" />
 					{:else}
 						{layer.featureCount ?? ''}
 					{/if}

@@ -52,7 +52,7 @@
 				: `, ok. ${appState.measuredFramesPerSecond} kl./s`;
 		if (appState.performancePreference !== 'auto') return `Jakość ${level}${fps}.`;
 		return appState.performanceWasLoweredAutomatically
-			? `Mapa się zacinała, więc obniżyliśmy jakość do: ${level}${fps}.`
+			? `Mapa się zacinała, więc jakość obniżono do: ${level}${fps}.`
 			: `Obecnie jakość ${level}${fps}.`;
 	});
 </script>
@@ -73,7 +73,7 @@
 		<div class="px-6 pt-8 pb-6 sm:px-8">
 			<Dialog.Title class="text-display text-primary">Wydajność</Dialog.Title>
 			<Dialog.Description class="mt-1 text-muted-foreground">
-				Gdy mapa się zacina, niższa jakość obrazu przyspiesza ją.
+				Niższa jakość obrazu przyspiesza zacinającą się mapę.
 			</Dialog.Description>
 
 			<fieldset class="mt-5 space-y-1">

@@ -35,8 +35,8 @@
 	{#if pointCount < 3}
 		<p class="mt-4 text-sm text-muted-foreground">
 			{pointCount === 0
-				? 'Klikaj kolejne wierzchołki wielokąta na mapie. Od trzeciego policzymy pole i obwód.'
-				: 'Kliknij kolejne wierzchołki — wielokąt potrzebuje co najmniej trzech.'}
+				? 'Klikaj kolejne wierzchołki wielokąta na mapie. Pole i obwód pojawią się od trzeciego.'
+				: 'Kliknij kolejne wierzchołki. Wielokąt wymaga co najmniej trzech.'}
 		</p>
 	{:else}
 		<div class="mt-4 border-l-2 border-primary bg-background/50 px-3.5 py-3 tabular-nums">
@@ -67,7 +67,7 @@
 	{#if pointCount < 2}
 		<p class="mt-4 text-sm text-muted-foreground">
 			{pointCount === 0
-				? 'Klikaj kolejne punkty na mapie. Odległość policzymy po terenie, razem z profilem wysokości.'
+				? 'Klikaj kolejne punkty na mapie. Odległość jest liczona po terenie, z profilem wysokości.'
 				: 'Kliknij następny punkt.'}
 		</p>
 	{:else}
@@ -85,7 +85,7 @@
 				{/each}
 			</dl>
 			{#if appState.measurement?.isProfileLoading}
-				<p class="mt-1 text-caption text-muted-foreground">Liczę profil terenu…</p>
+				<p class="mt-1 text-caption text-muted-foreground">Obliczanie profilu terenu…</p>
 			{/if}
 		</div>
 
@@ -100,8 +100,8 @@
 				{/each}
 			</dl>
 			<p class="mt-1 text-caption text-muted-foreground">
-				Dla odległości w poziomie, prędkości bohatera z animacji gry. 4 s rzeczywiste to minuta w
-				grze.
+				Obliczono dla odległości w poziomie i prędkości bohatera z animacji gry. 4 s rzeczywiste to
+				minuta w grze.
 			</p>
 		{/if}
 
@@ -128,7 +128,7 @@
 	{/if}
 {:else if appState.measuredPointReadings.length === 0}
 	<p class="mt-4 text-sm text-muted-foreground">
-		Kliknij punkt na mapie, żeby odczytać jego współrzędne we wszystkich układach.
+		Kliknij punkt na mapie, aby odczytać jego współrzędne we wszystkich układach.
 	</p>
 {:else}
 	<div class="mt-4 space-y-3 tabular-nums">
