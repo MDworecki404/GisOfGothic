@@ -48,7 +48,7 @@ export type FlightStick = 'move' | 'look';
 export type DataLoaderFactory = (dataBaseUrl: string) => GeoportalDataLoader;
 
 const OFFLINE_WORLD_MESSAGE =
-	'brak połączenia z internetem — model świata pobiera się z sieci; wyszukiwarka i dane działają dalej';
+	'brak połączenia z internetem. Model świata jest pobierany z sieci; wyszukiwarka i dane działają dalej';
 
 function describeWorldLoadError(error: unknown): string {
 	return navigator.onLine ? describeError(error) : OFFLINE_WORLD_MESSAGE;

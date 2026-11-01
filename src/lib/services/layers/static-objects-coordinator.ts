@@ -53,7 +53,7 @@ export class StaticObjectsCoordinator {
 		const tilesetUrls = this.tilesetUrls;
 		if (!display) return;
 		if (tilesetUrls.length === 0) {
-			this.setStatus('error', 'Obiekty tego świata nie są jeszcze dostępne');
+			this.setStatus('error', 'Obiekty tego świata są jeszcze niedostępne');
 			return;
 		}
 		const request = ++this.request;

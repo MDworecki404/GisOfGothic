@@ -154,7 +154,7 @@ export class SearchEntryPresenter {
 
 	private listItemFacts(entry: SearchEntry): EntryFact[] {
 		const facts: EntryFact[] = [
-			{ label: 'sztuk w świecie', value: String(entry.total ?? sumAmounts(entry.places)) }
+			{ label: 'Sztuki w świecie', value: String(entry.total ?? sumAmounts(entry.places)) }
 		];
 		const kinds: PlaceKind[] = ['ground', 'script', 'container', 'npc'];
 		for (const kind of kinds) {

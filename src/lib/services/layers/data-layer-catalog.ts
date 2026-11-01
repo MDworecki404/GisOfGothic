@@ -122,7 +122,7 @@ function presentContainer(properties: ContainerProperties): FeatureIdentificatio
 		layerName: 'Skrzynie',
 		title: 'Skrzynia',
 		subtitle: describeLock(properties),
-		facts: [{ label: 'Przedmiotów', value: String(properties.contents.length) }],
+		facts: [{ label: 'Przedmioty', value: String(properties.contents.length) }],
 		listTitle: properties.contents.length > 0 ? 'Zawartość' : null,
 		listItems: properties.contents.map(describeInventoryLine),
 		searchQuery: null,

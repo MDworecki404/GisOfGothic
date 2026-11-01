@@ -74,7 +74,7 @@
 			{#if appState.routineLayerStatus === 'loading'}
 				Wczytywanie rutyn dnia…
 			{:else if appState.charactersAtTimeOfDay !== null}
-				Postaci na mapie: {appState.charactersAtTimeOfDay}. Kliknij punkt, żeby zobaczyć kto i co
+				Postaci na mapie: {appState.charactersAtTimeOfDay}. Kliknij punkt, aby zobaczyć, kto i co
 				robi.
 			{:else}
 				Według codziennych rutyn unikatowych postaci.

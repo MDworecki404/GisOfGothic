@@ -170,7 +170,7 @@ describe('SearchEntryPresenter', () => {
 			'g2nk/khorinis'
 		);
 		expect(details.facts).toEqual([
-			{ label: 'sztuk w świecie', value: '3' },
+			{ label: 'Sztuki w świecie', value: '3' },
 			{ label: 'na ziemi', value: '1' },
 			{ label: 'u postaci', value: '2' }
 		]);

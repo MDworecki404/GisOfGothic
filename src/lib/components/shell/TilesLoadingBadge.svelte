@@ -5,7 +5,7 @@
 	const pendingTiles = $derived(appState.worldTilesPending + appState.staticObjectsTilesPending);
 	const isLoadingWorld = $derived(appState.worldStatus === 'loading');
 	const isVisible = $derived(isLoadingWorld || pendingTiles > 0);
-	const label = $derived(isLoadingWorld ? 'Wczytuję model świata' : 'Dociągam szczegóły terenu');
+	const label = $derived(isLoadingWorld ? 'Wczytywanie modelu świata' : 'Wczytywanie szczegółów terenu');
 </script>
 
 {#if isVisible}

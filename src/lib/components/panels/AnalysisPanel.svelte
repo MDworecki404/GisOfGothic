@@ -26,7 +26,7 @@
 			<span>
 				<span class="font-serif text-lead">{analysis.subject.name}</span>
 				<span class="block text-caption text-muted-foreground">
-					{analysis.subject.placeCount} miejsc w świecie
+					Miejsca w świecie: {analysis.subject.placeCount}
 				</span>
 			</span>
 			<button class="button-quiet shrink-0" onclick={() => geoportal.clearAnalysisSubject()}>
@@ -44,7 +44,7 @@
 		/>
 		{#if analysis.subjectQuery.trim() && analysis.subjectSuggestions.length === 0}
 			<p class="mt-2 text-sm text-muted-foreground">
-				Nic nie znaleziono. Spróbuj krótszej nazwy albo innej kategorii.
+				Brak wyników. Wpisz krótszą nazwę lub zmień kategorię.
 			</p>
 		{/if}
 		<ul class="mt-1">
@@ -97,7 +97,7 @@
 
 	{#if analysis.mode === 'nearest'}
 		<p class="mt-3 text-caption text-muted-foreground">
-			Wybierz przedmiot albo postać i wskaż punkt na mapie — pokażemy pięć najbliższych miejsc.
+			Wybierz przedmiot albo postać i wskaż punkt na mapie. Wynik: pięć najbliższych miejsc.
 		</p>
 		{@render subjectPicker()}
 		{@render originReading()}
@@ -137,7 +137,7 @@
 		{/if}
 	{:else if analysis.mode === 'buffer'}
 		<p class="mt-3 text-caption text-muted-foreground">
-			Wskaż punkt na mapie i ustaw promień — wypiszemy przedmioty, skrzynie i postacie w środku.
+			Wskaż punkt na mapie i ustaw promień. Wynik: przedmioty, skrzynie i postacie w tym promieniu.
 		</p>
 		<label class="mt-4 block">
 			<span class="flex items-baseline justify-between text-sm font-medium text-muted-foreground">
@@ -160,7 +160,7 @@
 				W promieniu {analysis.radiusMetres} m
 			</h3>
 			{#if analysis.isLoading}
-				<p class="text-sm text-muted-foreground">Wczytuję przedmioty, skrzynie i postacie…</p>
+				<p class="text-sm text-muted-foreground">Wczytywanie przedmiotów, skrzyń i postaci…</p>
 			{/if}
 			{#each analysis.bufferGroups as group (group.id)}
 				<section class="mb-3 border-t border-border/60 pt-2" aria-label={group.name}>
@@ -193,7 +193,7 @@
 		{/if}
 	{:else if analysis.mode === 'visibility'}
 		<p class="mt-3 text-caption text-muted-foreground">
-			Wskaż punkt na mapie — zaznaczymy teren, który widać z wysokości oczu stojącego człowieka.
+			Wskaż punkt na mapie. Zaznaczony zostanie teren widoczny z wysokości oczu stojącego człowieka.
 		</p>
 		<label class="mt-4 block">
 			<span class="flex items-baseline justify-between text-sm font-medium text-muted-foreground">
@@ -214,7 +214,7 @@
 		{#if analysis.origin}
 			<h3 class="group-label mt-4 mb-1">Wynik</h3>
 			{#if analysis.isLoading}
-				<p class="text-sm text-muted-foreground">Liczę widoczność…</p>
+				<p class="text-sm text-muted-foreground">Obliczanie widoczności…</p>
 			{:else if analysis.viewshed && analysis.viewshed.hasCells}
 				<p class="text-sm">
 					Z tego miejsca widać
@@ -235,7 +235,7 @@
 				</ul>
 				{#if analysis.viewshed.unknownCellCount > 0}
 					<p class="mt-2 text-caption text-muted-foreground">
-						Pominięto {analysis.viewshed.unknownCellCount} pól bez terenu albo jeszcze niewczytanych.
+						Pominięte pola bez terenu lub z niewczytanym terenem: {analysis.viewshed.unknownCellCount}.
 					</p>
 				{/if}
 			{:else if analysis.viewshed}
@@ -246,7 +246,7 @@
 		{/if}
 	{:else}
 		<p class="mt-3 text-caption text-muted-foreground">
-			Wybierz przedmiot albo postać — pokolorujemy komórki siatki według liczby sztuk w każdej.
+			Wybierz przedmiot albo postać. Komórki siatki zostaną pokolorowane według liczby sztuk.
 		</p>
 		{@render subjectPicker()}
 

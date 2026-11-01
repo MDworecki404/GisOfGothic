@@ -44,15 +44,15 @@
 
 {#if appState.bookmarkStorageFailed}
 	<p class="mt-2 text-sm text-destructive" role="alert">
-		Nie udało się zapisać zakładek w przeglądarce (pamięć witryny jest zablokowana). Zostaną do
-		zamknięcia karty.
+		Nie zapisano zakładek w przeglądarce, bo pamięć witryny jest zablokowana. Zakładki zostaną
+		do zamknięcia karty.
 	</p>
 {/if}
 
 <h3 class="group-label mt-5 mb-1">Zapisane widoki</h3>
 {#if appState.bookmarks.length === 0}
 	<p class="text-sm text-muted-foreground">
-		Nic jeszcze nie zapisano. Ustaw mapę tak, jak chcesz do niej wrócić, i kliknij „Zapisz widok”.
+		Brak zapisanych widoków. Ustaw mapę i wybierz „Zapisz widok”.
 	</p>
 {:else}
 	<ul class="space-y-2" aria-label="Zapisane widoki">

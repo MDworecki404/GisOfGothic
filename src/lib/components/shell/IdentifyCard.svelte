@@ -73,7 +73,7 @@
 						{/each}
 					</ul>
 				{:else}
-					<p class="note-faded mt-1" role="status">Wczytuję możliwą zawartość…</p>
+					<p class="note-faded mt-1" role="status">Wczytywanie możliwej zawartości…</p>
 				{/if}
 			{/if}
 

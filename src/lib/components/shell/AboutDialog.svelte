@@ -47,16 +47,15 @@
 
 			<div class="mt-6 space-y-3 text-body leading-relaxed text-foreground/90">
 				<p>
-					Wiki Gothica mówi, że miecz leży „gdzieś w Górniczej Dolinie”. Tu zobaczysz, gdzie
-					dokładnie: przedmioty i postacie są naniesione na model 3D świata gry, a stąd można
-					zaplanować drogę.
+					Przedmioty i postacie są naniesione na model 3D świata gry, dzięki czemu widać ich dokładne
+					miejsce i można zaplanować drogę.
 				</p>
 				<p>
 					Jest wyszukiwarka, pomiary odległości i profil terenu, zakładki oraz suwak czasu.
-					Aplikację zainstalujesz na telefonie albo komputerze. Konta nie potrzebujesz.
+					Aplikację można zainstalować na telefonie lub komputerze. Konto nie jest potrzebne.
 				</p>
 				<p class="text-sm text-muted-foreground">
-					Opisy postaci i questów znajdziesz w Gothicpedii (CC BY-SA) — ich karty prowadzą do jej
+					Opisy postaci i questów pochodzą z Gothicpedii (CC BY-SA), a ich karty prowadzą do jej
 					wyszukiwarki.
 				</p>
 			</div>
