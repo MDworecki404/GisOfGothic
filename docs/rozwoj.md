@@ -35,6 +35,7 @@ pracy lokalnej. Token Cesium ion nie trafia do strony — jest sekretem Workera
 | `npm run deploy:preview`              | bieżący build na podgląd `https://podglad.gis-of-gothic.pages.dev` (produkcja bez zmian)                          |
 | `npm run deploy:gate`                 | wdraża bramkę zasobów (`workers/model-gate/`)                                                                     |
 | `npm run release`                     | nowa wersja: nowe `feat` podbijają minor (ADR 0016), aktualizuje `package.json` i `CHANGELOG.md`, tworzy tag      |
+| `npm run publish-release`             | **całe wydanie**: `release`, `git push --follow-tags origin main`, `deploy`; tylko z `main` i czystego repo       |
 
 ## Konwencje kodu
 
@@ -84,6 +85,9 @@ Jednorazowo: `npx wrangler login`; `static/data/` z aktualnymi danymi i `PUBLIC_
 3. **Publikacja w repo:** `git push --follow-tags origin main`.
 4. **Produkcja:** `npm run deploy` — odmówi bez tagu wydania, przy niezacommitowanych zmianach albo
    niewypchniętym commicie/tagu; uruchamia `check`, `lint`, Vitest i Playwright, dopiero potem wysyła.
+
+Kroki 2–4 wykonuje jedno polecenie `npm run publish-release` (`scripts/publish-release.mjs`); z `-- --dry-run`
+pokazuje tylko podgląd wydania. Przerywa się przy pierwszym błędzie, więc po awarii można dokończyć ręcznie.
 
 Jeśli wrangler zaproponuje albo sam wykona automatyczną konfigurację (zamiana `adapter-static`
 na `adapter-cloudflare`, plik `wrangler.jsonc`), cofnij te zmiany — aplikacja jest statyczna.
