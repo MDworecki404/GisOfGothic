@@ -91,6 +91,19 @@ export class BookmarksCoordinator {
 		this.persistAndPublish();
 	}
 
+	exportViews(): SavedView[] {
+		return this.allViews;
+	}
+
+	/** Dołącza zakładki, których identyfikatorów jeszcze nie ma; zwraca, ile dodano. */
+	importViews(incoming: readonly SavedView[]): number {
+		const knownIds = new Set(this.allViews.map((view) => view.id));
+		const newViews = incoming.filter((view) => !knownIds.has(view.id));
+		this.allViews = [...this.allViews, ...newViews];
+		this.persistAndPublish();
+		return newViews.length;
+	}
+
 	private persistAndPublish(): void {
 		this.hasStorageError = !this.store.saveAll(this.allViews);
 		this.publish();

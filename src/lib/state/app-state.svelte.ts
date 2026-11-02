@@ -1,5 +1,6 @@
 import type { IndexCounts } from '#lib/data/types.js';
 import type { BookmarkView } from '#lib/services/bookmarks/bookmarks-coordinator.js';
+import type { NotebookView } from '#lib/services/notebook/notebook-coordinator.js';
 import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
 import {
 	DEFAULT_CAMERA_PROJECTION,
@@ -101,6 +102,7 @@ export class AppState {
 	mapOverlays = $state.raw<MapOverlays>(NO_MAP_OVERLAYS);
 	bookmarks = $state.raw<BookmarkView[]>([]);
 	bookmarkStorageFailed = $state(false);
+	notebook = $state.raw<NotebookView | null>(null);
 	selectedChapter = $state<ChapterNumber | null>(null);
 	areChaptersAvailable = $state(true);
 	areRoutineTimesApproximate = $state(false);
@@ -191,6 +193,9 @@ export class AppState {
 		eventBus.subscribe('bookmarks-changed', ({ bookmarks, hasStorageError }) => {
 			this.bookmarks = bookmarks;
 			this.bookmarkStorageFailed = hasStorageError;
+		});
+		eventBus.subscribe('notebook-changed', ({ notebook }) => {
+			this.notebook = notebook;
 		});
 		eventBus.subscribe('analysis-changed', ({ analysis }) => {
 			this.analysis = analysis;
@@ -354,6 +359,16 @@ export class AppState {
 	get measuredPointMarvinCommand(): string | null {
 		const point = this.measurement?.pickedPoint;
 		return point ? coordinateFormatter.formatMarvinTeleportCommand(point) : null;
+	}
+
+	/** Wpisy, które można odhaczyć na liście „co zebrałem”: przedmioty i questy. */
+	get isSelectedEntryCollectible(): boolean {
+		return this.selectedEntry?.type === 'item' || this.selectedEntry?.type === 'quest';
+	}
+
+	get isSelectedEntryCollected(): boolean {
+		const entryId = this.selectedEntry?.id;
+		return entryId !== undefined && (this.notebook?.collectedEntryIds.includes(entryId) ?? false);
 	}
 
 	/** Parametry adresu odtwarzające bieżący widok: wpis, kamera, narzędzie i rozdział. */

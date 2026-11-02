@@ -372,3 +372,65 @@ test('lista gier pokazuje światy dopiero po najechaniu i zamyka się klawiszem 
 	await page.keyboard.press('Escape');
 	await expect(worldMenu).toHaveCount(0);
 });
+
+test('kartę przedmiotu da się odhaczyć, a postęp widać w Notatniku', async ({ page }) => {
+	await page.goto('/g2nk/khorinis?wpis=item:HOLY_HAMMER_MIS');
+	const toggle = page.getByRole('button', { name: 'Oznacz jako zebrany' });
+	await expect(toggle).toBeVisible({ timeout: 30_000 });
+	await toggle.click();
+	await expect(page.getByRole('button', { name: 'Mam ten przedmiot' })).toHaveAttribute(
+		'aria-pressed',
+		'true'
+	);
+
+	await page
+		.getByRole('navigation', { name: 'Narzędzia' })
+		.getByRole('button', { name: 'Notatnik' })
+		.click();
+	await expect(page.getByRole('list', { name: 'Zebrane wpisy' })).toContainText('przedmiot');
+	await expect(page.getByRole('list', { name: 'Postęp zbierania' })).toContainText(
+		/Przedmioty\s*1 z/
+	);
+
+	await page.reload();
+	await page.getByRole('button', { name: /Usuń z listy/ }).click();
+	await expect(page.getByRole('list', { name: 'Zebrane wpisy' })).toHaveCount(0);
+});
+
+test('Notatnik przechodzi w tryb stawiania pinezki i pozwala go anulować', async ({ page }) => {
+	await page.goto('/g2nk/khorinis?narzedzie=notebook');
+	await expect(page.getByRole('heading', { name: 'Notatnik' })).toBeVisible();
+	await page.getByRole('button', { name: 'Postaw pinezkę na mapie' }).click();
+	await expect(page.getByText('Kliknij mapę w miejscu, gdzie ma stanąć pinezka.')).toBeVisible();
+	await page.getByRole('button', { name: 'Anuluj' }).click();
+	await expect(page.getByRole('button', { name: 'Postaw pinezkę na mapie' })).toBeVisible();
+	await expect(page.getByText('Brak pinezek w tym świecie.')).toBeVisible();
+});
+
+test('kopia zapasowa eksportuje plik i odrzuca obcy plik przy imporcie', async ({ page }) => {
+	await page.goto('/g2nk/khorinis?narzedzie=bookmarks');
+	const downloadPromise = page.waitForEvent('download');
+	await page.getByRole('button', { name: 'Zapisz do pliku' }).click();
+	const download = await downloadPromise;
+	expect(download.suggestedFilename()).toMatch(/^gis-of-gothic-notatnik-\d{4}-\d{2}-\d{2}\.json$/);
+
+	await page.getByLabel('Plik z kopią zapasową').setInputFiles({
+		name: 'obcy.json',
+		mimeType: 'application/json',
+		buffer: Buffer.from('{"cos":"innego"}')
+	});
+	await expect(page.getByRole('alert')).toContainText('To nie jest plik z kopią zapasową');
+});
+
+test('przycisk kopiowania linku potwierdza skopiowanie adresu widoku', async ({
+	page,
+	context
+}) => {
+	await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+	await page.goto('/g2nk/khorinis?narzedzie=bookmarks');
+	await page.getByRole('button', { name: 'Kopiuj link do bieżącego widoku' }).click();
+	await expect(page.getByRole('button', { name: 'Skopiowano link' })).toBeVisible();
+	const copied = await page.evaluate(() => navigator.clipboard.readText());
+	expect(copied).toContain('/g2nk/khorinis');
+	expect(copied).toContain('narzedzie=bookmarks');
+});

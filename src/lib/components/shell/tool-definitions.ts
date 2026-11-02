@@ -1,6 +1,7 @@
 import BookmarkIcon from '@lucide/svelte/icons/bookmark';
 import ClockIcon from '@lucide/svelte/icons/clock';
 import LayersIcon from '@lucide/svelte/icons/layers';
+import NotebookPenIcon from '@lucide/svelte/icons/notebook-pen';
 import RadarIcon from '@lucide/svelte/icons/radar';
 import RulerIcon from '@lucide/svelte/icons/ruler';
 import SearchIcon from '@lucide/svelte/icons/search';
@@ -21,6 +22,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 	{ id: 'measure', label: 'Pomiary', panelTitle: 'Pomiary', icon: RulerIcon },
 	{ id: 'analysis', label: 'Analizy', panelTitle: 'Analizy', icon: RadarIcon },
 	{ id: 'time', label: 'Czas', panelTitle: 'Czas i rozdział', icon: ClockIcon },
+	{ id: 'notebook', label: 'Notatnik', panelTitle: 'Notatnik', icon: NotebookPenIcon },
 	{
 		id: 'bookmarks',
 		label: 'Zakładki',

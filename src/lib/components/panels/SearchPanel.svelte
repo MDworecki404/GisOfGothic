@@ -3,6 +3,7 @@
 	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
 	import type { Attachment } from 'svelte/attachments';
 	import { appState, geoportal } from '#lib/composition-root.js';
+	import CopyViewLinkButton from '#lib/components/shell/CopyViewLinkButton.svelte';
 	import type { QuestLinkView } from '#lib/services/search/quest-presenter.js';
 
 	const TYPE_FILTERS = [
@@ -88,6 +89,23 @@
 		<p class="text-sm text-muted-foreground">
 			{entry.categoryLabel} · <span class="text-caption">{entry.code}</span>
 		</p>
+
+		<div class="mt-2 flex flex-wrap gap-2">
+			{#if appState.isSelectedEntryCollectible}
+				<button
+					class={appState.isSelectedEntryCollected ? 'button-ochre' : 'button-quiet'}
+					aria-pressed={appState.isSelectedEntryCollected}
+					onclick={() => geoportal.toggleCollectedStateOfSelectedEntry()}
+				>
+					{#if entry.type === 'quest'}
+						{appState.isSelectedEntryCollected ? 'Quest wykonany' : 'Oznacz jako wykonany'}
+					{:else}
+						{appState.isSelectedEntryCollected ? 'Mam ten przedmiot' : 'Oznacz jako zebrany'}
+					{/if}
+				</button>
+			{/if}
+			<CopyViewLinkButton />
+		</div>
 
 		{#if entry.modelPath}
 			<div

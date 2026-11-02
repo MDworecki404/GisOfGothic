@@ -4,6 +4,7 @@ import type { ViewMode } from '#lib/services/camera/view-mode.js';
 import type { AppEvent } from '#lib/events/app-events.js';
 import { EventBus } from '#lib/events/event-bus.js';
 import { BookmarkStore } from './bookmarks/bookmark-store.js';
+import { NotebookStore } from './notebook/notebook-store.js';
 import { GeoportalFacade } from './geoportal-facade.js';
 import { PerformancePreferenceStore } from './performance/performance-preference-store.js';
 
@@ -23,6 +24,7 @@ function createFacade() {
 			throw new Error('Bez otwartego świata ładowanie danych nie powinno być potrzebne');
 		},
 		new BookmarkStore(null),
+		new NotebookStore(null),
 		null,
 		new PerformancePreferenceStore(null)
 	);

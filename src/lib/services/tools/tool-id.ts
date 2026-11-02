@@ -1,4 +1,12 @@
-export const TOOL_IDS = ['search', 'layers', 'measure', 'analysis', 'time', 'bookmarks'] as const;
+export const TOOL_IDS = [
+	'search',
+	'layers',
+	'measure',
+	'analysis',
+	'time',
+	'notebook',
+	'bookmarks'
+] as const;
 
 export type ToolId = (typeof TOOL_IDS)[number];
 
@@ -8,6 +16,7 @@ export const TOOL_LABELS: Readonly<Record<ToolId, string>> = {
 	measure: 'Pomiary',
 	analysis: 'Analizy',
 	time: 'Czas',
+	notebook: 'Notatnik',
 	bookmarks: 'Zakładki'
 };
 

@@ -45,6 +45,8 @@ import { ShadowRangeCalculator } from './shadow-range-calculator.js';
 import { ShadowStrengthCalculator } from './shadow-strength-calculator.js';
 import { MapViewObserver, type MapViewListeners, type TileLayerId } from './map-view-observer.js';
 import { MeasurementRenderer } from './measurement-renderer.js';
+import { UserPinsRenderer } from './user-pins-renderer.js';
+import type { PinMarker } from '#lib/services/notebook/notebook-coordinator.js';
 import { PlaceMarkersLayer, type PlaceMarker } from './place-markers-layer.js';
 import { ViewerOptionsBuilder } from './viewer-options-builder.js';
 import { FlatMapPanController } from './flat-map-pan-controller.js';
@@ -84,6 +86,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 	private readonly placeMarkers: PlaceMarkersLayer;
 	private readonly dataLayers: DataLayersRenderer;
 	private readonly measurement: MeasurementRenderer;
+	private readonly userPins: UserPinsRenderer;
 	private readonly analysis: AnalysisRenderer;
 	private readonly cameraFramer: CameraFramer;
 	private readonly projectionController: CameraProjectionController;
@@ -148,6 +151,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 			this.projectionController.readOrthographicMetresPerPixel()
 		);
 		this.placeMarkers = new PlaceMarkersLayer(this.viewer, this.cameraFramer);
+		this.userPins = new UserPinsRenderer(this.viewer, this.cameraFramer);
 		this.viewer.scene.postRender.addEventListener(() =>
 			listeners.onFrameRendered(performance.now())
 		);
@@ -420,6 +424,24 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 
 	clearMeasurement(): void {
 		this.measurement.clearMeasurement();
+	}
+
+	showPins(pins: readonly PinMarker[]): void {
+		const frame = this.worldFrame;
+		if (!frame) {
+			if (pins.length === 0) this.userPins.showPins([]);
+			return;
+		}
+		this.userPins.showPins(
+			pins.map((pin) => ({
+				position: frame.toSceneCartesian(pin.east, pin.north, pin.height),
+				label: pin.label
+			}))
+		);
+	}
+
+	flyToPin(index: number): void {
+		this.userPins.flyToPin(index);
 	}
 
 	showNearestPlaces(origin: LocalPoint, targets: readonly LocalPoint[]): void {

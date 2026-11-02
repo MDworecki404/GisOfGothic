@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { appState, geoportal } from '#lib/composition-root.js';
+	import CopyViewLinkButton from '#lib/components/shell/CopyViewLinkButton.svelte';
+	import UserDataBackupSection from '#lib/components/shell/UserDataBackupSection.svelte';
 
 	let bookmarkName = $state('');
 	let copiedBookmarkId = $state<string | null>(null);
@@ -44,8 +46,8 @@
 
 {#if appState.bookmarkStorageFailed}
 	<p class="mt-2 text-sm text-destructive" role="alert">
-		Nie zapisano zakładek w przeglądarce, bo pamięć witryny jest zablokowana. Zakładki zostaną
-		do zamknięcia karty.
+		Nie zapisano zakładek w przeglądarce, bo pamięć witryny jest zablokowana. Zakładki zostaną do
+		zamknięcia karty.
 	</p>
 {/if}
 
@@ -85,3 +87,11 @@
 		{/each}
 	</ul>
 {/if}
+
+<h3 class="group-label mt-5 mb-1">Udostępnianie</h3>
+<p class="mb-2 text-sm text-muted-foreground">
+	Adres strony zawsze odtwarza bieżący widok, więc wystarczy go wysłać dalej.
+</p>
+<CopyViewLinkButton label="Kopiuj link do bieżącego widoku" />
+
+<UserDataBackupSection />

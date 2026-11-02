@@ -12,6 +12,7 @@
 	import BookmarksPanel from '#lib/components/panels/BookmarksPanel.svelte';
 	import LayersPanel from '#lib/components/panels/LayersPanel.svelte';
 	import MeasurePanel from '#lib/components/panels/MeasurePanel.svelte';
+	import NotebookPanel from '#lib/components/panels/NotebookPanel.svelte';
 	import SearchPanel from '#lib/components/panels/SearchPanel.svelte';
 	import TimePanel from '#lib/components/panels/TimePanel.svelte';
 	import { TOOL_DEFINITIONS } from './tool-definitions.js';
@@ -183,6 +184,8 @@
 					<MeasurePanel />
 				{:else if activeTool.id === 'analysis'}
 					<AnalysisPanel />
+				{:else if activeTool.id === 'notebook'}
+					<NotebookPanel />
 				{:else if activeTool.id === 'bookmarks'}
 					<BookmarksPanel />
 				{:else}
