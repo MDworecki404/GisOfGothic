@@ -1,6 +1,6 @@
 # 0031. Porównanie rozmiarów światów: widma z przesuwaniem
 
-Status: przyjęta
+Status: zmieniona (gizmo i widmo odniesienia: ADR 0032)
 
 ## Kontekst
 

@@ -34,4 +34,5 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0028](0028-nakladki-terenu.md)                                | Poziomice i siatka rysowane shaderem z pozycji oka   | przyjęta |
 | [0029](0029-notatnik-gracza-lokalnie-z-kopia-w-pliku.md)       | Notatnik gracza lokalnie, kopia zapasowa w pliku     | przyjęta |
 | [0030](0030-porownanie-swiatow-podzialem-ekranu.md)            | Porównanie światów suwakiem podziału ekranu          | przyjęta |
-| [0031](0031-porownanie-rozmiarow-swiatow.md)                   | Porównanie rozmiarów światów: widma z przesuwaniem   | przyjęta |
+| [0031](0031-porownanie-rozmiarow-swiatow.md)                   | Porównanie rozmiarów światów: widma z przesuwaniem   | zmieniona (0032) |
+| [0032](0032-gizmo-i-widmo-swiata-odniesienia.md)               | Gizmo i widmo świata odniesienia w Rozmiarach        | przyjęta |

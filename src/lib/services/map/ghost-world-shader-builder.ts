@@ -1,6 +1,6 @@
 import { Cartesian3, Color, CustomShader, CustomShaderTranslucencyMode, UniformType } from 'cesium';
 
-const TINT_STRENGTH = 0.45;
+const TINT_STRENGTH = 0.62;
 
 /**
  * Shader „widmowego” świata w porównaniu rozmiarów: kolor modelu zmieszany z barwą świata i stała przezroczystość.

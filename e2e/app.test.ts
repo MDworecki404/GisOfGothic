@@ -572,3 +572,26 @@ test('zamknięcie narzędzia Rozmiary zdejmuje wybrane światy', async ({ page }
 		.click();
 	await expect(page.getByRole('checkbox', { name: /Jarkendar/ })).not.toBeChecked();
 });
+
+test('narzędzie Rozmiary: otwarty świat ma swój wiersz, a nowy świat jest wybrany i można wybrać inny', async ({
+	page
+}) => {
+	await page.goto('/g2nk/khorinis?narzedzie=sizes');
+	await expect(page.getByText('Otwarty świat (odniesienie)')).toBeVisible({ timeout: 30_000 });
+
+	await page.getByRole('checkbox', { name: 'Pokaż świat Jarkendar (Gothic 2: Noc Kruka)' }).check();
+	await page.getByRole('checkbox', { name: 'Pokaż świat Irdorath (Gothic 2: Noc Kruka)' }).check();
+	const jarkendar = page.getByRole('button', { name: 'Wybierz świat Jarkendar: pokaż jego gizmo' });
+	const irdorath = page.getByRole('button', { name: 'Wybierz świat Irdorath: pokaż jego gizmo' });
+	await expect(irdorath).toHaveAttribute('aria-pressed', 'true', { timeout: 30_000 });
+	await expect(jarkendar).toHaveAttribute('aria-pressed', 'false');
+
+	await jarkendar.click();
+	await expect(jarkendar).toHaveAttribute('aria-pressed', 'true');
+	await expect(irdorath).toHaveAttribute('aria-pressed', 'false');
+
+	await page
+		.getByRole('checkbox', { name: 'Pokaż świat Jarkendar (Gothic 2: Noc Kruka)' })
+		.uncheck();
+	await expect(irdorath).toHaveAttribute('aria-pressed', 'true');
+});

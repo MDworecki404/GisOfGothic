@@ -423,11 +423,17 @@ korzenia (`OrientedBoundingBox`, a przy kuli kwadrat opisany na niej) jako środ
 `CustomShader` z uniformami `u_tint` i `u_alpha`. Nowy świat dostaje pozycję współśrodkową z otwartym (`buildCenteredPlacement`),
 barwę z `SIZE_WORLD_COLORS` (najwyżej sześć światów), a „Zresetuj” wraca do tej pozycji.
 
+Otwarty świat też jest widmem (jasna barwa `REFERENCE_WORLD_COLOR`): `MapService.setPrimaryWorldGhost` podmienia shader jego tilesetu
+i obiektów na czas działania narzędzia, a `applyTileColoursTo` omija je, dopóki są widmem; po zamknięciu narzędzia korekta koloru
+i nakładki wracają. Wybrany świat (kliknięty nazwą w panelu albo na mapie) ma gizmo `WorldSizeGizmo`: osie wschód, północ, góra
+i pierścień obrotu z punktów (stały rozmiar na ekranie, test głębi wyłączony). Przeciągnięcie uchwytu liczy `WorldSizeLayer`:
+oś przez `findClosestParameterOnLine`, obrót przez kąt od północy (`measureClockwiseAngleDegrees`).
+
 Wskazywanie świata na mapie: `drillPick` raz na klatkę (po `postRender`) wybiera świat pod kursorem, a koordynator
 publikuje podświetlenie (`isHighlighted`) i podnosi nieprzezroczystość wskazanego świata. Przeciąganie przechwytuje
 `pointerdown` w fazie przechwytywania na oknie, więc kamera nie dostaje zdarzenia (wyłączanie jej akcji powodowało
 skok kamery po puszczeniu przycisku, bo kontroler kumuluje ruch). Świat jedzie po płaszczyźnie poziomej przez swój środek
-(`IntersectionTests.rayPlane`), a każde przesunięcie wraca do koordynatora zdarzeniem `reactToMapDrag`.
+(`IntersectionTests.rayPlane`), a każde przesunięcie wraca do koordynatora zdarzeniem `reactToMapPlacement`.
 
 Fasada włącza koordynatora po wybraniu narzędzia (`activateTool`), wyłącza po jego zamknięciu i czyści po zmianie otwartego
 świata; start porównania suwakiem zamyka narzędzie Rozmiary. Wymiary otwartego świata odświeża `refreshReference` po wczytaniu

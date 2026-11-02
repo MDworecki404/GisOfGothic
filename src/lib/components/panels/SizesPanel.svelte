@@ -4,6 +4,8 @@
 	import type { SizeWorldView } from '#lib/services/comparison/world-size-coordinator.js';
 	import type { SizeWorldPlacement } from '#lib/services/map/world-placement-calculator.js';
 
+	const REFERENCE_KEY = 'reference';
+
 	const sizes = $derived(appState.worldSizes);
 	const games = $derived(
 		worldCatalog.listGames().map((game) => ({
@@ -54,20 +56,41 @@
 </script>
 
 <p class="text-sm text-muted-foreground">
-	Zaznacz światy, które mają się pokazać obok otwartego. Widma są półprzezroczyste, a świat pod
-	kursorem robi się wyraźny. Każdy świat staje środkiem na środku otwartego, a potem możesz go
-	przesunąć, podnieść i obrócić.
+	Zaznacz światy, które mają się pokazać obok otwartego. Wszystkie są półprzezroczystymi widmami, a
+	świat pod kursorem robi się wyraźny. Każdy świat staje środkiem na środku otwartego.
+</p>
+<p class="mt-2 text-sm text-muted-foreground">
+	Wybrany świat (kliknij jego nazwę albo sam świat na mapie) ma gizmo: przeciągnij
+	<span class="text-[#ff4545]">czerwoną</span> strzałkę, żeby przesunąć na wschód,
+	<span class="text-[#45ff70]">zieloną</span> na północ,
+	<span class="text-[#4596ff]">niebieską</span>
+	w górę, a biały pierścień, żeby obrócić. Można też przeciągnąć sam świat albo wpisać liczby.
 </p>
 <p class="mt-2 text-caption text-muted-foreground">
-	Przeciągnij świat na mapie, żeby go przesunąć. Kamerę ruszasz, przeciągając tło poza światem.
+	Kamerę ruszasz, przeciągając tło poza światami.
 </p>
 
 {#if sizes.reference}
-	<div class="mt-3 rounded-md border border-border bg-black/15 p-2.5" role="status">
+	{@const reference = sizes.reference}
+	<div
+		class="mt-3 rounded-md border bg-black/15 p-2.5 {reference.isHighlighted
+			? 'border-primary'
+			: 'border-border'}"
+		role="status"
+		onpointerenter={() => geoportal.highlightSizeWorld(REFERENCE_KEY)}
+		onpointerleave={() => geoportal.highlightSizeWorld(null)}
+	>
 		<span class="block text-caption text-muted-foreground">Otwarty świat (odniesienie)</span>
-		<span class="block font-serif text-lead">{sizes.reference.label}</span>
+		<span class="flex items-center gap-2 font-serif text-lead">
+			<span
+				class="size-3 shrink-0 rounded-full"
+				style:background-color={reference.color}
+				aria-hidden="true"
+			></span>
+			{reference.label}
+		</span>
 		<span class="block text-sm tabular-nums">
-			{describeSize(sizes.reference.widthMetres, sizes.reference.depthMetres)}
+			{describeSize(reference.widthMetres, reference.depthMetres)}
 		</span>
 	</div>
 {/if}
@@ -85,9 +108,12 @@
 			{#each game.worlds as world (world.id)}
 				{@const key = buildKey(game.id, world.id)}
 				{@const selected = selectedByKey.get(key)}
-				<li class="border-t border-border/60">
-					<label
-						class="list-row flex min-h-11 cursor-pointer items-center gap-2.5 px-1"
+				{@const isChosen = selected !== undefined && sizes.selectedKey === key}
+				<li class="border-t border-border/60 {isChosen ? 'bg-active-surface' : ''}">
+					<div
+						class="flex min-h-11 items-center gap-2.5 px-1"
+						role="group"
+						aria-label={world.name}
 						onpointerenter={() => selected && geoportal.highlightSizeWorld(key)}
 						onpointerleave={() => selected && geoportal.highlightSizeWorld(null)}
 					>
@@ -106,7 +132,18 @@
 								aria-hidden="true"
 							></span>
 						{/if}
-						<span class="min-w-0 flex-1 truncate">{world.name}</span>
+						{#if selected}
+							<button
+								class="min-h-11 min-w-0 flex-1 truncate text-left"
+								aria-pressed={isChosen}
+								aria-label="Wybierz świat {world.name}: pokaż jego gizmo"
+								onclick={() => geoportal.selectSizeWorld(key)}
+							>
+								{world.name}
+							</button>
+						{:else}
+							<span class="min-w-0 flex-1 truncate">{world.name}</span>
+						{/if}
 						{#if selected?.status === 'loading'}
 							<span class="text-caption text-muted-foreground">wczytywanie…</span>
 						{:else if selected?.status === 'error'}
@@ -116,7 +153,7 @@
 								{describeSize(selected.widthMetres, selected.depthMetres)}
 							</span>
 						{/if}
-					</label>
+					</div>
 
 					{#if selected?.status === 'error'}
 						<p class="px-1 pb-2 text-sm text-destructive" role="alert">
@@ -133,6 +170,7 @@
 										class="field w-full"
 										step={field.axis === 'up' ? 5 : 10}
 										value={roundForField(nativeCenter[field.axis] + selected.placement[field.axis])}
+										onfocus={() => geoportal.selectSizeWorld(key)}
 										onchange={(event) =>
 											changeCentre(selected, field.axis, event.currentTarget.value)}
 									/>
@@ -145,6 +183,7 @@
 									class="field w-full"
 									step="5"
 									value={roundForField(selected.placement.headingDegrees)}
+									onfocus={() => geoportal.selectSizeWorld(key)}
 									onchange={(event) => changeHeading(selected, event.currentTarget.value)}
 								/>
 							</label>

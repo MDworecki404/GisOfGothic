@@ -212,7 +212,8 @@ export class GeoportalFacade {
 		this.mapService.setViewInsets(this.mapViewInsets);
 		this.mapService.listenToSizeWorlds({
 			onHovered: (key) => this.worldSizeCoordinator.reactToMapHover(key),
-			onDragged: (key, east, north) => this.worldSizeCoordinator.reactToMapDrag(key, east, north)
+			onSelected: (key) => this.worldSizeCoordinator.select(key),
+			onPlaced: (key, placement) => this.worldSizeCoordinator.reactToMapPlacement(key, placement)
 		});
 		void this.showCurrentWorldOnMap();
 		this.searchCoordinator.showSelectedEntryOnMap(false);
@@ -220,6 +221,7 @@ export class GeoportalFacade {
 		this.timeCoordinator.showOnMap();
 		this.notebookCoordinator.showOnMap();
 		void this.worldComparisonCoordinator.showOnMap();
+		this.worldSizeCoordinator.showOnMap();
 		this.performanceCoordinator.showOnMap();
 		if (this.activeToolId === 'analysis') this.analysisCoordinator.activate();
 	}
@@ -299,6 +301,11 @@ export class GeoportalFacade {
 	/** Podświetla świat z listy narzędzia Rozmiary; `null` zdejmuje podświetlenie. */
 	highlightSizeWorld(key: string | null): void {
 		this.worldSizeCoordinator.highlight(key);
+	}
+
+	/** Wybiera świat w narzędziu Rozmiary: pokazuje przy nim gizmo przesuwania i obrotu. */
+	selectSizeWorld(key: string | null): void {
+		this.worldSizeCoordinator.select(key);
 	}
 
 	/** Przechodzi w tryb stawiania pinezki: następne kliknięcie mapy dodaje ją w tym miejscu. */

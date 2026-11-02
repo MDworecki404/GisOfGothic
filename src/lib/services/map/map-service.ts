@@ -93,6 +93,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 	private readonly userPins: UserPinsRenderer;
 	private readonly worldSizes: WorldSizeLayer;
 	private readonly worldExtentReader = new WorldExtentReader();
+	private primaryGhostColor: string | null = null;
 	private readonly analysis: AnalysisRenderer;
 	private readonly cameraFramer: CameraFramer;
 	private readonly projectionController: CameraProjectionController;
@@ -202,6 +203,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 		this.sliceController.applyTo(tileset);
 		this.reportTileLoadingOf(tileset, 'world');
 		this.viewer.scene.primitives.add(tileset);
+		this.applyPrimaryGhost();
 		if (this.minuteOfDay !== null) this.showTimeOfDay(this.minuteOfDay);
 		this.showWholeWorld(0);
 	}
@@ -442,6 +444,32 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 		return tileset && frame ? this.worldExtentReader.readExtent(tileset, frame) : null;
 	}
 
+	/**
+	 * Otwarty świat (z obiektami) jako półprzezroczyste widmo w narzędziu Rozmiary; `null` przywraca zwykły wygląd
+	 * (korektę koloru i nakładki). Widmo wraca też po wczytaniu nowego modelu świata.
+	 */
+	setPrimaryWorldGhost(tintCssColor: string | null): void {
+		this.primaryGhostColor = tintCssColor;
+		this.applyPrimaryGhost();
+	}
+
+	private applyPrimaryGhost(): void {
+		if (this.primaryGhostColor === null) {
+			for (const tileset of this.worldSizes.releaseReference()) {
+				if (!tileset.isDestroyed()) this.applyTileColoursTo(tileset);
+			}
+			return;
+		}
+		const tilesets = [this.worldTileset, ...this.staticObjectsTilesets].filter(
+			(tileset): tileset is Cesium3DTileset => tileset !== null
+		);
+		if (tilesets.length > 0) this.worldSizes.ghostReference(tilesets, this.primaryGhostColor);
+	}
+
+	selectSizeWorld(key: string | null): void {
+		this.worldSizes.selectWorld(key);
+	}
+
 	showSizeWorld(
 		key: string,
 		tilesetUrl: string,
@@ -608,6 +636,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 			this.reportStaticObjectsTileLoadingOf(tileset);
 			this.viewer.scene.primitives.add(tileset);
 		}
+		this.applyPrimaryGhost();
 	}
 
 	hideStaticObjectsTileset(): void {
@@ -618,6 +647,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 			this.viewer.scene.primitives.remove(tileset);
 		}
 		this.staticObjectsTilesets = [];
+		if (this.primaryGhostColor !== null) this.applyPrimaryGhost();
 	}
 
 	/**
@@ -662,6 +692,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 
 	removeWorldTileset(): void {
 		this.worldSizes.clear();
+		this.worldSizes.forgetReference();
 		this.removeComparisonTileset();
 		this.hideStaticObjectsTileset();
 		this.reportPendingTiles('world', 0);
@@ -724,6 +755,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 	}
 
 	private applyTileColoursTo(tileset: Cesium3DTileset): void {
+		if (this.worldSizes.isReferenceTileset(tileset)) return;
 		const isWorld = tileset === this.worldTileset;
 		const overlays = isWorld ? this.mapOverlays : NO_MAP_OVERLAYS;
 		if (isWorld) this.overlayCameraUniforms?.detach();
