@@ -12,6 +12,7 @@
 	import ToolPanel from '#lib/components/shell/ToolPanel.svelte';
 	import ToolRail from '#lib/components/shell/ToolRail.svelte';
 	import TopBar from '#lib/components/shell/TopBar.svelte';
+	import WorldComparisonSlider from '#lib/components/shell/WorldComparisonSlider.svelte';
 	import { untrack } from 'svelte';
 	import { replaceState } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -22,7 +23,7 @@
 	let { data }: PageProps = $props();
 
 	$effect(() => {
-		geoportal.openWorld(data.world);
+		geoportal.openWorld(data.world, `${data.game.name} — ${data.world.name}`);
 		geoportal.openSharedView(untrack(() => page.url.search));
 	});
 
@@ -49,7 +50,8 @@
 	<ToolRail />
 	<ToolPanel />
 	<MapInsetsReporter />
-	<MapControls />
+	<MapControls currentGameId={data.game.id} currentWorldId={data.world.id} />
+	<WorldComparisonSlider />
 	<FlightSticks />
 	<TilesLoadingBadge />
 	<ActiveLayersLegend />

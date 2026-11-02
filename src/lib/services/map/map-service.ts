@@ -8,6 +8,7 @@ import {
 	HeadingPitchRange,
 	Math as CesiumMath,
 	Matrix4,
+	SplitDirection,
 	Viewer
 } from 'cesium';
 import type { Anchor } from '#lib/data/types.js';
@@ -106,6 +107,8 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 	private worldFrame: WorldFrame | null = null;
 	private isDestroyed = false;
 	private latestTilesetRequest = 0;
+	private comparisonTileset: Cesium3DTileset | null = null;
+	private latestComparisonRequest = 0;
 	private minuteOfDay: number | null = null;
 	private shadowSettings: ShadowSettings = { areEnabled: false, areSoft: true };
 	private performanceProfile: PerformanceProfile | null = null;
@@ -557,6 +560,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 		}
 		this.staticObjectsTilesets = tilesets;
 		for (const tileset of tilesets) {
+			tileset.splitDirection = this.pickPrimarySplitDirection();
 			this.applyTileDetailTo(tileset);
 			this.sliceController.applyTo(tileset);
 			this.reportStaticObjectsTileLoadingOf(tileset);
@@ -574,7 +578,43 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 		this.staticObjectsTilesets = [];
 	}
 
+	/**
+	 * Porównanie światów: drugi model świata stoi w tym samym układzie co pierwszy (kotwice światów są zerowe),
+	 * a podział ekranu (`splitPosition`) odsłania po lewej bieżący świat, po prawej porównywany. Obiekty świata
+	 * zostają po lewej stronie, bo porównujemy sam teren.
+	 */
+	async showComparisonTileset(tilesetUrl: string, anchor: Anchor): Promise<void> {
+		const request = ++this.latestComparisonRequest;
+		this.removeComparisonTileset();
+		const tileset = await Cesium3DTileset.fromUrl(tilesetUrl, {
+			modelMatrix: new WorldFrame(anchor).anchorToEcef
+		});
+		if (this.isDestroyed || request !== this.latestComparisonRequest) {
+			tileset.destroy();
+			return;
+		}
+		this.comparisonTileset = tileset;
+		tileset.splitDirection = SplitDirection.RIGHT;
+		this.applyTileDetailTo(tileset);
+		this.viewer.scene.primitives.add(tileset);
+		this.applyPrimarySplitDirection();
+	}
+
+	removeComparisonTileset(): void {
+		this.latestComparisonRequest++;
+		if (!this.comparisonTileset) return;
+		this.viewer.scene.primitives.remove(this.comparisonTileset);
+		this.comparisonTileset = null;
+		this.applyPrimarySplitDirection();
+	}
+
+	/** Położenie podziału jako ułamek szerokości mapy (0 – lewy brzeg, 1 – prawy). */
+	setComparisonSplitPosition(fraction: number): void {
+		this.viewer.scene.splitPosition = fraction;
+	}
+
 	removeWorldTileset(): void {
+		this.removeComparisonTileset();
 		this.hideStaticObjectsTileset();
 		this.reportPendingTiles('world', 0);
 		if (!this.worldTileset) return;
@@ -616,6 +656,16 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 			}
 			this.reportPendingTiles('static-objects', totalPending);
 		});
+	}
+
+	private pickPrimarySplitDirection(): SplitDirection {
+		return this.comparisonTileset ? SplitDirection.LEFT : SplitDirection.NONE;
+	}
+
+	private applyPrimarySplitDirection(): void {
+		for (const tileset of [this.worldTileset, ...this.staticObjectsTilesets]) {
+			if (tileset) tileset.splitDirection = this.pickPrimarySplitDirection();
+		}
 	}
 
 	private reportPendingTiles(layer: TileLayerId, pendingTiles: number): void {

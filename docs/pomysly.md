@@ -21,8 +21,7 @@ warstwa Questy, widok 2D z cięciem wysokości, rzut ortogonalny, lot kamerą, P
 8. **Podkład „Poziomice”** jako osobny podkład, nie tylko nakładka.
 9. **Analizy:** zasięg słyszalności i agresji potworów, najkrótsza trasa między dwoma punktami,
    porównanie dwóch rozdziałów.
-10. **Porównanie światów lub rozdziałów** suwakiem podziału ekranu (split-screen Cesium), np. Archolos
-    względem oryginału.
+10. **Porównanie rozdziałów** suwakiem podziału ekranu: po lewej postacie z jednego rozdziału, po prawej z drugiego.
 
 ## Treść i wiki
 
@@ -53,6 +52,9 @@ jest treść: **2**.
 - **5. Lista kontrolna „co zebrałem”** — pole przy każdym miejscu przedmiotu (zebrane punkty gasną na mapie),
   „Zbierz wszystkie” i przycisk „Oznacz jako wykonany” przy queście; postęp w procentach w Notatniku. Kamienne tablice
   liczą się jak zwykłe przedmioty, osobnego licznika nie mają.
+- **10. Porównanie światów** — przycisk „Porównaj światy” w kontrolkach mapy: suwak podziału ekranu odsłania po lewej
+  otwarty świat, po prawej wybrany drugi (ADR 0030). Porównuje się teren; stan jest sesyjny. Porównanie rozdziałów
+  przeszło do pozycji 20.
 - **11. Powiązania między wpisami** — karta przedmiotu pokazuje, kto ma go przy sobie, i questy, w których występuje;
   karta postaci pokazuje, co ma przy sobie. Powiązania sprzedawców dojdą z danymi o handlarzach.
 - **14. Filtry wyszukiwarki** — gildia i typ przedmiotu działały już jako kategorie; doszły przedział poziomu postaci

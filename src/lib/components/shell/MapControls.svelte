@@ -5,9 +5,18 @@
 	import MapIcon from '@lucide/svelte/icons/map';
 	import MinusIcon from '@lucide/svelte/icons/minus';
 	import PlusIcon from '@lucide/svelte/icons/plus';
+	import Columns2Icon from '@lucide/svelte/icons/columns-2';
 	import CameraSettingsPopover from '#lib/components/shell/CameraSettingsPopover.svelte';
+	import WorldComparisonPopover from '#lib/components/shell/WorldComparisonPopover.svelte';
 	import { appState, flightControls, geoportal } from '#lib/composition-root.js';
 
+	interface Props {
+		currentGameId: string;
+		currentWorldId: string;
+	}
+
+	let { currentGameId, currentWorldId }: Props = $props();
+	let isComparisonPickerOpen = $state(false);
 	let isCameraSettingsOpen = $state(false);
 	let cameraSettingsButton = $state<HTMLButtonElement>();
 
@@ -15,14 +24,23 @@
 		'map-control-button grid size-11 place-items-center text-foreground hover:bg-hover-surface hover:text-hover';
 
 	function closeCameraSettingsOnOutsideClick(event: MouseEvent): void {
-		if (!isCameraSettingsOpen) return;
-		const isInsideSettings =
-			event.target instanceof Element && event.target.closest('[data-camera-settings]') !== null;
-		if (!isInsideSettings) isCameraSettingsOpen = false;
+		const target = event.target instanceof Element ? event.target : null;
+		if (isCameraSettingsOpen && target?.closest('[data-camera-settings]') === null) {
+			isCameraSettingsOpen = false;
+		}
+		if (isComparisonPickerOpen && target?.closest('[data-world-comparison]') === null) {
+			isComparisonPickerOpen = false;
+		}
 	}
 
 	function closeCameraSettingsOnEscape(event: KeyboardEvent): void {
-		if (!isCameraSettingsOpen || event.key !== 'Escape') return;
+		if (event.key !== 'Escape') return;
+		if (isComparisonPickerOpen) {
+			event.stopPropagation();
+			isComparisonPickerOpen = false;
+			return;
+		}
+		if (!isCameraSettingsOpen) return;
 		event.stopPropagation();
 		isCameraSettingsOpen = false;
 		cameraSettingsButton?.focus();
@@ -131,8 +149,26 @@
 		>
 			<MapIcon class="size-5" />
 		</button>
+		<button
+			class="{controlButton} aria-pressed:bg-active-surface aria-pressed:text-active"
+			aria-label="Porównaj światy"
+			aria-pressed={appState.worldComparison.status !== 'inactive'}
+			aria-expanded={isComparisonPickerOpen}
+			title="Porównaj ten świat z innym suwakiem podziału ekranu"
+			data-world-comparison
+			onclick={() => (isComparisonPickerOpen = !isComparisonPickerOpen)}
+		>
+			<Columns2Icon class="size-5" />
+		</button>
 	</div>
 	{#if isCameraSettingsOpen}
 		<CameraSettingsPopover onClose={() => (isCameraSettingsOpen = false)} />
+	{/if}
+	{#if isComparisonPickerOpen}
+		<WorldComparisonPopover
+			{currentGameId}
+			{currentWorldId}
+			onClose={() => (isComparisonPickerOpen = false)}
+		/>
 	{/if}
 </div>
