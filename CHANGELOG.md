@@ -2,6 +2,25 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.12.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.11.3...v0.12.0) (2026-11-02)
+
+### Nowe funkcje
+
+* gizmo w narzędziu Rozmiary i widmo świata odniesienia ([b0a89be](https://github.com/MDworecki404/GisOfGothic/commit/b0a89bea73d74d698f2cbae7ab7e7d4d3592709f))
+* lista „co zebrałem” odhacza pojedyncze miejsca przedmiotów ([93ac008](https://github.com/MDworecki404/GisOfGothic/commit/93ac0081b780b3eedb240d8ab258b54b92ce2a84))
+* narzędzie Rozmiary porównuje wielkość światów półprzezroczystymi widmami ([9e2e64d](https://github.com/MDworecki404/GisOfGothic/commit/9e2e64d630292b57137751c1da704b208c7cede4))
+* Notatnik z pinezkami i listą „co zebrałem”, kopiowanie linku i kopia zapasowa ([5a9145d](https://github.com/MDworecki404/GisOfGothic/commit/5a9145d87048a363d2eb238cd60e420ef643b72f))
+* porównanie dwóch światów suwakiem podziału ekranu ([de00cd3](https://github.com/MDworecki404/GisOfGothic/commit/de00cd35816f1460b2c0a1fd729f8eba467b612a))
+* powiązania między wpisami i filtry poziomu postaci oraz rozdziału questa ([f35e90f](https://github.com/MDworecki404/GisOfGothic/commit/f35e90f712d4b3d860fca0ea4c2b14e0f1b1beb0))
+
+### Poprawki błędów
+
+* porównywany świat nie znikał zaraz po wczytaniu ([12c86b4](https://github.com/MDworecki404/GisOfGothic/commit/12c86b4d6ddb46f73b99cfccb2da765da1ca35fa))
+
+### Dokumentacja
+
+* lista pomysłów na dalszy rozwój ([e158a78](https://github.com/MDworecki404/GisOfGothic/commit/e158a78c15ce2dc8e9b65c24c3179a641967da58))
+
 ## [0.11.3](https://github.com/MDworecki404/GisOfGothic/compare/v0.11.2...v0.11.3) (2026-11-01)
 
 ### Dokumentacja
