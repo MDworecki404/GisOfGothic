@@ -39,6 +39,7 @@ UI po polsku.
 | [docs/architektura.md](docs/architektura.md) | warstwy, fasada, event bus, przepływ danych              |
 | [docs/dane.md](docs/dane.md)                 | dane świata, układ współrzędnych, jak dodać nowy świat   |
 | [docs/rozwoj.md](docs/rozwoj.md)             | środowisko, skrypty, testy, konwencje, commity i wydania |
+| [docs/pomysly.md](docs/pomysly.md)           | pomysły na dalszy rozwój                                 |
 | [docs/adr/](docs/adr/)                       | zapisy decyzji architektonicznych                        |
 | [CHANGELOG.md](CHANGELOG.md)                 | historia wersji (generowana z commitów)                  |
 
