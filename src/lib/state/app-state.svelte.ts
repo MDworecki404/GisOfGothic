@@ -1,3 +1,4 @@
+import { SvelteSet } from 'svelte/reactivity';
 import type { IndexCounts } from '#lib/data/types.js';
 import type { BookmarkView } from '#lib/services/bookmarks/bookmarks-coordinator.js';
 import type { NotebookView } from '#lib/services/notebook/notebook-coordinator.js';
@@ -361,14 +362,19 @@ export class AppState {
 		return point ? coordinateFormatter.formatMarvinTeleportCommand(point) : null;
 	}
 
-	/** Wpisy, które można odhaczyć na liście „co zebrałem”: przedmioty i questy. */
-	get isSelectedEntryCollectible(): boolean {
-		return this.selectedEntry?.type === 'item' || this.selectedEntry?.type === 'quest';
+	get isSelectedQuestCollected(): boolean {
+		const entryId = this.selectedEntry?.id;
+		return entryId !== undefined && (this.notebook?.collectedQuestIds.includes(entryId) ?? false);
 	}
 
-	get isSelectedEntryCollected(): boolean {
+	/** Klucze odhaczonych miejsc wybranego przedmiotu (`PlaceSummary.key`). */
+	get collectedPlaceKeysOfSelectedEntry(): ReadonlySet<string> {
 		const entryId = this.selectedEntry?.id;
-		return entryId !== undefined && (this.notebook?.collectedEntryIds.includes(entryId) ?? false);
+		return new SvelteSet(
+			(this.notebook?.collectedPlaces ?? [])
+				.filter((place) => place.entryId === entryId)
+				.map((place) => place.placeKey)
+		);
 	}
 
 	/** Parametry adresu odtwarzające bieżący widok: wpis, kamera, narzędzie i rozdział. */

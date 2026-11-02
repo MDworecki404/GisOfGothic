@@ -141,51 +141,89 @@ describe('NotebookCoordinator: pinezki', () => {
 });
 
 describe('NotebookCoordinator: co zebrałem', () => {
-	const sword = { id: 'item:ITMW_1H_SWORD', name: 'Miecz', type: 'item' } as const;
-	const quest = { id: 'quest:Q1', name: 'Zadanie', type: 'quest' } as const;
+	const bolts = { id: 'item:ITRW_BOLT', name: 'Bełt' };
+	const quest = { id: 'quest:Q1', name: 'Zadanie' };
 
-	it('odhacza i cofa odhaczenie wpisu', () => {
+	it('odhacza pojedyncze miejsca przedmiotu, a nie cały przedmiot', () => {
 		const { coordinator, latest } = createCoordinator();
-		coordinator.useWorld('g2nk', 'khorinis');
-		coordinator.toggleCollected(sword);
-		expect(coordinator.isCollected(sword.id)).toBe(true);
-		expect(latest().collectedEntryIds).toEqual([sword.id]);
-		expect(latest().collected).toEqual([
-			{ entryId: sword.id, name: 'Miecz', typeLabel: 'przedmiot' }
+		coordinator.useWorld('g3', 'myrtana');
+		coordinator.toggleCollectedPlace(bolts, 'ground:item-1');
+		coordinator.toggleCollectedPlace(bolts, 'ground:item-2');
+		expect([...coordinator.listCollectedPlaceKeys(bolts.id)]).toEqual([
+			'ground:item-1',
+			'ground:item-2'
 		]);
-		coordinator.toggleCollected(sword);
-		expect(latest().collected).toEqual([]);
+		expect(latest().collectedItems).toEqual([{ entryId: bolts.id, name: 'Bełt', placeCount: 2 }]);
+		coordinator.toggleCollectedPlace(bolts, 'ground:item-1');
+		expect(latest().collectedPlaces).toEqual([{ entryId: bolts.id, placeKey: 'ground:item-2' }]);
 	});
 
-	it('liczy postęp względem liczby wpisów świata', () => {
+	it('odhacza i cofa wszystkie podane miejsca jednym zapisem, bez duplikatów', () => {
+		const { coordinator, latest } = createCoordinator();
+		coordinator.useWorld('g3', 'myrtana');
+		const keys = ['ground:item-1', 'ground:item-2', 'ground:item-3'];
+		coordinator.toggleCollectedPlace(bolts, 'ground:item-1');
+		coordinator.setPlacesCollected(bolts, keys, true);
+		expect(latest().collectedPlaces).toHaveLength(3);
+		coordinator.setPlacesCollected(bolts, keys, false);
+		expect(latest().collectedPlaces).toEqual([]);
+	});
+
+	it('usuwa z listy wszystkie miejsca jednego przedmiotu, nie ruszając innych', () => {
+		const { coordinator, latest } = createCoordinator();
+		coordinator.useWorld('g3', 'myrtana');
+		coordinator.toggleCollectedPlace(bolts, 'ground:item-1');
+		coordinator.toggleCollectedPlace({ id: 'item:ROSA', name: 'Rosa' }, 'ground:item-9');
+		coordinator.removeCollectedItem(bolts.id);
+		expect(latest().collectedItems.map((item) => item.entryId)).toEqual(['item:ROSA']);
+	});
+
+	it('odhacza i cofa odhaczenie questa', () => {
 		const { coordinator, latest } = createCoordinator();
 		coordinator.useWorld('g2nk', 'khorinis');
-		coordinator.useEntryTotals({ items: 8, quests: 4 });
-		coordinator.toggleCollected(sword);
-		coordinator.toggleCollected(quest);
+		coordinator.toggleQuestCollected(quest);
+		expect(coordinator.isQuestCollected(quest.id)).toBe(true);
+		expect(latest().collectedQuestIds).toEqual([quest.id]);
+		expect(latest().collectedQuests).toEqual([{ questId: quest.id, name: 'Zadanie' }]);
+		coordinator.toggleQuestCollected(quest);
+		expect(latest().collectedQuests).toEqual([]);
+	});
+
+	it('liczy postęp względem liczby miejsc przedmiotów i questów świata', () => {
+		const { coordinator, latest } = createCoordinator();
+		coordinator.useWorld('g2nk', 'khorinis');
+		coordinator.useEntryTotals({ itemPlaces: 8, quests: 4 });
+		coordinator.toggleCollectedPlace(bolts, 'ground:item-1');
+		coordinator.toggleQuestCollected(quest);
 		expect(latest().progress).toEqual([
-			{ type: 'item', label: 'Przedmioty', collected: 1, total: 8, percentLabel: '12,5%' },
-			{ type: 'quest', label: 'Questy', collected: 1, total: 4, percentLabel: '25%' }
+			{
+				kind: 'places',
+				label: 'Miejsca przedmiotów',
+				collected: 1,
+				total: 8,
+				percentLabel: '12,5%'
+			},
+			{ kind: 'quests', label: 'Questy', collected: 1, total: 4, percentLabel: '25%' }
 		]);
 	});
 
 	it('bez znanej liczby wpisów nie podaje procentu', () => {
 		const { coordinator, latest } = createCoordinator();
 		coordinator.useWorld('g2nk', 'khorinis');
-		coordinator.toggleCollected(sword);
+		coordinator.toggleCollectedPlace(bolts, 'ground:item-1');
 		expect(latest().progress[0]).toMatchObject({ total: null, percentLabel: null });
 	});
 
-	it('ten sam wpis w innym świecie liczy się osobno', () => {
+	it('to samo miejsce w innym świecie liczy się osobno', () => {
 		const { coordinator, latest } = createCoordinator();
 		coordinator.useWorld('g2nk', 'khorinis');
-		coordinator.toggleCollected(sword);
+		coordinator.toggleCollectedPlace(bolts, 'ground:item-1');
 		coordinator.useWorld('g1', 'gornicza-dolina');
-		expect(coordinator.isCollected(sword.id)).toBe(false);
-		coordinator.toggleCollected(sword);
-		coordinator.removeCollected(sword.id);
+		expect(coordinator.listCollectedPlaceKeys(bolts.id).size).toBe(0);
+		coordinator.toggleCollectedPlace(bolts, 'ground:item-1');
+		coordinator.removeCollectedItem(bolts.id);
 		coordinator.useWorld('g2nk', 'khorinis');
-		expect(latest().collectedEntryIds).toEqual([sword.id]);
+		expect(latest().collectedPlaces).toHaveLength(1);
 	});
 });
 
@@ -194,7 +232,8 @@ describe('NotebookCoordinator: import', () => {
 		const { coordinator, latest } = createCoordinator();
 		coordinator.useWorld('g2nk', 'khorinis');
 		coordinator.addPin(position);
-		coordinator.toggleCollected({ id: 'item:A', name: 'A', type: 'item' });
+		coordinator.toggleQuestCollected({ id: 'quest:A', name: 'A' });
+		coordinator.toggleCollectedPlace({ id: 'item:A', name: 'A' }, 'ground:item-1');
 		const exported = coordinator.exportData();
 
 		const counts = coordinator.importData({
@@ -202,19 +241,25 @@ describe('NotebookCoordinator: import', () => {
 				...exported.pins,
 				{ ...exported.pins[0], id: 'inny', gameId: 'g1', worldId: 'gornicza-dolina' }
 			],
-			collected: [
-				...exported.collected,
+			collectedQuests: [
+				...exported.collectedQuests,
+				{ gameId: 'g1', worldId: 'gornicza-dolina', questId: 'quest:B', questName: 'B' }
+			],
+			collectedPlaces: [
+				...exported.collectedPlaces,
+				...exported.collectedPlaces,
 				{
 					gameId: 'g1',
 					worldId: 'gornicza-dolina',
 					entryId: 'item:B',
-					entryType: 'item',
-					entryName: 'B'
+					entryName: 'B',
+					placeKey: 'ground:item-7'
 				}
 			]
 		});
-		expect(counts).toEqual({ pins: 1, collected: 1 });
+		expect(counts).toEqual({ pins: 1, collected: 2 });
 		expect(latest().pins).toHaveLength(1);
 		expect(coordinator.exportData().pins).toHaveLength(2);
+		expect(coordinator.exportData().collectedPlaces).toHaveLength(2);
 	});
 });

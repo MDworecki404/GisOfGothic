@@ -1,4 +1,5 @@
 import { describeCategory } from '#lib/data/category-names.js';
+import { buildPlaceKey, isCollectiblePlace } from '#lib/data/place-key.js';
 import { LootPresenter } from '#lib/services/loot/loot-presenter.js';
 import { EncyclopediaLinkBuilder } from '#lib/services/encyclopedia/encyclopedia-link-builder.js';
 import type {
@@ -56,6 +57,10 @@ export interface EntryFact {
 
 export interface PlaceSummary {
 	index: number;
+	/** Stały klucz miejsca (`buildPlaceKey`), pod którym zapisuje się odhaczenie. */
+	key: string;
+	/** Przedmiot można odhaczyć jako zebrany w tym miejscu; losowy łup i miejsca innych wpisów nie. */
+	isCollectible: boolean;
 	description: string;
 	kindLabel: string;
 	color: string;
@@ -116,7 +121,9 @@ export class SearchEntryPresenter {
 			lootSources: this.lootPresenter.describeLootSources(entry.loot ?? []),
 			encyclopediaUrl:
 				entry.type !== 'item' ? this.encyclopediaLinkBuilder.buildSearchUrl(entry.name) : null,
-			places: entry.places.map((place, index) => this.presentPlace(place, index))
+			places: entry.places.map((place, index) =>
+				this.presentPlace(place, index, entry.type === 'item')
+			)
 		};
 	}
 
@@ -177,12 +184,14 @@ export class SearchEntryPresenter {
 		return facts;
 	}
 
-	private presentPlace(place: Place, index: number): PlaceSummary {
+	private presentPlace(place: Place, index: number, isItemEntry: boolean): PlaceSummary {
 		const presentation = place.role
 			? QUEST_ROLE_PRESENTATION[place.role]
 			: PLACE_KIND_PRESENTATION[place.kind];
 		return {
 			index,
+			key: buildPlaceKey(place),
+			isCollectible: isItemEntry && isCollectiblePlace(place),
 			description: capitalize(place.label),
 			kindLabel: place.set ? 'Losowy łup' : presentation.label,
 			color: pickPlaceColor(place),

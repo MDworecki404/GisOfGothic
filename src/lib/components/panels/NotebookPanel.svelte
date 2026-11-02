@@ -73,11 +73,11 @@
 
 <h3 class="group-label mt-5 mb-1">Co zebrałem</h3>
 <p class="text-sm text-muted-foreground">
-	Odhaczaj przedmioty i questy w ich kartach w wyszukiwarce.
+	W karcie przedmiotu odhaczasz każde miejsce osobno, a w karcie questa cały quest.
 </p>
 {#if notebook}
 	<ul class="mt-2 space-y-2" aria-label="Postęp zbierania">
-		{#each notebook.progress as progress (progress.type)}
+		{#each notebook.progress as progress (progress.kind)}
 			<li>
 				<div class="flex items-baseline justify-between text-sm">
 					<span>{progress.label}</span>
@@ -97,30 +97,57 @@
 		{/each}
 	</ul>
 
-	{#if notebook.collected.length > 0}
-		<ul class="mt-3 text-sm" aria-label="Zebrane wpisy">
-			{#each notebook.collected as entry (entry.entryId)}
+	{#snippet collectedList(
+		label: string,
+		rows: readonly { id: string; name: string; description: string }[],
+		remove: (id: string) => void
+	)}
+		<ul class="mt-3 text-sm" aria-label={label}>
+			{#each rows as row (row.id)}
 				<li class="flex items-center justify-between gap-2 border-t border-border/60">
 					<button
 						class="list-row flex min-w-0 flex-1 items-center justify-between gap-3 px-1 text-left"
 						onclick={() => {
 							geoportal.selectTool('search');
-							geoportal.selectSearchEntry(entry.entryId);
+							geoportal.selectSearchEntry(row.id);
 						}}
 					>
-						<span class="truncate text-primary">{entry.name}</span>
-						<span class="text-caption text-muted-foreground">{entry.typeLabel}</span>
+						<span class="truncate text-primary">{row.name}</span>
+						<span class="text-caption text-muted-foreground">{row.description}</span>
 					</button>
 					<button
 						class="button-quiet shrink-0"
-						aria-label="Usuń z listy: {entry.name}"
-						onclick={() => geoportal.removeFromCollected(entry.entryId)}
+						aria-label="Usuń z listy: {row.name}"
+						onclick={() => remove(row.id)}
 					>
 						Usuń
 					</button>
 				</li>
 			{/each}
 		</ul>
+	{/snippet}
+
+	{#if notebook.collectedItems.length > 0}
+		{@render collectedList(
+			'Zebrane przedmioty',
+			notebook.collectedItems.map((item) => ({
+				id: item.entryId,
+				name: item.name,
+				description: `${item.placeCount} ${item.placeCount === 1 ? 'miejsce' : 'miejsc'}`
+			})),
+			(entryId) => geoportal.removeCollectedItem(entryId)
+		)}
+	{/if}
+	{#if notebook.collectedQuests.length > 0}
+		{@render collectedList(
+			'Wykonane questy',
+			notebook.collectedQuests.map((quest) => ({
+				id: quest.questId,
+				name: quest.name,
+				description: 'quest'
+			})),
+			(questId) => geoportal.removeCollectedQuest(questId)
+		)}
 	{/if}
 {/if}
 

@@ -373,12 +373,54 @@ test('lista gier pokazuje światy dopiero po najechaniu i zamyka się klawiszem 
 	await expect(worldMenu).toHaveCount(0);
 });
 
-test('kartę przedmiotu da się odhaczyć, a postęp widać w Notatniku', async ({ page }) => {
+test('miejsca przedmiotu odhacza się osobno, a postęp widać w Notatniku', async ({ page }) => {
 	await page.goto('/g2nk/khorinis?wpis=item:HOLY_HAMMER_MIS');
-	const toggle = page.getByRole('button', { name: 'Oznacz jako zebrany' });
+	const placeCheckboxes = page.getByRole('checkbox', { name: /^Zebrane:/ });
+	await expect(placeCheckboxes.first()).toBeVisible({ timeout: 30_000 });
+	const placeCount = await placeCheckboxes.count();
+	expect(placeCount).toBeGreaterThan(1);
+	await expect(page.getByRole('button', { name: 'Oznacz jako zebrany' })).toHaveCount(0);
+
+	await placeCheckboxes.first().check();
+	await expect(page.getByRole('status').filter({ hasText: 'Zebrano 1 z' })).toContainText(
+		`Zebrano 1 z ${placeCount} miejsc`
+	);
+	await expect(placeCheckboxes.nth(1)).not.toBeChecked();
+
+	await page
+		.getByRole('navigation', { name: 'Narzędzia' })
+		.getByRole('button', { name: 'Notatnik' })
+		.click();
+	await expect(page.getByRole('list', { name: 'Zebrane przedmioty' })).toContainText('1 miejsce');
+	await expect(page.getByRole('list', { name: 'Postęp zbierania' })).toContainText(
+		/Miejsca przedmiotów\s*1 z/
+	);
+
+	await page.reload();
+	await page.getByRole('button', { name: /Usuń z listy: Święty młot/ }).click();
+	await expect(page.getByRole('list', { name: 'Zebrane przedmioty' })).toHaveCount(0);
+});
+
+test('zbierz wszystkie odhacza wszystkie miejsca przedmiotu i można je odznaczyć', async ({
+	page
+}) => {
+	await page.goto('/g2nk/khorinis?wpis=item:HOLY_HAMMER_MIS');
+	const placeCheckboxes = page.getByRole('checkbox', { name: /^Zebrane:/ });
+	await expect(placeCheckboxes.first()).toBeVisible({ timeout: 30_000 });
+	const placeCount = await placeCheckboxes.count();
+
+	await page.getByRole('button', { name: 'Zbierz wszystkie' }).click();
+	await expect(page.getByText(`Zebrano ${placeCount} z ${placeCount} miejsc`)).toBeVisible();
+	await page.getByRole('button', { name: 'Odznacz wszystkie' }).click();
+	await expect(page.getByText(`Zebrano 0 z ${placeCount} miejsc`)).toBeVisible();
+});
+
+test('quest odhacza się jako całość i trafia na listę w Notatniku', async ({ page }) => {
+	await page.goto('/g2nk/khorinis?wpis=quest:TOPIC_RESCUEBENNET');
+	const toggle = page.getByRole('button', { name: 'Oznacz jako wykonany' });
 	await expect(toggle).toBeVisible({ timeout: 30_000 });
 	await toggle.click();
-	await expect(page.getByRole('button', { name: 'Mam ten przedmiot' })).toHaveAttribute(
+	await expect(page.getByRole('button', { name: 'Quest wykonany' })).toHaveAttribute(
 		'aria-pressed',
 		'true'
 	);
@@ -387,14 +429,9 @@ test('kartę przedmiotu da się odhaczyć, a postęp widać w Notatniku', async 
 		.getByRole('navigation', { name: 'Narzędzia' })
 		.getByRole('button', { name: 'Notatnik' })
 		.click();
-	await expect(page.getByRole('list', { name: 'Zebrane wpisy' })).toContainText('przedmiot');
-	await expect(page.getByRole('list', { name: 'Postęp zbierania' })).toContainText(
-		/Przedmioty\s*1 z/
-	);
-
-	await page.reload();
+	await expect(page.getByRole('list', { name: 'Wykonane questy' })).toContainText('quest');
 	await page.getByRole('button', { name: /Usuń z listy/ }).click();
-	await expect(page.getByRole('list', { name: 'Zebrane wpisy' })).toHaveCount(0);
+	await expect(page.getByRole('list', { name: 'Wykonane questy' })).toHaveCount(0);
 });
 
 test('Notatnik przechodzi w tryb stawiania pinezki i pozwala go anulować', async ({ page }) => {

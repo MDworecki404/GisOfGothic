@@ -11,11 +11,15 @@ urządzeniami.
 ## Decyzja
 
 - Własne dane gracza trzyma `NotebookStore` w `localStorage` (klucz `gisofgothic:notebook:v1`): pinezki
-  (pozycja w metrach od kotwicy świata, nazwa, notatka) i lista „co zebrałem” (przedmioty i questy, osobno dla
-  każdego świata). Zakładki zostają w `BookmarkStore`.
+  (pozycja w metrach od kotwicy świata, nazwa, notatka) i lista „co zebrałem” (wykonane questy oraz zebrane
+  miejsca przedmiotów, osobno dla każdego świata). Zakładki zostają w `BookmarkStore`.
+- Odhacza się miejsca przedmiotu, nie cały przedmiot: jeden wpis (np. bełty) ma w świecie nawet tysiąc miejsc,
+  więc odhaczenie wpisu nic by nie mówiło. Miejsce identyfikuje klucz z rodzaju i `ref` obiektu z GeoJSON, a nie
+  numer na liście, żeby odhaczenia przeżyły ponowny eksport danych. Quest odhacza się jako całość.
 - Przenoszenie między urządzeniami to plik JSON (`UserDataBackupCodec`): zakładki, pinezki i lista ze wszystkich
   światów w jednym pliku z nazwą aplikacji i wersją formatu. Import dołącza tylko rekordy, których jeszcze nie ma
-  (pinezki i zakładki po identyfikatorze, wpisy listy po grze, świecie i wpisie), więc można go powtarzać.
+  (pinezki i zakładki po identyfikatorze, questy po grze, świecie i identyfikatorze, miejsca dodatkowo po kluczu
+  miejsca), więc można go powtarzać.
 - Plik jest zwykłym zapisem danych użytkownika; zasada ADR 0012 o zasobach gry go nie dotyczy.
 - Udostępnianie widoku nie ma osobnego mechanizmu: adres strony już niesie cały widok (ADR 0007), więc przycisk
   „Kopiuj link” kopiuje `window.location.href`.

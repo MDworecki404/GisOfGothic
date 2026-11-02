@@ -1,3 +1,4 @@
+import { isCollectiblePlace } from './place-key.js';
 import { parseMetadata, parseSearchIndex } from './parsers.js';
 import { parseQuestCatalog } from './quest-parsers.js';
 import { parseTreasureSetCatalog } from './treasure-set-parsers.js';
@@ -71,6 +72,13 @@ export class GeoportalDataLoader {
 			else quests++;
 		}
 		return { items, characters, quests };
+	}
+
+	/** Liczba odhaczalnych miejsc wszystkich przedmiotów świata: mianownik postępu zbierania. */
+	countCollectibleItemPlaces(index: SearchIndex): number {
+		return index.entries
+			.filter((entry) => entry.type === 'item')
+			.reduce((sum, entry) => sum + entry.places.filter(isCollectiblePlace).length, 0);
 	}
 
 	private async fetchJson(fileName: string): Promise<unknown> {
