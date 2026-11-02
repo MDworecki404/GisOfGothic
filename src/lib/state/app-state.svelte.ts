@@ -2,6 +2,10 @@ import { SvelteSet } from 'svelte/reactivity';
 import type { IndexCounts } from '#lib/data/types.js';
 import type { BookmarkView } from '#lib/services/bookmarks/bookmarks-coordinator.js';
 import type { NotebookView } from '#lib/services/notebook/notebook-coordinator.js';
+import {
+	NO_WORLD_COMPARISON,
+	type WorldComparisonView
+} from '#lib/services/comparison/world-comparison-coordinator.js';
 import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
 import {
 	DEFAULT_CAMERA_PROJECTION,
@@ -111,6 +115,7 @@ export class AppState {
 	bookmarks = $state.raw<BookmarkView[]>([]);
 	bookmarkStorageFailed = $state(false);
 	notebook = $state.raw<NotebookView | null>(null);
+	worldComparison = $state.raw<WorldComparisonView>(NO_WORLD_COMPARISON);
 	selectedChapter = $state<ChapterNumber | null>(null);
 	areChaptersAvailable = $state(true);
 	areRoutineTimesApproximate = $state(false);
@@ -205,6 +210,9 @@ export class AppState {
 		});
 		eventBus.subscribe('notebook-changed', ({ notebook }) => {
 			this.notebook = notebook;
+		});
+		eventBus.subscribe('world-comparison-changed', ({ comparison }) => {
+			this.worldComparison = comparison;
 		});
 		eventBus.subscribe('analysis-changed', ({ analysis }) => {
 			this.analysis = analysis;

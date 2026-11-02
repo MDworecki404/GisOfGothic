@@ -508,3 +508,27 @@ test('filtr rozdziału zawęża questy do jednego rozdziału', async ({ page }) 
 	await page.getByRole('button', { name: 'Questy' }).click();
 	await expect(page.getByText('Wszystko: 165')).toBeVisible();
 });
+
+test('porównanie światów: wybór drugiego świata pokazuje suwak, który da się przesuwać klawiaturą', async ({
+	page
+}) => {
+	await page.goto('/g2nk/khorinis');
+	await page.getByRole('button', { name: 'Porównaj światy' }).click();
+	const picker = page.getByRole('group', { name: 'Porównanie światów' });
+	await expect(picker.getByRole('button', { name: 'Khorinis' })).toHaveCount(0);
+	await picker.getByRole('button', { name: 'Jarkendar' }).click();
+
+	const slider = page.getByRole('slider', { name: 'Suwak porównania światów' });
+	await expect(slider).toBeVisible({ timeout: 30_000 });
+	await expect(slider).toHaveAttribute('aria-valuenow', '50');
+	await expect(page.getByRole('status').filter({ hasText: 'Jarkendar' })).toContainText(
+		'Gothic 2: Noc Kruka — Khorinis'
+	);
+
+	await slider.focus();
+	await page.keyboard.press('ArrowRight');
+	await expect(slider).toHaveAttribute('aria-valuenow', '52');
+
+	await page.getByRole('button', { name: 'Zakończ porównanie światów' }).click();
+	await expect(slider).toHaveCount(0);
+});

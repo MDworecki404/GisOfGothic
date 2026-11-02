@@ -105,6 +105,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `view-mode-changed`          | `mode` (`view-3d` albo `view-2d`), `sliceHeightMetres` lub `null`                        | wejście w tryb 2D albo wyjście z niego, zmiana wysokości cięcia, odtworzenie z linku lub zakładki |
 | `slice-height-range-changed` | `range` (`minimumMetres`, `maximumMetres`) lub `null`                                    | po wczytaniu modelu świata (zakres suwaka cięcia wynika z granic modelu)                          |
 | `map-overlays-changed`       | `overlays` (`areContoursVisible`, `isGridVisible`)                                       | przełączenie poziomic albo siatki w panelu Warstwy                                                |
+| `world-comparison-changed`   | `comparison` (stan, podpisy światów, położenie suwaka, błąd)                             | start, koniec albo zmiana suwaka porównania światów, wynik wczytania drugiego świata              |
 | `bookmarks-changed`          | `bookmarks`, `hasStorageError`                                                           | wczytano, dodano albo usunięto zakładkę (lista dotyczy otwartego świata)                          |
 | `notebook-changed`           | `notebook` (pinezki, wpisy listy, postęp, tryb stawiania, błąd zapisu)                   | dodano, zmieniono albo usunięto pinezkę lub wpis listy, zmiana trybu stawiania, wczytanie świata  |
 | `measurement-changed`        | `measurement` (tryb, wierzchołki, podsumowanie, profil, czasy przejścia, wskazany punkt) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie                          |
@@ -399,6 +400,17 @@ widoki „Z góry”/„Skos” szacują odległość rzutem środka świata na 
 (`MapService.estimateDistanceAlongViewToWorldCentre`); gdy nie ma i takiego punktu (kamera patrzy poza model, np. ponad horyzont), celem jest środek modelu świata.
 
 Decyzja i wyniki spike'a: [ADR 0021](adr/0021-rzut-kamery.md).
+
+## Porównanie światów
+
+Przycisk „Porównaj światy” w kontrolkach mapy otwiera listę pozostałych światów (`WorldComparisonPopover`). Wybór uruchamia
+`WorldComparisonCoordinator.start`: koordynator czyta kotwicę drugiego świata z jego `metadata.json`, a `MapService`
+dokłada drugi tileset (`showComparisonTileset`) z `splitDirection = RIGHT`; bieżący model i obiekty świata dostają `LEFT`.
+`scene.splitPosition` (0–1) ustawia nakładka `WorldComparisonSlider` przez fasadę (`setWorldComparisonSplit`); koordynator
+przycina położenie do 3–97%. Podpis świata zawiera nazwę gry, bo „Górnicza Dolina” jest w Gothicu i w Gothicu 2.
+Zmiana otwartego świata (`usePrimaryWorld`) i usunięcie modelu świata (`removeWorldTileset`) kończą porównanie, a po
+ponownym utworzeniu mapy `showOnMap` kładzie drugi świat od nowa. Stan jest sesyjny i nie wchodzi do adresu.
+Decyzje: [ADR 0030](adr/0030-porownanie-swiatow-podzialem-ekranu.md).
 
 ## Widok 2D
 

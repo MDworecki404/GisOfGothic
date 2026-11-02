@@ -10,6 +10,7 @@ import {
 	type UserDataImportResult
 } from './backup/user-data-transfer.js';
 import { NotebookCoordinator } from './notebook/notebook-coordinator.js';
+import { WorldComparisonCoordinator } from './comparison/world-comparison-coordinator.js';
 import type { NotebookStore } from './notebook/notebook-store.js';
 import type { CameraView } from './bookmarks/camera-view-codec.js';
 import { ViewLinkCodec, type SharedViewState } from './bookmarks/view-link-codec.js';
@@ -84,6 +85,7 @@ export class GeoportalFacade {
 	private readonly analysisCoordinator: AnalysisCoordinator;
 	private readonly bookmarksCoordinator: BookmarksCoordinator;
 	private readonly notebookCoordinator: NotebookCoordinator;
+	private readonly worldComparisonCoordinator: WorldComparisonCoordinator;
 	private readonly userDataTransfer: UserDataTransfer;
 	private readonly viewLinkCodec = new ViewLinkCodec();
 	private readonly flightInputMixer = new FlightInputMixer();
@@ -114,6 +116,11 @@ export class GeoportalFacade {
 			eventBus,
 			notebookStore,
 			() => this.mapService
+		);
+		this.worldComparisonCoordinator = new WorldComparisonCoordinator(
+			eventBus,
+			() => this.mapService,
+			async (world) => (await this.createDataLoader(world.dataBaseUrl).loadMetadata()).anchor
 		);
 		this.userDataTransfer = new UserDataTransfer(
 			this.bookmarksCoordinator,
@@ -155,13 +162,15 @@ export class GeoportalFacade {
 		);
 	}
 
-	openWorld(world: WorldDefinition): void {
+	/** `displayName` to podpis świata w porównaniu (z nazwą gry); domyślnie sama nazwa świata. */
+	openWorld(world: WorldDefinition, displayName: string = world.name): void {
 		if (this.currentWorld?.id === world.id && this.currentWorld.gameId === world.gameId) return;
 		this.currentWorld = world;
 		this.isWorldShownOnMap = false;
 		this.pendingCameraView = null;
 		this.bookmarksCoordinator.useWorld(world.gameId, world.id);
 		this.notebookCoordinator.useWorld(world.gameId, world.id);
+		this.worldComparisonCoordinator.usePrimaryWorld(world, displayName);
 		this.currentDataLoader = this.createDataLoader(world.dataBaseUrl);
 		this.eventBus.publish({
 			type: 'world-opened',
@@ -197,6 +206,7 @@ export class GeoportalFacade {
 		this.dataLayersCoordinator.showVisibleLayersOnMap();
 		this.timeCoordinator.showOnMap();
 		this.notebookCoordinator.showOnMap();
+		void this.worldComparisonCoordinator.showOnMap();
 		this.performanceCoordinator.showOnMap();
 		if (this.activeToolId === 'analysis') this.analysisCoordinator.activate();
 	}
@@ -243,6 +253,20 @@ export class GeoportalFacade {
 
 	deleteBookmark(bookmarkId: string): void {
 		this.bookmarksCoordinator.removeBookmark(bookmarkId);
+	}
+
+	/** Porównuje otwarty świat z innym: po lewej stronie suwaka zostaje otwarty, po prawej pojawia się wybrany. */
+	startWorldComparison(world: WorldDefinition, displayName: string = world.name): void {
+		void this.worldComparisonCoordinator.start(world, displayName);
+	}
+
+	stopWorldComparison(): void {
+		this.worldComparisonCoordinator.stop();
+	}
+
+	/** Ustawia suwak porównania jako ułamek szerokości mapy (0–1). */
+	setWorldComparisonSplit(fraction: number): void {
+		this.worldComparisonCoordinator.setSplitFraction(fraction);
 	}
 
 	/** Przechodzi w tryb stawiania pinezki: następne kliknięcie mapy dodaje ją w tym miejscu. */
@@ -733,6 +757,7 @@ export class GeoportalFacade {
 			if (!isStillCurrent()) return;
 			this.isWorldShownOnMap = true;
 			this.notebookCoordinator.showOnMap();
+			void this.worldComparisonCoordinator.showOnMap();
 			this.cameraProjectionCoordinator.showOnMap();
 			this.viewModeCoordinator.useSliceRange(mapService.readSliceHeightRange());
 			this.viewModeCoordinator.showOnMap();

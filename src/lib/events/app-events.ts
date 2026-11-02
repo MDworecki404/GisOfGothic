@@ -13,6 +13,7 @@ import type { CategoryOption, SearchTypeFilter } from '#lib/services/search/sear
 import type { AnalysisView } from '#lib/services/analysis/analysis-coordinator.js';
 import type { BookmarkView } from '#lib/services/bookmarks/bookmarks-coordinator.js';
 import type { NotebookView } from '#lib/services/notebook/notebook-coordinator.js';
+import type { WorldComparisonView } from '#lib/services/comparison/world-comparison-coordinator.js';
 import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
 import type { FeatureIdentification } from '#lib/services/layers/data-layer-catalog.js';
 import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator.js';
@@ -88,6 +89,7 @@ export type AppEvent =
 	| { type: 'chapter-changed'; chapter: ChapterNumber | null }
 	| { type: 'bookmarks-changed'; bookmarks: BookmarkView[]; hasStorageError: boolean }
 	| { type: 'notebook-changed'; notebook: NotebookView }
+	| { type: 'world-comparison-changed'; comparison: WorldComparisonView }
 	| {
 			type: 'time-of-day-changed';
 			minuteOfDay: number;
