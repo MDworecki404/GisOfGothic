@@ -585,7 +585,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 	 */
 	async showComparisonTileset(tilesetUrl: string, anchor: Anchor): Promise<void> {
 		const request = ++this.latestComparisonRequest;
-		this.removeComparisonTileset();
+		this.detachComparisonTileset();
 		const tileset = await Cesium3DTileset.fromUrl(tilesetUrl, {
 			modelMatrix: new WorldFrame(anchor).anchorToEcef
 		});
@@ -600,8 +600,13 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 		this.applyPrimarySplitDirection();
 	}
 
+	/** Zdejmuje drugi świat i unieważnia jego trwające wczytywanie. */
 	removeComparisonTileset(): void {
 		this.latestComparisonRequest++;
+		this.detachComparisonTileset();
+	}
+
+	private detachComparisonTileset(): void {
 		if (!this.comparisonTileset) return;
 		this.viewer.scene.primitives.remove(this.comparisonTileset);
 		this.comparisonTileset = null;
