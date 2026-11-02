@@ -25,6 +25,16 @@
 			: null
 	);
 
+	const collectedPlaceKeys = $derived(appState.collectedPlaceKeysOfSelectedEntry);
+	const collectiblePlaceCount = $derived(
+		appState.selectedEntry?.places.filter((place) => place.isCollectible).length ?? 0
+	);
+	const collectedPlaceCount = $derived(
+		appState.selectedEntry?.places.filter(
+			(place) => place.isCollectible && collectedPlaceKeys.has(place.key)
+		).length ?? 0
+	);
+
 	const hasQuery = $derived(appState.searchQuery.trim().length > 0);
 
 	const RESULTS_PAGE_SIZE = 60;
@@ -91,17 +101,13 @@
 		</p>
 
 		<div class="mt-2 flex flex-wrap gap-2">
-			{#if appState.isSelectedEntryCollectible}
+			{#if entry.type === 'quest'}
 				<button
-					class={appState.isSelectedEntryCollected ? 'button-ochre' : 'button-quiet'}
-					aria-pressed={appState.isSelectedEntryCollected}
-					onclick={() => geoportal.toggleCollectedStateOfSelectedEntry()}
+					class={appState.isSelectedQuestCollected ? 'button-ochre' : 'button-quiet'}
+					aria-pressed={appState.isSelectedQuestCollected}
+					onclick={() => geoportal.toggleCollectedStateOfSelectedQuest()}
 				>
-					{#if entry.type === 'quest'}
-						{appState.isSelectedEntryCollected ? 'Quest wykonany' : 'Oznacz jako wykonany'}
-					{:else}
-						{appState.isSelectedEntryCollected ? 'Mam ten przedmiot' : 'Oznacz jako zebrany'}
-					{/if}
+					{appState.isSelectedQuestCollected ? 'Quest wykonany' : 'Oznacz jako wykonany'}
 				</button>
 			{/if}
 			<CopyViewLinkButton />
@@ -216,9 +222,38 @@
 		<h4 class="group-label mt-4 mb-1">
 			Miejsca ({entry.places.length}): kliknij, aby polecieć
 		</h4>
+		{#if collectiblePlaceCount > 0}
+			<div class="mb-1 flex flex-wrap items-center justify-between gap-2">
+				<p class="text-sm tabular-nums" role="status">
+					Zebrano {collectedPlaceCount} z {collectiblePlaceCount} miejsc
+				</p>
+				<button
+					class="button-quiet"
+					onclick={() =>
+						geoportal.setCollectedStateOfAllPlacesOfSelectedItem(
+							collectedPlaceCount < collectiblePlaceCount
+						)}
+				>
+					{collectedPlaceCount < collectiblePlaceCount ? 'Zbierz wszystkie' : 'Odznacz wszystkie'}
+				</button>
+			</div>
+		{/if}
 		<ul class="tabular-nums">
 			{#each entry.places as place (place.index)}
-				<li class="border-t border-border/60">
+				<li
+					class="flex items-center border-t border-border/60 {collectedPlaceKeys.has(place.key)
+						? 'opacity-60'
+						: ''}"
+				>
+					{#if place.isCollectible}
+						<input
+							type="checkbox"
+							class="mx-2 size-5 shrink-0 accent-primary"
+							aria-label="Zebrane: {place.description}"
+							checked={collectedPlaceKeys.has(place.key)}
+							onchange={() => geoportal.toggleCollectedStateOfPlaceOfSelectedItem(place.key)}
+						/>
+					{/if}
 					<button
 						class="list-row grid w-full grid-cols-[12px_1fr_auto] items-center gap-2.5 px-1 py-2 text-left"
 						onclick={() => geoportal.flyToPlaceOfSelectedEntry(place.index)}

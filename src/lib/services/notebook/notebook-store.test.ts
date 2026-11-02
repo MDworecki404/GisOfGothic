@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { NotebookStore, readNotebookData, type NotebookStorage } from './notebook-store.js';
+import {
+	createEmptyNotebookData,
+	NotebookStore,
+	readNotebookData,
+	type NotebookStorage
+} from './notebook-store.js';
 
 class FakeStorage implements NotebookStorage {
 	readonly values = new Map<string, string>();
@@ -26,17 +31,20 @@ const pin = {
 };
 
 describe('NotebookStore', () => {
-	it('zapisuje i odczytuje pinezki oraz wpisy listy', () => {
+	it('zapisuje i odczytuje pinezki, questy i miejsca przedmiotów', () => {
 		const store = new NotebookStore(new FakeStorage());
 		const data = {
 			pins: [pin],
-			collected: [
+			collectedQuests: [
+				{ gameId: 'g2nk', worldId: 'khorinis', questId: 'quest:A', questName: 'A' }
+			],
+			collectedPlaces: [
 				{
-					gameId: 'g2nk',
-					worldId: 'khorinis',
-					entryId: 'item:A',
-					entryType: 'item' as const,
-					entryName: 'A'
+					gameId: 'g3',
+					worldId: 'myrtana',
+					entryId: 'item:B',
+					entryName: 'Bełt',
+					placeKey: 'ground:item-1'
 				}
 			]
 		};
@@ -50,21 +58,23 @@ describe('NotebookStore', () => {
 			'gisofgothic:notebook:v1',
 			JSON.stringify({
 				pins: [pin, { id: 'x' }, 5, { ...pin, east: 'daleko' }],
-				collected: [{ entryId: 'item:A', entryType: 'hologram' }]
+				collectedQuests: [{ questId: 'quest:A' }],
+				collectedPlaces: [{ entryId: 'item:A', placeKey: 5 }]
 			})
 		);
 		const loaded = new NotebookStore(storage).load();
 		expect(loaded.pins).toEqual([pin]);
-		expect(loaded.collected).toEqual([]);
+		expect(loaded.collectedQuests).toEqual([]);
+		expect(loaded.collectedPlaces).toEqual([]);
 
 		storage.setItem('gisofgothic:notebook:v1', '{nie json');
-		expect(new NotebookStore(storage).load()).toEqual({ pins: [], collected: [] });
+		expect(new NotebookStore(storage).load()).toEqual(createEmptyNotebookData());
 	});
 
 	it('bez pamięci przeglądarki zapis się nie udaje, ale odczyt jest pusty', () => {
 		const store = new NotebookStore(null);
-		expect(store.save({ pins: [], collected: [] })).toBe(false);
-		expect(store.load()).toEqual({ pins: [], collected: [] });
+		expect(store.save(createEmptyNotebookData())).toBe(false);
+		expect(store.load()).toEqual(createEmptyNotebookData());
 	});
 
 	it('brakująca notatka i data dostają wartości domyślne', () => {

@@ -1,7 +1,5 @@
 import { isRecord } from '#lib/data/parsers.js';
 
-export type CollectibleType = 'item' | 'quest';
-
 export interface SavedPin {
 	id: string;
 	gameId: string;
@@ -14,25 +12,34 @@ export interface SavedPin {
 	createdAt: string;
 }
 
-export interface CollectedEntry {
+export interface CollectedQuest {
+	gameId: string;
+	worldId: string;
+	questId: string;
+	questName: string;
+}
+
+/** Jedno odhaczone miejsce przedmiotu; `placeKey` pochodzi z `buildPlaceKey`. */
+export interface CollectedPlace {
 	gameId: string;
 	worldId: string;
 	entryId: string;
-	entryType: CollectibleType;
 	entryName: string;
+	placeKey: string;
 }
 
 export interface NotebookData {
 	pins: SavedPin[];
-	collected: CollectedEntry[];
+	collectedQuests: CollectedQuest[];
+	collectedPlaces: CollectedPlace[];
 }
 
 export type NotebookStorage = Pick<Storage, 'getItem' | 'setItem'>;
 
 const STORAGE_KEY = 'gisofgothic:notebook:v1';
 
-export function isCollectibleType(value: unknown): value is CollectibleType {
-	return value === 'item' || value === 'quest';
+export function createEmptyNotebookData(): NotebookData {
+	return { pins: [], collectedQuests: [], collectedPlaces: [] };
 }
 
 function readFiniteNumber(value: unknown): number | null {
@@ -69,19 +76,33 @@ export function readSavedPin(value: unknown): SavedPin | null {
 	};
 }
 
-export function readCollectedEntry(value: unknown): CollectedEntry | null {
+export function readCollectedQuest(value: unknown): CollectedQuest | null {
 	if (!isRecord(value)) return null;
-	const { gameId, worldId, entryId, entryType, entryName } = value;
+	const { gameId, worldId, questId, questName } = value;
+	if (
+		typeof gameId !== 'string' ||
+		typeof worldId !== 'string' ||
+		typeof questId !== 'string' ||
+		typeof questName !== 'string'
+	) {
+		return null;
+	}
+	return { gameId, worldId, questId, questName };
+}
+
+export function readCollectedPlace(value: unknown): CollectedPlace | null {
+	if (!isRecord(value)) return null;
+	const { gameId, worldId, entryId, entryName, placeKey } = value;
 	if (
 		typeof gameId !== 'string' ||
 		typeof worldId !== 'string' ||
 		typeof entryId !== 'string' ||
 		typeof entryName !== 'string' ||
-		!isCollectibleType(entryType)
+		typeof placeKey !== 'string'
 	) {
 		return null;
 	}
-	return { gameId, worldId, entryId, entryType, entryName };
+	return { gameId, worldId, entryId, entryName, placeKey };
 }
 
 function readList<T>(value: unknown, readItem: (item: unknown) => T | null): T[] {
@@ -92,18 +113,20 @@ function readList<T>(value: unknown, readItem: (item: unknown) => T | null): T[]
 	});
 }
 
-/** Wyciąga z dowolnego JSON-a tylko poprawne pinezki i wpisy listy; resztę po cichu pomija. */
+/** Wyciąga z dowolnego JSON-a tylko poprawne pinezki i odhaczenia; resztę po cichu pomija. */
 export function readNotebookData(value: unknown): NotebookData {
-	if (!isRecord(value)) return { pins: [], collected: [] };
+	if (!isRecord(value)) return createEmptyNotebookData();
 	return {
 		pins: readList(value.pins, readSavedPin),
-		collected: readList(value.collected, readCollectedEntry)
+		collectedQuests: readList(value.collectedQuests, readCollectedQuest),
+		collectedPlaces: readList(value.collectedPlaces, readCollectedPlace)
 	};
 }
 
 /**
- * Pinezki i lista „co zebrałem” w `localStorage` przeglądarki (jeden klucz, obiekt JSON).
- * Niedostępna pamięć albo śmieci dają pusty notatnik, a nieudany zapis jest zgłaszany wynikiem.
+ * Pinezki oraz lista „co zebrałem” (wykonane questy i zebrane miejsca przedmiotów) w `localStorage`
+ * przeglądarki (jeden klucz, obiekt JSON). Niedostępna pamięć albo śmieci dają pusty notatnik,
+ * a nieudany zapis jest zgłaszany wynikiem.
  */
 export class NotebookStore {
 	constructor(private readonly storage: NotebookStorage | null) {}
@@ -119,10 +142,10 @@ export class NotebookStore {
 	load(): NotebookData {
 		try {
 			const text = this.storage?.getItem(STORAGE_KEY);
-			if (!text) return { pins: [], collected: [] };
+			if (!text) return createEmptyNotebookData();
 			return readNotebookData(JSON.parse(text));
 		} catch {
-			return { pins: [], collected: [] };
+			return createEmptyNotebookData();
 		}
 	}
 

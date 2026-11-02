@@ -23,7 +23,8 @@ export class UserDataBackupCodec {
 				exportedAt: exportedAt.toISOString(),
 				bookmarks: backup.bookmarks,
 				pins: backup.notebook.pins,
-				collected: backup.notebook.collected
+				collectedQuests: backup.notebook.collectedQuests,
+				collectedPlaces: backup.notebook.collectedPlaces
 			},
 			null,
 			2

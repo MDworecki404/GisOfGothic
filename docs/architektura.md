@@ -279,7 +279,7 @@ link” składa adres z `linkQuery` zakładki. Decyzje: [ADR 0007](adr/0007-wido
 
 Narzędzie Notatnik (`NotebookPanel`) ma dwie części. `NotebookCoordinator` trzyma dane otwartego świata (zapis obejmuje
 wszystkie światy) i publikuje `notebook-changed`; `NotebookStore` zapisuje je w `localStorage` (klucz
-`gisofgothic:notebook:v1`, obiekt z listami `pins` i `collected`), waliduje każdy rekord przy odczycie, a nieudany zapis
+`gisofgothic:notebook:v1`, obiekt z listami `pins`, `collectedQuests` i `collectedPlaces`), waliduje każdy rekord przy odczycie, a nieudany zapis
 zgłasza polem `hasStorageError`.
 
 - **Pinezki.** „Postaw pinezkę na mapie” włącza tryb umieszczania (`startPlacingPin`); gdy narzędziem jest Notatnik,
@@ -288,9 +288,17 @@ zgłasza polem `hasStorageError`.
   (`services/map/`) rysuje kropkę z podpisem w dwóch kolekcjach prymitywów, widoczną także przez dachy. Pinezki zdejmuje
   `useWorld` (zmiana świata), a pokazuje `showOnMap` po wczytaniu modelu świata i po utworzeniu mapy, bo pozycje
   przelicza rama świata, która istnieje dopiero po wczytaniu tilesetu. Wyjście z narzędzia anuluje tryb umieszczania.
-- **Co zebrałem.** Karta przedmiotu i questa w wyszukiwarce ma przycisk „Oznacz jako zebrany” / „wykonany”
-  (`toggleCollectedStateOfSelectedEntry`). Wpis listy to gra, świat, identyfikator, rodzaj i nazwa, więc lista działa
-  bez indeksu. Postęp (`CollectionProgressView`) dzieli liczbę odhaczonych przez liczbę wpisów świata z indeksu
+- **Co zebrałem.** Odhacza się dwie rzeczy. Quest jest jeden, więc karta questa ma przycisk „Oznacz jako wykonany”
+  (`toggleCollectedStateOfSelectedQuest`). Przedmiot występuje w wielu miejscach (bełtów w Myrtanie bywa tysiąc), więc
+  odhacza się każde miejsce osobno: karta przedmiotu ma pole przy miejscu (`toggleCollectedStateOfPlaceOfSelectedItem`)
+  oraz „Zbierz wszystkie” / „Odznacz wszystkie”. Miejsce rozpoznaje stały klucz z `buildPlaceKey`
+  (`data/place-key.ts`: rodzaj miejsca i `ref` obiektu z GeoJSON, a bez niego współrzędne), nie numer na liście,
+  więc odhaczenia przeżywają ponowny eksport danych. Losowy łup Gothica 3 (`set`) nie jest odhaczalny.
+  `SearchCoordinator` dostaje funkcję `getCollectedPlaceKeys` i maluje zebrane znaczniki przygaszonym kolorem,
+  a fasada po każdej zmianie odświeża znaczniki (`showSelectedEntryOnMap(false)`). Wpis zebranego miejsca zawiera
+  grę, świat, identyfikator i nazwę przedmiotu, więc lista działa bez indeksu. Postęp (`CollectionProgressView`)
+  dzieli liczbę zebranych miejsc przez liczbę odhaczalnych miejsc wszystkich przedmiotów świata
+  (`GeoportalDataLoader.countCollectibleItemPlaces`), a liczbę wykonanych questów przez liczbę questów
   (`useEntryTotals` po `search-index-loaded`); bez indeksu pokazuje tylko liczbę.
 - **Kopia zapasowa.** `UserDataTransfer` składa plik JSON z zakładek (`BookmarksCoordinator.exportViews`), pinezek
   i listy (`NotebookCoordinator.exportData`) przez `UserDataBackupCodec` (pola `application`, `version`, `exportedAt`).

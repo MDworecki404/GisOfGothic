@@ -119,7 +119,11 @@ export class GeoportalFacade {
 			this.bookmarksCoordinator,
 			this.notebookCoordinator
 		);
-		this.searchCoordinator = new SearchCoordinator(eventBus, () => this.mapService);
+		this.searchCoordinator = new SearchCoordinator(
+			eventBus,
+			() => this.mapService,
+			(entryId) => this.notebookCoordinator.listCollectedPlaceKeys(entryId)
+		);
 		this.analysisCoordinator = new AnalysisCoordinator(
 			eventBus,
 			() => this.searchCoordinator.currentSearchService,
@@ -266,15 +270,40 @@ export class GeoportalFacade {
 		this.notebookCoordinator.flyToPin(pinId);
 	}
 
-	/** Odhacza albo cofa odhaczenie wybranego przedmiotu lub questa na liście „co zebrałem”. */
-	toggleCollectedStateOfSelectedEntry(): void {
+	/** Odhacza albo cofa odhaczenie wybranego questa na liście „co zebrałem”. */
+	toggleCollectedStateOfSelectedQuest(): void {
 		const entry = this.searchCoordinator.selectedEntryReference;
-		if (!entry || (entry.type !== 'item' && entry.type !== 'quest')) return;
-		this.notebookCoordinator.toggleCollected({ id: entry.id, name: entry.name, type: entry.type });
+		if (entry?.type !== 'quest') return;
+		this.notebookCoordinator.toggleQuestCollected({ id: entry.id, name: entry.name });
 	}
 
-	removeFromCollected(entryId: string): void {
-		this.notebookCoordinator.removeCollected(entryId);
+	/** Odhacza albo cofa odhaczenie jednego miejsca wybranego przedmiotu (klucz z `PlaceSummary.key`). */
+	toggleCollectedStateOfPlaceOfSelectedItem(placeKey: string): void {
+		const item = this.searchCoordinator.selectedItemCollectiblePlaces;
+		if (!item || !item.placeKeys.includes(placeKey)) return;
+		this.notebookCoordinator.toggleCollectedPlace({ id: item.id, name: item.name }, placeKey);
+		this.searchCoordinator.showSelectedEntryOnMap(false);
+	}
+
+	/** Odhacza wszystkie miejsca wybranego przedmiotu albo cofa odhaczenie wszystkich. */
+	setCollectedStateOfAllPlacesOfSelectedItem(isCollected: boolean): void {
+		const item = this.searchCoordinator.selectedItemCollectiblePlaces;
+		if (!item) return;
+		this.notebookCoordinator.setPlacesCollected(
+			{ id: item.id, name: item.name },
+			item.placeKeys,
+			isCollected
+		);
+		this.searchCoordinator.showSelectedEntryOnMap(false);
+	}
+
+	removeCollectedQuest(questId: string): void {
+		this.notebookCoordinator.removeCollectedQuest(questId);
+	}
+
+	removeCollectedItem(entryId: string): void {
+		this.notebookCoordinator.removeCollectedItem(entryId);
+		this.searchCoordinator.showSelectedEntryOnMap(false);
 	}
 
 	exportUserData(): UserDataExport {
@@ -282,7 +311,9 @@ export class GeoportalFacade {
 	}
 
 	importUserData(text: string): UserDataImportResult {
-		return this.userDataTransfer.importBackup(text);
+		const result = this.userDataTransfer.importBackup(text);
+		this.searchCoordinator.showSelectedEntryOnMap(false);
+		return result;
 	}
 
 	/**
@@ -652,7 +683,10 @@ export class GeoportalFacade {
 			guildNameBook.useGuildNames(metadata.guild_names);
 			this.searchCoordinator.useIndex(index);
 			const counts = dataLoader.countEntriesByType(index);
-			this.notebookCoordinator.useEntryTotals({ items: counts.items, quests: counts.quests });
+			this.notebookCoordinator.useEntryTotals({
+				itemPlaces: dataLoader.countCollectibleItemPlaces(index),
+				quests: counts.quests
+			});
 			this.eventBus.publish({
 				type: 'search-index-loaded',
 				counts

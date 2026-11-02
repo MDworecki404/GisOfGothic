@@ -1,14 +1,13 @@
-import type {
-	QuestCatalog,
-	SearchEntry,
-	SearchEntryType,
-	SearchIndex
-} from '#lib/data/types.js';
+import type { QuestCatalog, SearchEntry, SearchEntryType, SearchIndex } from '#lib/data/types.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
 import type { PlaceMarker } from '#lib/services/map/place-markers-layer.js';
 import { QuestPresenter, type QuestLinkView } from './quest-presenter.js';
+import { buildPlaceKey, isCollectiblePlace } from '#lib/data/place-key.js';
 import { pickPlaceColor, SearchEntryPresenter } from './search-entry-presenter.js';
 import { SearchService, type CategoryOption, type SearchTypeFilter } from './search-service.js';
+
+/** Zebrane miejsca na mapie gasną do tego koloru, żeby od razu było widać, co zostało. */
+const COLLECTED_PLACE_COLOR = '#5d5649';
 
 export interface PlaceMarkersDisplay {
 	showPlaceMarkers(markers: readonly PlaceMarker[], shouldFlyToMarkers: boolean): void;
@@ -36,7 +35,9 @@ export class SearchCoordinator {
 
 	constructor(
 		private readonly eventBus: AppEventBus,
-		private readonly getMarkersDisplay: () => PlaceMarkersDisplay | null
+		private readonly getMarkersDisplay: () => PlaceMarkersDisplay | null,
+		private readonly getCollectedPlaceKeys: (entryId: string) => ReadonlySet<string> = () =>
+			new Set()
 	) {}
 
 	get currentSearchService(): SearchService | null {
@@ -111,17 +112,29 @@ export class SearchCoordinator {
 		this.eventBus.publish({ type: 'search-entry-selected', details: null });
 	}
 
+	/** Wybrany przedmiot i klucze jego miejsc, które można odhaczyć; `null`, gdy wybrano coś innego. */
+	get selectedItemCollectiblePlaces(): { id: string; name: string; placeKeys: string[] } | null {
+		const entry = this.selectedEntry;
+		if (entry?.type !== 'item') return null;
+		return {
+			id: entry.id,
+			name: entry.name,
+			placeKeys: entry.places.filter(isCollectiblePlace).map(buildPlaceKey)
+		};
+	}
+
 	flyToPlace(placeIndex: number): void {
 		this.getMarkersDisplay()?.flyToPlaceMarker(placeIndex);
 	}
 
 	showSelectedEntryOnMap(shouldFlyToMarkers: boolean): void {
 		if (!this.selectedEntry) return;
+		const collectedKeys = this.getCollectedPlaceKeys(this.selectedEntry.id);
 		const markers = this.selectedEntry.places.map((place) => ({
 			lon: place.lon,
 			lat: place.lat,
 			h: place.h,
-			color: pickPlaceColor(place)
+			color: collectedKeys.has(buildPlaceKey(place)) ? COLLECTED_PLACE_COLOR : pickPlaceColor(place)
 		}));
 		this.getMarkersDisplay()?.showPlaceMarkers(markers, shouldFlyToMarkers);
 	}

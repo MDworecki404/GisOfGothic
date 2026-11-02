@@ -51,8 +51,9 @@ jest treść: **2**.
   Zakładki; eksport i import zakładek razem z resztą notatnika do pliku JSON (ADR 0029).
 - **4. Własne notatki i pinezki** — narzędzie Notatnik: pinezka z nazwą i opisem stawiana kliknięciem mapy,
   zapisana w przeglądarce (`localStorage`, nie IndexedDB — danych jest mało), w kopii zapasowej (ADR 0029).
-- **5. Lista kontrolna „co zebrałem”** — przycisk „Oznacz jako zebrany” / „wykonany” w karcie przedmiotu i questa,
-  postęp w procentach w Notatniku. Kamienne tablice liczą się jako zwykłe przedmioty, osobnego licznika nie mają.
+- **5. Lista kontrolna „co zebrałem”** — pole przy każdym miejscu przedmiotu (zebrane punkty gasną na mapie),
+  „Zbierz wszystkie” i przycisk „Oznacz jako wykonany” przy queście; postęp w procentach w Notatniku. Kamienne tablice
+  liczą się jak zwykłe przedmioty, osobnego licznika nie mają.
 
 ## Odrzucone wcześniej (nie wracać bez powodu)
 

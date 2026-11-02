@@ -1,8 +1,9 @@
 import type { AppEventBus } from '#lib/events/app-events.js';
 import type { LocalPoint } from '#lib/services/measurement/measurement-calculator.js';
 import {
-	type CollectedEntry,
-	type CollectibleType,
+	createEmptyNotebookData,
+	type CollectedPlace,
+	type CollectedQuest,
 	type NotebookData,
 	type NotebookStore,
 	type SavedPin
@@ -23,14 +24,25 @@ export interface PinView {
 	note: string;
 }
 
-export interface CollectedEntryView {
+export interface CollectedQuestView {
+	questId: string;
+	name: string;
+}
+
+/** Przedmiot z co najmniej jednym odhaczonym miejscem i liczba tych miejsc. */
+export interface CollectedItemView {
 	entryId: string;
 	name: string;
-	typeLabel: string;
+	placeCount: number;
+}
+
+export interface CollectedPlaceView {
+	entryId: string;
+	placeKey: string;
 }
 
 export interface CollectionProgressView {
-	type: CollectibleType;
+	kind: 'places' | 'quests';
 	label: string;
 	collected: number;
 	total: number | null;
@@ -39,33 +51,29 @@ export interface CollectionProgressView {
 
 export interface NotebookView {
 	pins: PinView[];
-	collected: CollectedEntryView[];
-	collectedEntryIds: string[];
+	collectedQuests: CollectedQuestView[];
+	collectedQuestIds: string[];
+	collectedItems: CollectedItemView[];
+	collectedPlaces: CollectedPlaceView[];
 	progress: CollectionProgressView[];
 	isPlacingPin: boolean;
 	hasStorageError: boolean;
 }
 
 export interface EntryTotals {
-	items: number;
+	itemPlaces: number;
 	quests: number;
 }
 
-export interface CollectibleEntry {
+export interface EntryReference {
 	id: string;
 	name: string;
-	type: CollectibleType;
 }
 
 export interface NotebookImportCounts {
 	pins: number;
 	collected: number;
 }
-
-const COLLECTIBLE_LABELS: Readonly<Record<CollectibleType, { plural: string; entry: string }>> = {
-	item: { plural: 'Przedmioty', entry: 'przedmiot' },
-	quest: { plural: 'Questy', entry: 'quest' }
-};
 
 const percentFormat = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 1 });
 
@@ -75,11 +83,13 @@ function generatePinId(): string {
 
 /**
  * Notatnik gracza otwartego świata: własne pinezki z opisem na mapie oraz lista „co zebrałem”
- * (przedmioty i questy). Zapis obejmuje wszystkie światy, a widok tylko bieżący. Pinezkę stawia się
- * w trybie umieszczania: kolejne kliknięcie mapy dodaje ją i kończy tryb.
+ * (wykonane questy i zebrane miejsca przedmiotów). Przedmiot występuje w wielu miejscach (bełtów
+ * bywa tysiąc), więc odhacza się pojedyncze miejsca, nie cały przedmiot. Zapis obejmuje wszystkie
+ * światy, a widok tylko bieżący. Pinezkę stawia się w trybie umieszczania: kolejne kliknięcie mapy
+ * dodaje ją i kończy tryb.
  */
 export class NotebookCoordinator {
-	private data: NotebookData = { pins: [], collected: [] };
+	private data: NotebookData = createEmptyNotebookData();
 	private gameId: string | null = null;
 	private worldId: string | null = null;
 	private totals: EntryTotals | null = null;
@@ -175,65 +185,125 @@ export class NotebookCoordinator {
 		if (index >= 0) this.getDisplay()?.flyToPin(index);
 	}
 
-	toggleCollected(entry: CollectibleEntry): void {
+	toggleQuestCollected(quest: EntryReference): void {
 		if (this.gameId === null || this.worldId === null) return;
-		if (this.isCollected(entry.id)) {
-			this.removeCollected(entry.id);
+		if (this.isQuestCollected(quest.id)) {
+			this.removeCollectedQuest(quest.id);
 			return;
 		}
 		this.data = {
 			...this.data,
-			collected: [
-				...this.data.collected,
-				{
-					gameId: this.gameId,
-					worldId: this.worldId,
-					entryId: entry.id,
-					entryType: entry.type,
-					entryName: entry.name
-				}
+			collectedQuests: [
+				...this.data.collectedQuests,
+				{ gameId: this.gameId, worldId: this.worldId, questId: quest.id, questName: quest.name }
 			]
 		};
 		this.persistAndPublish();
 	}
 
-	removeCollected(entryId: string): void {
+	removeCollectedQuest(questId: string): void {
 		this.data = {
 			...this.data,
-			collected: this.data.collected.filter(
-				(collected) => !this.isInCurrentWorld(collected) || collected.entryId !== entryId
+			collectedQuests: this.data.collectedQuests.filter(
+				(collected) => !this.isInCurrentWorld(collected) || collected.questId !== questId
 			)
 		};
 		this.persistAndPublish();
 	}
 
-	isCollected(entryId: string): boolean {
-		return this.listCurrentWorldCollected().some((collected) => collected.entryId === entryId);
+	isQuestCollected(questId: string): boolean {
+		return this.listCurrentWorldQuests().some((collected) => collected.questId === questId);
+	}
+
+	toggleCollectedPlace(entry: EntryReference, placeKey: string): void {
+		const isCollected = this.listCollectedPlaceKeys(entry.id).has(placeKey);
+		this.setPlacesCollected(entry, [placeKey], !isCollected);
+	}
+
+	/** Odhacza albo cofa odhaczenie wszystkich podanych miejsc przedmiotu jednym zapisem. */
+	setPlacesCollected(
+		entry: EntryReference,
+		placeKeys: readonly string[],
+		isCollected: boolean
+	): void {
+		const { gameId, worldId } = this;
+		if (gameId === null || worldId === null) return;
+		const keysToChange = new Set(placeKeys);
+		const remaining = this.data.collectedPlaces.filter(
+			(place) =>
+				!this.isInCurrentWorld(place) ||
+				place.entryId !== entry.id ||
+				!keysToChange.has(place.placeKey)
+		);
+		const added: CollectedPlace[] = isCollected
+			? [...keysToChange].map((placeKey) => ({
+					gameId,
+					worldId,
+					entryId: entry.id,
+					entryName: entry.name,
+					placeKey
+				}))
+			: [];
+		this.data = { ...this.data, collectedPlaces: [...remaining, ...added] };
+		this.persistAndPublish();
+	}
+
+	/** Cofa odhaczenie wszystkich miejsc jednego przedmiotu. */
+	removeCollectedItem(entryId: string): void {
+		this.data = {
+			...this.data,
+			collectedPlaces: this.data.collectedPlaces.filter(
+				(place) => !this.isInCurrentWorld(place) || place.entryId !== entryId
+			)
+		};
+		this.persistAndPublish();
+	}
+
+	listCollectedPlaceKeys(entryId: string): ReadonlySet<string> {
+		return new Set(
+			this.listCurrentWorldPlaces()
+				.filter((place) => place.entryId === entryId)
+				.map((place) => place.placeKey)
+		);
 	}
 
 	exportData(): NotebookData {
 		return this.data;
 	}
 
-	/** Dołącza pinezki i wpisy listy, których jeszcze nie ma; zwraca, ile faktycznie dodano. */
+	/** Dołącza pinezki i odhaczenia, których jeszcze nie ma; zwraca, ile faktycznie dodano. */
 	importData(incoming: NotebookData): NotebookImportCounts {
 		const knownPinIds = new Set(this.data.pins.map((pin) => pin.id));
 		const newPins = incoming.pins.filter((pin) => !knownPinIds.has(pin.id));
-		const newCollected = incoming.collected.filter(
+		const newQuests = incoming.collectedQuests.filter(
 			(candidate) =>
-				!this.data.collected.some(
+				!this.data.collectedQuests.some(
 					(known) =>
 						known.gameId === candidate.gameId &&
 						known.worldId === candidate.worldId &&
-						known.entryId === candidate.entryId
+						known.questId === candidate.questId
 				)
 		);
+		const knownPlaceKeys = new Set(
+			this.data.collectedPlaces.map((place) => this.identifyPlace(place))
+		);
+		const newPlaces = incoming.collectedPlaces.filter((candidate) => {
+			const identity = this.identifyPlace(candidate);
+			if (knownPlaceKeys.has(identity)) return false;
+			knownPlaceKeys.add(identity);
+			return true;
+		});
 		this.data = {
 			pins: [...this.data.pins, ...newPins],
-			collected: [...this.data.collected, ...newCollected]
+			collectedQuests: [...this.data.collectedQuests, ...newQuests],
+			collectedPlaces: [...this.data.collectedPlaces, ...newPlaces]
 		};
 		this.persistAndPublish();
-		return { pins: newPins.length, collected: newCollected.length };
+		return { pins: newPins.length, collected: newQuests.length + newPlaces.length };
+	}
+
+	private identifyPlace(place: CollectedPlace): string {
+		return JSON.stringify([place.gameId, place.worldId, place.entryId, place.placeKey]);
 	}
 
 	private changePin(pinId: string, change: Partial<Pick<SavedPin, 'name' | 'note'>>): void {
@@ -258,8 +328,12 @@ export class NotebookCoordinator {
 		return this.data.pins.filter((pin) => this.isInCurrentWorld(pin));
 	}
 
-	private listCurrentWorldCollected(): CollectedEntry[] {
-		return this.data.collected.filter((collected) => this.isInCurrentWorld(collected));
+	private listCurrentWorldQuests(): CollectedQuest[] {
+		return this.data.collectedQuests.filter((quest) => this.isInCurrentWorld(quest));
+	}
+
+	private listCurrentWorldPlaces(): CollectedPlace[] {
+		return this.data.collectedPlaces.filter((place) => this.isInCurrentWorld(place));
 	}
 
 	private toMarker(pin: SavedPin): PinMarker {
@@ -267,13 +341,14 @@ export class NotebookCoordinator {
 	}
 
 	private presentProgress(
-		type: CollectibleType,
+		kind: CollectionProgressView['kind'],
+		label: string,
 		collectedCount: number,
 		total: number | null
 	): CollectionProgressView {
 		return {
-			type,
-			label: COLLECTIBLE_LABELS[type].plural,
+			kind,
+			label,
 			collected: collectedCount,
 			total,
 			percentLabel:
@@ -283,10 +358,24 @@ export class NotebookCoordinator {
 		};
 	}
 
+	private summarizeCollectedItems(places: readonly CollectedPlace[]): CollectedItemView[] {
+		const byEntry = new Map<string, CollectedItemView>();
+		for (const place of places) {
+			const known = byEntry.get(place.entryId);
+			if (known) known.placeCount++;
+			else
+				byEntry.set(place.entryId, {
+					entryId: place.entryId,
+					name: place.entryName,
+					placeCount: 1
+				});
+		}
+		return [...byEntry.values()];
+	}
+
 	private publish(): void {
-		const collected = this.listCurrentWorldCollected();
-		const countOf = (type: CollectibleType): number =>
-			collected.filter((entry) => entry.entryType === type).length;
+		const quests = this.listCurrentWorldQuests();
+		const places = this.listCurrentWorldPlaces();
 		this.eventBus.publish({
 			type: 'notebook-changed',
 			notebook: {
@@ -295,15 +384,21 @@ export class NotebookCoordinator {
 					name: pin.name,
 					note: pin.note
 				})),
-				collected: collected.map((entry) => ({
-					entryId: entry.entryId,
-					name: entry.entryName,
-					typeLabel: COLLECTIBLE_LABELS[entry.entryType].entry
+				collectedQuests: quests.map((quest) => ({ questId: quest.questId, name: quest.questName })),
+				collectedQuestIds: quests.map((quest) => quest.questId),
+				collectedItems: this.summarizeCollectedItems(places),
+				collectedPlaces: places.map((place) => ({
+					entryId: place.entryId,
+					placeKey: place.placeKey
 				})),
-				collectedEntryIds: collected.map((entry) => entry.entryId),
 				progress: [
-					this.presentProgress('item', countOf('item'), this.totals?.items ?? null),
-					this.presentProgress('quest', countOf('quest'), this.totals?.quests ?? null)
+					this.presentProgress(
+						'places',
+						'Miejsca przedmiotów',
+						places.length,
+						this.totals?.itemPlaces ?? null
+					),
+					this.presentProgress('quests', 'Questy', quests.length, this.totals?.quests ?? null)
 				],
 				isPlacingPin: this.isPlacing,
 				hasStorageError: this.hasStorageError

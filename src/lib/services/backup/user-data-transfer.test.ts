@@ -63,7 +63,8 @@ describe('UserDataTransfer', () => {
 			chapter: null
 		});
 		source.notebook.addPin({ east: 1, north: 2, height: 3 });
-		source.notebook.toggleCollected({ id: 'item:A', name: 'A', type: 'item' });
+		source.notebook.toggleCollectedPlace({ id: 'item:A', name: 'A' }, 'ground:item-1');
+		source.notebook.toggleQuestCollected({ id: 'quest:Q', name: 'Q' });
 		const backup = source.transfer.exportBackup();
 		expect(backup.fileName).toBe('gis-of-gothic-notatnik-2026-11-02.json');
 
@@ -72,7 +73,7 @@ describe('UserDataTransfer', () => {
 		expect(result.isSuccess).toBe(true);
 		expect(result.message).toContain('zakładki: 1');
 		expect(result.message).toContain('pinezki: 1');
-		expect(result.message).toContain('„co zebrałem”: 1');
+		expect(result.message).toContain('„co zebrałem”: 2');
 		expect(target.notebook.exportData().pins).toHaveLength(1);
 		expect(target.bookmarks.exportViews()).toHaveLength(1);
 	});
