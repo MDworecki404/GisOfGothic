@@ -6,6 +6,10 @@ import {
 	NO_WORLD_COMPARISON,
 	type WorldComparisonView
 } from '#lib/services/comparison/world-comparison-coordinator.js';
+import {
+	NO_WORLD_SIZE_COMPARISON,
+	type WorldSizeView
+} from '#lib/services/comparison/world-size-coordinator.js';
 import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
 import {
 	DEFAULT_CAMERA_PROJECTION,
@@ -116,6 +120,7 @@ export class AppState {
 	bookmarkStorageFailed = $state(false);
 	notebook = $state.raw<NotebookView | null>(null);
 	worldComparison = $state.raw<WorldComparisonView>(NO_WORLD_COMPARISON);
+	worldSizes = $state.raw<WorldSizeView>(NO_WORLD_SIZE_COMPARISON);
 	selectedChapter = $state<ChapterNumber | null>(null);
 	areChaptersAvailable = $state(true);
 	areRoutineTimesApproximate = $state(false);
@@ -213,6 +218,9 @@ export class AppState {
 		});
 		eventBus.subscribe('world-comparison-changed', ({ comparison }) => {
 			this.worldComparison = comparison;
+		});
+		eventBus.subscribe('world-size-changed', ({ sizes }) => {
+			this.worldSizes = sizes;
 		});
 		eventBus.subscribe('analysis-changed', ({ analysis }) => {
 			this.analysis = analysis;

@@ -532,3 +532,43 @@ test('porównanie światów: wybór drugiego świata pokazuje suwak, który da s
 	await page.getByRole('button', { name: 'Zakończ porównanie światów' }).click();
 	await expect(slider).toHaveCount(0);
 });
+
+test('narzędzie Rozmiary pokazuje odniesienie, światy z wymiarami i pola pozycji', async ({
+	page
+}) => {
+	await page.goto('/g2nk/khorinis?narzedzie=sizes');
+	await expect(page.getByRole('heading', { name: 'Rozmiary światów' })).toBeVisible();
+	await expect(page.getByText('Otwarty świat (odniesienie)')).toBeVisible({ timeout: 30_000 });
+	await expect(page.getByRole('checkbox', { name: /Pokaż świat Khorinis/ })).toHaveCount(0);
+
+	const jarkendar = page.getByRole('checkbox', {
+		name: 'Pokaż świat Jarkendar (Gothic 2: Noc Kruka)'
+	});
+	await jarkendar.check();
+	const east = page.getByLabel('Środek: wschód (m)');
+	await expect(east).toBeVisible({ timeout: 30_000 });
+	await east.fill('500');
+	await east.blur();
+	await expect(east).toHaveValue('500');
+	await page.getByLabel('Obrót (°)').fill('90');
+	await page.getByLabel('Obrót (°)').blur();
+	await expect(page.getByLabel('Obrót (°)')).toHaveValue('90');
+
+	await page.getByRole('button', { name: 'Zresetuj pozycję' }).click();
+	await expect(page.getByLabel('Obrót (°)')).toHaveValue('0');
+
+	await jarkendar.uncheck();
+	await expect(east).toHaveCount(0);
+});
+
+test('zamknięcie narzędzia Rozmiary zdejmuje wybrane światy', async ({ page }) => {
+	await page.goto('/g2nk/khorinis?narzedzie=sizes');
+	await page.getByRole('checkbox', { name: 'Pokaż świat Jarkendar (Gothic 2: Noc Kruka)' }).check();
+	await expect(page.getByLabel('Środek: wschód (m)')).toBeVisible({ timeout: 30_000 });
+	await page.getByRole('button', { name: 'Zamknij panel' }).click();
+	await page
+		.getByRole('navigation', { name: 'Narzędzia' })
+		.getByRole('button', { name: 'Rozmiary' })
+		.click();
+	await expect(page.getByRole('checkbox', { name: /Jarkendar/ })).not.toBeChecked();
+});

@@ -4,6 +4,7 @@ export const TOOL_IDS = [
 	'measure',
 	'analysis',
 	'time',
+	'sizes',
 	'notebook',
 	'bookmarks'
 ] as const;
@@ -16,6 +17,7 @@ export const TOOL_LABELS: Readonly<Record<ToolId, string>> = {
 	measure: 'Pomiary',
 	analysis: 'Analizy',
 	time: 'Czas',
+	sizes: 'Rozmiary',
 	notebook: 'Notatnik',
 	bookmarks: 'Zakładki'
 };

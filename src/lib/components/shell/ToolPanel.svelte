@@ -14,6 +14,7 @@
 	import MeasurePanel from '#lib/components/panels/MeasurePanel.svelte';
 	import NotebookPanel from '#lib/components/panels/NotebookPanel.svelte';
 	import SearchPanel from '#lib/components/panels/SearchPanel.svelte';
+	import SizesPanel from '#lib/components/panels/SizesPanel.svelte';
 	import TimePanel from '#lib/components/panels/TimePanel.svelte';
 	import { TOOL_DEFINITIONS } from './tool-definitions.js';
 
@@ -184,6 +185,8 @@
 					<MeasurePanel />
 				{:else if activeTool.id === 'analysis'}
 					<AnalysisPanel />
+				{:else if activeTool.id === 'sizes'}
+					<SizesPanel />
 				{:else if activeTool.id === 'notebook'}
 					<NotebookPanel />
 				{:else if activeTool.id === 'bookmarks'}

@@ -47,6 +47,9 @@ import { ShadowStrengthCalculator } from './shadow-strength-calculator.js';
 import { MapViewObserver, type MapViewListeners, type TileLayerId } from './map-view-observer.js';
 import { MeasurementRenderer } from './measurement-renderer.js';
 import { UserPinsRenderer } from './user-pins-renderer.js';
+import { WorldExtentReader, type WorldExtent } from './world-extent-reader.js';
+import type { SizeWorldPlacement } from './world-placement-calculator.js';
+import { WorldSizeLayer, type SizeWorldListener } from './world-size-layer.js';
 import type { PinMarker } from '#lib/services/notebook/notebook-coordinator.js';
 import { PlaceMarkersLayer, type PlaceMarker } from './place-markers-layer.js';
 import { ViewerOptionsBuilder } from './viewer-options-builder.js';
@@ -88,6 +91,8 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 	private readonly dataLayers: DataLayersRenderer;
 	private readonly measurement: MeasurementRenderer;
 	private readonly userPins: UserPinsRenderer;
+	private readonly worldSizes: WorldSizeLayer;
+	private readonly worldExtentReader = new WorldExtentReader();
 	private readonly analysis: AnalysisRenderer;
 	private readonly cameraFramer: CameraFramer;
 	private readonly projectionController: CameraProjectionController;
@@ -155,6 +160,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 		);
 		this.placeMarkers = new PlaceMarkersLayer(this.viewer, this.cameraFramer);
 		this.userPins = new UserPinsRenderer(this.viewer, this.cameraFramer);
+		this.worldSizes = new WorldSizeLayer(this.viewer);
 		this.viewer.scene.postRender.addEventListener(() =>
 			listeners.onFrameRendered(performance.now())
 		);
@@ -429,6 +435,42 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 		this.measurement.clearMeasurement();
 	}
 
+	/** Obrys otwartego modelu świata (środek i wymiary w metrach); `null`, zanim model się wczyta. */
+	readPrimaryWorldExtent(): WorldExtent | null {
+		const tileset = this.worldTileset;
+		const frame = this.worldFrame;
+		return tileset && frame ? this.worldExtentReader.readExtent(tileset, frame) : null;
+	}
+
+	showSizeWorld(
+		key: string,
+		tilesetUrl: string,
+		anchor: Anchor,
+		tintCssColor: string
+	): Promise<WorldExtent | null> {
+		return this.worldSizes.addWorld(key, tilesetUrl, anchor, tintCssColor);
+	}
+
+	removeSizeWorld(key: string): void {
+		this.worldSizes.removeWorld(key);
+	}
+
+	placeSizeWorld(key: string, placement: SizeWorldPlacement): void {
+		this.worldSizes.placeWorld(key, placement);
+	}
+
+	highlightSizeWorld(key: string | null): void {
+		this.worldSizes.highlightWorld(key);
+	}
+
+	clearSizeWorlds(): void {
+		this.worldSizes.clear();
+	}
+
+	listenToSizeWorlds(listener: SizeWorldListener | null): void {
+		this.worldSizes.listen(listener);
+	}
+
 	showPins(pins: readonly PinMarker[]): void {
 		const frame = this.worldFrame;
 		if (!frame) {
@@ -619,6 +661,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 	}
 
 	removeWorldTileset(): void {
+		this.worldSizes.clear();
 		this.removeComparisonTileset();
 		this.hideStaticObjectsTileset();
 		this.reportPendingTiles('world', 0);
@@ -632,6 +675,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 
 	destroy(): void {
 		this.isDestroyed = true;
+		this.worldSizes.destroy();
 		this.flightController.destroy();
 		this.flatMapPanController.stop();
 		this.projectionController.destroy();
