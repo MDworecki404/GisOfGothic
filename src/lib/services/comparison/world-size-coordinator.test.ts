@@ -6,6 +6,7 @@ import { EventBus } from '#lib/events/event-bus.js';
 import type { WorldExtent } from '#lib/services/map/world-extent-reader.js';
 import type { SizeWorldPlacement } from '#lib/services/map/world-placement-calculator.js';
 import {
+	REFERENCE_WORLD_COLOR,
 	SIZE_WORLD_COLORS,
 	WorldSizeCoordinator,
 	type WorldSizeDisplay,
@@ -44,6 +45,8 @@ class FakeDisplay implements WorldSizeDisplay {
 	removed: string[] = [];
 	placements = new Map<string, SizeWorldPlacement>();
 	highlighted: string | null = null;
+	selected: string | null = null;
+	ghostColor: string | null = null;
 	cleared = 0;
 	extentsByKey = new Map<string, WorldExtent>();
 	failingKeys = new Set<string>();
@@ -72,6 +75,14 @@ class FakeDisplay implements WorldSizeDisplay {
 
 	highlightSizeWorld(key: string | null): void {
 		this.highlighted = key;
+	}
+
+	selectSizeWorld(key: string | null): void {
+		this.selected = key;
+	}
+
+	setPrimaryWorldGhost(tintCssColor: string | null): void {
+		this.ghostColor = tintCssColor;
 	}
 
 	clearSizeWorlds(): void {
@@ -117,6 +128,8 @@ describe('WorldSizeCoordinator', () => {
 		expect(latest().isActive).toBe(true);
 		expect(latest().reference).toEqual({
 			label: 'Gothic 2 — Khorinis',
+			color: REFERENCE_WORLD_COLOR,
+			isHighlighted: false,
 			widthMetres: 1500,
 			depthMetres: 1700
 		});
@@ -180,13 +193,68 @@ describe('WorldSizeCoordinator', () => {
 		});
 	});
 
-	it('przeciągnięcie myszą zapisuje pozycję bez ponownego ustawiania świata na mapie', async () => {
+	it('przeciągnięcie myszą lub gizmem zapisuje pozycję bez ponownego ustawiania świata na mapie', async () => {
 		const { coordinator, display, latest } = createCoordinator();
 		await coordinator.toggleWorld(createWorld('g3', 'myrtana'));
 		const placementsBefore = display.placements.get('g3/myrtana');
-		coordinator.reactToMapDrag('g3/myrtana', 10, 20);
-		expect(latest().worlds[0].placement).toMatchObject({ east: 10, north: 20 });
+		coordinator.reactToMapPlacement('g3/myrtana', {
+			east: 10,
+			north: 20,
+			up: 5,
+			headingDegrees: 30
+		});
+		expect(latest().worlds[0].placement).toEqual({
+			east: 10,
+			north: 20,
+			up: 5,
+			headingDegrees: 30
+		});
 		expect(display.placements.get('g3/myrtana')).toBe(placementsBefore);
+	});
+
+	it('otwarty świat staje się widmem po włączeniu narzędzia i wraca do zwykłego wyglądu po wyłączeniu', () => {
+		const { coordinator, display, latest } = createCoordinator();
+		expect(display.ghostColor).toBe(REFERENCE_WORLD_COLOR);
+		expect(latest().reference?.color).toBe(REFERENCE_WORLD_COLOR);
+		coordinator.deactivate();
+		expect(display.ghostColor).toBeNull();
+	});
+
+	it('podświetlenie otwartego świata oznacza odniesienie, a nie żaden z dodanych', async () => {
+		const { coordinator, display, latest } = createCoordinator();
+		await coordinator.toggleWorld(createWorld('g3', 'myrtana'));
+		coordinator.highlight('reference');
+		expect(display.highlighted).toBe('reference');
+		expect(latest().reference?.isHighlighted).toBe(true);
+		expect(latest().worlds[0].isHighlighted).toBe(false);
+	});
+
+	it('nowy świat jest wybrany (ma gizmo), a po usunięciu wybór przechodzi na ostatni', async () => {
+		const { coordinator, display, latest } = createCoordinator();
+		await coordinator.toggleWorld(createWorld('g3', 'myrtana'));
+		expect(latest().selectedKey).toBe('g3/myrtana');
+		expect(display.selected).toBe('g3/myrtana');
+		await coordinator.toggleWorld(createWorld('archolos', 'archolos'));
+		expect(latest().selectedKey).toBe('archolos/archolos');
+		coordinator.select('g3/myrtana');
+		expect(display.selected).toBe('g3/myrtana');
+		await coordinator.toggleWorld(createWorld('g3', 'myrtana'));
+		expect(latest().selectedKey).toBe('archolos/archolos');
+		await coordinator.toggleWorld(createWorld('archolos', 'archolos'));
+		expect(latest().selectedKey).toBeNull();
+		expect(display.selected).toBeNull();
+	});
+
+	it('nie wybiera świata, którego nie ma na liście', async () => {
+		const { coordinator, latest } = createCoordinator();
+		await coordinator.toggleWorld(createWorld('g3', 'myrtana'));
+		coordinator.select('nie-ma/takiego');
+		expect(latest().selectedKey).toBe('g3/myrtana');
+	});
+
+	it('barwy światów są różne i różnią się od barwy otwartego świata', () => {
+		expect(new Set(SIZE_WORLD_COLORS).size).toBe(SIZE_WORLD_COLORS.length);
+		expect(SIZE_WORLD_COLORS).not.toContain(REFERENCE_WORLD_COLOR);
 	});
 
 	it('podświetlenie z listy i z mapy oznacza świat, a lista ma pierwszeństwo', async () => {

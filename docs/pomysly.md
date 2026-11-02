@@ -22,8 +22,6 @@ warstwa Questy, widok 2D z cięciem wysokości, rzut ortogonalny, lot kamerą, P
 - **9. Analizy:** zasięg słyszalności i agresji potworów, najkrótsza trasa między dwoma punktami,
   porównanie dwóch rozdziałów.
 - **20. Porównanie rozdziałów** suwakiem podziału ekranu: po lewej postacie z jednego rozdziału, po prawej z drugiego.
-- **21. Gizmo osi przy przesuwaniu światów** w narzędziu Rozmiary (strzałki osi i pierścień obrotu zamiast przeciągania
-  po płaszczyźnie), jeśli przeciąganie okaże się niewygodne.
 
 ## Treść i wiki
 
@@ -59,7 +57,7 @@ jest treść: **2**.
   przeszło do pozycji 20.
 - **Porównanie rozmiarów światów** (narzędzie Rozmiary) — pola wyboru światów jako półprzezroczyste widma obok
   otwartego, wymiary w metrach, podświetlenie po najechaniu, przesuwanie myszą i polami liczbowymi oraz obrót (ADR 0031).
-  Gizmo osi zostało odłożone na później.
+  Gizmo osi i widmo świata odniesienia doszły w kolejnym kroku (ADR 0032).
 - **11. Powiązania między wpisami** — karta przedmiotu pokazuje, kto ma go przy sobie, i questy, w których występuje;
   karta postaci pokazuje, co ma przy sobie. Powiązania sprzedawców dojdą z danymi o handlarzach.
 - **14. Filtry wyszukiwarki** — gildia i typ przedmiotu działały już jako kategorie; doszły przedział poziomu postaci

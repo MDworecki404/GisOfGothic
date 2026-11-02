@@ -1,6 +1,7 @@
 import type { Anchor } from '#lib/data/types.js';
 import type { WorldDefinition } from '#lib/data/world-catalog.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
+import { REFERENCE_WORLD_KEY } from '#lib/services/map/size-world-keys.js';
 import type { WorldExtent } from '#lib/services/map/world-extent-reader.js';
 import type { SizeWorldPlacement } from '#lib/services/map/world-placement-calculator.js';
 
@@ -14,6 +15,8 @@ export interface WorldSizeDisplay {
 	removeSizeWorld(key: string): void;
 	placeSizeWorld(key: string, placement: SizeWorldPlacement): void;
 	highlightSizeWorld(key: string | null): void;
+	selectSizeWorld(key: string | null): void;
+	setPrimaryWorldGhost(tintCssColor: string | null): void;
 	clearSizeWorlds(): void;
 	readPrimaryWorldExtent(): WorldExtent | null;
 }
@@ -36,12 +39,16 @@ export interface SizeWorldView {
 
 export interface SizeReferenceView {
 	label: string;
+	color: string;
+	isHighlighted: boolean;
 	widthMetres: number;
 	depthMetres: number;
 }
 
 export interface WorldSizeView {
 	isActive: boolean;
+	/** Świat z gizmem; `null`, gdy żaden nie jest wybrany. */
+	selectedKey: string | null;
 	reference: SizeReferenceView | null;
 	worlds: SizeWorldView[];
 	isLimitReached: boolean;
@@ -49,6 +56,7 @@ export interface WorldSizeView {
 
 export const NO_WORLD_SIZE_COMPARISON: WorldSizeView = {
 	isActive: false,
+	selectedKey: null,
 	reference: null,
 	worlds: [],
 	isLimitReached: false
@@ -66,15 +74,18 @@ interface SizeWorldState {
 	defaultPlacement: SizeWorldPlacement;
 }
 
-/** Barwy światów: odległe od siebie odcieniem, czytelne na ciemnym tle mapy. */
+/** Barwy światów: nasycone, daleko od siebie na kole barw i jasne na ciemnym tle mapy. */
 export const SIZE_WORLD_COLORS: readonly string[] = [
-	'#e0662f',
-	'#4fa3d9',
-	'#8ac94f',
-	'#b07ad0',
-	'#e0c94a',
-	'#4fd0c0'
+	'#ff5a3c',
+	'#2ec4ff',
+	'#ffd23f',
+	'#b266ff',
+	'#4dff88',
+	'#ff5cc8'
 ];
+
+/** Otwarty świat jest widmem w jasnej, prawie białej barwie, żeby odróżniał się od barwnych światów. */
+export const REFERENCE_WORLD_COLOR = '#f2efe6';
 
 const NATIVE: SizeWorldPlacement = { east: 0, north: 0, up: 0, headingDegrees: 0 };
 
@@ -87,18 +98,19 @@ function describeError(error: unknown): string {
 }
 
 /**
- * Narzędzie Rozmiary: wybrane światy pokazują się na mapie obok otwartego (jako półprzezroczyste widma), żeby
- * porównać ich wielkość. Każdy świat można przesunąć, podnieść i obrócić. Nowy świat staje środkiem obrysu
- * w środku otwartego świata (porównanie „współśrodkowe”), a „Zresetuj” wraca do tej pozycji. Stan jest sesyjny i znika
- * po zamknięciu narzędzia albo zmianie otwartego świata.
+ * Narzędzie Rozmiary: wybrane światy pokazują się na mapie obok otwartego (który też staje się półprzezroczystym widmem),
+ * żeby porównać ich wielkość. Każdy świat można przesunąć, podnieść i obrócić polami liczbowymi, przeciągnięciem
+ * albo gizmem wybranego świata. Nowy świat staje środkiem obrysu w środku otwartego (porównanie „współśrodkowe”),
+ * a „Zresetuj” wraca do tej pozycji. Stan jest sesyjny i znika po zamknięciu narzędzia albo zmianie otwartego świata.
  */
 export class WorldSizeCoordinator {
 	private isActive = false;
 	private primaryWorld: WorldDefinition | null = null;
 	private primaryLabel: string | null = null;
-	private reference: SizeReferenceView | null = null;
+	private reference: Pick<SizeReferenceView, 'label' | 'widthMetres' | 'depthMetres'> | null = null;
 	private referenceExtent: WorldExtent | null = null;
 	private worlds: SizeWorldState[] = [];
+	private selectedKey: string | null = null;
 	private listHighlightedKey: string | null = null;
 	private mapHoveredKey: string | null = null;
 
@@ -119,13 +131,20 @@ export class WorldSizeCoordinator {
 
 	activate(): void {
 		this.isActive = true;
+		this.showOnMap();
 		this.refreshReference();
 	}
 
 	deactivate(): void {
 		this.isActive = false;
 		this.clearWorlds();
+		this.getDisplay()?.setPrimaryWorldGhost(null);
 		this.publish();
+	}
+
+	/** Po utworzeniu mapy (albo włączeniu narzędzia) otwarty świat trzeba zamienić w widmo. */
+	showOnMap(): void {
+		if (this.isActive) this.getDisplay()?.setPrimaryWorldGhost(REFERENCE_WORLD_COLOR);
 	}
 
 	/** Po wczytaniu modelu otwartego świata znamy jego obrys, względem którego ustawiamy pozostałe. */
@@ -163,6 +182,7 @@ export class WorldSizeCoordinator {
 			defaultPlacement: NATIVE
 		};
 		this.worlds = [...this.worlds, state];
+		this.selectedKey = key;
 		this.publish();
 		await this.loadWorld(state);
 	}
@@ -173,6 +193,14 @@ export class WorldSizeCoordinator {
 
 	resetPlacement(key: string): void {
 		this.updateState(key, (state) => ({ ...state, placement: state.defaultPlacement }));
+	}
+
+	/** Wybiera świat, który ma mieć gizmo (z listy albo kliknięciem na mapie). */
+	select(key: string | null): void {
+		if (key !== null && !this.worlds.some((state) => state.key === key)) return;
+		this.selectedKey = key;
+		this.getDisplay()?.selectSizeWorld(key);
+		this.publish();
 	}
 
 	/** Podświetlenie z listy (najechanie na wiersz świata); `null` zdejmuje je. */
@@ -187,13 +215,9 @@ export class WorldSizeCoordinator {
 		this.publish();
 	}
 
-	/** Przeciągnięcie świata myszą: warstwa mapy już go przesunęła, więc zapisujemy tylko nową pozycję. */
-	reactToMapDrag(key: string, east: number, north: number): void {
-		this.updateState(
-			key,
-			(state) => ({ ...state, placement: { ...state.placement, east, north } }),
-			false
-		);
+	/** Przeciągnięcie świata albo uchwytu gizma: warstwa mapy już go ustawiła, więc zapisujemy tylko nową pozycję. */
+	reactToMapPlacement(key: string, placement: SizeWorldPlacement): void {
+		this.updateState(key, (state) => ({ ...state, placement }), false);
 	}
 
 	private isSamePrimaryWorld(world: WorldDefinition): boolean {
@@ -220,6 +244,7 @@ export class WorldSizeCoordinator {
 			if (!extent || !this.isStillSelected(state.key)) return;
 			const defaultPlacement = this.buildCenteredPlacement(extent);
 			display.placeSizeWorld(state.key, defaultPlacement);
+			if (this.selectedKey === state.key) display.selectSizeWorld(state.key);
 			this.updateState(
 				state.key,
 				(current) => ({
@@ -260,11 +285,16 @@ export class WorldSizeCoordinator {
 	private removeWorld(key: string): void {
 		this.worlds = this.worlds.filter((state) => state.key !== key);
 		this.getDisplay()?.removeSizeWorld(key);
+		if (this.selectedKey === key) {
+			this.selectedKey = this.worlds.at(-1)?.key ?? null;
+			this.getDisplay()?.selectSizeWorld(this.selectedKey);
+		}
 		this.publish();
 	}
 
 	private clearWorlds(): void {
 		this.worlds = [];
+		this.selectedKey = null;
 		this.listHighlightedKey = null;
 		this.mapHoveredKey = null;
 		this.getDisplay()?.clearSizeWorlds();
@@ -287,7 +317,14 @@ export class WorldSizeCoordinator {
 			type: 'world-size-changed',
 			sizes: {
 				isActive: this.isActive,
-				reference: this.reference,
+				selectedKey: this.selectedKey,
+				reference: this.reference
+					? {
+							...this.reference,
+							color: REFERENCE_WORLD_COLOR,
+							isHighlighted: emphasizedKey === REFERENCE_WORLD_KEY
+						}
+					: null,
 				worlds: this.worlds.map((state) => ({
 					key: state.key,
 					label: state.label,
