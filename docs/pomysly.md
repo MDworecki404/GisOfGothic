@@ -26,12 +26,11 @@ warstwa Questy, widok 2D z cięciem wysokości, rzut ortogonalny, lot kamerą, P
 
 ## Treść i wiki
 
-11. **Powiązania między wpisami.** W karcie przedmiotu: kto go sprzedaje, kto nosi, w jakim queście
-    występuje; i odwrotnie. Dane łączą to już dziś, karta nie pokazuje tego wprost.
 12. **Rutyny postaci jako animacja.** Przesuwanie czasu przesuwa NPC po mapie według dziennych rozkładów
     (`daily-schedule` i suwak czasu już są).
 13. **Podgląd 3D w karcie dla postaci i potworów**, jak dla przedmiotów.
-14. **Filtry wyszukiwarki:** gildia, rozdział, zakres wartości, typ przedmiotu.
+14. **Filtr wartości przedmiotów** (cena, obrażenia). Indeks nie niesie tych pól, więc najpierw trzeba je dodać
+    w ekstraktorze danych.
 
 ## Jakość i publikacja
 
@@ -54,6 +53,10 @@ jest treść: **2**.
 - **5. Lista kontrolna „co zebrałem”** — pole przy każdym miejscu przedmiotu (zebrane punkty gasną na mapie),
   „Zbierz wszystkie” i przycisk „Oznacz jako wykonany” przy queście; postęp w procentach w Notatniku. Kamienne tablice
   liczą się jak zwykłe przedmioty, osobnego licznika nie mają.
+- **11. Powiązania między wpisami** — karta przedmiotu pokazuje, kto ma go przy sobie, i questy, w których występuje;
+  karta postaci pokazuje, co ma przy sobie. Powiązania sprzedawców dojdą z danymi o handlarzach.
+- **14. Filtry wyszukiwarki** — gildia i typ przedmiotu działały już jako kategorie; doszły przedział poziomu postaci
+  i rozdział questa. Filtr wartości przedmiotów (brak ceny w danych) przeszedł do pozycji 19.
 
 ## Odrzucone wcześniej (nie wracać bez powodu)
 

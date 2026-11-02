@@ -376,6 +376,16 @@ export class GeoportalFacade {
 		this.searchCoordinator.filterByCategory(categoryLabel);
 	}
 
+	/** Zawęża postacie do przedziału poziomu; `null` zdejmuje granicę. */
+	filterSearchByLevelRange(minimumLevel: number | null, maximumLevel: number | null): void {
+		this.searchCoordinator.filterByLevelRange(minimumLevel, maximumLevel);
+	}
+
+	/** Zawęża questy do jednego rozdziału startu; `null` pokazuje wszystkie. */
+	filterSearchByQuestChapter(chapter: ChapterNumber | null): void {
+		this.searchCoordinator.filterByQuestChapter(chapter);
+	}
+
 	selectSearchEntry(entryId: string): void {
 		this.searchCoordinator.selectEntry(entryId);
 	}

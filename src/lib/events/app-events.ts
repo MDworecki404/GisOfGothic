@@ -1,4 +1,6 @@
 import type { QuestDetailsView, QuestLinkView } from '#lib/services/search/quest-presenter.js';
+import type { AttributeFilter } from '#lib/services/search/attribute-filter.js';
+import type { RelatedGroupView } from '#lib/services/search/entry-relation-finder.js';
 import type { IndexCounts } from '#lib/data/types.js';
 import type { ChapterNumber } from '#lib/services/chapters/chapter-filter.js';
 import type { CoordinateSystemId } from '#lib/services/geodesy/coordinate-formatter.js';
@@ -51,6 +53,7 @@ export type AppEvent =
 			query: string;
 			typeFilter: SearchTypeFilter;
 			categoryFilter: string | null;
+			attributeFilter: AttributeFilter;
 			categories: CategoryOption[];
 			results: SearchResult[];
 	  }
@@ -67,6 +70,7 @@ export type AppEvent =
 			status: 'loading' | 'ready' | 'error';
 			quests: QuestLinkView[];
 	  }
+	| { type: 'related-entries-changed'; entryId: string; groups: RelatedGroupView[] }
 	| { type: 'data-layers-changed'; layers: DataLayerView[] }
 	| { type: 'data-layer-load-failed'; layerName: string; message: string }
 	| { type: 'feature-identified'; identification: FeatureIdentification | null }

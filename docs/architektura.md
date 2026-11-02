@@ -93,7 +93,8 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `camera-heading-changed`     | `headingDegrees`                                                                         | obrót kamery — kompas                                                                             |
 | `map-scale-changed`          | `metresPerPixel` lub `null`                                                              | zmiana skali w środku ekranu — podziałka                                                          |
 | `coordinate-system-changed`  | `systemId`                                                                               | zmiana układu współrzędnych w pasku przyrządu                                                     |
-| `search-results-changed`     | `query`, `typeFilter`, `results`                                                         | zmiana zapytania, filtra albo wczytanie indeksu                                                   |
+| `search-results-changed`     | `query`, `typeFilter`, `categoryFilter`, `attributeFilter`, `results`                    | zmiana zapytania, filtra albo wczytanie indeksu                                                   |
+| `related-entries-changed`    | `entryId`, `groups` (nagłówek, linki, liczba pominiętych)                                | wybrano przedmiot lub postać: kto go ma przy sobie, co ma przy sobie                              |
 | `search-entry-selected`      | `details` lub `null`                                                                     | wybrano wpis (karta szczegółów, znaczniki na mapie) albo wrócono do wyników                       |
 | `data-layers-changed`        | `layers` (nazwa, kolor, liczność, stan)                                                  | włączenie, wczytywanie albo błąd warstwy danych                                                   |
 | `data-layer-load-failed`     | `layerName`, `message`                                                                   | nie udało się pobrać lub sprawdzić pliku warstwy                                                  |
@@ -170,6 +171,25 @@ Treści z Gothicpedii nie kopiujemy (licencja CC BY-SA), tylko linkujemy i wskaz
 
 Wybrany wpis jest w adresie: `/g2nk/khorinis?wpis=item:ITPL_PERM_HERB`. Wpis z linku czeka na
 wczytanie indeksu, a po wczytaniu modelu świata kamera leci do jego miejsc.
+
+### Powiązania między wpisami
+
+Karta przedmiotu i postaci pokazuje, co z czym jest związane. `EntryRelationFinder` (`services/search/`) buduje się przy
+`useIndex` z samego indeksu wyszukiwania: miejsce przedmiotu „u NPC” ma ten sam `ref` (identyfikator obiektu w GeoJSON)
+co miejsce pojawienia się postaci, więc przedmiot dostaje listę „Ma go przy sobie”, a postać „Ma przy sobie”.
+Postacie spoza indeksu (zwykłe wilki, mieszczanie) nie mają wpisu i są zwykłym tekstem z liczbą; wpisy z linkiem są
+pierwsze, a lista jest obcięta do 40 pozycji z licznikiem pozostałych. `SearchCoordinator` publikuje wynik zdarzeniem
+`related-entries-changed` zaraz po `search-entry-selected`. Questy powiązane z przedmiotem (nagroda, do oddania, zostaje
+w świecie) idą tą samą drogą co questy postaci: `QuestPresenter.presentQuestsOfItem` po kodzie przedmiotu z `quests.json`
+i zdarzenie `related-quests-changed`.
+
+### Filtry cech
+
+Oprócz rodzaju i kategorii (gildia albo kategoria przedmiotu) wyniki zawężają dwa filtry, które pokazują się dopiero po
+wybraniu rodzaju: przedział poziomu dla postaci i rozdział startu dla questów (`AttributeFilter`, `AttributeFilterMatcher`).
+`SearchService.search` i `listAll` przyjmują filtr jako ostatni argument, a limit 60 wyników liczy się po filtrze. Zmiana
+rodzaju czyści filtry. Zakres wartości przedmiotów nie jest dostępny, bo indeks nie niesie ceny przedmiotu; wymaga to
+zmiany w ekstraktorze danych (zob. `docs/dane.md`).
 
 ## Warstwy danych i identyfikacja
 

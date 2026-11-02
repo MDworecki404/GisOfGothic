@@ -35,6 +35,28 @@
 		).length ?? 0
 	);
 
+	const relatedEntries = $derived(
+		appState.relatedEntries && appState.relatedEntries.entryId === appState.selectedEntry?.id
+			? appState.relatedEntries
+			: null
+	);
+
+	const isAttributeFilterActive = $derived(
+		appState.searchAttributeFilter.minimumLevel !== null ||
+			appState.searchAttributeFilter.maximumLevel !== null ||
+			appState.searchAttributeFilter.questChapter !== null
+	);
+
+	function readLevelBound(text: string): number | null {
+		const level = Number.parseInt(text, 10);
+		return Number.isFinite(level) && level >= 0 ? level : null;
+	}
+
+	function clearAttributeFilters(): void {
+		geoportal.filterSearchByLevelRange(null, null);
+		geoportal.filterSearchByQuestChapter(null);
+	}
+
 	const hasQuery = $derived(appState.searchQuery.trim().length > 0);
 
 	const RESULTS_PAGE_SIZE = 60;
@@ -53,7 +75,7 @@
 	}
 </script>
 
-{#snippet linkList(heading: string, links: readonly QuestLinkView[])}
+{#snippet linkList(heading: string, links: readonly QuestLinkView[], hiddenCount = 0)}
 	{#if links.length > 0}
 		<h4 class="group-label mt-4 mb-1">{heading}</h4>
 		<ul class="text-sm">
@@ -81,6 +103,9 @@
 				</li>
 			{/each}
 		</ul>
+		{#if hiddenCount > 0}
+			<p class="px-1 pt-1 text-caption text-muted-foreground">…i jeszcze {hiddenCount}</p>
+		{/if}
 	{/if}
 {/snippet}
 
@@ -196,7 +221,15 @@
 			{/if}
 		{/if}
 
-		{#if entry.type === 'character' && relatedQuests}
+		{#each relatedEntries?.groups ?? [] as group (group.heading)}
+			{@render linkList(
+				`${group.heading} (${group.links.length + group.hiddenCount})`,
+				group.links,
+				group.hiddenCount
+			)}
+		{/each}
+
+		{#if entry.type !== 'quest' && relatedQuests}
 			{#if relatedQuests.status === 'error'}
 				<p class="mt-3 text-sm text-muted-foreground">Nie udało się wczytać questów postaci.</p>
 			{:else if relatedQuests.status === 'ready'}
@@ -306,6 +339,60 @@
 		</label>
 	{/if}
 
+	{#if appState.searchTypeFilter === 'character'}
+		<div class="mt-2 grid grid-cols-2 gap-2">
+			<label class="text-sm">
+				<span class="text-caption text-muted-foreground">Poziom od</span>
+				<input
+					type="number"
+					min="0"
+					inputmode="numeric"
+					class="field w-full"
+					value={appState.searchAttributeFilter.minimumLevel ?? ''}
+					onchange={(event) =>
+						geoportal.filterSearchByLevelRange(
+							readLevelBound(event.currentTarget.value),
+							appState.searchAttributeFilter.maximumLevel
+						)}
+				/>
+			</label>
+			<label class="text-sm">
+				<span class="text-caption text-muted-foreground">Poziom do</span>
+				<input
+					type="number"
+					min="0"
+					inputmode="numeric"
+					class="field w-full"
+					value={appState.searchAttributeFilter.maximumLevel ?? ''}
+					onchange={(event) =>
+						geoportal.filterSearchByLevelRange(
+							appState.searchAttributeFilter.minimumLevel,
+							readLevelBound(event.currentTarget.value)
+						)}
+				/>
+			</label>
+		</div>
+	{:else if appState.searchTypeFilter === 'quest' && appState.areChaptersAvailable}
+		<label class="mt-2 block">
+			<span class="sr-only">Rozdział questa</span>
+			<select
+				class="field w-full"
+				value={appState.searchAttributeFilter.questChapter ?? ''}
+				onchange={(event) => {
+					const chapter = appState.chapterOptions.find(
+						(option) => String(option.chapter) === event.currentTarget.value
+					);
+					geoportal.filterSearchByQuestChapter(chapter?.chapter ?? null);
+				}}
+			>
+				<option value="">Wszystkie rozdziały</option>
+				{#each appState.chapterOptions as option (option.chapter)}
+					<option value={option.chapter}>Rozdział {option.label}</option>
+				{/each}
+			</select>
+		</label>
+	{/if}
+
 	{#if appState.searchIndexStatus === 'loading'}
 		<div class="mt-4" role="status" aria-label="Wczytywanie przedmiotów i postaci świata">
 			{#each [0, 1, 2] as row (row)}
@@ -319,7 +406,10 @@
 			{:else}
 				<p>Brak wyników do wyświetlenia.</p>
 			{/if}
-			{#if appState.searchTypeFilter !== 'all'}
+			{#if isAttributeFilterActive}
+				<p class="mt-1 text-muted-foreground">Żaden wpis nie spełnia wybranych filtrów.</p>
+				<button class="button-quiet mt-3" onclick={clearAttributeFilters}>Wyczyść filtry</button>
+			{:else if appState.searchTypeFilter !== 'all'}
 				<p class="mt-1 text-muted-foreground">Wyszukiwanie obejmuje jeden rodzaj wyników.</p>
 				<button class="button-quiet mt-3" onclick={() => geoportal.filterSearchByType('all')}>
 					Szukaj we wszystkich rodzajach
