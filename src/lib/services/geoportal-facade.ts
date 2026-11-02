@@ -11,6 +11,8 @@ import {
 } from './backup/user-data-transfer.js';
 import { NotebookCoordinator } from './notebook/notebook-coordinator.js';
 import { WorldComparisonCoordinator } from './comparison/world-comparison-coordinator.js';
+import { WorldSizeCoordinator } from './comparison/world-size-coordinator.js';
+import type { SizeWorldPlacement } from './map/world-placement-calculator.js';
 import type { NotebookStore } from './notebook/notebook-store.js';
 import type { CameraView } from './bookmarks/camera-view-codec.js';
 import { ViewLinkCodec, type SharedViewState } from './bookmarks/view-link-codec.js';
@@ -86,6 +88,7 @@ export class GeoportalFacade {
 	private readonly bookmarksCoordinator: BookmarksCoordinator;
 	private readonly notebookCoordinator: NotebookCoordinator;
 	private readonly worldComparisonCoordinator: WorldComparisonCoordinator;
+	private readonly worldSizeCoordinator: WorldSizeCoordinator;
 	private readonly userDataTransfer: UserDataTransfer;
 	private readonly viewLinkCodec = new ViewLinkCodec();
 	private readonly flightInputMixer = new FlightInputMixer();
@@ -118,6 +121,11 @@ export class GeoportalFacade {
 			() => this.mapService
 		);
 		this.worldComparisonCoordinator = new WorldComparisonCoordinator(
+			eventBus,
+			() => this.mapService,
+			async (world) => (await this.createDataLoader(world.dataBaseUrl).loadMetadata()).anchor
+		);
+		this.worldSizeCoordinator = new WorldSizeCoordinator(
 			eventBus,
 			() => this.mapService,
 			async (world) => (await this.createDataLoader(world.dataBaseUrl).loadMetadata()).anchor
@@ -171,6 +179,7 @@ export class GeoportalFacade {
 		this.bookmarksCoordinator.useWorld(world.gameId, world.id);
 		this.notebookCoordinator.useWorld(world.gameId, world.id);
 		this.worldComparisonCoordinator.usePrimaryWorld(world, displayName);
+		this.worldSizeCoordinator.usePrimaryWorld(world, displayName);
 		this.currentDataLoader = this.createDataLoader(world.dataBaseUrl);
 		this.eventBus.publish({
 			type: 'world-opened',
@@ -201,6 +210,10 @@ export class GeoportalFacade {
 		this.isWorldShownOnMap = false;
 		this.mapService = new MapService(container, creditContainer, this.createMapViewListeners());
 		this.mapService.setViewInsets(this.mapViewInsets);
+		this.mapService.listenToSizeWorlds({
+			onHovered: (key) => this.worldSizeCoordinator.reactToMapHover(key),
+			onDragged: (key, east, north) => this.worldSizeCoordinator.reactToMapDrag(key, east, north)
+		});
 		void this.showCurrentWorldOnMap();
 		this.searchCoordinator.showSelectedEntryOnMap(false);
 		this.dataLayersCoordinator.showVisibleLayersOnMap();
@@ -257,6 +270,7 @@ export class GeoportalFacade {
 
 	/** Porównuje otwarty świat z innym: po lewej stronie suwaka zostaje otwarty, po prawej pojawia się wybrany. */
 	startWorldComparison(world: WorldDefinition, displayName: string = world.name): void {
+		if (this.activeToolId === 'sizes') this.activateTool(null);
 		void this.worldComparisonCoordinator.start(world, displayName);
 	}
 
@@ -267,6 +281,24 @@ export class GeoportalFacade {
 	/** Ustawia suwak porównania jako ułamek szerokości mapy (0–1). */
 	setWorldComparisonSplit(fraction: number): void {
 		this.worldComparisonCoordinator.setSplitFraction(fraction);
+	}
+
+	/** Pokazuje albo ukrywa świat w narzędziu Rozmiary (półprzezroczysty, obok otwartego). */
+	toggleSizeWorld(world: WorldDefinition, displayName: string = world.name): void {
+		void this.worldSizeCoordinator.toggleWorld(world, displayName);
+	}
+
+	setSizeWorldPlacement(key: string, change: Partial<SizeWorldPlacement>): void {
+		this.worldSizeCoordinator.setPlacement(key, change);
+	}
+
+	resetSizeWorldPlacement(key: string): void {
+		this.worldSizeCoordinator.resetPlacement(key);
+	}
+
+	/** Podświetla świat z listy narzędzia Rozmiary; `null` zdejmuje podświetlenie. */
+	highlightSizeWorld(key: string | null): void {
+		this.worldSizeCoordinator.highlight(key);
 	}
 
 	/** Przechodzi w tryb stawiania pinezki: następne kliknięcie mapy dodaje ją w tym miejscu. */
@@ -674,6 +706,11 @@ export class GeoportalFacade {
 			this.measurementCoordinator.clear();
 		if (this.activeToolId === 'analysis' && toolId !== 'analysis')
 			this.analysisCoordinator.deactivate();
+		if (this.activeToolId === 'sizes' && toolId !== 'sizes') this.worldSizeCoordinator.deactivate();
+		if (toolId === 'sizes' && this.activeToolId !== 'sizes') {
+			this.worldComparisonCoordinator.stop();
+			this.worldSizeCoordinator.activate();
+		}
 		if (this.activeToolId === 'notebook' && toolId !== 'notebook')
 			this.notebookCoordinator.cancelPlacingPin();
 		if (this.activeToolId === 'search' && toolId === null) this.searchCoordinator.clearSelection();
@@ -758,6 +795,7 @@ export class GeoportalFacade {
 			this.isWorldShownOnMap = true;
 			this.notebookCoordinator.showOnMap();
 			void this.worldComparisonCoordinator.showOnMap();
+			this.worldSizeCoordinator.refreshReference();
 			this.cameraProjectionCoordinator.showOnMap();
 			this.viewModeCoordinator.useSliceRange(mapService.readSliceHeightRange());
 			this.viewModeCoordinator.showOnMap();

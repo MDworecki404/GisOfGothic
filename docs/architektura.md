@@ -106,6 +106,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `slice-height-range-changed` | `range` (`minimumMetres`, `maximumMetres`) lub `null`                                    | po wczytaniu modelu świata (zakres suwaka cięcia wynika z granic modelu)                          |
 | `map-overlays-changed`       | `overlays` (`areContoursVisible`, `isGridVisible`)                                       | przełączenie poziomic albo siatki w panelu Warstwy                                                |
 | `world-comparison-changed`   | `comparison` (stan, podpisy światów, położenie suwaka, błąd)                             | start, koniec albo zmiana suwaka porównania światów, wynik wczytania drugiego świata              |
+| `world-size-changed`         | `sizes` (odniesienie, wybrane światy z wymiarami i pozycją, limit)                       | zaznaczenie świata, zmiana pozycji, podświetlenie albo wczytanie obrysu w narzędziu Rozmiary      |
 | `bookmarks-changed`          | `bookmarks`, `hasStorageError`                                                           | wczytano, dodano albo usunięto zakładkę (lista dotyczy otwartego świata)                          |
 | `notebook-changed`           | `notebook` (pinezki, wpisy listy, postęp, tryb stawiania, błąd zapisu)                   | dodano, zmieniono albo usunięto pinezkę lub wpis listy, zmiana trybu stawiania, wczytanie świata  |
 | `measurement-changed`        | `measurement` (tryb, wierzchołki, podsumowanie, profil, czasy przejścia, wskazany punkt) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie                          |
@@ -411,6 +412,26 @@ przycina położenie do 3–97%. Podpis świata zawiera nazwę gry, bo „Górni
 Zmiana otwartego świata (`usePrimaryWorld`) i usunięcie modelu świata (`removeWorldTileset`) kończą porównanie, a po
 ponownym utworzeniu mapy `showOnMap` kładzie drugi świat od nowa. Stan jest sesyjny i nie wchodzi do adresu.
 Decyzje: [ADR 0030](adr/0030-porownanie-swiatow-podzialem-ekranu.md).
+
+## Porównanie rozmiarów światów
+
+Narzędzie Rozmiary (`SizesPanel`, `WorldSizeCoordinator`) pokazuje wybrane światy obok otwartego, żeby porównać ich wielkość.
+Otwarty świat jest odniesieniem (jego wymiary pokazuje panel). `WorldExtentReader` odczytuje obrys tilesetu z obwiedni
+korzenia (`OrientedBoundingBox`, a przy kuli kwadrat opisany na niej) jako środek i wymiary w ramie świata. Każdy wybrany
+świat to osobny `Cesium3DTileset` w `WorldSizeLayer`; jego macierz modelu składa `WorldPlacementCalculator`
+(obrót wokół środka obrysu, potem przesunięcie, w ramie kotwicy), a `GhostWorldShaderBuilder` daje półprzezroczysty
+`CustomShader` z uniformami `u_tint` i `u_alpha`. Nowy świat dostaje pozycję współśrodkową z otwartym (`buildCenteredPlacement`),
+barwę z `SIZE_WORLD_COLORS` (najwyżej sześć światów), a „Zresetuj” wraca do tej pozycji.
+
+Wskazywanie świata na mapie: `drillPick` raz na klatkę (po `postRender`) wybiera świat pod kursorem, a koordynator
+publikuje podświetlenie (`isHighlighted`) i podnosi nieprzezroczystość wskazanego świata. Przeciąganie przechwytuje
+`pointerdown` w fazie przechwytywania na oknie, więc kamera nie dostaje zdarzenia (wyłączanie jej akcji powodowało
+skok kamery po puszczeniu przycisku, bo kontroler kumuluje ruch). Świat jedzie po płaszczyźnie poziomej przez swój środek
+(`IntersectionTests.rayPlane`), a każde przesunięcie wraca do koordynatora zdarzeniem `reactToMapDrag`.
+
+Fasada włącza koordynatora po wybraniu narzędzia (`activateTool`), wyłącza po jego zamknięciu i czyści po zmianie otwartego
+świata; start porównania suwakiem zamyka narzędzie Rozmiary. Wymiary otwartego świata odświeża `refreshReference` po wczytaniu
+modelu. Stan jest sesyjny, nie wchodzi do adresu ani zakładek. Decyzje: [ADR 0031](adr/0031-porownanie-rozmiarow-swiatow.md).
 
 ## Widok 2D
 
