@@ -56,7 +56,7 @@ function readSliceHeight(value: unknown): number | null {
 	return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
 
-function readSavedView(value: unknown): SavedView | null {
+export function readSavedView(value: unknown): SavedView | null {
 	if (!isRecord(value)) return null;
 	const { id, name, savedAt, gameId, worldId, toolId } = value;
 	if (

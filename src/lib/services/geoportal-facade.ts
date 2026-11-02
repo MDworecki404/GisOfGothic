@@ -4,6 +4,13 @@ import type { WorldDefinition } from '#lib/data/world-catalog.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
 import type { BookmarkStore } from './bookmarks/bookmark-store.js';
 import { BookmarksCoordinator } from './bookmarks/bookmarks-coordinator.js';
+import {
+	UserDataTransfer,
+	type UserDataExport,
+	type UserDataImportResult
+} from './backup/user-data-transfer.js';
+import { NotebookCoordinator } from './notebook/notebook-coordinator.js';
+import type { NotebookStore } from './notebook/notebook-store.js';
 import type { CameraView } from './bookmarks/camera-view-codec.js';
 import { ViewLinkCodec, type SharedViewState } from './bookmarks/view-link-codec.js';
 import type { MapViewInsets } from './map/free-area-calculator.js';
@@ -76,6 +83,8 @@ export class GeoportalFacade {
 	private readonly previewOrientationChooser = new PreviewOrientationChooser();
 	private readonly analysisCoordinator: AnalysisCoordinator;
 	private readonly bookmarksCoordinator: BookmarksCoordinator;
+	private readonly notebookCoordinator: NotebookCoordinator;
+	private readonly userDataTransfer: UserDataTransfer;
 	private readonly viewLinkCodec = new ViewLinkCodec();
 	private readonly flightInputMixer = new FlightInputMixer();
 	private readonly stickDeflectionCalculator = new StickDeflectionCalculator();
@@ -96,10 +105,20 @@ export class GeoportalFacade {
 		private readonly eventBus: AppEventBus,
 		private readonly createDataLoader: DataLoaderFactory,
 		bookmarkStore: BookmarkStore,
+		notebookStore: NotebookStore,
 		private readonly protectedModelLoader: ProtectedModelLoader | null,
 		performancePreferenceStore: PerformancePreferenceStore
 	) {
 		this.bookmarksCoordinator = new BookmarksCoordinator(eventBus, bookmarkStore);
+		this.notebookCoordinator = new NotebookCoordinator(
+			eventBus,
+			notebookStore,
+			() => this.mapService
+		);
+		this.userDataTransfer = new UserDataTransfer(
+			this.bookmarksCoordinator,
+			this.notebookCoordinator
+		);
 		this.searchCoordinator = new SearchCoordinator(eventBus, () => this.mapService);
 		this.analysisCoordinator = new AnalysisCoordinator(
 			eventBus,
@@ -138,6 +157,7 @@ export class GeoportalFacade {
 		this.isWorldShownOnMap = false;
 		this.pendingCameraView = null;
 		this.bookmarksCoordinator.useWorld(world.gameId, world.id);
+		this.notebookCoordinator.useWorld(world.gameId, world.id);
 		this.currentDataLoader = this.createDataLoader(world.dataBaseUrl);
 		this.eventBus.publish({
 			type: 'world-opened',
@@ -172,6 +192,7 @@ export class GeoportalFacade {
 		this.searchCoordinator.showSelectedEntryOnMap(false);
 		this.dataLayersCoordinator.showVisibleLayersOnMap();
 		this.timeCoordinator.showOnMap();
+		this.notebookCoordinator.showOnMap();
 		this.performanceCoordinator.showOnMap();
 		if (this.activeToolId === 'analysis') this.analysisCoordinator.activate();
 	}
@@ -218,6 +239,50 @@ export class GeoportalFacade {
 
 	deleteBookmark(bookmarkId: string): void {
 		this.bookmarksCoordinator.removeBookmark(bookmarkId);
+	}
+
+	/** Przechodzi w tryb stawiania pinezki: następne kliknięcie mapy dodaje ją w tym miejscu. */
+	startPlacingPin(): void {
+		this.notebookCoordinator.startPlacingPin();
+	}
+
+	cancelPlacingPin(): void {
+		this.notebookCoordinator.cancelPlacingPin();
+	}
+
+	renamePin(pinId: string, name: string): void {
+		this.notebookCoordinator.renamePin(pinId, name);
+	}
+
+	changePinNote(pinId: string, note: string): void {
+		this.notebookCoordinator.changePinNote(pinId, note);
+	}
+
+	deletePin(pinId: string): void {
+		this.notebookCoordinator.removePin(pinId);
+	}
+
+	flyToPin(pinId: string): void {
+		this.notebookCoordinator.flyToPin(pinId);
+	}
+
+	/** Odhacza albo cofa odhaczenie wybranego przedmiotu lub questa na liście „co zebrałem”. */
+	toggleCollectedStateOfSelectedEntry(): void {
+		const entry = this.searchCoordinator.selectedEntryReference;
+		if (!entry || (entry.type !== 'item' && entry.type !== 'quest')) return;
+		this.notebookCoordinator.toggleCollected({ id: entry.id, name: entry.name, type: entry.type });
+	}
+
+	removeFromCollected(entryId: string): void {
+		this.notebookCoordinator.removeCollected(entryId);
+	}
+
+	exportUserData(): UserDataExport {
+		return this.userDataTransfer.exportBackup();
+	}
+
+	importUserData(text: string): UserDataImportResult {
+		return this.userDataTransfer.importBackup(text);
 	}
 
 	/**
@@ -544,6 +609,8 @@ export class GeoportalFacade {
 			this.measurementCoordinator.clear();
 		if (this.activeToolId === 'analysis' && toolId !== 'analysis')
 			this.analysisCoordinator.deactivate();
+		if (this.activeToolId === 'notebook' && toolId !== 'notebook')
+			this.notebookCoordinator.cancelPlacingPin();
 		if (this.activeToolId === 'search' && toolId === null) this.searchCoordinator.clearSelection();
 		if (toolId === 'analysis' && this.activeToolId !== 'analysis')
 			this.analysisCoordinator.activate();
@@ -552,6 +619,10 @@ export class GeoportalFacade {
 	}
 
 	private reactToMapClick(click: MapClick): void {
+		if (this.activeToolId === 'notebook' && this.notebookCoordinator.isPlacingPin) {
+			if (click.position) this.notebookCoordinator.addPin(click.position);
+			return;
+		}
 		if (this.activeToolId === 'measure') {
 			if (click.position) this.measurementCoordinator.addPoint(click.position);
 			return;
@@ -580,9 +651,11 @@ export class GeoportalFacade {
 			if (dataLoader !== this.currentDataLoader) return;
 			guildNameBook.useGuildNames(metadata.guild_names);
 			this.searchCoordinator.useIndex(index);
+			const counts = dataLoader.countEntriesByType(index);
+			this.notebookCoordinator.useEntryTotals({ items: counts.items, quests: counts.quests });
 			this.eventBus.publish({
 				type: 'search-index-loaded',
-				counts: dataLoader.countEntriesByType(index)
+				counts
 			});
 		} catch (error) {
 			if (dataLoader !== this.currentDataLoader) return;
@@ -615,6 +688,7 @@ export class GeoportalFacade {
 			await mapService.showWorldTileset(world.worldTilesetUrl, metadata.anchor);
 			if (!isStillCurrent()) return;
 			this.isWorldShownOnMap = true;
+			this.notebookCoordinator.showOnMap();
 			this.cameraProjectionCoordinator.showOnMap();
 			this.viewModeCoordinator.useSliceRange(mapService.readSliceHeightRange());
 			this.viewModeCoordinator.showOnMap();

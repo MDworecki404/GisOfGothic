@@ -105,6 +105,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `slice-height-range-changed` | `range` (`minimumMetres`, `maximumMetres`) lub `null`                                    | po wczytaniu modelu świata (zakres suwaka cięcia wynika z granic modelu)                          |
 | `map-overlays-changed`       | `overlays` (`areContoursVisible`, `isGridVisible`)                                       | przełączenie poziomic albo siatki w panelu Warstwy                                                |
 | `bookmarks-changed`          | `bookmarks`, `hasStorageError`                                                           | wczytano, dodano albo usunięto zakładkę (lista dotyczy otwartego świata)                          |
+| `notebook-changed`           | `notebook` (pinezki, wpisy listy, postęp, tryb stawiania, błąd zapisu)                   | dodano, zmieniono albo usunięto pinezkę lub wpis listy, zmiana trybu stawiania, wczytanie świata  |
 | `measurement-changed`        | `measurement` (tryb, wierzchołki, podsumowanie, profil, czasy przejścia, wskazany punkt) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie                          |
 | `chapter-changed`            | `chapter` (1–6) lub `null`                                                               | wybór rozdziału w panelu Czas albo odtworzenie go z linku lub zakładki                            |
 | `time-of-day-changed`        | `minuteOfDay`, `routineLayerStatus`, `charactersOnMap`                                   | zmiana pory dnia albo warstwy postaci o tej godzinie                                              |
@@ -273,6 +274,33 @@ kamery (`camera.moveEnd`), fasada publikuje `camera-view-changed`. Widok z linku
 (klucz `gisofgothic:bookmarks:v1`, lista JSON). Odczyt waliduje każdy wpis; niedostępna albo pełna pamięć
 nie przerywa działania — panel pokazuje ostrzeżenie. Zakładka zapamiętuje to samo co link (także opcjonalny `projection`; brak pola w starej zakładce oznacza rzut domyślny), więc „Kopiuj
 link” składa adres z `linkQuery` zakładki. Decyzje: [ADR 0007](adr/0007-widok-w-adresie-i-zakladki-w-localstorage.md).
+
+## Notatnik gracza i kopia zapasowa
+
+Narzędzie Notatnik (`NotebookPanel`) ma dwie części. `NotebookCoordinator` trzyma dane otwartego świata (zapis obejmuje
+wszystkie światy) i publikuje `notebook-changed`; `NotebookStore` zapisuje je w `localStorage` (klucz
+`gisofgothic:notebook:v1`, obiekt z listami `pins` i `collected`), waliduje każdy rekord przy odczycie, a nieudany zapis
+zgłasza polem `hasStorageError`.
+
+- **Pinezki.** „Postaw pinezkę na mapie” włącza tryb umieszczania (`startPlacingPin`); gdy narzędziem jest Notatnik,
+  fasada kieruje następne kliknięcie mapy do `NotebookCoordinator.addPin`, który kończy tryb. Pozycja to metry od kotwicy
+  świata (jak w pomiarach), więc nie zależy od globusa. Nazwę i notatkę edytuje się w panelu, a `UserPinsRenderer`
+  (`services/map/`) rysuje kropkę z podpisem w dwóch kolekcjach prymitywów, widoczną także przez dachy. Pinezki zdejmuje
+  `useWorld` (zmiana świata), a pokazuje `showOnMap` po wczytaniu modelu świata i po utworzeniu mapy, bo pozycje
+  przelicza rama świata, która istnieje dopiero po wczytaniu tilesetu. Wyjście z narzędzia anuluje tryb umieszczania.
+- **Co zebrałem.** Karta przedmiotu i questa w wyszukiwarce ma przycisk „Oznacz jako zebrany” / „wykonany”
+  (`toggleCollectedStateOfSelectedEntry`). Wpis listy to gra, świat, identyfikator, rodzaj i nazwa, więc lista działa
+  bez indeksu. Postęp (`CollectionProgressView`) dzieli liczbę odhaczonych przez liczbę wpisów świata z indeksu
+  (`useEntryTotals` po `search-index-loaded`); bez indeksu pokazuje tylko liczbę.
+- **Kopia zapasowa.** `UserDataTransfer` składa plik JSON z zakładek (`BookmarksCoordinator.exportViews`), pinezek
+  i listy (`NotebookCoordinator.exportData`) przez `UserDataBackupCodec` (pola `application`, `version`, `exportedAt`).
+  Import przepuszcza tylko poprawne rekordy, pomija duplikaty i zwraca komunikat z liczbami dodanych; obcy plik
+  jest odrzucany bez zmian. Panel pobiera plik (`Blob` i `download`) i czyta wybrany plik (`UserDataBackupSection`,
+  wspólna dla paneli Zakładki i Notatnik).
+- **Kopiuj link.** `CopyViewLinkButton` kopiuje `window.location.href`; adres odtwarza cały widok (zob. wyżej), a strona
+  podmienia go po każdej zmianie widoku. Przycisk jest w pasku górnym (od szerokości `lg`), w karcie wpisu i w panelu Zakładki.
+
+Decyzje: [ADR 0029](adr/0029-notatnik-gracza-lokalnie-z-kopia-w-pliku.md).
 
 ## Kadrowanie kamery
 

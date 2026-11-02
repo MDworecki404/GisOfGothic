@@ -5,6 +5,7 @@
 	import { appState, geoportal, installApp, mobileSheet } from '#lib/composition-root.js';
 	import AboutDialog from './AboutDialog.svelte';
 	import BrandMark from './BrandMark.svelte';
+	import CopyViewLinkButton from './CopyViewLinkButton.svelte';
 	import MoreMenu from './MoreMenu.svelte';
 	import PerformanceDialog from './PerformanceDialog.svelte';
 	import WorldSwitcher, { type WorldSwitcherGame } from './WorldSwitcher.svelte';
@@ -71,6 +72,13 @@
 			>Ctrl K</kbd
 		>
 	</label>
+
+	<div class="hidden shrink-0 lg:block">
+		<CopyViewLinkButton
+			class="min-h-11 rounded-sm border border-border px-3 text-label text-muted-foreground hover:border-torch/60 hover:text-foreground"
+			label="Kopiuj link"
+		/>
+	</div>
 
 	{#if appState.canInstallApp}
 		<button

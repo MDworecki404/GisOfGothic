@@ -1,4 +1,9 @@
-import type { QuestCatalog, SearchEntry, SearchIndex } from '#lib/data/types.js';
+import type {
+	QuestCatalog,
+	SearchEntry,
+	SearchEntryType,
+	SearchIndex
+} from '#lib/data/types.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
 import type { PlaceMarker } from '#lib/services/map/place-markers-layer.js';
 import { QuestPresenter, type QuestLinkView } from './quest-presenter.js';
@@ -38,8 +43,10 @@ export class SearchCoordinator {
 		return this.searchService;
 	}
 
-	get selectedEntryReference(): { id: string; name: string } | null {
-		return this.selectedEntry ? { id: this.selectedEntry.id, name: this.selectedEntry.name } : null;
+	get selectedEntryReference(): { id: string; name: string; type: SearchEntryType } | null {
+		return this.selectedEntry
+			? { id: this.selectedEntry.id, name: this.selectedEntry.name, type: this.selectedEntry.type }
+			: null;
 	}
 
 	useModelNamespace(modelNamespace: string): void {

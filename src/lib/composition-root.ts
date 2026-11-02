@@ -4,6 +4,7 @@ import { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
 import type { AppEvent } from '#lib/events/app-events.js';
 import { EventBus } from '#lib/events/event-bus.js';
 import { BookmarkStore } from '#lib/services/bookmarks/bookmark-store.js';
+import { NotebookStore } from '#lib/services/notebook/notebook-store.js';
 import { GeoportalFacade } from '#lib/services/geoportal-facade.js';
 import { ProtectedModelLoader } from '#lib/services/models/protected-model-loader.js';
 import { PerformancePreferenceStore } from '#lib/services/performance/performance-preference-store.js';
@@ -18,6 +19,7 @@ export const geoportal = new GeoportalFacade(
 	eventBus,
 	(dataBaseUrl) => new GeoportalDataLoader(dataBaseUrl),
 	BookmarkStore.forBrowser(),
+	NotebookStore.forBrowser(),
 	PUBLIC_MODEL_KEY ? new ProtectedModelLoader(PUBLIC_MODEL_KEY) : null,
 	PerformancePreferenceStore.forBrowser()
 );
