@@ -2,6 +2,8 @@ import type { QuestCatalog, SearchEntry, SearchEntryType, SearchIndex } from '#l
 import type { AppEventBus } from '#lib/events/app-events.js';
 import type { PlaceMarker } from '#lib/services/map/place-markers-layer.js';
 import { QuestPresenter, type QuestLinkView } from './quest-presenter.js';
+import { NO_ATTRIBUTE_FILTER, type AttributeFilter } from './attribute-filter.js';
+import { EntryRelationFinder } from './entry-relation-finder.js';
 import { buildPlaceKey, isCollectiblePlace } from '#lib/data/place-key.js';
 import { pickPlaceColor, SearchEntryPresenter } from './search-entry-presenter.js';
 import { SearchService, type CategoryOption, type SearchTypeFilter } from './search-service.js';
@@ -25,6 +27,8 @@ export class SearchCoordinator {
 	private query = '';
 	private typeFilter: SearchTypeFilter = 'all';
 	private categoryFilter: string | null = null;
+	private attributeFilter: AttributeFilter = NO_ATTRIBUTE_FILTER;
+	private relationFinder: EntryRelationFinder | null = null;
 	private selectedEntry: SearchEntry | null = null;
 	private entryIdAwaitingIndex: string | null = null;
 	private shouldFlyToAwaitedEntry = true;
@@ -62,6 +66,7 @@ export class SearchCoordinator {
 
 	useIndex(index: SearchIndex | null): void {
 		this.searchService = index ? new SearchService(index) : null;
+		this.relationFinder = index ? new EntryRelationFinder(index) : null;
 		this.clearSelection();
 		this.publishResults();
 		if (this.entryIdAwaitingIndex) {
@@ -78,11 +83,24 @@ export class SearchCoordinator {
 	filterByType(typeFilter: SearchTypeFilter): void {
 		this.typeFilter = typeFilter;
 		this.categoryFilter = null;
+		this.attributeFilter = NO_ATTRIBUTE_FILTER;
 		this.publishResults();
 	}
 
 	filterByCategory(categoryLabel: string | null): void {
 		this.categoryFilter = categoryLabel;
+		this.publishResults();
+	}
+
+	/** Zawęża postacie do przedziału poziomu; `null` zdejmuje daną granicę. */
+	filterByLevelRange(minimumLevel: number | null, maximumLevel: number | null): void {
+		this.attributeFilter = { ...this.attributeFilter, minimumLevel, maximumLevel };
+		this.publishResults();
+	}
+
+	/** Zawęża questy do jednego rozdziału startu; `null` pokazuje wszystkie. */
+	filterByQuestChapter(questChapter: number | null): void {
+		this.attributeFilter = { ...this.attributeFilter, questChapter };
 		this.publishResults();
 	}
 
@@ -101,8 +119,9 @@ export class SearchCoordinator {
 			details: this.presenter.presentDetails(entry, this.modelNamespace)
 		});
 		this.showSelectedEntryOnMap(shouldFlyToMarkers);
+		this.publishRelatedEntries(entry);
 		if (entry.type === 'quest') void this.showQuestDetails(entry);
-		if (entry.type === 'character') void this.showQuestsOfCharacter(entry);
+		if (entry.type !== 'quest') void this.showQuestsOfEntry(entry);
 	}
 
 	clearSelection(): void {
@@ -168,7 +187,16 @@ export class SearchCoordinator {
 		}
 	}
 
-	private async showQuestsOfCharacter(entry: SearchEntry): Promise<void> {
+	private publishRelatedEntries(entry: SearchEntry): void {
+		this.eventBus.publish({
+			type: 'related-entries-changed',
+			entryId: entry.id,
+			groups: this.relationFinder?.describeRelations(entry) ?? []
+		});
+	}
+
+	/** Questy powiązane z postacią (zleca, występuje) albo z przedmiotem (nagroda, do oddania, zostaje w świecie). */
+	private async showQuestsOfEntry(entry: SearchEntry): Promise<void> {
 		const publishState = (status: 'loading' | 'ready' | 'error', quests: QuestLinkView[]): void =>
 			this.eventBus.publish({
 				type: 'related-quests-changed',
@@ -180,10 +208,12 @@ export class SearchCoordinator {
 		try {
 			const catalog = await this.readQuestCatalog();
 			if (this.selectedEntry?.id !== entry.id) return;
-			const characterCodes = entry.codes ?? [entry.code];
+			const codes = entry.codes ?? [entry.code];
 			publishState(
 				'ready',
-				this.questPresenter.presentQuestsOfCharacter(catalog.quests, characterCodes)
+				entry.type === 'item'
+					? this.questPresenter.presentQuestsOfItem(catalog.quests, entry.code)
+					: this.questPresenter.presentQuestsOfCharacter(catalog.quests, codes)
 			);
 		} catch (error) {
 			console.error(error);
@@ -206,8 +236,13 @@ export class SearchCoordinator {
 	private findEntriesToList(): SearchEntry[] {
 		if (!this.searchService) return [];
 		return this.query.trim().length === 0
-			? this.searchService.listAll(this.typeFilter, this.categoryFilter)
-			: this.searchService.search(this.query, this.typeFilter, this.categoryFilter);
+			? this.searchService.listAll(this.typeFilter, this.categoryFilter, this.attributeFilter)
+			: this.searchService.search(
+					this.query,
+					this.typeFilter,
+					this.categoryFilter,
+					this.attributeFilter
+				);
 	}
 
 	private listCategories(): CategoryOption[] {
@@ -222,6 +257,7 @@ export class SearchCoordinator {
 			query: this.query,
 			typeFilter: this.typeFilter,
 			categoryFilter: this.categoryFilter,
+			attributeFilter: this.attributeFilter,
 			categories: this.listCategories(),
 			results: entries.map((entry) => this.presenter.presentResult(entry))
 		});

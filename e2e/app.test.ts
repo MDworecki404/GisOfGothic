@@ -471,3 +471,40 @@ test('przycisk kopiowania linku potwierdza skopiowanie adresu widoku', async ({
 	expect(copied).toContain('/g2nk/khorinis');
 	expect(copied).toContain('narzedzie=bookmarks');
 });
+
+test('karta postaci pokazuje przedmioty, które ma przy sobie, z linkami do przedmiotów', async ({
+	page
+}) => {
+	await page.goto('/g2nk/khorinis?wpis=character:BAU_908_HODGES');
+	await expect(page.getByRole('heading', { name: 'Hodges' })).toBeVisible({ timeout: 30_000 });
+	await expect(page.getByRole('heading', { name: /^Ma przy sobie \(\d+\)/ })).toBeVisible();
+	await page.getByRole('button', { name: /^Sierp/ }).click();
+	await expect(page).toHaveURL(/wpis=item/);
+	await expect(page.getByRole('heading', { name: /^Ma go przy sobie/ })).toBeVisible();
+	await expect(page.getByRole('button', { name: /^Hodges/ })).toBeVisible();
+});
+
+test('filtr poziomu zawęża postacie, a pusty wynik daje przycisk czyszczenia filtrów', async ({
+	page
+}) => {
+	await page.goto('/g2nk/khorinis');
+	await page.getByRole('button', { name: 'Postacie' }).click();
+	await expect(page.getByText(/^Wszystko: \d+$/)).toBeVisible({ timeout: 30_000 });
+	await page.getByLabel('Poziom od').fill('101');
+	await page.getByLabel('Poziom od').blur();
+	await expect(page.getByText('Żaden wpis nie spełnia wybranych filtrów.')).toBeVisible();
+	await page.getByRole('button', { name: 'Wyczyść filtry' }).click();
+	await expect(page.getByText(/^Wszystko: \d+$/)).toBeVisible();
+	await expect(page.getByLabel('Poziom od')).toHaveValue('');
+});
+
+test('filtr rozdziału zawęża questy do jednego rozdziału', async ({ page }) => {
+	await page.goto('/g2nk/khorinis');
+	await page.getByRole('button', { name: 'Questy' }).click();
+	await expect(page.getByText('Wszystko: 165')).toBeVisible({ timeout: 30_000 });
+	await page.getByLabel('Rozdział questa').selectOption({ label: 'Rozdział III' });
+	await expect(page.getByText('Wszystko: 19')).toBeVisible();
+	await page.getByRole('button', { name: 'Postacie' }).click();
+	await page.getByRole('button', { name: 'Questy' }).click();
+	await expect(page.getByText('Wszystko: 165')).toBeVisible();
+});

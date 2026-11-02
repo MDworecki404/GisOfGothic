@@ -2,6 +2,11 @@ import MiniSearch from 'minisearch';
 import { describeCategory } from '#lib/data/category-names.js';
 import { stonePlateNameResolver } from '#lib/data/stone-plate-names.js';
 import type { SearchEntry, SearchEntryType, SearchIndex } from '#lib/data/types.js';
+import {
+	AttributeFilterMatcher,
+	NO_ATTRIBUTE_FILTER,
+	type AttributeFilter
+} from './attribute-filter.js';
 
 export type SearchTypeFilter = 'all' | SearchEntryType;
 
@@ -36,6 +41,7 @@ export class SearchService {
 	private readonly miniSearch: MiniSearch<IndexedDocument>;
 	private readonly entriesById: Map<string, SearchEntry>;
 	private readonly entriesSortedByName: SearchEntry[];
+	private readonly attributeFilterMatcher = new AttributeFilterMatcher();
 
 	constructor(index: SearchIndex) {
 		this.entriesById = new Map(index.entries.map((entry) => [entry.id, entry]));
@@ -70,7 +76,8 @@ export class SearchService {
 	search(
 		query: string,
 		typeFilter: SearchTypeFilter,
-		categoryLabel: string | null = null
+		categoryLabel: string | null = null,
+		attributeFilter: AttributeFilter = NO_ATTRIBUTE_FILTER
 	): SearchEntry[] {
 		const trimmedQuery = query.trim();
 		if (trimmedQuery.length === 0) return [];
@@ -80,19 +87,24 @@ export class SearchService {
 					(typeFilter === 'all' || result.type === typeFilter) &&
 					(categoryLabel === null || result.categoryLabel === categoryLabel)
 			})
-			.slice(0, MAXIMUM_RESULTS)
 			.flatMap((result) => {
 				const entry = this.entriesById.get(String(result.id));
-				return entry ? [entry] : [];
-			});
+				return entry && this.attributeFilterMatcher.matches(entry, attributeFilter) ? [entry] : [];
+			})
+			.slice(0, MAXIMUM_RESULTS);
 	}
 
 	/** Wszystkie wpisy (z filtrem rodzaju) w kolejności alfabetycznej — do przeglądania bez wpisywania frazy. */
-	listAll(typeFilter: SearchTypeFilter, categoryLabel: string | null = null): SearchEntry[] {
+	listAll(
+		typeFilter: SearchTypeFilter,
+		categoryLabel: string | null = null,
+		attributeFilter: AttributeFilter = NO_ATTRIBUTE_FILTER
+	): SearchEntry[] {
 		return this.entriesSortedByName.filter(
 			(entry) =>
 				(typeFilter === 'all' || entry.type === typeFilter) &&
-				(categoryLabel === null || describeCategory(entry.category) === categoryLabel)
+				(categoryLabel === null || describeCategory(entry.category) === categoryLabel) &&
+				this.attributeFilterMatcher.matches(entry, attributeFilter)
 		);
 	}
 

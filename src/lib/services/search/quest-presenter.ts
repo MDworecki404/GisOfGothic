@@ -119,6 +119,28 @@ export class QuestPresenter {
 		}));
 	}
 
+	/** Questy, w których przedmiot o danym kodzie jest nagrodą, rzeczą do oddania albo zostaje w świecie. */
+	presentQuestsOfItem(quests: readonly QuestRecord[], itemCode: string): QuestLinkView[] {
+		return quests
+			.flatMap((quest) => {
+				const item = quest.items.find((candidate) => candidate.code === itemCode);
+				return item ? [{ quest, item }] : [];
+			})
+			.sort((first, second) => first.quest.name.localeCompare(second.quest.name, 'pl'))
+			.map(({ quest, item }) => ({
+				name: quest.name,
+				description: [
+					ITEM_ROLE_LABELS[item.role],
+					item.amount > 1 ? `×${item.amount}` : '',
+					quest.chapter === null ? '' : `rozdz. ${quest.chapter}`
+				]
+					.filter((part) => part !== '')
+					.join(', '),
+				isUncertain: item.certainty === 'possible',
+				entryId: quest.id
+			}));
+	}
+
 	private findBestRoleOfCharacter(
 		quest: QuestRecord,
 		characterCodes: readonly string[]

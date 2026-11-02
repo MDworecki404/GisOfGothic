@@ -28,6 +28,11 @@ import {
 import { ScaleBarCalculator, type ScaleBar } from '#lib/services/geodesy/scale-bar-calculator.js';
 import type { WorldPosition } from '#lib/services/geodesy/world-frame.js';
 import type { QuestDetailsView, QuestLinkView } from '#lib/services/search/quest-presenter.js';
+import {
+	NO_ATTRIBUTE_FILTER,
+	type AttributeFilter
+} from '#lib/services/search/attribute-filter.js';
+import type { RelatedGroupView } from '#lib/services/search/entry-relation-finder.js';
 import type {
 	SearchEntryDetails,
 	SearchResult
@@ -77,6 +82,7 @@ export class AppState {
 	searchTypeFilter = $state<SearchTypeFilter>('all');
 	searchCategoryFilter = $state<string | null>(null);
 	searchCategories = $state.raw<CategoryOption[]>([]);
+	searchAttributeFilter = $state.raw<AttributeFilter>(NO_ATTRIBUTE_FILTER);
 	searchResults = $state.raw<SearchResult[]>([]);
 	questDetails = $state.raw<{
 		entryId: string;
@@ -88,6 +94,7 @@ export class AppState {
 		status: 'loading' | 'ready' | 'error';
 		quests: QuestLinkView[];
 	} | null>(null);
+	relatedEntries = $state.raw<{ entryId: string; groups: RelatedGroupView[] } | null>(null);
 	selectedEntry = $state.raw<SearchEntryDetails | null>(null);
 	dataLayers = $state.raw<DataLayerView[]>([]);
 	dataLayerErrorMessage = $state<string | null>(null);
@@ -150,6 +157,7 @@ export class AppState {
 			this.searchTypeFilter = typeFilter;
 			this.searchCategoryFilter = event.categoryFilter;
 			this.searchCategories = event.categories;
+			this.searchAttributeFilter = event.attributeFilter;
 			this.searchResults = results;
 		});
 		eventBus.subscribe('data-layers-changed', ({ layers }) => {
@@ -208,6 +216,10 @@ export class AppState {
 			this.selectedEntry = details;
 			this.questDetails = null;
 			this.relatedQuests = null;
+			this.relatedEntries = null;
+		});
+		eventBus.subscribe('related-entries-changed', ({ entryId, groups }) => {
+			this.relatedEntries = { entryId, groups };
 		});
 		eventBus.subscribe('related-quests-changed', ({ entryId, status, quests }) => {
 			this.relatedQuests = { entryId, status, quests };
