@@ -22,7 +22,7 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0016](0016-nowe-funkcje-podnosza-wersje-minor.md)             | Nowe funkcje podnoszą wersję minor przed 1.0.0       | przyjęta          |
 | [0017](0017-szczegoly-questow-ladowane-leniwie.md)             | Szczegóły questów ładowane leniwie z `quests.json`   | przyjęta          |
 | [0018](0018-nazwy-gildii-z-danych-swiata.md)                   | Nazwy gildii z danych świata, nie z kodu aplikacji   | przyjęta          |
-| [0019](0019-motyw-mapa-z-sakwy-i-tokeny-ukladu.md)             | Motyw „Mapa z sakwy kopacza” i tokeny układu         | przyjęta          |
+| [0019](0019-motyw-mapa-z-sakwy-i-tokeny-ukladu.md)             | Motyw „Mapa z sakwy kopacza” i tokeny układu         | zastąpiona (0036) |
 | [0020](0020-pergamin-pod-plotnem-i-widoczne-atrybucje.md)      | Pergamin pod płótnem i widoczne atrybucje            | przyjęta          |
 | [0021](0021-rzut-kamery.md)                                    | Rzut kamery: wbudowany ortogonalny Cesium z korektą  | przyjęta          |
 | [0022](0022-losowy-lup-gothic-3.md)                            | Losowy łup Gothica 3 z osobnego pliku, na żądanie    | przyjęta          |
@@ -39,3 +39,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0033](0033-trasy-po-sieci-waypointow.md)                      | Trasy po sieci waypointów                            | przyjęta          |
 | [0034](0034-siec-drog-gothica-3.md)                            | Sieć dróg Gothica 3 ze stref nawigacyjnych           | przyjęta          |
 | [0035](0035-animacja-rutyn-po-sieci-drog.md)                   | Animacja rutyn postaci po sieci dróg                 | przyjęta          |
+| [0036](0036-motyw-latarnia-w-kopalni.md)                       | Motyw „latarnia w kopalni”                           | przyjęta          |

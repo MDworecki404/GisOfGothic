@@ -496,19 +496,21 @@ widzi aktualny zasłonięty dół. Decyzje: [ADR 0009](adr/0009-wlasny-arkusz-mo
 
 ## Motyw i układ ekranu
 
-Wszystkie tokeny wyglądu są w `src/app.css`: paleta materiałów (smoła, dębina, skóra, kuta stal, pergamin,
-atrament, ochra, pochodnia, magiczna ruda, krew), role (zmienne shadcn oraz `--hover` i `--active`), skala
-pisma (`text-caption` … `text-hero`), cienie i promienie. Pochodnia oznacza najechanie i ładowanie,
-magiczna ruda zaznaczenie, aktywne narzędzie i focus. Materiały to klasy `material-leather`
-(`material-leather-riveted` dodaje nity i przeszycie), `material-iron` i `material-parchment`. Krój
-Grenze Gotisch jest tylko w `h1`/`h2`; reszta to Alegreya Sans, a opisy na pergaminie Alegreya.
+Wszystkie tokeny wyglądu są w `src/app.css` ([ADR 0036](adr/0036-motyw-latarnia-w-kopalni.md), motyw „latarnia w
+kopalni”): paleta (łupek, łupek wysoki, woda, krawędź, linia, popiół, mgła, żar, bariera, krew), role (zmienne shadcn oraz
+`--hover` i `--active`), skala pisma (`text-caption` … `text-hero`) i promienie. Żar oznacza działanie, najechanie i
+ładowanie, bariera wybór, aktywne narzędzie i fokus. Stare nazwy tokenów (`--ochre`, `--torch`, `--ore`…) są aliasami
+do etapu 5. Materiały to klasy `material-leather` (płyta ze ściętym rogiem, `clip-path`, bez cienia zewnętrznego i bez
+`backdrop-filter`), `material-iron` i `material-parchment` (płaska płyta). Krój Grenze jest w nazwach i nagłówkach, a
+Barlow Semi Condensed w reszcie interfejsu (oba z `@fontsource`). Kontrast kolorów pilnuje `ColorContrastCalculator`
+(`services/theme/`), a kolory warstw mapy trzyma `MAP_PALETTE` (`services/map/map-palette.ts`).
 
 Kontrolki mają klasy w `src/app.css` zamiast powtarzanych list klas Tailwind: przyciski `button-iron`
 (zwykła akcja), `button-ochre` (jedna główna akcja w widoku) i `button-quiet`, przełączniki `chip` i
 `choice-card` (stan z `aria-pressed`), pole tekstowe `field`, pola wyboru i opcje `check-forged`, wiersz
 listy `list-row`, nagłówek grupy `group-label`. Suwak to komponent `controls/ForgedRange.svelte` (wypełnienie
-rowka liczy się z wartości). Karta obiektu (`IdentifyCard`) to notatka na pergaminie przybita gwoździem
-(`parchment-note`, cień na `parchment-note-shadow`, bo `clip-path` przyciąłby cień), z przyciskiem `button-ink`.
+rowka liczy się z wartości). Karta obiektu (`IdentifyCard`) to płyta (`parchment-note`, cień na `parchment-note-shadow`, bo `clip-path`
+przyciąłby cień), z przyciskiem `button-ink`.
 Wszystkie elementy klikalne mają co najmniej 44 px wysokości (`--touch-target`).
 
 Stany interfejsu:
@@ -532,11 +534,11 @@ Wymiary układu też są tokenami: `--top-bar-height`, `--bottom-nav-height`, `-
 `--panel-occupied-width` (szerokość panelu na większych ekranach). Pasek stanu, joysticki i plakietka
 ładowania liczą z nich położenie zamiast stałych. Decyzja: [ADR 0019](adr/0019-motyw-mapa-z-sakwy-i-tokeny-ukladu.md).
 
-Mapa wygląda jak arkusz pergaminu: płótno Cesium ma przezroczyste tło (`withTransparentBackground`),
-a pod nim `MapView` rysuje ciemny, przydymiony pergamin (`.map-parchment`, kolor `--map-backdrop`) i nad nim przypalone brzegi (`.map-parchment-frame`,
-bez przechwytywania kliknięć). Cesium wpisuje atrybucje do elementu z komponentu `MapAttribution`
+Płótno Cesium ma przezroczyste tło (`withTransparentBackground`), a pod nim `MapView` rysuje ciemną wodę z delikatnymi
+falami (`.map-parchment`, kolor `--woda`) i nad nim chłodne winietowanie brzegów (`.map-parchment-frame`, bez
+przechwytywania kliknięć). Cesium wpisuje atrybucje do elementu z komponentu `MapAttribution`
 (`attachMapTo(kontener, atrybucje)`, `withCreditsIn`), który obok logo Cesium ion pokazuje prawa do świata
-gry. Kontrolki mapy (`MapControls`) mają przyciski 44 px, a podziałka w pasku stanu wygląda jak linijka.
+gry. Kontrolki mapy (`MapControls`) mają przyciski 44 px, a podziałka w pasku stanu to linijka z naprzemiennymi odcinkami.
 Decyzja: [ADR 0020](adr/0020-pergamin-pod-plotnem-i-widoczne-atrybucje.md).
 
 ## Podgląd modelu przedmiotu

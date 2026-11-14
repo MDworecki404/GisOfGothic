@@ -1,6 +1,6 @@
 # 0019. Motyw „Mapa z sakwy kopacza” i tokeny układu w jednym miejscu
 
-Status: przyjęta
+Status: zastąpiona w części motywu i pisma (ADR 0036); tokeny układu pozostają w mocy
 
 ## Kontekst
 

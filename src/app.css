@@ -251,10 +251,23 @@
 
 @layer components {
 	/* Płyta: ciosany łupek ze ściętym rogiem, światło pochodni pada z lewej-góry (ADR 0036).
-	   Krawędź to tło elementu, a wnętrze to ::before, więc clip-path nie ucina ramki. */
-	.material-leather {
+	   Kształt dają dwie warstwy ozdobne (::before to krawędź, ::after to wnętrze), a sam element
+	   nie jest przycinany, więc rozwijane menu i podpowiedzi mogą wystawać poza płytę. */
+	.material-leather,
+	.parchment-note {
 		--cut: 14px;
 		position: relative;
+		isolation: isolate;
+		color: var(--popiol);
+	}
+
+	.material-leather::before,
+	.parchment-note::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		pointer-events: none;
 		background: linear-gradient(135deg, rgb(242 162 74 / 0.7), #40515a 28%, #2a373d 70%, #232e33);
 		clip-path: polygon(
 			var(--cut) 0,
@@ -266,11 +279,12 @@
 		);
 	}
 
-	.material-leather::before {
+	.material-leather::after,
+	.parchment-note::after {
 		content: '';
 		position: absolute;
 		inset: 1px;
-		z-index: 0;
+		z-index: -1;
 		pointer-events: none;
 		background:
 			radial-gradient(120% 80% at 0 0, rgb(242 162 74 / 0.13), transparent 58%), var(--lupek);
@@ -284,13 +298,8 @@
 		);
 	}
 
-	.material-leather > * {
-		position: relative;
-		z-index: 1;
-	}
-
 	/* Wybrana płyta: krawędź w kolorze bariery */
-	.material-leather.plate-selected {
+	.material-leather.plate-selected::before {
 		background: linear-gradient(135deg, var(--bariera), #55659e 40%, #2a373d);
 	}
 
@@ -605,45 +614,7 @@
 		color: var(--muted-foreground);
 	}
 
-	/* Karta obiektu: płyta jak reszta interfejsu (dawna notatka na pergaminie) */
-	.parchment-note {
-		--cut: 14px;
-		position: relative;
-		color: var(--popiol);
-		background: linear-gradient(135deg, rgb(242 162 74 / 0.7), #40515a 28%, #2a373d 70%, #232e33);
-		clip-path: polygon(
-			var(--cut) 0,
-			100% 0,
-			100% calc(100% - var(--cut)),
-			calc(100% - var(--cut)) 100%,
-			0 100%,
-			0 var(--cut)
-		);
-	}
-
-	.parchment-note::before {
-		content: '';
-		position: absolute;
-		inset: 1px;
-		z-index: 0;
-		pointer-events: none;
-		background:
-			radial-gradient(120% 80% at 0 0, rgb(242 162 74 / 0.13), transparent 58%), var(--lupek);
-		clip-path: polygon(
-			calc(var(--cut) - 0.4px) 0,
-			100% 0,
-			100% calc(100% - var(--cut) + 0.4px),
-			calc(100% - var(--cut) + 0.4px) 100%,
-			0 100%,
-			0 calc(var(--cut) - 0.4px)
-		);
-	}
-
-	.parchment-note > * {
-		position: relative;
-		z-index: 1;
-	}
-
+	/* Karta obiektu: płyta jak reszta interfejsu (dawna notatka na pergaminie); kształt z reguł wyżej */
 	/* Cień karty na elemencie nadrzędnym, bo clip-path karty przyciąłby cień */
 	.parchment-note-shadow {
 		filter: drop-shadow(0 8px 14px rgb(0 0 0 / 0.55));

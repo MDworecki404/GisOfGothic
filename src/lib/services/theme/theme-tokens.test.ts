@@ -69,8 +69,10 @@ describe('klasy materiałów', () => {
 		expect(appCss).not.toContain('backdrop-filter');
 	});
 
-	it('płyta ma ścięty róg, a nity i przeszycie znikły', () => {
-		expect(readRuleBlock('.material-leather {')).toContain('clip-path');
+	it('kształt płyty dają warstwy ozdobne, a sam element nie jest przycinany', () => {
+		expect(readRuleBlock('.material-leather::before')).toContain('clip-path');
+		expect(readRuleBlock('.material-leather,')).not.toContain('clip-path');
+		expect(readRuleBlock('.parchment-note::before')).toContain('clip-path');
 		expect(appCss).not.toContain('.material-leather-riveted::after');
 	});
 
