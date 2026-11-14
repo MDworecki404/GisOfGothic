@@ -182,3 +182,22 @@ export interface TreasureSet {
 }
 
 export type TreasureSetCatalog = ReadonlyMap<string, TreasureSet>;
+
+export interface WaypointNode {
+	name: string;
+	lon: number;
+	lat: number;
+	height: number;
+	isUnderwater: boolean;
+}
+
+export interface WaypointEdge {
+	from: string;
+	to: string;
+}
+
+/** Sieć dróg z gry (waynet): punkty i połączenia między nimi, po których chodzą postacie. */
+export interface WaypointNetwork {
+	nodes: WaypointNode[];
+	edges: WaypointEdge[];
+}

@@ -2,12 +2,14 @@ import { isCollectiblePlace } from './place-key.js';
 import { parseMetadata, parseSearchIndex } from './parsers.js';
 import { parseQuestCatalog } from './quest-parsers.js';
 import { parseTreasureSetCatalog } from './treasure-set-parsers.js';
+import { parseWaypointNetwork } from './waypoint-network-parser.js';
 import type {
 	IndexCounts,
 	Metadata,
 	QuestCatalog,
 	SearchIndex,
-	TreasureSetCatalog
+	TreasureSetCatalog,
+	WaypointNetwork
 } from './types.js';
 
 const SEARCH_INDEX_FILE_NAME = 'search_index.json';
@@ -44,6 +46,18 @@ export class GeoportalDataLoader {
 
 	async loadTreasureSetCatalog(): Promise<TreasureSetCatalog> {
 		return parseTreasureSetCatalog(await this.fetchJson('treasure_sets.json'));
+	}
+
+	/** Świat bez sieci dróg (np. Gothic 3) nie ma pliku, więc HTTP 404 oznacza `null`, a nie błąd. */
+	async loadWaypointNetwork(): Promise<WaypointNetwork | null> {
+		const response = await this.fetchResource(`${this.baseUrl}/waypoints.json`);
+		if (response.status === 404) return null;
+		if (!response.ok) {
+			throw new Error(
+				`Nie udało się pobrać ${this.baseUrl}/waypoints.json (HTTP ${response.status})`
+			);
+		}
+		return parseWaypointNetwork(await response.json());
 	}
 
 	async loadLayerFile(fileName: string): Promise<unknown> {

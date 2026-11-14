@@ -136,3 +136,35 @@ describe('GeoportalDataLoader', () => {
 		await expect(createLoaderServing({}, 404).loadSearchIndex()).rejects.toThrow(/404/);
 	});
 });
+
+describe('GeoportalDataLoader: sieć waypointów', () => {
+	const networkJson = {
+		version: 1,
+		game: 'g2nk',
+		world: 'NEWWORLD',
+		nodes: [
+			['A', 0, 0, 0, 0],
+			['B', 0.001, 0, 0, 0]
+		],
+		edges: [[0, 1]]
+	};
+
+	it('ładuje sieć z waypoints.json', async () => {
+		const requestedUrls: string[] = [];
+		const loader = new GeoportalDataLoader('/data/test', async (url) => {
+			requestedUrls.push(url);
+			return new Response(JSON.stringify(networkJson));
+		});
+		const network = await loader.loadWaypointNetwork();
+		expect(requestedUrls).toEqual(['/data/test/waypoints.json']);
+		expect(network?.nodes).toHaveLength(2);
+	});
+
+	it('zwraca null przy HTTP 404 (świat bez sieci)', async () => {
+		await expect(createLoaderServing({}, 404).loadWaypointNetwork()).resolves.toBeNull();
+	});
+
+	it('rzuca błąd przy HTTP 500', async () => {
+		await expect(createLoaderServing({}, 500).loadWaypointNetwork()).rejects.toThrow(/500/);
+	});
+});
