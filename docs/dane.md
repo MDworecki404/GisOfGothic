@@ -136,6 +136,15 @@ Znane odstępstwa od kontraktu, które parser dopuszcza:
   składa z niego nazwę, np. „Kamienna tablica siły II”, przy parsowaniu indeksu, warstwy przedmiotów
   i zawartości skrzyń, oraz podaje wyszukiwarce słowa kluczowe (`siła`, `zręczność`, `jednoręczna`…).
 
+## Sieć dróg (`waypoints.json`)
+
+Plik `waypoints.json` w paczce świata to sieć waypointów z gry (waynet): `{version: 1, game, world, nodes, edges}`,
+gdzie `nodes` to wiersze `[nazwa, lon, lat, wysokość, podWodą]` (lon i lat do 6 miejsc, wysokość do 1, `podWodą` to 0
+albo 1), a `edges` to pary indeksów do `nodes`. Exporter pomija punkt `TOT` (miejsce odstawienia usuniętych postaci)
+i jego krawędzie. Gothic 3 nie ma sieci i pliku też nie: `GeoportalDataLoader.loadWaypointNetwork` zwraca wtedy `null`
+(HTTP 404), a tryb Trasa w Pomiarach mówi, że świat nie ma sieci dróg. Parser (`waypoint-network-parser.ts`) waliduje
+kształt wierszy i zakres indeksów; zastosowanie opisuje [ADR 0033](adr/0033-trasy-po-sieci-waypointow.md).
+
 ## Opis przedmiotu (`description`)
 
 Wiele przedmiotów ma w grze tę samą ogólną nazwę (`name`: „Mikstura”, „Zwój”, „Pierścień”, „Klucz”), a różni je opis ze

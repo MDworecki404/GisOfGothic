@@ -9,18 +9,16 @@ warstwa Questy, widok 2D z cięciem wysokości, rzut ortogonalny, lot kamerą, P
 
 ## Największy zysk dla użytkownika
 
-- **1. Trasy i przewodnik po questach.** Zaznaczony quest rysuje kolejność miejsc z etapów dziennika
-  i liczy czas przejścia. Dane etapów, czas przejścia i profil terenu już istnieją.
+- **1. Przewodnik po questach.** Zaznaczony quest rysuje kolejność miejsc z etapów dziennika. Wymaga kolejności etapów
+  z gry: dziś `quests.json` ma `order: "script"` (kolejność w skryptach), więc trasa przez wszystkie cele byłaby zgadywaniem.
+  Sama trasa A→B po sieci dróg już jest (patrz „Zrobione”).
 - **2. Lokacje jako trzeci rodzaj danych.** Nazwane miejsca (obozy, jaskinie, budynki, przejścia między
   światami) z kartą i wpisem w wyszukiwarce. Pierwszy krok: wejścia do światów, np. Khorinis → Górnicza Dolina.
 
 ## Rozwinięcie istniejących narzędzi
 
-- **6. Pomiary: tempo marszu.** Przeliczenia pieszo / biegiem / strzały z łuku.
-- **7. Telefon: arkusz z trzema stanami** (zwinięty / połowa / pełny). Kadrowanie z ADR 0008 już go zakłada.
 - **8. Podkład „Poziomice”** jako osobny podkład, nie tylko nakładka.
-- **9. Analizy:** zasięg słyszalności i agresji potworów, najkrótsza trasa między dwoma punktami,
-  porównanie dwóch rozdziałów.
+- **9. Analizy:** zasięg słyszalności i agresji potworów, porównanie dwóch rozdziałów.
 - **20. Porównanie rozdziałów** suwakiem podziału ekranu: po lewej postacie z jednego rozdziału, po prawej z drugiego.
 
 ## Treść i wiki
@@ -40,11 +38,15 @@ warstwa Questy, widok 2D z cięciem wysokości, rzut ortogonalny, lot kamerą, P
 
 ## Proponowana kolejność
 
-Najpierw małe i widoczne: **6**, **7**. Potem duże: **1**, a następnie **12**. Jeśli priorytetem
+Najpierw **12** (rutyny jako animacja). **1** (przewodnik po questach) dopiero po tym, jak ekstraktor poda kolejność etapów z gry. Jeśli priorytetem
 jest treść: **2**.
 
 ## Zrobione
 
+- **6. Pomiary: tempo marszu** — czas przejścia pieszo, biegiem, skradaniem i z bronią, z prędkości z animacji gry.
+- **7. Telefon: arkusz z trzema stanami** — zwinięty, połowa i pełny ekran (`sheet-detents`, ADR 0009).
+- **Trasa po sieci dróg z gry** — czwarty tryb narzędzia Pomiary: początek i cel z mapy lub przycisk „Prowadź tutaj”
+  w karcie wpisu, dystans, czas przejścia, profil terenu, trasa w adresie (ADR 0033).
 - **3. Udostępnianie widoku jednym linkiem** — przycisk „Kopiuj link” w pasku górnym, w karcie wpisu i w panelu
   Zakładki; eksport i import zakładek razem z resztą notatnika do pliku JSON (ADR 0029).
 - **4. Własne notatki i pinezki** — narzędzie Notatnik: pinezka z nazwą i opisem stawiana kliknięciem mapy,
