@@ -345,7 +345,7 @@ Decyzje: [ADR 0029](adr/0029-notatnik-gracza-lokalnie-z-kopia-w-pliku.md).
 ## Kadrowanie kamery
 
 Panele zasłaniają część mapy, więc przeloty kamery nie mogą stawiać celu w środku całego płótna.
-`MapInsetsReporter` (komponent bez znaczników) mierzy elementy z `data-map-obstacle` — szynę i panel
+`MapInsetsReporter` (komponent bez znaczników) mierzy elementy z `data-map-obstacle` — płyty nagłówka, dok narzędzi, panel
 narzędzia — i zgłasza fasadzie `reserveMapSpace({ leftPixels, bottomPixels })`: na komputerze panel
 z lewej, na telefonie arkusz od dołu. `CameraFramer` przesuwa kamerę w bok i w górę, tak by cel wypadł
 w środku wolnego obszaru (`FreeAreaCalculator`), a przy dopasowaniu do wielu znaczników oddala ją
@@ -404,8 +404,8 @@ przywraca po powrocie do perspektywy. Rzut jest w adresie (`rzut=o` albo `rzut=p
 Interfejs: przycisk „Rzut kamery” stoi na dole kolumny `MapControls` (`aria-pressed` w ortho) i otwiera
 `CameraSettingsPopover` (grupa przycisków `chip` Perspektywa / Ortogonalny, suwak `ForgedRange` kąta widzenia,
 nieaktywny w ortho, oraz przyciski „Z góry” i „Skos”). Okienko zamyka Esc, kliknięcie poza nim (elementy z
-`data-camera-settings` są „w środku”) albo wybór widoku. Stan otwarcia jest lokalny dla `MapControls`; szyna
-narzędzi się nie zmienia. W ortho pasek stanu pokazuje „rzut ortogonalny”, a panel Czas informuje, że cienie
+`data-camera-settings` są „w środku”) albo wybór widoku. Stan otwarcia jest lokalny dla `MapControls`; dok
+narzędzi się nie zmienia. W ortho płyta odczytu pokazuje „rzut ortogonalny”, a panel Czas informuje, że cienie
 są wyłączone. Gdy pod środkiem ekranu nie ma powierzchni (woda, niewczytane kafle), przełączenie rzutu i
 widoki „Z góry”/„Skos” szacują odległość rzutem środka świata na kierunek patrzenia
 (`MapService.estimateDistanceAlongViewToWorldCentre`); gdy nie ma i takiego punktu (kamera patrzy poza model, np. ponad horyzont), celem jest środek modelu świata.
@@ -528,10 +528,19 @@ Stany interfejsu:
   we wszystkich rodzajach.
 - Na telefonie odczyt położenia kursora jest w lewym górnym rogu mapy, bo dół zajmują legenda i atrybucja.
 
-Wymiary układu też są tokenami: `--top-bar-height`, `--bottom-nav-height`, `--rail-width`,
-`--status-bar-height`, `--panel-width` i `--map-controls-width` zmieniają się z szerokością ekranu.
+Układ ekranu ([ADR 0036](adr/0036-motyw-latarnia-w-kopalni.md)): mapa wypełnia cały ekran, a interfejs pływa nad nią
+w płytach. Nagłówek to trzy płyty (`TopBar`): tytuł świata z `WorldSwitcher` (`data-testid="header-title"`),
+wyszukiwarka (`header-search`) i akcje (`header-actions`: kopiuj link, wydajność, „O projekcie”, instalacja). Narzędzia
+tworzą na komputerze pionowy dok (`ToolRail`) z trzema grupami (`ToolDefinition.group`: `find`, `measure`, `time`)
+oddzielonymi kreską, znacznikiem aktywnego i podpisem po najechaniu; na telefonie dolna nawigacja ma cztery narzędzia
+(`ToolDefinition.isOnPhoneBar`) i menu „Inne” z resztą. Pasek stanu zastępuje narożna płyta odczytu (`InstrumentBar`:
+układ współrzędnych, tekst stanu `data-testid="status-bar"`, skala, odczyt kursora), której szerokość liczy się z
+tokenów, żeby nie nachodziła na panel narzędzia. Każda płyta zasłaniająca mapę ma `data-map-obstacle`, więc kadrowanie
+kamery ją uwzględnia. Wymiary układu są tokenami: `--edge-inset` (margines pływających elementów), `--top-bar-height`
+(strefa nagłówka), `--bottom-nav-height`, `--rail-width` (margines i dok), `--status-bar-height` (dolny odstęp), `--panel-width`
+i `--map-controls-width` zmieniają się z szerokością ekranu.
 `ToolPanel` ustawia w biegu na `:root` `--sheet-occupied-height` (wysokość arkusza na telefonie) oraz
-`--panel-occupied-width` (szerokość panelu na większych ekranach). Pasek stanu, joysticki i plakietka
+`--panel-occupied-width` (szerokość panelu na większych ekranach). Płyta odczytu, joysticki i plakietka
 ładowania liczą z nich położenie zamiast stałych. Decyzja: [ADR 0019](adr/0019-motyw-mapa-z-sakwy-i-tokeny-ukladu.md).
 
 Płótno Cesium ma przezroczyste tło (`withTransparentBackground`), a pod nim `MapView` rysuje ciemną wodę z delikatnymi
@@ -652,4 +661,4 @@ instalacji zapisuje powłokę (pliki z hashem, ikony, manifest, stronę startow�
 według `CachingPolicy` (`services/pwa/`): strony najpierw z sieci, pliki z hashem i zasoby Cesium
 najpierw z pamięci, dane świata z pamięci z odświeżeniem w tle; plików z bramki zasobów (kafle świata, modele przedmiotów) nie dotyka.
 `AppInstallation` przechwytuje `beforeinstallprompt` i publikuje `app-installability-changed`;
-pasek górny pokazuje wtedy przycisk „Zainstaluj”. Szczegóły i pułapki: [ADR 0011](adr/0011-pwa-z-wlasnym-service-workerem.md).
+płyta akcji w nagłówku pokazuje wtedy przycisk „Zainstaluj”. Szczegóły i pułapki: [ADR 0011](adr/0011-pwa-z-wlasnym-service-workerem.md).

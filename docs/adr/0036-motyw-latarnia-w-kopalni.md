@@ -33,4 +33,8 @@ oświetlony pochodnią i chłodną barierą, z mapą na cały ekran. Etap 1 wdro
 - Zmiana koloru to edycja jednego tokenu; test kontrastu zgłosi regresję czytelności.
 - Aliasy starych nazw są długiem do spłacenia w etapie 5; do tego czasu kod ma dwie nazwy dla tych samych kolorów.
 - Ikony PWA (`static/icons`) mają jeszcze starą paletę; przemalowanie w etapie 5.
-- Układ ekranu (pływające płyty, dok narzędzi) zmienia etap 2; ADR 0036 uzupełnimy wtedy sekcją o układzie.
+- Układ ekranu (etap 2): nagłówek z trzech płyt, pionowy dok narzędzi z grupami, narożna płyta odczytu zamiast paska stanu,
+  na telefonie dolna nawigacja z czterema narzędziami i menu „Inne”. Rozwijane menu mogą wystawać poza płytę, bo kształt
+  płyty dają tylko warstwy `::before` i `::after` (clip-path na całym elemencie ucinałby menu; wykryły to testy e2e).
+- Zwinięcie rzadko używanych przycisków mapy w jeden przycisk „Widok” przesuwamy do etapu 5: testy e2e zależą od ich
+  obecnych etykiet (`Rzut kamery`, `Widok kamery`, przycisk 2D/3D).
