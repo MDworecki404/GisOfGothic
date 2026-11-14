@@ -1,3 +1,4 @@
+import { MAP_PALETTE } from '#lib/services/map/map-palette.js';
 import {
 	Cartesian3,
 	Color,
@@ -7,8 +8,8 @@ import {
 	type Viewer
 } from 'cesium';
 
-const LINE_COLOR = Color.fromCssColorString('#ecd08a');
-const VERTEX_OUTLINE_COLOR = Color.fromCssColorString('#14110d');
+const LINE_COLOR = Color.fromCssColorString(MAP_PALETTE.ember);
+const VERTEX_OUTLINE_COLOR = Color.fromCssColorString(MAP_PALETTE.edge);
 const LINE_WIDTH_PIXELS = 3;
 const VERTEX_PIXEL_SIZE = 9;
 

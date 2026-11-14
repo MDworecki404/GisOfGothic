@@ -1,3 +1,4 @@
+import { MAP_PALETTE } from '#lib/services/map/map-palette.js';
 import {
 	Cartesian2,
 	Cartesian3,
@@ -17,7 +18,7 @@ export interface UserPinPlacement {
 }
 
 const PIN_COLOR = Color.fromCssColorString('#7cc4e0');
-const PIN_OUTLINE_COLOR = Color.fromCssColorString('#14110d');
+const PIN_OUTLINE_COLOR = Color.fromCssColorString(MAP_PALETTE.edge);
 const LABEL_COLOR = Color.fromCssColorString('#f3ead6');
 const PIN_PIXEL_SIZE = 13;
 const LABEL_FONT = '600 14px sans-serif';

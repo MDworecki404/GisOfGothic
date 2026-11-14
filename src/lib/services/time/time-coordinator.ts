@@ -1,3 +1,4 @@
+import { MAP_PALETTE } from '#lib/services/map/map-palette.js';
 import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
 import { parseCharacterProperties, parsePointFeatures } from '#lib/data/layer-features.js';
 import { describeRoutineAction, parseRoutinePlaceProperties } from '#lib/data/routine-places.js';
@@ -28,7 +29,7 @@ import {
 import type { WorldRoutingContext } from '#lib/services/routing/world-routing-context.js';
 
 export const ROUTINE_LAYER_ID = 'routines';
-const ROUTINE_LAYER_COLOR = '#ffd27a';
+const ROUTINE_LAYER_COLOR = MAP_PALETTE.emberLight;
 const ROUTINE_FILE_NAME = 'character_places.geojson';
 const SPAWN_FILE_NAME = 'npcs.geojson';
 const NOON_MINUTE = 12 * 60;

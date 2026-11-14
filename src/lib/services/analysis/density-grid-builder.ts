@@ -1,3 +1,4 @@
+import { MAP_PALETTE } from '#lib/services/map/map-palette.js';
 import type { LocalPoint } from '#lib/services/measurement/measurement-calculator.js';
 
 export type GridShape = 'hex' | 'square';
@@ -32,7 +33,7 @@ export interface DensityGrid {
 }
 
 /** Ciepła skala motywu: rdza → żar → mosiądz → jasny żar. */
-const HEAT_PALETTE_STOPS = ['#8b3a2b', '#e0662f', '#c9a24a', '#ffd27a'];
+const HEAT_PALETTE_STOPS = ['#8b3a2b', '#e0662f', '#c9a24a', MAP_PALETTE.emberLight];
 const MAXIMUM_LEGEND_STEPS = 5;
 const SINGLE_STEP_PALETTE_POSITION = 0.7;
 const HEX_VERTEX_COUNT = 6;

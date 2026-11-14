@@ -53,7 +53,11 @@ import { DurationFormatter } from '#lib/services/measurement/duration-formatter.
 import { RouteStatusPresenter } from '#lib/services/routing/route-status-presenter.js';
 import { PlaybackStatusPresenter } from '#lib/services/time/playback-status-presenter.js';
 import { formatMinuteOfDay } from '#lib/services/time/daily-schedule.js';
-import type { RoutineLayerStatus, ShadowSettings, RoutinePlaybackView } from '#lib/services/time/time-coordinator.js';
+import type {
+	RoutineLayerStatus,
+	ShadowSettings,
+	RoutinePlaybackView
+} from '#lib/services/time/time-coordinator.js';
 import type { StaticObjectsStatus } from '#lib/services/layers/static-objects-coordinator.js';
 import type {
 	PerformancePreference,

@@ -1,3 +1,4 @@
+import { MAP_PALETTE } from '#lib/services/map/map-palette.js';
 import { DataLayerShapeComparer } from './data-layer-shape-comparer.js';
 import {
 	BillboardCollection,
@@ -25,10 +26,10 @@ export interface FeaturePick {
 }
 
 const POINT_PIXEL_SIZE = 8;
-const POINT_OUTLINE_COLOR = Color.fromCssColorString('#14110d');
+const POINT_OUTLINE_COLOR = Color.fromCssColorString(MAP_PALETTE.edge);
 const SCALE_BY_DISTANCE = new NearFarScalar(50, 1.4, 3000, 0.75);
 const ICON_SIZE_PIXELS = 26;
-const ICON_OUTLINE_COLOR = '#14110d';
+const ICON_OUTLINE_COLOR = MAP_PALETTE.edge;
 const OCCLUDED_ICON_CSS_COLOR = '#8a8f94';
 const OCCLUDED_ALPHA = 0.4;
 const OCCLUDED_POINT_COLOR =

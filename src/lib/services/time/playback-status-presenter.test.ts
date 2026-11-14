@@ -24,7 +24,9 @@ describe('PlaybackStatusPresenter', () => {
 
 	it('po zbudowaniu pokazuje, ile postaci idzie drogami, a ile skacze', () => {
 		expect(
-			presenter.describeStatus(createView({ isPlaying: true, walkingCount: 93, withoutRoadCount: 4 }))
+			presenter.describeStatus(
+				createView({ isPlaying: true, walkingCount: 93, withoutRoadCount: 4 })
+			)
 		).toBe('Na drogach: 93, bez drogi: 4');
 	});
 

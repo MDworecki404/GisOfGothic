@@ -1,3 +1,4 @@
+import { MAP_PALETTE } from '#lib/services/map/map-palette.js';
 import {
 	Cartesian2,
 	Cartesian3,
@@ -16,10 +17,10 @@ import {
 	type Viewer
 } from 'cesium';
 
-const ORIGIN_COLOR = Color.fromCssColorString('#ffd27a');
-const CONNECTION_COLOR = Color.fromCssColorString('#ffd27a').withAlpha(0.7);
+const ORIGIN_COLOR = Color.fromCssColorString(MAP_PALETTE.emberLight);
+const CONNECTION_COLOR = Color.fromCssColorString(MAP_PALETTE.emberLight).withAlpha(0.7);
 const TARGET_COLOR = Color.fromCssColorString('#e0662f');
-const OUTLINE_COLOR = Color.fromCssColorString('#14110d');
+const OUTLINE_COLOR = Color.fromCssColorString(MAP_PALETTE.edge);
 const LABEL_FONT = '600 15px "Barlow Semi Condensed", sans-serif';
 const ORIGIN_PIXEL_SIZE = 12;
 const TARGET_PIXEL_SIZE = 14;

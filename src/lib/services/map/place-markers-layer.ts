@@ -1,3 +1,4 @@
+import { MAP_PALETTE } from '#lib/services/map/map-palette.js';
 import {
 	BoundingSphere,
 	Cartesian3,
@@ -17,8 +18,8 @@ export interface PlaceMarker {
 
 const MARKER_PIXEL_SIZE = 11;
 const HIGHLIGHT_PIXEL_SIZE = 18;
-const MARKER_OUTLINE_COLOR = Color.fromCssColorString('#14110d');
-const HIGHLIGHT_COLOR = Color.fromCssColorString('#ffd27a');
+const MARKER_OUTLINE_COLOR = Color.fromCssColorString(MAP_PALETTE.edge);
+const HIGHLIGHT_COLOR = Color.fromCssColorString(MAP_PALETTE.emberLight);
 const OVERVIEW_PITCH_DEGREES = -55;
 const MINIMUM_OVERVIEW_RANGE_METRES = 120;
 const PLACE_CLOSE_UP_RANGE_METRES = 45;
