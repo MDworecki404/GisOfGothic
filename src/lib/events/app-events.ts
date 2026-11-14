@@ -19,7 +19,11 @@ import type { CameraView } from '#lib/services/bookmarks/camera-view-codec.js';
 import type { FeatureIdentification } from '#lib/services/layers/data-layer-catalog.js';
 import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator.js';
 import type { MeasurementView } from '#lib/services/measurement/measurement-coordinator.js';
-import type { RoutineLayerStatus, ShadowSettings } from '#lib/services/time/time-coordinator.js';
+import type {
+	RoutineLayerStatus,
+	RoutinePlaybackView,
+	ShadowSettings
+} from '#lib/services/time/time-coordinator.js';
 import type { StaticObjectsStatus } from '#lib/services/layers/static-objects-coordinator.js';
 import type {
 	PerformancePreference,
@@ -98,6 +102,7 @@ export type AppEvent =
 			routineLayerStatus: RoutineLayerStatus;
 			charactersOnMap: number | null;
 			shadows: ShadowSettings;
+			playback: RoutinePlaybackView;
 	  }
 	| { type: 'app-installability-changed'; canInstall: boolean }
 	| { type: 'static-objects-changed'; status: StaticObjectsStatus; errorMessage: string | null }

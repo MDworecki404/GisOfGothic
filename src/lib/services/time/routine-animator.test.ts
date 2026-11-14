@@ -51,7 +51,7 @@ describe('RoutineAnimator', () => {
 		for (const minute of [0, hours(12), 1439]) {
 			const [frame] = animator.readFramesAt(minute);
 			expect(frame.position.lon).toBe(5);
-			expect(frame.activity.kind).toBe('staying');
+			expect(frame.activity).toEqual({ kind: 'staying', untilMinute: null });
 		}
 	});
 

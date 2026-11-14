@@ -4,7 +4,7 @@ import type { CharacterTimeline, RoutinePlace } from './character-timeline.js';
 import type { WalkingLeg } from './routine-movement-planner.js';
 
 export type CharacterActivity =
-	| { kind: 'staying'; untilMinute: number }
+	| { kind: 'staying'; untilMinute: number | null }
 	| { kind: 'walking'; from: RoutinePlace; to: RoutinePlace; arrivalMinute: number };
 
 export interface CharacterFrame {
@@ -60,7 +60,10 @@ export class RoutineAnimator {
 		return {
 			place: stay.place,
 			position: { lon: stay.place.lon, lat: stay.place.lat, h: stay.place.h },
-			activity: { kind: 'staying', untilMinute: stay.endMinute }
+			activity: {
+				kind: 'staying',
+				untilMinute: stay.startMinute === stay.endMinute ? null : stay.endMinute
+			}
 		};
 	}
 }

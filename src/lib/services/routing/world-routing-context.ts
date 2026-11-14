@@ -29,6 +29,10 @@ export class WorldRoutingContext {
 		return this.planning;
 	}
 
+	readProjector(): LocalProjector {
+		return this.projector;
+	}
+
 	convertToWorldPosition(lon: number, lat: number, height: number): WorldPosition {
 		return { ...this.projector.projectToLocalPoint(lon, lat, height), lon, lat };
 	}
