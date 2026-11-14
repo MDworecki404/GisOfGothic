@@ -18,7 +18,7 @@ const TRAVEL_MODE_LABELS: readonly { mode: TravelMode; label: string }[] = [
 ];
 
 /** Jedna minuta czasu gry trwa ok. 4 s rzeczywistych (pomiar stoperem w grze). */
-const REAL_SECONDS_PER_GAME_MINUTE = 4;
+export const REAL_SECONDS_PER_GAME_MINUTE = 4;
 
 /** Przelicza odległość w poziomie na czas przejścia bohatera: rzeczywisty i w świecie gry. */
 export class TravelTimeCalculator {
