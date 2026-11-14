@@ -111,7 +111,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `notebook-changed`           | `notebook` (pinezki, wpisy listy, postęp, tryb stawiania, błąd zapisu)                               | dodano, zmieniono albo usunięto pinezkę lub wpis listy, zmiana trybu stawiania, wczytanie świata  |
 | `measurement-changed`        | `measurement` (tryb, wierzchołki, podsumowanie, profil, czasy przejścia, wskazany punkt, stan trasy) | kliknięcie mapy w narzędziu Pomiary, wynik profilu terenu, wyczyszczenie                          |
 | `chapter-changed`            | `chapter` (1–6) lub `null`                                                                           | wybór rozdziału w panelu Czas albo odtworzenie go z linku lub zakładki                            |
-| `time-of-day-changed`        | `minuteOfDay`, `routineLayerStatus`, `charactersOnMap`                                               | zmiana pory dnia albo warstwy postaci o tej godzinie                                              |
+| `time-of-day-changed`        | `minuteOfDay`, `routineLayerStatus`, `charactersOnMap`, `shadows`, `playback` (odtwarzanie doby)     | zmiana pory dnia albo warstwy postaci o tej godzinie                                              |
 | `app-installability-changed` | `canInstall`                                                                                         | przeglądarka pozwala zainstalować aplikację albo instalacja się zakończyła                        |
 | `static-objects-changed`     | `status`, `errorMessage`                                                                             | włączenie, wczytywanie albo błąd warstwy obiektów świata                                          |
 | `performance-changed`        | `preference`, `effectiveLevel`, `wasLoweredAutomatically`, `measuredFramesPerSecond`                 | wybór jakości przez użytkownika, automatyczne obniżenie jakości albo nowy pomiar FPS              |
@@ -607,6 +607,15 @@ to trzykrotność odległości do punktu pod środkiem ekranu, w granicach 400 m
 Warstwa „postacie o tej godzinie” czyta `character_places.geojson` przy pierwszym włączeniu, bierze
 tylko rutyny domyślne i przez `DailySchedule` wybiera miejsca, których przedział godzin obejmuje
 wybraną minutę (przedziały przez północ, np. „22:00–07:00”, są obsługiwane).
+
+**Odtwarzanie doby** ([ADR 0035](adr/0035-animacja-rutyn-po-sieci-drog.md)). `startPlayback` w `TimeCoordinator` buduje
+`RoutineAnimator`: dla każdej postaci `CharacterTimeline` składa jej domyślne miejsca w ciągłą dobę (pobyty bez luk i
+nakładania), a `RoutineMovementPlanner` planuje marsz między pobytami przez `RoutePlanner` z `WorldRoutingContext`
+(prędkość marszu z `movement_speeds_m_s`). Animator zwraca pozycję i czynność postaci (`staying` albo `walking`) w danej
+minucie; bez drogi postać skacze. `RoutinePlayback` zwiększa godzinę w tempie 20 Hz (trzy tempa), a punkty warstwy
+przesuwa `DataLayersRenderer.moveLayerPoints` bez przebudowy. Zdarzenie `time-of-day-changed` niesie `playback`
+(`RoutinePlaybackView`); tekst stanu daje `PlaybackStatusPresenter`. Odtwarzanie zatrzymują: suwak, ukrycie warstwy,
+zmiana świata i zamknięcie narzędzia Czas.
 
 ## Wydajność
 

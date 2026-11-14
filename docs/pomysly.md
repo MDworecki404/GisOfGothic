@@ -23,8 +23,6 @@ warstwa Questy, widok 2D z cięciem wysokości, rzut ortogonalny, lot kamerą, P
 
 ## Treść i wiki
 
-- **12. Rutyny postaci jako animacja.** Przesuwanie czasu przesuwa NPC po mapie według dziennych rozkładów
-  (`daily-schedule` i suwak czasu już są).
 - **13. Podgląd 3D w karcie dla postaci i potworów**, jak dla przedmiotów.
 - **19. Filtr wartości przedmiotów** (cena, obrażenia). Indeks nie niesie tych pól, więc najpierw trzeba je dodać
   w ekstraktorze danych.
@@ -38,11 +36,13 @@ warstwa Questy, widok 2D z cięciem wysokości, rzut ortogonalny, lot kamerą, P
 
 ## Proponowana kolejność
 
-Najpierw **12** (rutyny jako animacja). **1** (przewodnik po questach) dopiero po tym, jak ekstraktor poda kolejność etapów z gry. Jeśli priorytetem
+Najpierw **2** (lokacje). **1** (przewodnik po questach) dopiero po tym, jak ekstraktor poda kolejność etapów z gry. Jeśli priorytetem
 jest treść: **2**.
 
 ## Zrobione
 
+- **12. Rutyny postaci jako animacja** — przycisk „Odtwórz” w panelu Czas: godzina rośnie w trzech tempach, a postacie
+  idą po drogach z gry między miejscami rutyny; bez drogi skaczą (ADR 0035).
 - **6. Pomiary: tempo marszu** — czas przejścia pieszo, biegiem, skradaniem i z bronią, z prędkości z animacji gry.
 - **7. Telefon: arkusz z trzema stanami** — zwinięty, połowa i pełny ekran (`sheet-detents`, ADR 0009).
 - **Trasa po sieci dróg z gry** — czwarty tryb narzędzia Pomiary: początek i cel z mapy lub przycisk „Prowadź tutaj”
