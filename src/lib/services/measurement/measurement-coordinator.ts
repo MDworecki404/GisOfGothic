@@ -9,8 +9,23 @@ import {
 } from './measurement-calculator.js';
 import type { MovementSpeeds } from '#lib/data/types.js';
 import { TravelTimeCalculator, type TravelTimeEstimate } from './travel-time-calculator.js';
+import type { RouteOutcome, RoutePlanner } from '#lib/services/routing/route-planner.js';
 
-export type MeasurementMode = 'distance' | 'area' | 'point';
+export type MeasurementMode = 'distance' | 'area' | 'point' | 'route';
+
+export type RouteAvailability = 'unavailable' | 'loading' | 'ready';
+export type RouteOutcomeKind = 'none' | 'found' | 'too-far-from-network' | 'no-path';
+
+export interface RouteView {
+	availability: RouteAvailability;
+	hasStart: boolean;
+	hasEnd: boolean;
+	outcome: RouteOutcomeKind;
+	startApproachMetres: number;
+	endApproachMetres: number;
+}
+
+export type RoutePlannerSource = () => Promise<RoutePlanner | null>;
 
 export interface MeasurementView {
 	mode: MeasurementMode;
@@ -21,6 +36,7 @@ export interface MeasurementView {
 	travelTimes: TravelTimeEstimate[];
 	isProfileLoading: boolean;
 	pickedPoint: WorldPosition | null;
+	route: RouteView | null;
 }
 
 export interface MeasurementDisplay {
@@ -47,6 +63,13 @@ export class MeasurementCoordinator {
 	private profile: TerrainProfile | null = null;
 	private isProfileLoading = false;
 	private profileRequest = 0;
+	private routePlannerSource: RoutePlannerSource | null = null;
+	private routePlanner: RoutePlanner | null = null;
+	private routeAvailability: RouteAvailability = 'unavailable';
+	private routePlannerRequest = 0;
+	private routeStart: WorldPosition | null = null;
+	private routeEnd: WorldPosition | null = null;
+	private routeOutcome: RouteOutcome | null = null;
 
 	constructor(
 		private readonly eventBus: AppEventBus,
@@ -59,12 +82,42 @@ export class MeasurementCoordinator {
 		this.publish();
 	}
 
+	/**
+	 * Źródło planisty tras bieżącego świata (`null` = świat bez sieci dróg). Wynik ładowania ze
+	 * starszego źródła jest pomijany, żeby sieć poprzedniego świata nie trafiła do nowego.
+	 */
+	useRoutePlannerSource(source: RoutePlannerSource | null): void {
+		this.routePlannerRequest++;
+		this.routePlannerSource = source;
+		this.routePlanner = null;
+		this.routeAvailability = 'unavailable';
+		this.routeOutcome = null;
+		if (this.mode === 'route') void this.loadRoutePlanner();
+		else this.publish();
+	}
+
 	switchMode(mode: MeasurementMode): void {
+		this.routePlannerRequest++;
 		this.mode = mode;
 		this.clear();
+		if (mode === 'route') void this.loadRoutePlanner();
+	}
+
+	setRouteEnd(position: WorldPosition): void {
+		this.routeEnd = position;
+		void this.refreshRoute();
+	}
+
+	swapRouteEndpoints(): void {
+		[this.routeStart, this.routeEnd] = [this.routeEnd, this.routeStart];
+		void this.refreshRoute();
 	}
 
 	addPoint(position: WorldPosition): void {
+		if (this.mode === 'route') {
+			this.addRoutePoint(position);
+			return;
+		}
 		if (this.mode === 'point') {
 			this.pickedPoint = position;
 			this.getDisplay()?.showMeasurement([position], []);
@@ -76,6 +129,12 @@ export class MeasurementCoordinator {
 	}
 
 	removeLastPoint(): void {
+		if (this.mode === 'route') {
+			if (this.routeEnd) this.routeEnd = null;
+			else this.routeStart = null;
+			void this.refreshRoute();
+			return;
+		}
 		this.vertices = this.vertices.slice(0, -1);
 		void this.refreshPath();
 	}
@@ -83,6 +142,9 @@ export class MeasurementCoordinator {
 	clear(): void {
 		this.profileRequest++;
 		this.vertices = [];
+		this.routeStart = null;
+		this.routeEnd = null;
+		this.routeOutcome = null;
 		this.pickedPoint = null;
 		this.profile = null;
 		this.isProfileLoading = false;
@@ -92,6 +154,74 @@ export class MeasurementCoordinator {
 
 	private refreshPath(): Promise<void> {
 		return this.mode === 'area' ? this.refreshArea() : this.refreshDistance();
+	}
+
+	private addRoutePoint(position: WorldPosition): void {
+		if (this.routeAvailability === 'unavailable') return;
+		if (this.routeStart === null || this.routeEnd !== null) {
+			this.routeStart = position;
+			this.routeEnd = null;
+		} else {
+			this.routeEnd = position;
+		}
+		void this.refreshRoute();
+	}
+
+	private async loadRoutePlanner(): Promise<void> {
+		if (this.routePlanner) {
+			this.routeAvailability = 'ready';
+			await this.refreshRoute();
+			return;
+		}
+		if (!this.routePlannerSource) {
+			this.routeAvailability = 'unavailable';
+			this.publish();
+			return;
+		}
+		const request = this.routePlannerRequest;
+		this.routeAvailability = 'loading';
+		this.publish();
+		let planner: RoutePlanner | null = null;
+		try {
+			planner = await this.routePlannerSource();
+		} catch (error) {
+			console.error(error);
+		}
+		if (request !== this.routePlannerRequest) return;
+		this.routePlanner = planner;
+		this.routeAvailability = planner ? 'ready' : 'unavailable';
+		await this.refreshRoute();
+	}
+
+	private refreshRoute(): Promise<void> {
+		this.routeOutcome =
+			this.routePlanner && this.routeStart && this.routeEnd
+				? this.routePlanner.planRoute(this.routeStart, this.routeEnd)
+				: null;
+		return this.refreshDistance();
+	}
+
+	private readPathPoints(): readonly LocalPoint[] {
+		if (this.mode !== 'route') return this.vertices;
+		return this.routeOutcome?.status === 'found' ? this.routeOutcome.path : [];
+	}
+
+	private readMarkerPoints(): readonly LocalPoint[] {
+		if (this.mode !== 'route') return this.vertices;
+		return [this.routeStart, this.routeEnd].filter((point) => point !== null);
+	}
+
+	private buildRouteView(): RouteView | null {
+		if (this.mode !== 'route') return null;
+		const outcome = this.routeOutcome;
+		return {
+			availability: this.routeAvailability,
+			hasStart: this.routeStart !== null,
+			hasEnd: this.routeEnd !== null,
+			outcome: outcome ? outcome.status : 'none',
+			startApproachMetres: outcome?.status === 'found' ? outcome.startApproachMetres : 0,
+			endApproachMetres: outcome?.status === 'found' ? outcome.endApproachMetres : 0
+		};
 	}
 
 	/**
@@ -123,16 +253,15 @@ export class MeasurementCoordinator {
 	private async refreshDistance(): Promise<void> {
 		const request = ++this.profileRequest;
 		const display = this.getDisplay();
+		const path = this.readPathPoints();
+		const markers = this.readMarkerPoints();
 		this.profile = null;
-		this.isProfileLoading = this.vertices.length >= 2;
-		display?.showMeasurement(this.vertices, this.vertices);
+		this.isProfileLoading = path.length >= 2;
+		display?.showMeasurement(markers, path);
 		this.publish();
-		if (!display || this.vertices.length < 2) return;
+		if (!display || path.length < 2) return;
 
-		const probes = this.calculator.interpolateAlongPath(
-			this.vertices,
-			this.chooseSampleSpacing(this.vertices)
-		);
+		const probes = this.calculator.interpolateAlongPath(path, this.chooseSampleSpacing(path));
 		const surfacePoints = await display.sampleTerrainUnder(probes);
 		if (request !== this.profileRequest) return;
 		const terrainPoints = this.calculator.removeNarrowObstacles(
@@ -141,10 +270,7 @@ export class MeasurementCoordinator {
 		);
 		this.profile = this.calculator.summarizeProfile(terrainPoints);
 		this.isProfileLoading = false;
-		display.showMeasurement(
-			this.vertices,
-			terrainPoints.length >= 2 ? terrainPoints : this.vertices
-		);
+		display.showMeasurement(markers, terrainPoints.length >= 2 ? terrainPoints : path);
 		this.publish();
 	}
 
@@ -154,24 +280,28 @@ export class MeasurementCoordinator {
 	}
 
 	private estimateTravelTimes(summary: PathSummary | null): TravelTimeEstimate[] {
-		return this.mode === 'distance' && summary && this.travelTimeCalculator
+		return (this.mode === 'distance' || this.mode === 'route') &&
+			summary &&
+			this.travelTimeCalculator
 			? this.travelTimeCalculator.estimateTravelTimes(summary.horizontalMetres)
 			: [];
 	}
 
 	private publish(): void {
-		const summary = this.vertices.length >= 2 ? this.calculator.summarizePath(this.vertices) : null;
+		const pathPoints = this.readPathPoints();
+		const summary = pathPoints.length >= 2 ? this.calculator.summarizePath(pathPoints) : null;
 		this.eventBus.publish({
 			type: 'measurement-changed',
 			measurement: {
 				mode: this.mode,
-				pointCount: this.vertices.length,
+				pointCount: this.readMarkerPoints().length,
 				summary,
 				profile: this.profile,
 				polygon: this.mode === 'area' ? this.calculator.summarizePolygon(this.vertices) : null,
 				travelTimes: this.estimateTravelTimes(summary),
 				isProfileLoading: this.isProfileLoading,
-				pickedPoint: this.pickedPoint
+				pickedPoint: this.pickedPoint,
+				route: this.buildRouteView()
 			}
 		});
 	}
