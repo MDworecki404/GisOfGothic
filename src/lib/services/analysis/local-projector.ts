@@ -27,6 +27,14 @@ function convertGeodeticToEarthFixed(
 	};
 }
 
+export interface GeodeticPoint {
+	lon: number;
+	lat: number;
+	h: number;
+}
+
+const GEODETIC_ITERATIONS = 8;
+
 /**
  * Rzutuje punkty podane jako lon/lat/h (WGS 84) na lokalną ramę świata: Wschód, Północ, Góra
  * w metrach od kotwicy. To ten sam układ co `WorldFrame`, ale bez Cesium — analizy liczą się
@@ -58,6 +66,40 @@ export class LocalProjector {
 			east: -this.sinLon * dx + this.cosLon * dy,
 			north: -this.sinLat * this.cosLon * dx - this.sinLat * this.sinLon * dy + this.cosLat * dz,
 			height: this.cosLat * this.cosLon * dx + this.cosLat * this.sinLon * dy + this.sinLat * dz
+		};
+	}
+
+	/** Odwrotność `projectToLocalPoint`: lokalne metry (E, N, Góra) z powrotem na lon/lat (stopnie) i wysokość nad elipsoidą. */
+	unprojectToGeodetic(point: LocalPoint): GeodeticPoint {
+		const x =
+			this.anchorPoint.x +
+			-this.sinLon * point.east +
+			-this.sinLat * this.cosLon * point.north +
+			this.cosLat * this.cosLon * point.height;
+		const y =
+			this.anchorPoint.y +
+			this.cosLon * point.east +
+			-this.sinLat * this.sinLon * point.north +
+			this.cosLat * this.sinLon * point.height;
+		const z = this.anchorPoint.z + this.cosLat * point.north + this.sinLat * point.height;
+
+		const horizontalRadius = Math.hypot(x, y);
+		let latitude = Math.atan2(z, horizontalRadius * (1 - ECCENTRICITY_SQUARED));
+		let height = 0;
+		for (let iteration = 0; iteration < GEODETIC_ITERATIONS; iteration++) {
+			const primeVerticalRadius =
+				SEMI_MAJOR_AXIS_METRES / Math.sqrt(1 - ECCENTRICITY_SQUARED * Math.sin(latitude) ** 2);
+			height = horizontalRadius / Math.cos(latitude) - primeVerticalRadius;
+			latitude = Math.atan2(
+				z,
+				horizontalRadius *
+					(1 - (ECCENTRICITY_SQUARED * primeVerticalRadius) / (primeVerticalRadius + height))
+			);
+		}
+		return {
+			lon: (Math.atan2(y, x) * 180) / Math.PI,
+			lat: (latitude * 180) / Math.PI,
+			h: height
 		};
 	}
 }
