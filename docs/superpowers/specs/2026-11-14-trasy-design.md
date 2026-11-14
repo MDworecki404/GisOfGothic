@@ -60,7 +60,7 @@ nie nowe narzędzie, bo pasek ma już osiem przycisków, a trasa korzysta z tego
 
 ### Dane (ekstraktor, osobne repozytorium)
 
-Dodać `waypoints.geojson` do paczki każdego świata z siecią, bez punktu `TOT`; walidacja: krawędzie wskazują
+Dodać do paczki każdego świata z siecią zwarty plik `waypoints.json` (`nodes: [[name, lon, lat, height, isUnderwater]]`, `edges: [[a, b]]` jako indeksy; pełny geojson miałby w Archolosie 7,6 MB), bez punktu `TOT`; walidacja: krawędzie wskazują
 istniejące punkty, brak duplikatów nazw, raport spójności grafu. Prompt dla ekstraktora jest w historii rozmowy;
 kontrakt zapisujemy w `static/data/g2nk/khorinis/README.md` i `docs/dane.md`.
 
@@ -68,7 +68,7 @@ kontrakt zapisujemy w `static/data/g2nk/khorinis/README.md` i `docs/dane.md`.
 
 Klasy (zgodnie z `CLAUDE.md`, logika w serwisach, bez Cesium w klasach liczących):
 
-- `WaypointGraph` (`src/lib/services/routing/waypoint-graph.ts`): buduje graf z `waypoints.geojson`, w lokalnych
+- `WaypointGraph` (`src/lib/services/routing/waypoint-graph.ts`): buduje graf z `waypoints.json`, w lokalnych
   metrach przez `LocalProjector`; znajduje najbliższy punkt sieci dla pozycji; zna składowe spójności.
 - `RouteFinder` (`.../route-finder.ts`): najkrótsza ścieżka (A* z odległością euklidesową w lokalnym układzie jako
   heurystyką), wynik: lista punktów, dystans poziomy, flaga „dojście spoza sieci” z długością odcinków dojścia.
