@@ -37,3 +37,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0031](0031-porownanie-rozmiarow-swiatow.md)                   | Porównanie rozmiarów światów: widma z przesuwaniem   | zmieniona (0032)  |
 | [0032](0032-gizmo-i-widmo-swiata-odniesienia.md)               | Gizmo i widmo świata odniesienia w Rozmiarach        | przyjęta          |
 | [0033](0033-trasy-po-sieci-waypointow.md)                      | Trasy po sieci waypointów                            | przyjęta          |
+| [0034](0034-siec-drog-gothica-3.md)                            | Sieć dróg Gothica 3 ze stref nawigacyjnych           | przyjęta          |
