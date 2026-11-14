@@ -39,6 +39,7 @@ import {
 } from './measurement/measurement-coordinator.js';
 import type { RouteEndpoints } from './routing/route-endpoints-codec.js';
 import { WorldRoutingContext } from './routing/world-routing-context.js';
+import type { PlaybackSpeed } from './time/routine-playback.js';
 import type { MapClick, MapViewListeners } from './map/map-view-observer.js';
 import { SearchCoordinator } from './search/search-coordinator.js';
 import type { SearchTypeFilter } from './search/search-service.js';
@@ -422,6 +423,18 @@ export class GeoportalFacade {
 		void this.timeCoordinator.toggleRoutineLayer();
 	}
 
+	startRoutinePlayback(speed: PlaybackSpeed): void {
+		void this.timeCoordinator.startPlayback(speed);
+	}
+
+	stopRoutinePlayback(): void {
+		this.timeCoordinator.stopPlayback();
+	}
+
+	setRoutinePlaybackSpeed(speed: PlaybackSpeed): void {
+		this.timeCoordinator.setPlaybackSpeed(speed);
+	}
+
 	toggleStaticObjects(): void {
 		void this.staticObjectsCoordinator.toggle();
 	}
@@ -745,6 +758,7 @@ export class GeoportalFacade {
 	}
 
 	private activateTool(toolId: ToolId | null): void {
+		if (this.activeToolId === 'time' && toolId !== 'time') this.timeCoordinator.stopPlayback();
 		if (this.activeToolId === 'measure' && toolId !== 'measure')
 			this.measurementCoordinator.clear();
 		if (this.activeToolId === 'analysis' && toolId !== 'analysis')
@@ -837,6 +851,8 @@ export class GeoportalFacade {
 			);
 			this.worldRoutingContext = routingContext;
 			this.measurementCoordinator.useRoutePlannerSource(() => routingContext.loadRoutePlanner());
+			this.timeCoordinator.useRoutingContext(routingContext);
+			this.timeCoordinator.useWalkingSpeed(metadata.movement_speeds_m_s?.walk ?? null);
 			this.applyPendingRoute();
 			mapService.useTileColorGrade(world.tileColorGrade);
 			this.mapOverlaysCoordinator.showOnMap();

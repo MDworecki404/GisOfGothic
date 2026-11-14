@@ -51,8 +51,9 @@ import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator
 import type { MeasurementView } from '#lib/services/measurement/measurement-coordinator.js';
 import { DurationFormatter } from '#lib/services/measurement/duration-formatter.js';
 import { RouteStatusPresenter } from '#lib/services/routing/route-status-presenter.js';
+import { PlaybackStatusPresenter } from '#lib/services/time/playback-status-presenter.js';
 import { formatMinuteOfDay } from '#lib/services/time/daily-schedule.js';
-import type { RoutineLayerStatus, ShadowSettings } from '#lib/services/time/time-coordinator.js';
+import type { RoutineLayerStatus, ShadowSettings, RoutinePlaybackView } from '#lib/services/time/time-coordinator.js';
 import type { StaticObjectsStatus } from '#lib/services/layers/static-objects-coordinator.js';
 import type {
 	PerformancePreference,
@@ -63,6 +64,7 @@ import type { ToolId } from '#lib/services/tools/tool-id.js';
 const coordinateFormatter = new CoordinateFormatter();
 const durationFormatter = new DurationFormatter();
 const routeStatusPresenter = new RouteStatusPresenter();
+const playbackStatusPresenter = new PlaybackStatusPresenter();
 
 export interface MeasurementReading {
 	label: string;
@@ -129,6 +131,13 @@ export class AppState {
 	minuteOfDay = $state(12 * 60);
 	routineLayerStatus = $state<RoutineLayerStatus>('hidden');
 	charactersAtTimeOfDay = $state<number | null>(null);
+	routinePlayback = $state.raw<RoutinePlaybackView>({
+		isPlaying: false,
+		isPreparing: false,
+		speed: 'game',
+		walkingCount: 0,
+		withoutRoadCount: 0
+	});
 	shadows = $state.raw<ShadowSettings>({ areEnabled: false, areSoft: true });
 
 	performancePreference = $state<PerformancePreference>('auto');
@@ -181,8 +190,9 @@ export class AppState {
 		});
 		eventBus.subscribe(
 			'time-of-day-changed',
-			({ minuteOfDay, routineLayerStatus, charactersOnMap, shadows }) => {
+			({ minuteOfDay, routineLayerStatus, charactersOnMap, shadows, playback }) => {
 				this.shadows = shadows;
+				this.routinePlayback = playback;
 				this.minuteOfDay = minuteOfDay;
 				this.routineLayerStatus = routineLayerStatus;
 				this.charactersAtTimeOfDay = charactersOnMap;
@@ -346,6 +356,10 @@ export class AppState {
 			);
 		}
 		return readings;
+	}
+
+	get routinePlaybackStatusMessage(): string | null {
+		return playbackStatusPresenter.describeStatus(this.routinePlayback);
 	}
 
 	get routeStatusMessage(): string | null {

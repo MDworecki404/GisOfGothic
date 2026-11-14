@@ -9,6 +9,12 @@
 		{ label: 'Północ', minuteOfDay: 0 }
 	] as const;
 
+	const SPEEDS = [
+		{ value: 'game', label: 'Jak w grze' },
+		{ value: 'fast', label: 'Szybko' },
+		{ value: 'very-fast', label: 'Bardzo szybko' }
+	] as const;
+
 	const isLayerOn = $derived(
 		appState.routineLayerStatus === 'visible' || appState.routineLayerStatus === 'loading'
 	);
@@ -33,6 +39,35 @@
 		</button>
 	{/each}
 </div>
+
+<h3 class="group-label mt-5 mb-1">Odtwarzanie doby</h3>
+<div class="flex flex-wrap items-center gap-2">
+	<button
+		class="button-iron"
+		disabled={appState.routinePlayback.isPreparing}
+		onclick={() =>
+			appState.routinePlayback.isPlaying
+				? geoportal.stopRoutinePlayback()
+				: geoportal.startRoutinePlayback(appState.routinePlayback.speed)}
+	>
+		{appState.routinePlayback.isPlaying ? 'Zatrzymaj' : 'Odtwórz'}
+	</button>
+	<div class="flex flex-wrap gap-1.5" role="group" aria-label="Tempo odtwarzania">
+		{#each SPEEDS as speed (speed.value)}
+			<button
+				class="chip"
+				aria-pressed={appState.routinePlayback.speed === speed.value}
+				onclick={() => geoportal.setRoutinePlaybackSpeed(speed.value)}
+			>
+				{speed.label}
+			</button>
+		{/each}
+	</div>
+</div>
+<p class="mt-1 text-caption text-muted-foreground" role="status">
+	{appState.routinePlaybackStatusMessage ??
+		'Postacie z rutyn dnia idą po drogach z gry. Gdzie dróg brak, pojawiają się w nowym miejscu.'}
+</p>
 
 {#if appState.areChaptersAvailable}
 	<h3 class="group-label mt-5 mb-1">Rozdział</h3>
