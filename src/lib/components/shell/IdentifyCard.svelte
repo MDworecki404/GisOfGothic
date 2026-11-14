@@ -29,7 +29,7 @@
 					<p class="note-faded font-serif italic">{feature.subtitle}</p>
 				</div>
 				<button
-					class="note-faded -mt-2 -mr-3 grid size-11 shrink-0 place-items-center rounded-sm hover:bg-ink/10 hover:text-ink"
+					class="note-faded -mt-2 -mr-3 grid size-11 shrink-0 place-items-center rounded-sm hover:bg-hover-surface hover:text-hover"
 					aria-label="Zamknij informacje o obiekcie"
 					onclick={() => geoportal.closeFeatureIdentification()}
 				>
@@ -39,7 +39,7 @@
 
 			{#if feature.modelFile}
 				<div
-					class="my-3 h-36 overflow-hidden rounded-sm border border-ink-faded/30"
+					class="my-3 h-36 overflow-hidden rounded-sm border border-border"
 					aria-label="Podgląd 3D: {feature.title}"
 					role="img"
 					{@attach showPreview(feature.modelFile)}
@@ -59,7 +59,7 @@
 				<h4 class="note-faded mt-3 text-label font-medium">{feature.listTitle}</h4>
 				<ul class="mt-1 font-serif">
 					{#each feature.listItems as item, index (index)}
-						<li class="border-t border-ink-faded/30 py-1">{item}</li>
+						<li class="border-t border-border py-1">{item}</li>
 					{/each}
 				</ul>
 			{/if}
@@ -69,7 +69,7 @@
 				{#if feature.possibleItems.length > 0}
 					<ul class="mt-1 font-serif">
 						{#each feature.possibleItems as item, index (index)}
-							<li class="border-t border-ink-faded/30 py-1">{item}</li>
+							<li class="border-t border-border py-1">{item}</li>
 						{/each}
 					</ul>
 				{:else}

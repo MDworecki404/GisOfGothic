@@ -301,14 +301,11 @@
 		box-shadow: var(--shadow-raised);
 	}
 
-	/* Pergamin: notatki i karty obiektów */
+	/* Płaska płyta na treść (dawny pergamin): ciemny łupek z linią */
 	.material-parchment {
-		color: var(--ink);
-		background:
-			radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(92 58 22 / 0.35) 100%),
-			radial-gradient(rgb(90 60 20 / 0.08) 1px, transparent 1.4px) 0 0 / 4px 4px,
-			var(--parchment);
-		border-radius: var(--radius-sm);
+		color: var(--popiol);
+		background: var(--lupek-wysoki);
+		box-shadow: inset 0 0 0 1px var(--linia);
 	}
 
 	/* Przyciski ze ściętym rogiem. Kuty (zwykła akcja), żarowy (jedna główna akcja w widoku), cichy (pomocnicza). */
@@ -415,29 +412,28 @@
 		min-height: var(--touch-target);
 		padding: 0.5rem 0.625rem;
 		border-radius: var(--radius);
-		border: 1px solid var(--border);
 		text-align: left;
-		background: rgb(0 0 0 / 0.15);
+		background: rgb(255 255 255 / 0.04);
+		box-shadow: inset 0 0 0 1px #3d4d53;
 	}
 
 	.choice-card:hover {
-		border-color: rgb(232 145 58 / 0.6);
+		box-shadow: inset 0 0 0 1px var(--zar-ciemny);
 	}
 
 	.choice-card[aria-pressed='true'] {
-		border-color: var(--active);
 		background: var(--active-surface);
-		box-shadow: inset 0 0 0 1px rgb(108 195 232 / 0.25);
+		box-shadow: inset 0 0 0 1px var(--active);
 	}
 
-	/* Pole tekstowe jak wyżłobienie w drewnie */
+	/* Pole tekstowe jak wnęka wykuta w łupku */
 	.field {
 		width: 100%;
 		min-height: var(--touch-target);
 		padding: 0 0.75rem;
 		border-radius: var(--radius);
 		border: 1px solid var(--iron);
-		background: rgb(10 7 4 / 0.7);
+		background: var(--krawedz);
 		color: var(--foreground);
 		box-shadow: var(--shadow-well);
 	}
@@ -452,7 +448,7 @@
 		box-shadow: var(--shadow-well), var(--glow-ore);
 	}
 
-	/* Pole wyboru i opcja: kute okucie z zaznaczeniem w kolorze rudy */
+	/* Pole wyboru i opcja: wnęka z zaznaczeniem w kolorze bariery */
 	.check-forged {
 		appearance: none;
 		flex-shrink: 0;
@@ -462,8 +458,8 @@
 		height: 1.375rem;
 		margin: 0;
 		border-radius: var(--radius-sm);
-		border: 1px solid var(--iron-light);
-		background: linear-gradient(#1a130d, #241a12);
+		border: 1px solid var(--iron);
+		background: var(--krawedz);
 		box-shadow: var(--shadow-well);
 		cursor: pointer;
 	}
@@ -519,14 +515,14 @@
 		border-radius: 3px;
 		background: linear-gradient(90deg, var(--ochre-dark), var(--ochre)) 0 0 / var(--range-fill, 0%)
 				100% no-repeat,
-			#120d08;
+			var(--krawedz);
 		box-shadow: var(--shadow-well);
 	}
 
 	.range-forged::-moz-range-track {
 		height: 6px;
 		border-radius: 3px;
-		background: #120d08;
+		background: var(--krawedz);
 		box-shadow: var(--shadow-well);
 	}
 
@@ -542,18 +538,18 @@
 		height: 22px;
 		margin-top: -8px;
 		border-radius: 999px;
-		border: 1px solid #111;
-		background: radial-gradient(circle at 35% 35%, #c9ced1, var(--iron) 60%, #222);
-		box-shadow: 0 2px 3px rgb(0 0 0 / 0.6);
+		border: 2px solid var(--krawedz);
+		background: var(--popiol);
+		box-shadow: 0 1px 3px rgb(0 0 0 / 0.6);
 	}
 
 	.range-forged::-moz-range-thumb {
 		width: 22px;
 		height: 22px;
 		border-radius: 999px;
-		border: 1px solid #111;
-		background: radial-gradient(circle at 35% 35%, #c9ced1, var(--iron) 60%, #222);
-		box-shadow: 0 2px 3px rgb(0 0 0 / 0.6);
+		border: 2px solid var(--krawedz);
+		background: var(--popiol);
+		box-shadow: 0 1px 3px rgb(0 0 0 / 0.6);
 	}
 
 	.range-forged:hover::-webkit-slider-thumb {
@@ -609,77 +605,69 @@
 		color: var(--muted-foreground);
 	}
 
-	/* Notatka na pergaminie przybita gwoździem (karta obiektu) */
+	/* Karta obiektu: płyta jak reszta interfejsu (dawna notatka na pergaminie) */
 	.parchment-note {
+		--cut: 14px;
 		position: relative;
-		color: var(--ink);
-		background:
-			radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(92 58 22 / 0.35) 100%),
-			radial-gradient(rgb(90 60 20 / 0.08) 1px, transparent 1.4px) 0 0 / 4px 4px,
-			var(--parchment);
+		color: var(--popiol);
+		background: linear-gradient(135deg, rgb(242 162 74 / 0.7), #40515a 28%, #2a373d 70%, #232e33);
 		clip-path: polygon(
-			0 1.2%,
-			6% 0,
-			22% 0.8%,
-			40% 0,
-			61% 0.6%,
-			78% 0,
-			94% 1%,
+			var(--cut) 0,
 			100% 0,
-			99.4% 22%,
-			100% 48%,
-			99.4% 74%,
-			100% 99%,
-			92% 100%,
-			70% 99.2%,
-			48% 100%,
-			27% 99.2%,
-			8% 100%,
-			0 99%,
-			0.6% 70%,
-			0 44%,
-			0.5% 18%
+			100% calc(100% - var(--cut)),
+			calc(100% - var(--cut)) 100%,
+			0 100%,
+			0 var(--cut)
 		);
-	}
-
-	/* Cień notatki na elemencie nadrzędnym, bo clip-path notatki przyciąłby cień */
-	.parchment-note-shadow {
-		filter: drop-shadow(0 8px 14px rgb(0 0 0 / 0.7));
 	}
 
 	.parchment-note::before {
 		content: '';
 		position: absolute;
-		top: 8px;
-		left: 50%;
-		width: 12px;
-		height: 12px;
-		margin-left: -6px;
-		border-radius: 999px;
-		background: radial-gradient(circle at 35% 35%, #c9ced1, #55595c 60%, #222);
-		box-shadow: 0 2px 2px rgb(0 0 0 / 0.5);
+		inset: 1px;
+		z-index: 0;
+		pointer-events: none;
+		background:
+			radial-gradient(120% 80% at 0 0, rgb(242 162 74 / 0.13), transparent 58%), var(--lupek);
+		clip-path: polygon(
+			calc(var(--cut) - 0.4px) 0,
+			100% 0,
+			100% calc(100% - var(--cut) + 0.4px),
+			calc(100% - var(--cut) + 0.4px) 100%,
+			0 100%,
+			0 calc(var(--cut) - 0.4px)
+		);
+	}
+
+	.parchment-note > * {
+		position: relative;
+		z-index: 1;
+	}
+
+	/* Cień karty na elemencie nadrzędnym, bo clip-path karty przyciąłby cień */
+	.parchment-note-shadow {
+		filter: drop-shadow(0 8px 14px rgb(0 0 0 / 0.55));
 	}
 
 	.parchment-note .note-faded {
-		color: var(--ink-faded);
+		color: var(--mgla);
 	}
 
 	.parchment-note .note-rule {
 		height: 1px;
 		border: 0;
-		background: linear-gradient(90deg, transparent, var(--ink-faded), transparent);
-		opacity: 0.5;
+		background: var(--linia);
 	}
 
 	.parchment-note a {
-		color: var(--ink-red);
+		color: var(--zar);
 		text-decoration: underline;
 		text-decoration-thickness: 1px;
 		text-underline-offset: 3px;
 	}
 
 	.parchment-note :focus-visible {
-		outline-color: var(--ore-deep);
+		outline-color: var(--ring);
 	}
 
 	.button-ink {
@@ -688,54 +676,50 @@
 		gap: 0.5rem;
 		min-height: var(--touch-target);
 		padding: 0 0.875rem;
-		border-radius: var(--radius-sm);
-		border: 1.5px solid var(--ink-faded);
-		color: var(--ink);
+		color: var(--popiol);
 		font-weight: 500;
+		background: var(--lupek-wysoki);
+		box-shadow: inset 0 0 0 1px var(--linia);
+		clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
 	}
 
 	.button-ink:hover {
-		background: rgb(42 28 15 / 0.1);
-		border-color: var(--ink);
+		color: var(--hover);
+		background: var(--leather-raised);
 	}
 
-	/* Mapa z ekwipunku: pergamin pod przezroczystym płótnem Cesium (widać go poza modelem świata) */
+	.button-ink:focus-visible {
+		outline: 2px solid var(--ring);
+		outline-offset: -3px;
+	}
+
+	/* Tło pod przezroczystym płótnem Cesium (widać je poza modelem świata): ciemna woda z delikatnymi falami */
 	.map-parchment {
 		background:
-			radial-gradient(
-				ellipse at 50% 45%,
-				rgb(120 90 50 / 0.18) 0%,
-				transparent 55%,
-				rgb(8 5 2 / 0.7) 100%
-			),
-			radial-gradient(circle at 18% 28%, rgb(0 0 0 / 0.18), transparent 22%),
-			radial-gradient(circle at 78% 72%, rgb(0 0 0 / 0.15), transparent 18%),
-			radial-gradient(rgb(201 154 69 / 0.05) 1px, transparent 1.4px) 0 0 / 4px 4px,
-			var(--map-backdrop);
+			radial-gradient(ellipse at 50% 45%, rgb(163 212 224 / 0.05) 0%, transparent 55%, rgb(6 10 12 / 0.6) 100%),
+			repeating-linear-gradient(0deg, rgb(163 212 224 / 0.035) 0 1px, transparent 1px 24px),
+			var(--woda);
 	}
 
-	/* Przypalone brzegi arkusza nad mapą; nie przechwytuje kliknięć */
+	/* Winietowanie brzegów nad mapą; nie przechwytuje kliknięć */
 	.map-parchment-frame {
 		box-shadow:
 			inset 0 0 0 1px var(--edge),
-			inset 0 0 70px 16px rgb(30 16 6 / 0.7);
+			inset 0 0 90px 10px rgb(6 10 12 / 0.55);
 	}
 
-	/* Kompas: kuty pierścień na skórzanej tarczy */
+	/* Kompas: tarcza z łupka w kutym pierścieniu */
 	.map-compass {
-		background: radial-gradient(circle, var(--leather), #1a130d);
-		border: 2px solid var(--edge);
+		background: radial-gradient(circle, var(--lupek-wysoki), var(--lupek));
 		box-shadow:
-			inset 0 0 0 3px var(--iron),
-			inset 0 0 0 4px rgb(0 0 0 / 0.5),
-			0 6px 14px rgb(0 0 0 / 0.6);
+			inset 0 0 0 2px var(--iron),
+			inset 0 0 0 3px var(--krawedz);
 	}
 
 	.map-compass:hover {
 		box-shadow:
-			inset 0 0 0 3px var(--iron-light),
-			inset 0 0 0 4px rgb(0 0 0 / 0.5),
-			0 6px 14px rgb(0 0 0 / 0.6),
+			inset 0 0 0 2px var(--zar),
+			inset 0 0 0 3px var(--krawedz),
 			var(--glow-torch);
 	}
 
@@ -755,19 +739,17 @@
 		);
 	}
 
-	/* Atrybucja jak dopisek atramentem na brzegu mapy */
+	/* Atrybucja na brzegu mapy */
 	.map-attribution {
-		color: var(--bone-dim);
-		background: rgb(21 17 12 / 0.78);
-		border: 1px solid var(--edge);
-		box-shadow: inset 0 1px 0 var(--divider-highlight);
+		color: var(--mgla);
+		background: rgb(18 27 30 / 0.85);
+		border: 1px solid var(--linia);
 	}
 
-	/* Listwa przyrządu na dole ekranu */
+	/* Odczyt przyrządów: pas z łupka (w etapie 2 przechodzi w pływającą płytę) */
 	.instrument-bar {
-		background: linear-gradient(180deg, var(--oak-light), #17110b);
-		border-top: 1px solid var(--edge);
-		box-shadow: inset 0 1px 0 var(--divider-highlight);
+		background: var(--lupek);
+		border-top: 1px solid var(--linia);
 	}
 
 	.instrument-cell {
@@ -850,8 +832,8 @@ input[type='search']::-webkit-search-cancel-button {
 	display: inline-block;
 	width: 14px;
 	height: 14px;
-	border: 2px solid rgb(201 154 69 / 0.3);
-	border-top-color: var(--torch);
+	border: 2px solid rgb(242 162 74 / 0.3);
+	border-top-color: var(--zar);
 	border-radius: 50%;
 	animation: tile-loader-spin 0.9s linear infinite;
 }

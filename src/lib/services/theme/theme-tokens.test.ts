@@ -73,4 +73,19 @@ describe('klasy materiałów', () => {
 		expect(readRuleBlock('.material-leather {')).toContain('clip-path');
 		expect(appCss).not.toContain('.material-leather-riveted::after');
 	});
+
+	it('klasy komponentów nie używają już pergaminu, nitów ani przeszycia', () => {
+		const components = appCss.slice(appCss.indexOf('@layer components'));
+		expect(components).not.toContain('var(--parchment');
+		expect(components).not.toContain('var(--rivet');
+		expect(components).not.toContain('var(--stitch');
+	});
+
+	it('tło pod mapą to woda', () => {
+		expect(readRuleBlock('.map-parchment {')).toContain('var(--woda)');
+	});
+
+	it('przycisk atramentowy też ma fokus wewnątrz kształtu', () => {
+		expect(readRuleBlock('.button-ink:focus-visible')).toContain('outline-offset: -');
+	});
 });
