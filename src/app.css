@@ -137,9 +137,9 @@
 		--top-bar-height: 5.5rem;
 		--bottom-nav-height: 0px;
 		--rail-width: 5.5rem;
-		--status-bar-height: 2.75rem;
+		--status-bar-height: 0.875rem;
 		--panel-width: 20rem;
-		--map-controls-width: 5.5rem;
+		--map-controls-width: 6.25rem;
 	}
 }
 
@@ -721,8 +721,7 @@
 
 	/* Odczyt przyrządów: pas z łupka (w etapie 2 przechodzi w pływającą płytę) */
 	.instrument-bar {
-		background: var(--lupek);
-		border-top: 1px solid var(--linia);
+		border: 0;
 	}
 
 	.instrument-cell {

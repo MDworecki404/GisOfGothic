@@ -27,7 +27,7 @@
 		aria-live="polite"
 		aria-label="Wczytywanie aplikacji"
 	>
-		<div class="material-leather material-leather-riveted launch-screen-card">
+		<div class="material-leather launch-screen-card">
 			<img class="size-16" src="/favicon.svg" alt="" width="64" height="64" />
 			<h1 class="font-heading text-hero text-primary">GIS of Gothic</h1>
 			<p class="font-serif text-muted-foreground italic">

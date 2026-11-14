@@ -69,3 +69,63 @@ test('dok narzędzi na desktopie ma osiem przycisków i znacznik aktywnego', asy
 	await expect(tools.getByRole('button')).toHaveCount(8);
 	await expect(tools.getByRole('button', { name: 'Czas' })).toHaveAttribute('aria-pressed', 'true');
 });
+
+test('otwarty panel narzędzia nie zasłania doku ani nagłówka', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 720 });
+	await page.goto('/g2nk/khorinis?narzedzie=measure');
+	const panel = await page.getByRole('region', { name: 'Pomiary' }).boundingBox();
+	const dock = await page.getByRole('navigation', { name: 'Narzędzia' }).boundingBox();
+	if (!panel || !dock) throw new Error('Brak panelu albo doku');
+	expect(intersects(panel, dock), 'panel nakłada się na dok').toBe(false);
+	for (const testId of HEADER_PLATES) {
+		const plate = await page.getByTestId(testId).boundingBox();
+		if (!plate) throw new Error(`Brak płyty ${testId}`);
+		expect(intersects(panel, plate), `panel nakłada się na ${testId}`).toBe(false);
+	}
+});
+
+test('odczyt współrzędnych to płyta w prawym dolnym rogu ze stanem', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 720 });
+	await page.goto('/g2nk/khorinis');
+	const readout = page.locator('footer[aria-label="Pozycja kursora, skala i stan"]');
+	const box = await readout.boundingBox();
+	if (!box) throw new Error('Brak płyty odczytu');
+	expect(1280 - (box.x + box.width)).toBeLessThanOrEqual(40);
+	expect(720 - (box.y + box.height)).toBeLessThanOrEqual(40);
+	await expect(readout.getByTestId('status-bar')).toBeVisible();
+	await expect(page.locator('[data-testid="status-bar"]')).toContainText(/Przedmioty: \d+/, {
+		timeout: 90_000
+	});
+});
+
+test('podpis praw autorskich do świata gry jest widoczny', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 720 });
+	await page.goto('/g2nk/khorinis');
+	await expect(page.locator('.map-attribution')).toContainText('Piranha Bytes');
+});
+
+for (const viewport of [
+	{ width: 800, height: 600 },
+	{ width: 1280, height: 720 }
+]) {
+	test(`płyta odczytu nie nachodzi na otwarty panel ani dok na ${viewport.width}×${viewport.height}`, async ({
+		page
+	}) => {
+		await page.setViewportSize(viewport);
+		await page.goto('/g2nk/khorinis?narzedzie=measure');
+		const readout = await page
+			.locator('footer[aria-label="Pozycja kursora, skala i stan"]')
+			.boundingBox();
+		const panel = await page.getByRole('region', { name: 'Pomiary' }).boundingBox();
+		const dock = await page.getByRole('navigation', { name: 'Narzędzia' }).boundingBox();
+		if (!readout || !panel || !dock) throw new Error('Brak płyty odczytu, panelu albo doku');
+		expect(intersects(readout, panel), 'odczyt nakłada się na panel').toBe(false);
+		expect(intersects(readout, dock), 'odczyt nakłada się na dok').toBe(false);
+		expect(readout.x + readout.width, 'odczyt wychodzi poza ekran').toBeLessThanOrEqual(
+			viewport.width
+		);
+		expect(dock.y + dock.height, 'dok jest rozciągnięty do dołu ekranu').toBeLessThan(
+			viewport.height - 80
+		);
+	});
+}

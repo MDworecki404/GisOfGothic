@@ -7,10 +7,11 @@
 </script>
 
 <footer
-	class="instrument-bar fixed top-[calc(var(--top-bar-height)+var(--gutter))] left-(--gutter) z-20 h-8 items-stretch rounded-sm text-caption tabular-nums md:inset-x-0 md:top-auto md:bottom-0 md:h-(--status-bar-height) md:rounded-none {appState.cursorReadings
+	class="instrument-bar material-leather fixed top-[calc(var(--top-bar-height)+var(--gutter))] left-(--gutter) z-20 h-9 items-stretch overflow-hidden text-caption tabular-nums [--cut:9px] md:top-auto md:right-(--edge-inset) md:bottom-(--edge-inset) md:left-auto md:h-10 md:max-w-[calc(100vw-var(--rail-width)-var(--panel-occupied-width)-var(--edge-inset)-var(--gutter))] {appState.cursorReadings
 		? 'flex'
 		: 'hidden md:flex'}"
 	aria-label="Pozycja kursora, skala i stan"
+	data-map-obstacle
 >
 	<div class="{cell} hidden px-0 md:flex">
 		<button
@@ -19,17 +20,6 @@
 			onclick={() => geoportal.switchToNextCoordinateSystem()}
 		>
 			{appState.coordinateSystem.name}
-		</button>
-	</div>
-
-	<div class="{cell} hidden pr-0 md:flex">
-		<span class="text-muted-foreground">Godzina</span>
-		<button
-			class="h-full px-2 hover:bg-hover-surface hover:text-hover"
-			title="Zmień porę dnia"
-			onclick={() => geoportal.selectTool('time')}
-		>
-			{appState.timeOfDayLabel}
 		</button>
 	</div>
 
@@ -66,6 +56,6 @@
 			</div>
 		{/each}
 	{:else}
-		<div class="{cell} hidden text-muted-foreground md:flex md:w-104">Wskaż punkt na mapie</div>
+		<div class="{cell} hidden text-muted-foreground md:flex md:w-56">Wskaż punkt na mapie</div>
 	{/if}
 </footer>

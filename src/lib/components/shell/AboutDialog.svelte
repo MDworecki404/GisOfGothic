@@ -24,7 +24,7 @@
 	</Dialog.Trigger>
 
 	<Dialog.Content
-		class="material-leather material-leather-riveted max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-md p-0 ring-0 sm:max-w-lg"
+		class="material-leather max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-md p-0 ring-0 sm:max-w-lg"
 	>
 		<div class="px-6 pt-8 pb-6 sm:px-9">
 			<div class="flex items-center gap-4">

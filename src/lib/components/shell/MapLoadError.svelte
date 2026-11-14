@@ -24,7 +24,7 @@
 
 {#if failure}
 	<div
-		class="material-leather material-leather-riveted fixed top-1/2 left-1/2 z-30 w-[min(24rem,calc(100vw-2*var(--gutter)))] -translate-x-1/2 -translate-y-1/2 rounded-md px-6 py-5"
+		class="material-leather fixed top-1/2 left-1/2 z-30 w-[min(24rem,calc(100vw-2*var(--gutter)))] -translate-x-1/2 -translate-y-1/2 rounded-md px-6 py-5"
 		role="alert"
 	>
 		<h2 class="text-title text-destructive">{failure.title}</h2>

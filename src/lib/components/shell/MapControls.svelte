@@ -53,7 +53,7 @@
 />
 
 <div
-	class="fixed top-[calc(var(--top-bar-height)+var(--gutter))] right-(--gutter) z-10 flex flex-col items-center gap-2.5 md:right-3.5"
+	class="fixed top-[calc(var(--top-bar-height)+var(--gutter))] right-(--gutter) z-10 flex flex-col items-center gap-2.5 md:right-(--edge-inset)"
 >
 	<button
 		class="map-compass grid size-13 place-items-center rounded-full md:size-16"

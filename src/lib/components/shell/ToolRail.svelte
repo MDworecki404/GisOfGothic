@@ -88,7 +88,7 @@
 	</nav>
 {:else}
 	<nav
-		class="material-leather fixed top-(--top-bar-height) bottom-(--edge-inset) left-(--edge-inset) z-30 flex w-16 flex-col items-center gap-0.5 py-1.5 [--cut:12px]"
+		class="material-leather fixed top-(--top-bar-height) left-(--edge-inset) z-30 flex max-h-[calc(100dvh-var(--top-bar-height)-var(--edge-inset))] w-16 flex-col items-center gap-0.5 py-1.5 [--cut:12px]"
 		aria-label="Narzędzia"
 		data-map-obstacle
 	>
