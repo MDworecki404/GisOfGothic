@@ -86,7 +86,7 @@
 				x="27"
 				y="16"
 				text-anchor="middle"
-				font-family="Grenze Gotisch, serif"
+				font-family="Grenze, serif"
 				font-size="9"
 				font-weight="600"
 				fill="var(--pitch)">N</text

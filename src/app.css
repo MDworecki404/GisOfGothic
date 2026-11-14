@@ -2,104 +2,118 @@
 @import "tw-animate-css";
 @import "shadcn-svelte/tailwind.css";
 @import "cesium/Build/Cesium/Widgets/widgets.css";
-@import "@fontsource/grenze-gotisch/latin-ext-600.css";
-@import "@fontsource/grenze-gotisch/latin-600.css";
-@import "@fontsource/alegreya/latin-ext-400.css";
-@import "@fontsource/alegreya/latin-400.css";
-@import "@fontsource/alegreya/latin-ext-400-italic.css";
-@import "@fontsource/alegreya-sans/latin-ext-400.css";
-@import "@fontsource/alegreya-sans/latin-400.css";
-@import "@fontsource/alegreya-sans/latin-ext-500.css";
-@import "@fontsource/alegreya-sans/latin-500.css";
+@import "@fontsource/grenze/latin-ext-500.css";
+@import "@fontsource/grenze/latin-500.css";
+@import "@fontsource/grenze/latin-ext-600.css";
+@import "@fontsource/grenze/latin-600.css";
+@import "@fontsource/grenze/latin-ext-700.css";
+@import "@fontsource/grenze/latin-700.css";
+@import "@fontsource/barlow-semi-condensed/latin-ext-400.css";
+@import "@fontsource/barlow-semi-condensed/latin-400.css";
+@import "@fontsource/barlow-semi-condensed/latin-ext-500.css";
+@import "@fontsource/barlow-semi-condensed/latin-500.css";
+@import "@fontsource/barlow-semi-condensed/latin-ext-600.css";
+@import "@fontsource/barlow-semi-condensed/latin-600.css";
 
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Motyw „Mapa z sakwy kopacza” (ADR 0019). Jedno źródło tokenów:
+ * Motyw „latarnia w kopalni” (ADR 0036; zastępuje ADR 0019). Jedno źródło tokenów:
  * 1. surowa paleta materiałów, 2. role (zmienne shadcn i własne), 3. układ ekranu.
  * Komponenty używają ról i układu, nie surowej palety.
  */
 :root {
 	color-scheme: dark;
 
-	/* 1. Paleta materiałów */
-	--pitch: #15110c;
-	--oak: #251b13;
-	--oak-light: #2c2016;
-	--leather: #35261a;
-	--leather-raised: #4a3524;
-	--iron: #5b5f62;
-	--iron-light: #9aa0a4;
-	--stone: #7d7466;
-	--parchment: #d8c39a;
-	--parchment-dark: #b59a6c;
-	--map-backdrop: #2b2016;
-	--ink: #2a1c0f;
-	--ink-faded: #5a4128;
-	--ink-red: #6a2c12;
-	--ochre: #c99a45;
-	--ochre-dark: #93681f;
-	--torch: #e8913a;
-	--ore: #6cc3e8;
-	--ore-deep: #2c6f8f;
-	--blood: #e57a62;
-	--bone: #eadcc0;
-	--bone-dim: #b7a688;
+	/* 1. Paleta: ciemny łupek oświetlony pochodnią (żar) i chłodną barierą */
+	--lupek: #1e282b;
+	--lupek-wysoki: #27353a;
+	--woda: #121b1e;
+	--krawedz: #0c1214;
+	--linia: #3a494f;
+	--popiol: #e1dac8;
+	--mgla: #9aa6a3;
+	--zar: #f2a24a;
+	--zar-ciemny: #b8691d;
+	--bariera: #a3b4ff;
+	--bariera-ciemna: #55659e;
+	--krew: #ee7d68;
+
+	/* Aliasy nazw z ADR 0019 (komponenty ich jeszcze używają); usuwane w etapie 5 */
+	--pitch: var(--woda);
+	--oak: var(--lupek);
+	--oak-light: var(--lupek-wysoki);
+	--leather: var(--lupek-wysoki);
+	--leather-raised: #31434a;
+	--iron: #66777c;
+	--iron-light: var(--mgla);
+	--stone: var(--mgla);
+	--parchment: var(--popiol);
+	--parchment-dark: var(--mgla);
+	--map-backdrop: var(--woda);
+	--ink: var(--krawedz);
+	--ink-faded: var(--lupek-wysoki);
+	--ink-red: #8a2f1c;
+	--ochre: var(--zar);
+	--ochre-dark: var(--zar-ciemny);
+	--torch: var(--zar);
+	--ore: var(--bariera);
+	--ore-deep: var(--bariera-ciemna);
+	--blood: var(--krew);
+	--bone: var(--popiol);
+	--bone-dim: var(--mgla);
 
 	/* 2. Role: zmienne shadcn */
-	--background: var(--pitch);
-	--foreground: var(--bone);
-	--card: var(--oak);
-	--card-foreground: var(--bone);
-	--popover: var(--oak);
-	--popover-foreground: var(--bone);
-	--primary: var(--ochre);
-	--primary-foreground: #1b1006;
-	--secondary: var(--leather);
-	--secondary-foreground: var(--bone);
-	--muted: var(--leather);
-	--muted-foreground: var(--bone-dim);
+	--background: var(--woda);
+	--foreground: var(--popiol);
+	--card: var(--lupek);
+	--card-foreground: var(--popiol);
+	--popover: var(--lupek);
+	--popover-foreground: var(--popiol);
+	--primary: var(--zar);
+	--primary-foreground: #261504;
+	--secondary: var(--lupek-wysoki);
+	--secondary-foreground: var(--popiol);
+	--muted: var(--lupek-wysoki);
+	--muted-foreground: var(--mgla);
 	--accent: var(--leather-raised);
-	--accent-foreground: var(--bone);
-	--destructive: var(--blood);
-	--border: var(--leather-raised);
-	--edge: #0c0906;
-	--input: var(--iron-light);
-	--ring: var(--ore);
-	--chart-1: var(--ochre);
-	--chart-2: var(--torch);
-	--chart-3: var(--ore);
-	--chart-4: var(--stone);
-	--chart-5: var(--leather-raised);
+	--accent-foreground: var(--popiol);
+	--destructive: var(--krew);
+	--border: var(--linia);
+	--edge: var(--krawedz);
+	--input: var(--iron);
+	--ring: var(--bariera);
+	--chart-1: var(--zar);
+	--chart-2: var(--zar-ciemny);
+	--chart-3: var(--bariera);
+	--chart-4: var(--mgla);
+	--chart-5: var(--linia);
 	--radius: 3px;
-	--sidebar: var(--oak);
-	--sidebar-foreground: var(--bone);
-	--sidebar-primary: var(--ochre);
-	--sidebar-primary-foreground: #1b1006;
-	--sidebar-accent: var(--leather);
-	--sidebar-accent-foreground: var(--bone);
-	--sidebar-border: var(--leather-raised);
-	--sidebar-ring: var(--ore);
+	--sidebar: var(--lupek);
+	--sidebar-foreground: var(--popiol);
+	--sidebar-primary: var(--zar);
+	--sidebar-primary-foreground: #261504;
+	--sidebar-accent: var(--lupek-wysoki);
+	--sidebar-accent-foreground: var(--popiol);
+	--sidebar-border: var(--linia);
+	--sidebar-ring: var(--bariera);
 
 	/* Role: własne */
-	--hover: var(--torch);
-	--hover-surface: rgb(232 145 58 / 0.1);
-	--active: var(--ore);
-	--active-surface: rgb(108 195 232 / 0.14);
+	--hover: var(--zar);
+	--hover-surface: rgb(242 162 74 / 0.1);
+	--active: var(--bariera);
+	--active-surface: rgb(163 180 255 / 0.14);
 	--divider: rgb(0 0 0 / 0.45);
-	--divider-highlight: rgb(201 154 69 / 0.1);
-	--rivet: var(--iron-light);
-	--stitch: rgb(201 154 69 / 0.22);
+	--divider-highlight: rgb(242 162 74 / 0.1);
+	--rivet: var(--mgla);
+	--stitch: rgb(242 162 74 / 0.22);
 
-	/* Cienie i poświaty */
-	--shadow-panel:
-		inset 0 1px 0 rgb(255 220 160 / 0.06), 0 0 0 1px rgb(0 0 0 / 0.55),
-		0 10px 28px rgb(0 0 0 / 0.65);
-	--shadow-raised: inset 0 1px 0 rgb(255 255 255 / 0.18), inset 0 -1px 0 rgb(0 0 0 / 0.5),
-		0 2px 4px rgb(0 0 0 / 0.6);
-	--shadow-well: inset 0 1px 3px rgb(0 0 0 / 0.8);
-	--glow-torch: 0 0 14px rgb(232 145 58 / 0.35);
-	--glow-ore: 0 0 10px rgb(108 195 232 / 0.35);
+	/* Cienie i poświaty (płyty mają clip-path, więc cień zewnętrzny by je przycinał) */
+	--shadow-panel: inset 0 1px 0 rgb(242 162 74 / 0.06);
+	--shadow-raised: inset 0 1px 0 rgb(255 255 255 / 0.08), inset 0 -1px 0 rgb(0 0 0 / 0.4);
+	--shadow-well: inset 0 1px 3px rgb(0 0 0 / 0.6);
+	--glow-torch: 0 0 14px rgb(242 162 74 / 0.35);
+	--glow-ore: 0 0 10px rgb(163 180 255 / 0.35);
 
 	/* 3. Układ ekranu (telefon; większe ekrany niżej) */
 	--top-bar-height: 3.75rem;
@@ -134,9 +148,9 @@
 }
 
 @theme inline {
-	--font-sans: 'Alegreya Sans', ui-sans-serif, sans-serif;
-	--font-serif: 'Alegreya', Georgia, serif;
-	--font-heading: 'Grenze Gotisch', 'Alegreya', serif;
+	--font-sans: 'Barlow Semi Condensed', ui-sans-serif, sans-serif;
+	--font-serif: 'Grenze', Georgia, serif;
+	--font-heading: 'Grenze', Georgia, serif;
 
 	--text-caption: 0.8125rem;
 	--text-caption--line-height: 1.4;
