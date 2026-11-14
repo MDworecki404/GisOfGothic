@@ -44,11 +44,21 @@ for (const viewport of [
 	});
 }
 
-test('płyty nagłówka zgłaszają się jako elementy zasłaniające mapę', async ({ page }) => {
+test('płyty u góry i w rogu nie są raportowane jako zasłonięty brzeg mapy', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 720 });
 	await page.goto('/g2nk/khorinis');
+	for (const testId of HEADER_PLATES) await expect(page.getByTestId(testId)).toBeVisible();
+	await expect(page.locator('footer[aria-label="Pozycja kursora, skala i stan"]')).toBeVisible();
 	for (const testId of HEADER_PLATES) {
-		await expect(page.locator(`[data-testid="${testId}"][data-map-obstacle]`)).toHaveCount(1);
+		await expect(page.locator(`[data-testid="${testId}"][data-map-obstacle]`)).toHaveCount(0);
 	}
+	await expect(
+		page.locator('footer[aria-label="Pozycja kursora, skala i stan"][data-map-obstacle]')
+	).toHaveCount(0);
+	await expect(page.getByRole('navigation', { name: 'Narzędzia' })).toHaveAttribute(
+		'data-map-obstacle',
+		''
+	);
 });
 
 test('na telefonie menu „Inne” otwiera narzędzie spoza paska', async ({ page }) => {
@@ -129,3 +139,41 @@ for (const viewport of [
 		);
 	});
 }
+
+test('dok i panel narzędzia zachowują odstęp od płyty tytułu', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 720 });
+	await page.goto('/g2nk/khorinis?narzedzie=measure');
+	const title = await page.getByTestId('header-title').boundingBox();
+	const dock = await page.getByRole('navigation', { name: 'Narzędzia' }).boundingBox();
+	const panel = await page.getByRole('region', { name: 'Pomiary' }).boundingBox();
+	if (!title || !dock || !panel) throw new Error('Brak płyty tytułu, doku albo panelu');
+	expect(dock.y - (title.y + title.height), 'odstęp doku od tytułu').toBeGreaterThanOrEqual(12);
+	expect(panel.y - (title.y + title.height), 'odstęp panelu od tytułu').toBeGreaterThanOrEqual(12);
+});
+
+test('atrybucja Cesium nie jest przykryta przez płytę odczytu', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 720 });
+	await page.goto('/g2nk/khorinis');
+	const attribution = await page.locator('.map-attribution').boundingBox();
+	const readout = await page
+		.locator('footer[aria-label="Pozycja kursora, skala i stan"]')
+		.boundingBox();
+	if (!attribution || !readout) throw new Error('Brak atrybucji albo płyty odczytu');
+	expect(intersects(attribution, readout), 'atrybucja nakłada się na odczyt').toBe(false);
+});
+
+test('płyta odczytu ma stałą szerokość, więc nie przesuwa się pod kursorem', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 720 });
+	for (const query of ['?narzedzie=zamkniete', '']) {
+		await page.goto(`/g2nk/khorinis${query}`);
+		const readout = page.locator('footer[aria-label="Pozycja kursora, skala i stan"]');
+		const before = await readout.boundingBox();
+		await page.mouse.move(640, 360);
+		await page.mouse.move(700, 400);
+		const after = await readout.boundingBox();
+		if (!before || !after) throw new Error('Brak płyty odczytu');
+		expect(after.width, query).toBe(before.width);
+		expect(after.x, query).toBe(before.x);
+		if (query === '?narzedzie=zamkniete') expect(before.width).toBe(896);
+	}
+});

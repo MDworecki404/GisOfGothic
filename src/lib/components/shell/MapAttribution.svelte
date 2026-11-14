@@ -7,7 +7,7 @@
 </script>
 
 <aside
-	class="map-attribution fixed bottom-[calc(var(--bottom-nav-height)+var(--sheet-occupied-height)+var(--status-bar-height)+var(--gutter))] left-(--gutter) z-10 flex max-w-[calc(100vw-2*var(--gutter))] items-center gap-2 rounded-sm px-2 py-1 text-caption md:right-(--gutter) md:left-auto"
+	class="map-attribution fixed bottom-[calc(var(--bottom-nav-height)+var(--sheet-occupied-height)+var(--status-bar-height)+var(--gutter))] left-(--gutter) z-10 flex max-w-[calc(100vw-2*var(--gutter))] items-center gap-2 rounded-sm px-2 py-1 text-caption md:right-(--edge-inset) md:bottom-[calc(var(--edge-inset)+3rem)] md:left-auto"
 	aria-label="Źródła i prawa autorskie"
 >
 	<div class="map-credits flex min-w-0 items-center" bind:this={creditContainer}></div>

@@ -49,7 +49,6 @@
 	<div
 		class="material-leather pointer-events-auto flex h-14 shrink-0 items-center gap-1.5 pr-1 pl-3 md:h-16 md:gap-3 md:pr-3 md:pl-4"
 		data-testid="header-title"
-		data-map-obstacle
 	>
 		<span class="hidden md:inline-flex"><BrandMark /></span>
 		<WorldSwitcher {games} {currentGameId} {currentWorldId} />
@@ -58,7 +57,6 @@
 	<div
 		class="material-leather pointer-events-auto mx-auto flex h-14 max-w-xl min-w-0 flex-1 items-center [--cut:9px] md:h-16"
 		data-testid="header-search"
-		data-map-obstacle
 	>
 		<label
 			class="flex h-full min-w-0 flex-1 items-center gap-2 px-3 text-muted-foreground focus-within:text-foreground md:px-4"
@@ -84,7 +82,6 @@
 	<div
 		class="material-leather pointer-events-auto flex h-14 shrink-0 items-center gap-0.5 px-1.5 [--cut:9px] md:h-16 md:gap-1 md:px-2"
 		data-testid="header-actions"
-		data-map-obstacle
 	>
 		<div class="hidden shrink-0 lg:block">
 			<CopyViewLinkButton

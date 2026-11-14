@@ -7,11 +7,10 @@
 </script>
 
 <footer
-	class="instrument-bar material-leather fixed top-[calc(var(--top-bar-height)+var(--gutter))] left-(--gutter) z-20 h-9 items-stretch overflow-hidden text-caption tabular-nums [--cut:9px] md:top-auto md:right-(--edge-inset) md:bottom-(--edge-inset) md:left-auto md:h-10 md:max-w-[calc(100vw-var(--rail-width)-var(--panel-occupied-width)-var(--edge-inset)-var(--gutter))] {appState.cursorReadings
+	class="instrument-bar material-leather fixed top-[calc(var(--top-bar-height)+var(--gutter))] left-(--gutter) z-20 h-9 items-stretch overflow-hidden text-caption tabular-nums [--cut:9px] md:top-auto md:right-(--edge-inset) md:bottom-(--edge-inset) md:left-auto md:h-10 md:w-[56rem] md:max-w-[calc(100vw-var(--rail-width)-var(--panel-occupied-width)-var(--edge-inset)-var(--gutter))] {appState.cursorReadings
 		? 'flex'
 		: 'hidden md:flex'}"
 	aria-label="Pozycja kursora, skala i stan"
-	data-map-obstacle
 >
 	<div class="{cell} hidden px-0 md:flex">
 		<button

@@ -535,8 +535,7 @@ tworzą na komputerze pionowy dok (`ToolRail`) z trzema grupami (`ToolDefinition
 oddzielonymi kreską, znacznikiem aktywnego i podpisem po najechaniu; na telefonie dolna nawigacja ma cztery narzędzia
 (`ToolDefinition.isOnPhoneBar`) i menu „Inne” z resztą. Pasek stanu zastępuje narożna płyta odczytu (`InstrumentBar`:
 układ współrzędnych, tekst stanu `data-testid="status-bar"`, skala, odczyt kursora), której szerokość liczy się z
-tokenów, żeby nie nachodziła na panel narzędzia. Każda płyta zasłaniająca mapę ma `data-map-obstacle`, więc kadrowanie
-kamery ją uwzględnia. Wymiary układu są tokenami: `--edge-inset` (margines pływających elementów), `--top-bar-height`
+tokenów, żeby nie nachodziła na panel narzędzia. `data-map-obstacle` mają tylko elementy, które zasłaniają lewy albo dolny brzeg mapy (dok, panel, arkusz i nawigacja telefonu), bo `MapInsetsReporter` liczy z nich wolny obszar kadrowania; płyty nagłówka i narożny odczyt go nie mają (płyta wyszukiwarki sięgająca prawej strony ekranu uznana za zasłonięty brzeg zepsułaby kadrowanie i dawała błąd NaN). Wymiary układu są tokenami: `--edge-inset` (margines pływających elementów), `--top-bar-height`
 (strefa nagłówka), `--bottom-nav-height`, `--rail-width` (margines i dok), `--status-bar-height` (dolny odstęp), `--panel-width`
 i `--map-controls-width` zmieniają się z szerokością ekranu.
 `ToolPanel` ustawia w biegu na `:root` `--sheet-occupied-height` (wysokość arkusza na telefonie) oraz
