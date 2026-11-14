@@ -5,7 +5,8 @@
 	const MODES = [
 		{ value: 'distance', label: 'Odległość', hint: 'łamana po kliknięciach' },
 		{ value: 'area', label: 'Pole', hint: 'wielokąt, pole i obwód' },
-		{ value: 'point', label: 'Współrzędne', hint: 'punkt i komenda Marvina' }
+		{ value: 'point', label: 'Współrzędne', hint: 'punkt i komenda Marvina' },
+		{ value: 'route', label: 'Trasa', hint: 'droga z gry między dwoma punktami' }
 	] as const;
 
 	const mode = $derived(appState.measurement?.mode ?? 'distance');
@@ -18,7 +19,7 @@
 	}
 </script>
 
-<div class="grid grid-cols-3 gap-2" role="group" aria-label="Rodzaj pomiaru">
+<div class="grid grid-cols-2 gap-2" role="group" aria-label="Rodzaj pomiaru">
 	{#each MODES as option (option.value)}
 		<button
 			class="choice-card"
@@ -63,13 +64,17 @@
 			</button>
 		</div>
 	{/if}
-{:else if mode === 'distance'}
-	{#if pointCount < 2}
-		<p class="mt-4 text-sm text-muted-foreground">
-			{pointCount === 0
-				? 'Klikaj kolejne punkty na mapie. Odległość jest liczona po terenie, z profilem wysokości.'
-				: 'Kliknij następny punkt.'}
-		</p>
+{:else if mode === 'distance' || mode === 'route'}
+	{@const waitingMessage =
+		mode === 'route'
+			? appState.routeStatusMessage
+			: pointCount < 2
+				? pointCount === 0
+					? 'Klikaj kolejne punkty na mapie. Odległość jest liczona po terenie, z profilem wysokości.'
+					: 'Kliknij następny punkt.'
+				: null}
+	{#if waitingMessage}
+		<p class="mt-4 text-sm text-muted-foreground" role="status">{waitingMessage}</p>
 	{:else}
 		<div class="mt-4 border-l-2 border-primary bg-background/50 px-3.5 py-3 tabular-nums">
 			<p class="text-sm text-muted-foreground">
@@ -86,6 +91,9 @@
 			</dl>
 			{#if appState.measurement?.isProfileLoading}
 				<p class="mt-1 text-caption text-muted-foreground">Obliczanie profilu terenu…</p>
+			{/if}
+			{#if mode === 'route' && appState.routeApproachNote}
+				<p class="mt-1 text-caption text-muted-foreground">{appState.routeApproachNote}</p>
 			{/if}
 		</div>
 
@@ -117,12 +125,17 @@
 	{/if}
 
 	{#if pointCount > 0}
-		<div class="mt-3 flex gap-2">
+		<div class="mt-3 flex flex-wrap gap-2">
+			{#if mode === 'route' && pointCount === 2}
+				<button class="button-iron" onclick={() => geoportal.swapRouteEndpoints()}>
+					Zamień początek i cel
+				</button>
+			{/if}
 			<button class="button-iron" onclick={() => geoportal.removeLastMeasurementPoint()}>
 				Cofnij punkt
 			</button>
 			<button class="button-iron" onclick={() => geoportal.clearMeasurement()}>
-				Wyczyść pomiar
+				{mode === 'route' ? 'Wyczyść trasę' : 'Wyczyść pomiar'}
 			</button>
 		</div>
 	{/if}

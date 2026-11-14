@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
+	import RouteIcon from '@lucide/svelte/icons/route';
 	import type { Attachment } from 'svelte/attachments';
 	import { appState, geoportal } from '#lib/composition-root.js';
 	import CopyViewLinkButton from '#lib/components/shell/CopyViewLinkButton.svelte';
@@ -305,6 +306,14 @@
 							{/if}
 						</span>
 						<span class="text-muted-foreground">{place.quantity ?? ''}</span>
+					</button>
+					<button
+						class="list-row grid size-11 shrink-0 place-items-center"
+						aria-label="Prowadź tutaj: {place.description}"
+						title="Prowadź tutaj"
+						onclick={() => geoportal.routeToPlaceOfSelectedEntry(place.index)}
+					>
+						<RouteIcon class="size-4" aria-hidden="true" />
 					</button>
 				</li>
 			{/each}

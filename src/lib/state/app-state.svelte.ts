@@ -50,6 +50,7 @@ import type { FeatureIdentification } from '#lib/services/layers/data-layer-cata
 import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator.js';
 import type { MeasurementView } from '#lib/services/measurement/measurement-coordinator.js';
 import { DurationFormatter } from '#lib/services/measurement/duration-formatter.js';
+import { RouteStatusPresenter } from '#lib/services/routing/route-status-presenter.js';
 import { formatMinuteOfDay } from '#lib/services/time/daily-schedule.js';
 import type { RoutineLayerStatus, ShadowSettings } from '#lib/services/time/time-coordinator.js';
 import type { StaticObjectsStatus } from '#lib/services/layers/static-objects-coordinator.js';
@@ -61,6 +62,7 @@ import type { ToolId } from '#lib/services/tools/tool-id.js';
 
 const coordinateFormatter = new CoordinateFormatter();
 const durationFormatter = new DurationFormatter();
+const routeStatusPresenter = new RouteStatusPresenter();
 
 export interface MeasurementReading {
 	label: string;
@@ -344,6 +346,20 @@ export class AppState {
 			);
 		}
 		return readings;
+	}
+
+	get routeStatusMessage(): string | null {
+		const route = this.measurement?.route;
+		return route ? routeStatusPresenter.describeStatus(route) : null;
+	}
+
+	get routeApproachNote(): string | null {
+		const route = this.measurement?.route;
+		return route
+			? routeStatusPresenter.describeApproach(route, (metres) =>
+					coordinateFormatter.formatLength(metres)
+				)
+			: null;
 	}
 
 	get travelTimeReadings(): MeasurementReading[] {

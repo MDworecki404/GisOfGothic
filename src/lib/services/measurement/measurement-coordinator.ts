@@ -163,11 +163,13 @@ export class MeasurementCoordinator {
 
 	private addRoutePoint(position: WorldPosition): void {
 		if (this.routeAvailability === 'unavailable') return;
-		if (this.routeStart === null || this.routeEnd !== null) {
+		if (this.routeStart === null) {
+			this.routeStart = position;
+		} else if (this.routeEnd === null) {
+			this.routeEnd = position;
+		} else {
 			this.routeStart = position;
 			this.routeEnd = null;
-		} else {
-			this.routeEnd = position;
 		}
 		void this.refreshRoute();
 	}

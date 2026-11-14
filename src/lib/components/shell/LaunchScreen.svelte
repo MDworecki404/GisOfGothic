@@ -31,7 +31,9 @@
 			<img class="size-16" src="/favicon.svg" alt="" width="64" height="64" />
 			<h1 class="font-heading text-hero text-primary">GIS of Gothic</h1>
 			<p class="font-serif text-muted-foreground italic">
-				{appState.openedWorldName ? `Otwieranie: ${appState.openedWorldName}` : 'Przygotowanie mapy'}
+				{appState.openedWorldName
+					? `Otwieranie: ${appState.openedWorldName}`
+					: 'Przygotowanie mapy'}
 			</p>
 			<ul class="mt-4 w-full text-left">
 				{#each steps as step (step.label)}

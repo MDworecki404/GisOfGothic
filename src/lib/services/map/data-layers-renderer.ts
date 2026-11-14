@@ -30,9 +30,8 @@ const ICON_SIZE_PIXELS = 26;
 const ICON_OUTLINE_COLOR = '#14110d';
 const OCCLUDED_ICON_CSS_COLOR = '#8a8f94';
 const OCCLUDED_ALPHA = 0.4;
-const OCCLUDED_POINT_COLOR = Color.fromCssColorString(OCCLUDED_ICON_CSS_COLOR).withAlpha(
-	OCCLUDED_ALPHA
-);
+const OCCLUDED_POINT_COLOR =
+	Color.fromCssColorString(OCCLUDED_ICON_CSS_COLOR).withAlpha(OCCLUDED_ALPHA);
 const OCCLUDED_POINT_OUTLINE_COLOR = POINT_OUTLINE_COLOR.withAlpha(OCCLUDED_ALPHA);
 const OCCLUDED_ICON_TINT = Color.WHITE.withAlpha(OCCLUDED_ALPHA);
 
@@ -56,7 +55,10 @@ export function isFeaturePick(value: unknown): value is FeaturePick {
  * swojego ducha, a punkt pod tilesetem zostaje widoczny wyłącznie jako duch.
  */
 export class DataLayersRenderer {
-	private readonly collections = new Map<string, (PointPrimitiveCollection | BillboardCollection)[]>();
+	private readonly collections = new Map<
+		string,
+		(PointPrimitiveCollection | BillboardCollection)[]
+	>();
 	private readonly iconImages = new Map<string, string>();
 
 	constructor(private readonly viewer: Viewer) {}

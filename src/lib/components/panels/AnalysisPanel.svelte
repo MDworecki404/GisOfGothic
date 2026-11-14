@@ -235,7 +235,8 @@
 				</ul>
 				{#if analysis.viewshed.unknownCellCount > 0}
 					<p class="mt-2 text-caption text-muted-foreground">
-						Pominięte pola bez terenu lub z niewczytanym terenem: {analysis.viewshed.unknownCellCount}.
+						Pominięte pola bez terenu lub z niewczytanym terenem: {analysis.viewshed
+							.unknownCellCount}.
 					</p>
 				{/if}
 			{:else if analysis.viewshed}

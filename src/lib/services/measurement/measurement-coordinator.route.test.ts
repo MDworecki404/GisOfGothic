@@ -165,4 +165,14 @@ describe('MeasurementCoordinator: tryb trasy', () => {
 		await settle();
 		expect(fixture.view()?.mode).toBe('route');
 	});
+
+	it('kliknięcie po ustawieniu samego celu ustawia początek i zachowuje cel', async () => {
+		const { coordinator, calls, view } = await openRouteMode(async () => createPlanner());
+		coordinator.setRouteEnd(at(200, 5));
+		expect(view()?.route).toMatchObject({ hasStart: false, hasEnd: true });
+		coordinator.addPoint(at(0, 5));
+		await settle();
+		expect(view()?.route).toMatchObject({ hasStart: true, hasEnd: true, outcome: 'found' });
+		expect(calls[calls.length - 1].vertices[1].east).toBe(200);
+	});
 });
