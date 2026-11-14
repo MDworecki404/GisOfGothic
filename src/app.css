@@ -116,7 +116,8 @@
 	--glow-ore: 0 0 10px rgb(163 180 255 / 0.35);
 
 	/* 3. Układ ekranu (telefon; większe ekrany niżej) */
-	--top-bar-height: 3.75rem;
+	--edge-inset: 0.75rem;
+	--top-bar-height: 4.25rem;
 	--bottom-nav-height: 4rem;
 	--rail-width: 0px;
 	--status-bar-height: 0px;
@@ -132,7 +133,8 @@
 
 @media (min-width: 48rem) {
 	:root {
-		--top-bar-height: 3.5rem;
+		--edge-inset: 1.5rem;
+		--top-bar-height: 5.5rem;
 		--bottom-nav-height: 0px;
 		--rail-width: 4.5rem;
 		--status-bar-height: 2.75rem;

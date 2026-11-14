@@ -44,59 +44,73 @@
 <svelte:window onkeydown={focusSearchOnShortcut} />
 
 <header
-	class="material-leather fixed inset-x-0 top-0 z-40 flex h-(--top-bar-height) items-center gap-1.5 border-x-0 border-t-0 pr-1 pl-2 md:gap-4 md:px-4"
+	class="pointer-events-none fixed inset-x-0 top-0 z-40 flex items-start gap-2 p-(--edge-inset) md:gap-4"
 >
-	<div class="hidden shrink-0 items-center gap-2.5 md:flex">
-		<BrandMark />
-		<span class="hidden font-heading text-lead text-primary lg:inline"> GIS of Gothic </span>
-	</div>
-
-	<WorldSwitcher {games} {currentGameId} {currentWorldId} />
-
-	<label
-		class="mx-auto flex h-11 max-w-xl min-w-0 flex-1 items-center gap-2 rounded-md border border-iron bg-background/80 px-3 text-muted-foreground shadow-well focus-within:border-ore focus-within:shadow-[var(--shadow-well),var(--glow-ore)] md:h-10"
+	<div
+		class="material-leather pointer-events-auto flex h-14 shrink-0 items-center gap-1.5 pr-1 pl-3 md:h-16 md:gap-3 md:pr-3 md:pl-4"
+		data-testid="header-title"
+		data-map-obstacle
 	>
-		<SearchIcon class="size-4 shrink-0" />
-		<input
-			bind:this={searchInput}
-			class="min-w-0 flex-1 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none"
-			placeholder={isPhone.current ? 'Szukaj…' : 'Szukaj przedmiotu lub postaci…'}
-			aria-label="Szukaj przedmiotu lub postaci"
-			type="search"
-			value={appState.searchQuery}
-			oninput={(event) => geoportal.search(event.currentTarget.value)}
-			onkeydown={selectFirstResultOnEnter}
-			onfocus={openSearchPanel}
-		/>
-		<kbd class="hidden rounded-sm border border-border px-1.5 font-sans text-caption md:inline"
-			>Ctrl K</kbd
-		>
-	</label>
-
-	<div class="hidden shrink-0 lg:block">
-		<CopyViewLinkButton
-			class="min-h-11 rounded-sm border border-border px-3 text-label text-muted-foreground hover:border-torch/60 hover:text-foreground"
-			label="Kopiuj link"
-		/>
+		<span class="hidden md:inline-flex"><BrandMark /></span>
+		<WorldSwitcher {games} {currentGameId} {currentWorldId} />
 	</div>
 
-	{#if appState.canInstallApp}
-		<button
-			class="hidden min-h-11 shrink-0 items-center gap-1.5 rounded-sm border border-border px-3 text-label text-muted-foreground hover:border-torch/60 hover:text-foreground md:flex"
-			title="Zainstaluj GIS of Gothic jako aplikację na tym urządzeniu"
-			onclick={() => void installApp()}
+	<div
+		class="material-leather pointer-events-auto mx-auto flex h-14 max-w-xl min-w-0 flex-1 items-center [--cut:9px] md:h-16"
+		data-testid="header-search"
+		data-map-obstacle
+	>
+		<label
+			class="flex h-full min-w-0 flex-1 items-center gap-2 px-3 text-muted-foreground focus-within:text-foreground md:px-4"
 		>
-			<DownloadIcon class="size-4" />
-			Zainstaluj
-		</button>
-	{/if}
+			<SearchIcon class="size-4 shrink-0" />
+			<input
+				bind:this={searchInput}
+				class="min-w-0 flex-1 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none"
+				placeholder={isPhone.current ? 'Szukaj…' : 'Szukaj przedmiotu lub postaci…'}
+				aria-label="Szukaj przedmiotu lub postaci"
+				type="search"
+				value={appState.searchQuery}
+				oninput={(event) => geoportal.search(event.currentTarget.value)}
+				onkeydown={selectFirstResultOnEnter}
+				onfocus={openSearchPanel}
+			/>
+			<kbd class="hidden rounded-sm border border-border px-1.5 font-sans text-caption md:inline"
+				>Ctrl K</kbd
+			>
+		</label>
+	</div>
 
-	<PerformanceDialog bind:open={isPerformanceOpen} />
-	<AboutDialog bind:open={isAboutOpen} />
-	<MoreMenu
-		canInstallApp={appState.canInstallApp}
-		onInstallApp={() => void installApp()}
-		onOpenPerformance={() => (isPerformanceOpen = true)}
-		onOpenAbout={() => (isAboutOpen = true)}
-	/>
+	<div
+		class="material-leather pointer-events-auto flex h-14 shrink-0 items-center gap-0.5 px-1.5 [--cut:9px] md:h-16 md:gap-1 md:px-2"
+		data-testid="header-actions"
+		data-map-obstacle
+	>
+		<div class="hidden shrink-0 lg:block">
+			<CopyViewLinkButton
+				class="min-h-11 rounded-sm px-3 text-label text-muted-foreground hover:bg-hover-surface hover:text-hover"
+				label="Kopiuj link"
+			/>
+		</div>
+
+		{#if appState.canInstallApp}
+			<button
+				class="hidden min-h-11 shrink-0 items-center gap-1.5 rounded-sm px-3 text-label text-muted-foreground hover:bg-hover-surface hover:text-hover md:flex"
+				title="Zainstaluj GIS of Gothic jako aplikację na tym urządzeniu"
+				onclick={() => void installApp()}
+			>
+				<DownloadIcon class="size-4" />
+				Zainstaluj
+			</button>
+		{/if}
+
+		<PerformanceDialog bind:open={isPerformanceOpen} />
+		<AboutDialog bind:open={isAboutOpen} />
+		<MoreMenu
+			canInstallApp={appState.canInstallApp}
+			onInstallApp={() => void installApp()}
+			onOpenPerformance={() => (isPerformanceOpen = true)}
+			onOpenAbout={() => (isAboutOpen = true)}
+		/>
+	</div>
 </header>
