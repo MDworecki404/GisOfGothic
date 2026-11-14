@@ -10,6 +10,8 @@ import { PerformancePreferenceStore } from './performance/performance-preference
 
 function createFacade() {
 	const eventBus = new EventBus<AppEvent>();
+	const selectedTools: (string | null)[] = [];
+	eventBus.subscribe('tool-selected', (event) => selectedTools.push(event.toolId));
 	let projection: CameraProjectionSetting = { kind: 'perspective', fovDegrees: 60 };
 	let mode: ViewMode = 'view-3d';
 	let sliceHeightMetres: number | null = null;
@@ -30,6 +32,7 @@ function createFacade() {
 	);
 	return {
 		facade,
+		selectedTools,
 		readProjection: () => projection,
 		readMode: () => mode,
 		readSliceHeight: () => sliceHeightMetres
@@ -78,5 +81,13 @@ describe('GeoportalFacade: widok 2D', () => {
 		const { facade, readSliceHeight } = createFacade();
 		facade.setSliceHeight(10);
 		expect(readSliceHeight()).toBeNull();
+	});
+});
+
+describe('GeoportalFacade: trasy', () => {
+	it('prowadzenie do miejsca bez otwartego świata nie otwiera Pomiarów', () => {
+		const { facade, selectedTools } = createFacade();
+		facade.routeToPlaceOfSelectedEntry(0);
+		expect(selectedTools).toEqual([]);
 	});
 });

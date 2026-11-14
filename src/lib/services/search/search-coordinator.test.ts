@@ -77,3 +77,35 @@ describe('SearchCoordinator — kategorie', () => {
 		expect(listedNames.at(-1)).toEqual(['Miecz', 'Ziele']);
 	});
 });
+
+describe('SearchCoordinator — pozycja miejsca wybranego wpisu', () => {
+	function createCoordinatorWithPlaces(): SearchCoordinator {
+		const coordinator = new SearchCoordinator(new EventBus<AppEvent>(), () => null);
+		coordinator.useIndex({
+			version: 1,
+			entries: [
+				{
+					...createEntry('item:x', 'item', 'Amulet'),
+					places: [
+						{ kind: 'ground', lon: 0.001, lat: 0.002, h: 5, label: 'na ziemi', ref: 'item-1' },
+						{ kind: 'ground', lon: 0.003, lat: 0.004, h: 6, label: 'w skrzyni', ref: 'item-2' }
+					]
+				}
+			]
+		});
+		return coordinator;
+	}
+
+	it('podaje pozycję miejsca o danym numerze', () => {
+		const coordinator = createCoordinatorWithPlaces();
+		coordinator.selectEntry('item:x');
+		expect(coordinator.readPlacePosition(1)).toEqual({ lon: 0.003, lat: 0.004, h: 6 });
+	});
+
+	it('zwraca null bez wybranego wpisu i dla numeru spoza listy', () => {
+		const coordinator = createCoordinatorWithPlaces();
+		expect(coordinator.readPlacePosition(0)).toBeNull();
+		coordinator.selectEntry('item:x');
+		expect(coordinator.readPlacePosition(5)).toBeNull();
+	});
+});

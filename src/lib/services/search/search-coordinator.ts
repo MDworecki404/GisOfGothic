@@ -142,6 +142,12 @@ export class SearchCoordinator {
 		};
 	}
 
+	/** Pozycja miejsca wybranego wpisu (lon/lat/h); `null` bez wybranego wpisu albo dla numeru spoza listy. */
+	readPlacePosition(placeIndex: number): { lon: number; lat: number; h: number } | null {
+		const place = this.selectedEntry?.places[placeIndex];
+		return place ? { lon: place.lon, lat: place.lat, h: place.h } : null;
+	}
+
 	flyToPlace(placeIndex: number): void {
 		this.getMarkersDisplay()?.flyToPlaceMarker(placeIndex);
 	}

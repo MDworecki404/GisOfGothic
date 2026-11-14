@@ -150,4 +150,19 @@ describe('MeasurementCoordinator: tryb trasy', () => {
 		expect(view()?.route?.outcome).toBe('too-far-from-network');
 		expect(calls[calls.length - 1].linePath).toHaveLength(0);
 	});
+
+	it('openRouteMode nie gubi startu, gdy tryb trasy już jest włączony', async () => {
+		const { coordinator, view } = await openRouteMode(async () => createPlanner());
+		coordinator.addPoint(at(0, 5));
+		coordinator.openRouteMode();
+		expect(view()?.route?.hasStart).toBe(true);
+	});
+
+	it('openRouteMode włącza tryb trasy z innego trybu', async () => {
+		const fixture = createFixture();
+		fixture.coordinator.useRoutePlannerSource(async () => createPlanner());
+		fixture.coordinator.openRouteMode();
+		await settle();
+		expect(fixture.view()?.mode).toBe('route');
+	});
 });

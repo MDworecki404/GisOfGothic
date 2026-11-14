@@ -37,6 +37,7 @@ import {
 	MeasurementCoordinator,
 	type MeasurementMode
 } from './measurement/measurement-coordinator.js';
+import { WorldRoutingContext } from './routing/world-routing-context.js';
 import type { MapClick, MapViewListeners } from './map/map-view-observer.js';
 import { SearchCoordinator } from './search/search-coordinator.js';
 import type { SearchTypeFilter } from './search/search-service.js';
@@ -77,6 +78,7 @@ export class GeoportalFacade {
 	private mapService: MapService | null = null;
 	private currentWorld: WorldDefinition | null = null;
 	private currentDataLoader: GeoportalDataLoader | null = null;
+	private worldRoutingContext: WorldRoutingContext | null = null;
 	private worldLoadGeneration = 0;
 	private activeToolId: ToolId | null = 'search';
 	private selectedChapter: ChapterNumber | null = null;
@@ -197,6 +199,8 @@ export class GeoportalFacade {
 		this.analysisCoordinator.resetForNewWorld();
 		this.treasureSetBook.useWorld(this.currentDataLoader);
 		this.dataLayersCoordinator.useWorld(this.currentDataLoader, {});
+		this.worldRoutingContext = null;
+		this.measurementCoordinator.useRoutePlannerSource(null);
 		this.measurementCoordinator.clear();
 		this.timeCoordinator.useWorld(this.currentDataLoader);
 		this.timeCoordinator.useApproximateRoutineTimes(world.hasApproximateRoutineTimes);
@@ -471,6 +475,22 @@ export class GeoportalFacade {
 
 	switchMeasurementMode(mode: MeasurementMode): void {
 		this.measurementCoordinator.switchMode(mode);
+	}
+
+	swapRouteEndpoints(): void {
+		this.measurementCoordinator.swapRouteEndpoints();
+	}
+
+	/** Karta wpisu: otwiera Pomiary w trybie trasy i ustawia wybrane miejsce jako cel. */
+	routeToPlaceOfSelectedEntry(placeIndex: number): void {
+		const routingContext = this.worldRoutingContext;
+		const place = this.searchCoordinator.readPlacePosition(placeIndex);
+		if (!routingContext || !place) return;
+		if (this.activeToolId !== 'measure') this.activateTool('measure');
+		this.measurementCoordinator.openRouteMode();
+		this.measurementCoordinator.setRouteEnd(
+			routingContext.convertToWorldPosition(place.lon, place.lat, place.h)
+		);
 	}
 
 	removeLastMeasurementPoint(): void {
@@ -795,6 +815,12 @@ export class GeoportalFacade {
 			this.dataLayersCoordinator.updateFeatureCounts(metadata.package.counts);
 			this.analysisCoordinator.useAnchor(metadata.anchor);
 			this.measurementCoordinator.useMovementSpeeds(metadata.movement_speeds_m_s ?? null);
+			const routingContext = new WorldRoutingContext(
+				() => dataLoader.loadWaypointNetwork(),
+				metadata.anchor
+			);
+			this.worldRoutingContext = routingContext;
+			this.measurementCoordinator.useRoutePlannerSource(() => routingContext.loadRoutePlanner());
 			mapService.useTileColorGrade(world.tileColorGrade);
 			this.mapOverlaysCoordinator.showOnMap();
 			await mapService.showWorldTileset(world.worldTilesetUrl, metadata.anchor);

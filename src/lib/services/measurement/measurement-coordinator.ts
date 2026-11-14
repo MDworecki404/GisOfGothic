@@ -103,6 +103,11 @@ export class MeasurementCoordinator {
 		if (mode === 'route') void this.loadRoutePlanner();
 	}
 
+	/** Włącza tryb trasy; jeśli już jest włączony, zostawia wybrany początek. */
+	openRouteMode(): void {
+		if (this.mode !== 'route') this.switchMode('route');
+	}
+
 	setRouteEnd(position: WorldPosition): void {
 		this.routeEnd = position;
 		void this.refreshRoute();
