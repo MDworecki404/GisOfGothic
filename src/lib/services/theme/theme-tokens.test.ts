@@ -49,3 +49,28 @@ describe('tokeny motywu „latarnia w kopalni”', () => {
 		expect(appCss).toMatch(/@fontsource\/barlow-semi-condensed\//);
 	});
 });
+
+describe('klasy materiałów', () => {
+	function readRuleBlock(selector: string): string {
+		const selectorIndex = appCss.indexOf(selector);
+		if (selectorIndex < 0) throw new Error(`Brak reguły ${selector} w app.css`);
+		const blockStart = appCss.indexOf('{', selectorIndex);
+		return appCss.slice(blockStart, appCss.indexOf('}', blockStart));
+	}
+
+	it.each(['.button-iron', '.button-ochre', '.button-quiet'])(
+		'ścięty przycisk %s ma fokus widoczny wewnątrz kształtu',
+		(selector) => {
+			expect(readRuleBlock(`${selector}:focus-visible`)).toContain('outline-offset: -');
+		}
+	);
+
+	it('żadna klasa nie używa backdrop-filter', () => {
+		expect(appCss).not.toContain('backdrop-filter');
+	});
+
+	it('płyta ma ścięty róg, a nity i przeszycie znikły', () => {
+		expect(readRuleBlock('.material-leather {')).toContain('clip-path');
+		expect(appCss).not.toContain('.material-leather-riveted::after');
+	});
+});
