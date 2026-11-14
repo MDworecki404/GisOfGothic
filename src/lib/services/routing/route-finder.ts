@@ -1,5 +1,9 @@
 import type { WaypointGraph } from './waypoint-graph.js';
 
+export interface ShortestPathFinder {
+	findShortestPath(graph: WaypointGraph, startIndex: number, endIndex: number): number[] | null;
+}
+
 interface QueueEntry {
 	nodeIndex: number;
 	priority: number;
@@ -70,7 +74,7 @@ class MinimumPriorityQueue {
  * Najkrótsza droga po grafie algorytmem A*. Heurystyką jest odległość w linii prostej w poziomie;
  * nigdy nie przekracza ona wagi krawędzi (waga to odległość w poziomie), więc wynik jest optymalny.
  */
-export class RouteFinder {
+export class RouteFinder implements ShortestPathFinder {
 	findShortestPath(graph: WaypointGraph, startIndex: number, endIndex: number): number[] | null {
 		const end = graph.readNode(endIndex);
 		const estimateRemaining = (nodeIndex: number): number => {
