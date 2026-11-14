@@ -31,6 +31,12 @@ class RecordingDisplay implements DataLayersDisplay {
 		this.shownPoints.set(layerId, points);
 	}
 
+	moveDataLayerPoints(layerId: string, points: readonly DataLayerPoint[]): boolean {
+		if (!this.shownPoints.has(layerId)) return false;
+		this.shownPoints.set(layerId, points);
+		return true;
+	}
+
 	hideDataLayer(layerId: string): void {
 		this.shownPoints.delete(layerId);
 	}

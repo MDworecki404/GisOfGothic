@@ -1,3 +1,4 @@
+import { DataLayerShapeComparer } from './data-layer-shape-comparer.js';
 import {
 	BillboardCollection,
 	Cartesian3,
@@ -55,6 +56,8 @@ export function isFeaturePick(value: unknown): value is FeaturePick {
  * swojego ducha, a punkt pod tilesetem zostaje widoczny wyłącznie jako duch.
  */
 export class DataLayersRenderer {
+	private readonly shapeComparer = new DataLayerShapeComparer();
+	private readonly shownPoints = new Map<string, readonly DataLayerPoint[]>();
 	private readonly collections = new Map<
 		string,
 		(PointPrimitiveCollection | BillboardCollection)[]
@@ -65,6 +68,7 @@ export class DataLayersRenderer {
 
 	showLayer(layerId: string, points: readonly DataLayerPoint[], cssColor: string): void {
 		this.hideLayer(layerId);
+		this.shownPoints.set(layerId, points);
 		if (points.some((point) => point.iconId !== undefined)) {
 			this.showIconLayer(layerId, points, cssColor);
 			return;
@@ -98,7 +102,26 @@ export class DataLayersRenderer {
 		this.addCollections(layerId, [occludedCollection, collection]);
 	}
 
+	/**
+	 * Przesuwa punkty widocznej warstwy bez jej przebudowy. Zwraca `false`, gdy warstwa ma inną liczbę punktów
+	 * albo inne ikony i kolory (wtedy trzeba ją pokazać od nowa).
+	 */
+	moveLayerPoints(layerId: string, points: readonly DataLayerPoint[]): boolean {
+		const previous = this.shownPoints.get(layerId);
+		const collections = this.collections.get(layerId);
+		if (!previous || !collections || !this.shapeComparer.isSameShape(previous, points))
+			return false;
+		for (const collection of collections) {
+			points.forEach((point, index) => {
+				collection.get(index).position = Cartesian3.fromDegrees(point.lon, point.lat, point.h);
+			});
+		}
+		this.shownPoints.set(layerId, points);
+		return true;
+	}
+
 	hideLayer(layerId: string): void {
+		this.shownPoints.delete(layerId);
 		const collections = this.collections.get(layerId);
 		if (!collections) return;
 		for (const collection of collections) this.viewer.scene.primitives.remove(collection);

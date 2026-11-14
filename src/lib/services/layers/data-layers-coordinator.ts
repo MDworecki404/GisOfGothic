@@ -16,6 +16,7 @@ import {
 
 export interface DataLayersDisplay {
 	showDataLayer(layerId: string, points: readonly DataLayerPoint[], cssColor: string): void;
+	moveDataLayerPoints(layerId: string, points: readonly DataLayerPoint[]): boolean;
 	hideDataLayer(layerId: string): void;
 }
 

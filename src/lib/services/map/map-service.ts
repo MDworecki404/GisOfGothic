@@ -360,6 +360,11 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 		this.dataLayers.showLayer(layerId, points, cssColor);
 	}
 
+	/** `false`, gdy warstwy nie da się tylko przesunąć (inna liczba punktów albo ikony); wtedy pokaż ją od nowa. */
+	moveDataLayerPoints(layerId: string, points: readonly DataLayerPoint[]): boolean {
+		return this.dataLayers.moveLayerPoints(layerId, points);
+	}
+
 	hideDataLayer(layerId: string): void {
 		this.dataLayers.hideLayer(layerId);
 	}
