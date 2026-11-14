@@ -9,27 +9,82 @@ import SearchIcon from '@lucide/svelte/icons/search';
 import type { Component } from 'svelte';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 
+/** Grupy w doku narzędzi, oddzielone kreską: znajdowanie, mierzenie, czas i własne notatki. */
+export type ToolGroup = 'find' | 'measure' | 'time';
+
 export interface ToolDefinition {
 	id: ToolId;
 	label: string;
 	panelTitle: string;
 	icon: Component;
-	isAtRailEnd?: boolean;
+	group: ToolGroup;
+	/** Narzędzia spoza paska telefonu są w menu „Inne”. */
+	isOnPhoneBar: boolean;
 }
 
 export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
-	{ id: 'search', label: 'Szukaj', panelTitle: 'Wyszukiwarka', icon: SearchIcon },
-	{ id: 'layers', label: 'Warstwy', panelTitle: 'Warstwy', icon: LayersIcon },
-	{ id: 'measure', label: 'Pomiary', panelTitle: 'Pomiary', icon: RulerIcon },
-	{ id: 'analysis', label: 'Analizy', panelTitle: 'Analizy', icon: RadarIcon },
-	{ id: 'time', label: 'Czas', panelTitle: 'Czas i rozdział', icon: ClockIcon },
-	{ id: 'sizes', label: 'Rozmiary', panelTitle: 'Rozmiary światów', icon: ScalingIcon },
-	{ id: 'notebook', label: 'Notatnik', panelTitle: 'Notatnik', icon: NotebookPenIcon },
+	{
+		id: 'search',
+		label: 'Szukaj',
+		panelTitle: 'Wyszukiwarka',
+		icon: SearchIcon,
+		group: 'find',
+		isOnPhoneBar: true
+	},
+	{
+		id: 'layers',
+		label: 'Warstwy',
+		panelTitle: 'Warstwy',
+		icon: LayersIcon,
+		group: 'find',
+		isOnPhoneBar: true
+	},
+	{
+		id: 'measure',
+		label: 'Pomiary',
+		panelTitle: 'Pomiary',
+		icon: RulerIcon,
+		group: 'measure',
+		isOnPhoneBar: true
+	},
+	{
+		id: 'analysis',
+		label: 'Analizy',
+		panelTitle: 'Analizy',
+		icon: RadarIcon,
+		group: 'measure',
+		isOnPhoneBar: false
+	},
+	{
+		id: 'sizes',
+		label: 'Rozmiary',
+		panelTitle: 'Rozmiary światów',
+		icon: ScalingIcon,
+		group: 'measure',
+		isOnPhoneBar: false
+	},
+	{
+		id: 'time',
+		label: 'Czas',
+		panelTitle: 'Czas i rozdział',
+		icon: ClockIcon,
+		group: 'time',
+		isOnPhoneBar: true
+	},
+	{
+		id: 'notebook',
+		label: 'Notatnik',
+		panelTitle: 'Notatnik',
+		icon: NotebookPenIcon,
+		group: 'time',
+		isOnPhoneBar: false
+	},
 	{
 		id: 'bookmarks',
 		label: 'Zakładki',
 		panelTitle: 'Zakładki',
 		icon: BookmarkIcon,
-		isAtRailEnd: true
+		group: 'time',
+		isOnPhoneBar: false
 	}
 ];
