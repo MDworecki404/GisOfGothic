@@ -4,6 +4,10 @@ import { CameraProjectionCodec } from '#lib/services/camera/camera-projection-co
 import type { CameraProjectionSetting } from '#lib/services/camera/camera-projection.js';
 import type { ViewMode } from '#lib/services/camera/view-mode.js';
 import { CameraViewCodec, type CameraView } from './camera-view-codec.js';
+import {
+	RouteEndpointsCodec,
+	type RouteEndpoints
+} from '#lib/services/routing/route-endpoints-codec.js';
 
 /**
  * To, co odtwarza link: wybrany wpis, kamera, rzut (`null` = domyślny), tryb widoku z wysokością cięcia (`null` = bez cięcia),
@@ -17,6 +21,7 @@ export interface SharedViewState {
 	sliceHeightMetres: number | null;
 	toolId: ToolId | null;
 	chapter: ChapterNumber | null;
+	route: RouteEndpoints | null;
 }
 
 const ENTRY_PARAMETER = 'wpis';
@@ -28,6 +33,7 @@ const FLAT_MAP_VIEW_MODE_TEXT = '2d';
 const SLICE_HEIGHT_DECIMALS_FACTOR = 10;
 const TOOL_PARAMETER = 'narzedzie';
 const CHAPTER_PARAMETER = 'rozdzial';
+const ROUTE_PARAMETER = 'trasa';
 const CLOSED_TOOL_VALUE = 'zamkniete';
 export const DEFAULT_TOOL_ID: ToolId = 'search';
 
@@ -39,6 +45,7 @@ export const DEFAULT_TOOL_ID: ToolId = 'search';
 export class ViewLinkCodec {
 	private readonly cameraCodec = new CameraViewCodec();
 	private readonly projectionCodec = new CameraProjectionCodec();
+	private readonly routeCodec = new RouteEndpointsCodec();
 
 	buildQuery(state: SharedViewState): string {
 		const parameters = new URLSearchParams();
@@ -60,6 +67,7 @@ export class ViewLinkCodec {
 		if (state.toolId === null) parameters.set(TOOL_PARAMETER, CLOSED_TOOL_VALUE);
 		else if (state.toolId !== DEFAULT_TOOL_ID) parameters.set(TOOL_PARAMETER, state.toolId);
 		if (state.chapter !== null) parameters.set(CHAPTER_PARAMETER, String(state.chapter));
+		if (state.route) parameters.set(ROUTE_PARAMETER, this.routeCodec.serialize(state.route));
 		const query = parameters.toString();
 		return query ? `?${query}` : '';
 	}
@@ -72,6 +80,7 @@ export class ViewLinkCodec {
 		const viewMode: ViewMode =
 			parameters.get(VIEW_MODE_PARAMETER) === FLAT_MAP_VIEW_MODE_TEXT ? 'view-2d' : 'view-3d';
 		const chapter = Number(parameters.get(CHAPTER_PARAMETER));
+		const routeText = parameters.get(ROUTE_PARAMETER);
 		return {
 			entryId: parameters.get(ENTRY_PARAMETER) || null,
 			camera: cameraText ? this.cameraCodec.parse(cameraText) : null,
@@ -83,7 +92,8 @@ export class ViewLinkCodec {
 					: null,
 			toolId:
 				toolText === CLOSED_TOOL_VALUE ? null : isToolId(toolText) ? toolText : DEFAULT_TOOL_ID,
-			chapter: isChapterNumber(chapter) ? chapter : null
+			chapter: isChapterNumber(chapter) ? chapter : null,
+			route: routeText ? this.routeCodec.parse(routeText) : null
 		};
 	}
 

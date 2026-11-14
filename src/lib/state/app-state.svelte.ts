@@ -430,7 +430,8 @@ export class AppState {
 			viewMode: this.viewMode,
 			sliceHeightMetres: this.sliceHeightMetres,
 			toolId: this.activeToolId,
-			chapter: this.selectedChapter
+			chapter: this.selectedChapter,
+			route: this.measurement?.routePoints ?? null
 		});
 	}
 

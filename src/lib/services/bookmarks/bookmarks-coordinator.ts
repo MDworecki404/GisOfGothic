@@ -148,6 +148,7 @@ export class BookmarksCoordinator {
 				projection: view.projection,
 				viewMode: view.viewMode,
 				sliceHeightMetres: view.sliceHeightMetres,
+				route: null,
 				toolId: view.toolId,
 				chapter: view.chapter
 			})

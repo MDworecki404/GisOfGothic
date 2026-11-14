@@ -175,4 +175,18 @@ describe('MeasurementCoordinator: tryb trasy', () => {
 		expect(view()?.route).toMatchObject({ hasStart: true, hasEnd: true, outcome: 'found' });
 		expect(calls[calls.length - 1].vertices[1].east).toBe(200);
 	});
+
+	it('setRouteEndpoints odtwarza trasę z linku i udostępnia jej końce do adresu', async () => {
+		const { coordinator, view } = await openRouteMode(async () => createPlanner());
+		const endpoints = {
+			start: { east: 0, north: 5, height: 0 },
+			end: { east: 200, north: 5, height: 0 }
+		};
+		coordinator.setRouteEndpoints(endpoints);
+		await settle();
+		expect(view()?.route?.outcome).toBe('found');
+		expect(view()?.routePoints).toEqual(endpoints);
+		coordinator.clear();
+		expect(view()?.routePoints).toBeNull();
+	});
 });

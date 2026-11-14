@@ -14,7 +14,8 @@ describe('ViewLinkCodec', () => {
 				chapter: null,
 				projection: null,
 				viewMode: 'view-3d',
-				sliceHeightMetres: null
+				sliceHeightMetres: null,
+				route: null
 			})
 		).toBe('');
 	});
@@ -27,7 +28,8 @@ describe('ViewLinkCodec', () => {
 			chapter: 3,
 			projection: null,
 			viewMode: 'view-3d',
-			sliceHeightMetres: null
+			sliceHeightMetres: null,
+			route: null
 		} as const;
 		const query = codec.buildQuery(state);
 		expect(query).toBe(
@@ -44,7 +46,8 @@ describe('ViewLinkCodec', () => {
 			chapter: null,
 			projection: null,
 			viewMode: 'view-3d',
-			sliceHeightMetres: null
+			sliceHeightMetres: null,
+			route: null
 		});
 		expect(query).toBe('?narzedzie=zamkniete');
 		expect(codec.parseQuery(query).toolId).toBeNull();
@@ -58,7 +61,8 @@ describe('ViewLinkCodec', () => {
 			chapter: null,
 			projection: null,
 			viewMode: 'view-3d',
-			sliceHeightMetres: null
+			sliceHeightMetres: null,
+			route: null
 		});
 	});
 
@@ -70,7 +74,8 @@ describe('ViewLinkCodec', () => {
 			chapter: null,
 			projection: null,
 			viewMode: 'view-3d',
-			sliceHeightMetres: null
+			sliceHeightMetres: null,
+			route: null
 		});
 	});
 
@@ -87,7 +92,8 @@ describe('ViewLinkCodec', () => {
 			toolId: 'search',
 			chapter: null,
 			viewMode: 'view-3d',
-			sliceHeightMetres: null
+			sliceHeightMetres: null,
+			route: null
 		} as const;
 
 		it('rzut ortogonalny i perspektywa z niedomyślnym FOV trafiają do adresu', () => {
@@ -130,7 +136,8 @@ describe('ViewLinkCodec: widok 2D', () => {
 		camera: null,
 		toolId: 'search',
 		chapter: null,
-		projection: null
+		projection: null,
+		route: null
 	} as const;
 
 	it('2D bez cięcia daje sam parametr trybu', () => {
@@ -155,7 +162,8 @@ describe('ViewLinkCodec: widok 2D', () => {
 	it('cięcie bez trybu 2D jest ignorowane', () => {
 		expect(codec.parseQuery('?ciecie=50')).toMatchObject({
 			viewMode: 'view-3d',
-			sliceHeightMetres: null
+			sliceHeightMetres: null,
+			route: null
 		});
 		expect(codec.parseQuery('?tryb=3d&ciecie=50').viewMode).toBe('view-3d');
 	});
@@ -164,12 +172,47 @@ describe('ViewLinkCodec: widok 2D', () => {
 		for (const broken of ['abc', 'NaN', 'Infinity', '-Infinity', '']) {
 			expect(codec.parseQuery(`?tryb=2d&ciecie=${broken}`)).toMatchObject({
 				viewMode: 'view-2d',
-				sliceHeightMetres: null
+				sliceHeightMetres: null,
+				route: null
 			});
 		}
 	});
 
 	it('ujemna wysokość cięcia jest poprawna', () => {
 		expect(codec.parseQuery('?tryb=2d&ciecie=-12.5').sliceHeightMetres).toBe(-12.5);
+	});
+});
+
+describe('ViewLinkCodec: trasa', () => {
+	const baseState = {
+		entryId: null,
+		camera: null,
+		toolId: 'measure',
+		chapter: null,
+		projection: null,
+		viewMode: 'view-3d',
+		sliceHeightMetres: null,
+		route: null
+	} as const;
+	const route = {
+		start: { east: 10, north: 20, height: 1 },
+		end: { east: 30, north: 40, height: 2 }
+	};
+
+	it('zapisuje trasę w parametrze trasa, a odczyt ją odtwarza', () => {
+		const query = codec.buildQuery({ ...baseState, route });
+		expect(new URLSearchParams(query).get('trasa')).toBe('10_20_1~30_40_2');
+		expect(codec.parseQuery(query).route).toEqual(route);
+	});
+
+	it('pomija parametr trasa bez trasy', () => {
+		expect(codec.buildQuery({ ...baseState, route: null })).not.toContain('trasa');
+	});
+
+	it('ignoruje zepsuty parametr trasa i zostawia resztę widoku', () => {
+		const state = codec.parseQuery('?narzedzie=measure&trasa=NaN_1_2~3&rozdzial=2');
+		expect(state.route).toBeNull();
+		expect(state.toolId).toBe('measure');
+		expect(state.chapter).toBe(2);
 	});
 });

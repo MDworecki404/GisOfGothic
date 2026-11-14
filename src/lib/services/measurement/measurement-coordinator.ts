@@ -10,6 +10,7 @@ import {
 import type { MovementSpeeds } from '#lib/data/types.js';
 import { TravelTimeCalculator, type TravelTimeEstimate } from './travel-time-calculator.js';
 import type { RouteOutcome, RoutePlanner } from '#lib/services/routing/route-planner.js';
+import type { RouteEndpoints } from '#lib/services/routing/route-endpoints-codec.js';
 
 export type MeasurementMode = 'distance' | 'area' | 'point' | 'route';
 
@@ -37,6 +38,7 @@ export interface MeasurementView {
 	isProfileLoading: boolean;
 	pickedPoint: WorldPosition | null;
 	route: RouteView | null;
+	routePoints: RouteEndpoints | null;
 }
 
 export interface MeasurementDisplay {
@@ -67,8 +69,8 @@ export class MeasurementCoordinator {
 	private routePlanner: RoutePlanner | null = null;
 	private routeAvailability: RouteAvailability = 'unavailable';
 	private routePlannerRequest = 0;
-	private routeStart: WorldPosition | null = null;
-	private routeEnd: WorldPosition | null = null;
+	private routeStart: LocalPoint | null = null;
+	private routeEnd: LocalPoint | null = null;
 	private routeOutcome: RouteOutcome | null = null;
 
 	constructor(
@@ -106,6 +108,13 @@ export class MeasurementCoordinator {
 	/** Włącza tryb trasy; jeśli już jest włączony, zostawia wybrany początek. */
 	openRouteMode(): void {
 		if (this.mode !== 'route') this.switchMode('route');
+	}
+
+	/** Odtwarza trasę z linku: ustawia oba końce naraz. */
+	setRouteEndpoints(endpoints: RouteEndpoints): void {
+		this.routeStart = endpoints.start;
+		this.routeEnd = endpoints.end;
+		void this.refreshRoute();
 	}
 
 	setRouteEnd(position: WorldPosition): void {
@@ -218,6 +227,11 @@ export class MeasurementCoordinator {
 		return [this.routeStart, this.routeEnd].filter((point) => point !== null);
 	}
 
+	private buildRoutePoints(): RouteEndpoints | null {
+		if (this.mode !== 'route' || !this.routeStart || !this.routeEnd) return null;
+		return { start: this.routeStart, end: this.routeEnd };
+	}
+
 	private buildRouteView(): RouteView | null {
 		if (this.mode !== 'route') return null;
 		const outcome = this.routeOutcome;
@@ -308,7 +322,8 @@ export class MeasurementCoordinator {
 				travelTimes: this.estimateTravelTimes(summary),
 				isProfileLoading: this.isProfileLoading,
 				pickedPoint: this.pickedPoint,
-				route: this.buildRouteView()
+				route: this.buildRouteView(),
+				routePoints: this.buildRoutePoints()
 			}
 		});
 	}

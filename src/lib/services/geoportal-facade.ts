@@ -37,6 +37,7 @@ import {
 	MeasurementCoordinator,
 	type MeasurementMode
 } from './measurement/measurement-coordinator.js';
+import type { RouteEndpoints } from './routing/route-endpoints-codec.js';
 import { WorldRoutingContext } from './routing/world-routing-context.js';
 import type { MapClick, MapViewListeners } from './map/map-view-observer.js';
 import { SearchCoordinator } from './search/search-coordinator.js';
@@ -79,6 +80,7 @@ export class GeoportalFacade {
 	private currentWorld: WorldDefinition | null = null;
 	private currentDataLoader: GeoportalDataLoader | null = null;
 	private worldRoutingContext: WorldRoutingContext | null = null;
+	private pendingRoute: RouteEndpoints | null = null;
 	private worldLoadGeneration = 0;
 	private activeToolId: ToolId | null = 'search';
 	private selectedChapter: ChapterNumber | null = null;
@@ -200,6 +202,7 @@ export class GeoportalFacade {
 		this.treasureSetBook.useWorld(this.currentDataLoader);
 		this.dataLayersCoordinator.useWorld(this.currentDataLoader, {});
 		this.worldRoutingContext = null;
+		this.pendingRoute = null;
 		this.measurementCoordinator.useRoutePlannerSource(null);
 		this.measurementCoordinator.clear();
 		this.timeCoordinator.useWorld(this.currentDataLoader);
@@ -264,7 +267,8 @@ export class GeoportalFacade {
 				viewMode: bookmark.viewMode,
 				sliceHeightMetres: bookmark.sliceHeightMetres,
 				toolId: bookmark.toolId,
-				chapter: bookmark.chapter
+				chapter: bookmark.chapter,
+				route: null
 			},
 			true
 		);
@@ -690,7 +694,7 @@ export class GeoportalFacade {
 		};
 	}
 
-	private captureViewState(): SharedViewState {
+	private captureViewState(): Omit<SharedViewState, 'route'> {
 		return {
 			entryId: this.searchCoordinator.selectedEntryReference?.id ?? null,
 			camera: this.mapService?.readCameraView() ?? null,
@@ -709,6 +713,10 @@ export class GeoportalFacade {
 			{ mode: state.viewMode, sliceHeightMetres: state.sliceHeightMetres },
 			state.projection
 		);
+		if (state.route) {
+			this.pendingRoute = state.route;
+			if (this.worldRoutingContext) this.applyPendingRoute();
+		}
 		if (state.entryId) this.searchCoordinator.selectEntry(state.entryId, state.camera === null);
 		else this.searchCoordinator.clearSelection();
 		const camera = state.camera;
@@ -719,6 +727,14 @@ export class GeoportalFacade {
 		} else {
 			this.pendingCameraView = camera;
 		}
+	}
+
+	private applyPendingRoute(): void {
+		const route = this.pendingRoute;
+		this.pendingRoute = null;
+		if (!route) return;
+		this.measurementCoordinator.openRouteMode();
+		this.measurementCoordinator.setRouteEndpoints(route);
 	}
 
 	private publishCameraView(): void {
@@ -821,6 +837,7 @@ export class GeoportalFacade {
 			);
 			this.worldRoutingContext = routingContext;
 			this.measurementCoordinator.useRoutePlannerSource(() => routingContext.loadRoutePlanner());
+			this.applyPendingRoute();
 			mapService.useTileColorGrade(world.tileColorGrade);
 			this.mapOverlaysCoordinator.showOnMap();
 			await mapService.showWorldTileset(world.worldTilesetUrl, metadata.anchor);
