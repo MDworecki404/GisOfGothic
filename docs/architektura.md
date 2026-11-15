@@ -167,6 +167,7 @@ z jej kodów instancji (`QuestPresenter.presentQuestsOfCharacter`), i publikuje 
 najważniejszej roli (zleca, możliwy zleceniodawca, występuje w etapach) i prowadzi do kart questów; otwarcie
 jakiejkolwiek karty postaci wczytuje więc plik (potem jest w pamięci).
 
+Karta postaci z rutyną pokazuje „Teraz”: `CharacterNowPresenter` wybiera z miejsc rutyny (`PlaceSummary.routineSlot`) przedział obejmujący godzinę zegara gry i opisuje czynność (`appState.selectedCharacterNow`), więc blok w Księdze i na `EntrySummaryCard` zmienia się razem z zegarem doby; poza przedziałami pokazuje „Poza rutyną dnia”.
 Karta postaci i questa (wyszukiwarka, kliknięcie na mapie, rutyna w panelu czasu) ma przycisk „Zobacz na Gothicpedii”.
 `EncyclopediaLinkBuilder.buildSearchUrl` (`services/encyclopedia/`) buduje adres do wyszukiwarki wiki
 (`Special:Search?query=<nazwa>`); pole `encyclopediaUrl` jest w `SearchEntryDetails` i `FeatureIdentification`.

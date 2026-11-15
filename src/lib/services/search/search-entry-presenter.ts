@@ -68,6 +68,13 @@ export interface PlaceSummary {
 	isUncertain: boolean;
 	/** Miejsce zestawu losowego łupu: przedmiot może się tu wylosować, ale nie musi. */
 	isRandomLoot: boolean;
+	/** Miejsce domyślnej rutyny postaci: przedziały godzin i czynności z gry; inne miejsca mają `null`. */
+	routineSlot: RoutineSlot | null;
+}
+
+export interface RoutineSlot {
+	timeRanges: string[];
+	actions: string[];
 }
 
 export interface SearchEntryDetails {
@@ -184,6 +191,14 @@ export class SearchEntryPresenter {
 		return facts;
 	}
 
+	private readRoutineSlot(place: Place): RoutineSlot | null {
+		if (place.kind !== 'routine' || place.is_default === false) return null;
+		return {
+			timeRanges: place.label.split(',').map((range) => range.trim()),
+			actions: place.actions ?? []
+		};
+	}
+
 	private presentPlace(place: Place, index: number, isItemEntry: boolean): PlaceSummary {
 		const presentation = place.role
 			? QUEST_ROLE_PRESENTATION[place.role]
@@ -197,7 +212,8 @@ export class SearchEntryPresenter {
 			color: pickPlaceColor(place),
 			quantity: place.amount === undefined ? null : `${place.amount} szt.`,
 			isUncertain: place.certainty === 'possible' && !place.set,
-			isRandomLoot: place.set !== undefined
+			isRandomLoot: place.set !== undefined,
+			routineSlot: this.readRoutineSlot(place)
 		};
 	}
 }

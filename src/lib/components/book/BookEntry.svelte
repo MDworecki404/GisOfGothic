@@ -125,6 +125,19 @@
 				></div>
 			{/if}
 
+			{#if appState.selectedCharacterNow}
+				{@const now = appState.selectedCharacterNow}
+				<p class="my-3 border-l-2 border-primary pl-3" role="status">
+					<span class="text-caption text-muted-foreground tabular-nums">
+						Teraz · {appState.timeOfDayLabel}
+					</span>
+					<span class="block text-lg text-primary">{now.activity}</span>
+					{#if now.timeRange}
+						<span class="text-caption text-muted-foreground tabular-nums">{now.timeRange}</span>
+					{/if}
+				</p>
+			{/if}
+
 			{#if entry.facts.length > 0}
 				<dl class="my-3 flex flex-wrap gap-x-5 gap-y-2 tabular-nums">
 					{#each entry.facts as fact (fact.label)}

@@ -41,6 +41,15 @@
 				</button>
 			</div>
 
+			{#if appState.selectedCharacterNow}
+				<p class="mt-3 text-sm" role="status">
+					<span class="text-caption text-muted-foreground tabular-nums">
+						Teraz · {appState.timeOfDayLabel}
+					</span>
+					<span class="block text-primary">{appState.selectedCharacterNow.activity}</span>
+				</p>
+			{/if}
+
 			{#if entry.facts.length > 0}
 				<dl class="mt-3 flex flex-wrap gap-x-5 gap-y-2 tabular-nums">
 					{#each entry.facts.slice(0, MAXIMUM_FACTS) as fact (fact.label)}

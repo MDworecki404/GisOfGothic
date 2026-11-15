@@ -51,6 +51,8 @@ import type { DataLayerView } from '#lib/services/layers/data-layers-coordinator
 import type { MeasurementView } from '#lib/services/measurement/measurement-coordinator.js';
 import { DurationFormatter } from '#lib/services/measurement/duration-formatter.js';
 import { RouteStatusPresenter } from '#lib/services/routing/route-status-presenter.js';
+import type { CharacterNow as CharacterNowView } from '#lib/services/search/character-now-presenter.js';
+import { CharacterNowPresenter } from '#lib/services/search/character-now-presenter.js';
 import { PlaybackStatusPresenter } from '#lib/services/time/playback-status-presenter.js';
 import { formatMinuteOfDay } from '#lib/services/time/daily-schedule.js';
 import type {
@@ -69,6 +71,7 @@ const coordinateFormatter = new CoordinateFormatter();
 const durationFormatter = new DurationFormatter();
 const routeStatusPresenter = new RouteStatusPresenter();
 const playbackStatusPresenter = new PlaybackStatusPresenter();
+const characterNowPresenter = new CharacterNowPresenter();
 
 export interface MeasurementReading {
 	label: string;
@@ -360,6 +363,15 @@ export class AppState {
 			);
 		}
 		return readings;
+	}
+
+	/** „Teraz” postaci o godzinie z zegara gry; `null`, gdy wpis nie jest postacią z rutyną. */
+	get selectedCharacterNow(): CharacterNowView | null {
+		const entry = this.selectedEntry;
+		if (entry === null || entry.type !== 'character') return null;
+		if (!characterNowPresenter.hasRoutine(entry.places)) return null;
+		const now = characterNowPresenter.describeAt(entry.places, this.minuteOfDay);
+		return now === null ? { activity: 'Poza rutyną dnia', timeRange: null } : now;
 	}
 
 	get routinePlaybackStatusMessage(): string | null {
