@@ -402,6 +402,7 @@ szerokość na odległość od powierzchni, gdy tylko kafle się wczytają.
 Cienie Cesium nie działają przy kamerze ortogonalnej, więc `MapService.applyShadows` wyłącza je w ortho i
 przywraca po powrocie do perspektywy. Rzut jest w adresie (`rzut=o` albo `rzut=p_<fov>`) i w zakładkach.
 
+Przycisk „Widok” w `MapControls` zwija i rozwija rzadziej używane przyciski (joysticki, rzut kamery, 2D, porównanie światów); wybór zapamiętuje `localStorage` (`gisofgothic:view-options-collapsed`), domyślnie są rozwinięte.
 Interfejs: przycisk „Rzut kamery” stoi na dole kolumny `MapControls` (`aria-pressed` w ortho) i otwiera
 `CameraSettingsPopover` (grupa przycisków `chip` Perspektywa / Ortogonalny, suwak `ForgedRange` kąta widzenia,
 nieaktywny w ortho, oraz przyciski „Z góry” i „Skos”). Okienko zamyka Esc, kliknięcie poza nim (elementy z

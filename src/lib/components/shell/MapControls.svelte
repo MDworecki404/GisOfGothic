@@ -2,6 +2,7 @@
 	import BoxIcon from '@lucide/svelte/icons/box';
 	import GamepadIcon from '@lucide/svelte/icons/gamepad-2';
 	import HouseIcon from '@lucide/svelte/icons/house';
+	import EyeIcon from '@lucide/svelte/icons/eye';
 	import MapIcon from '@lucide/svelte/icons/map';
 	import MinusIcon from '@lucide/svelte/icons/minus';
 	import PlusIcon from '@lucide/svelte/icons/plus';
@@ -17,6 +18,28 @@
 
 	let { currentGameId, currentWorldId }: Props = $props();
 	let isComparisonPickerOpen = $state(false);
+	const VIEW_OPTIONS_STORAGE_KEY = 'gisofgothic:view-options-collapsed';
+
+	function readAreViewOptionsCollapsed(): boolean {
+		try {
+			return localStorage.getItem(VIEW_OPTIONS_STORAGE_KEY) === 'true';
+		} catch {
+			return false;
+		}
+	}
+
+	function toggleViewOptions(): void {
+		areViewOptionsCollapsed = !areViewOptionsCollapsed;
+		isCameraSettingsOpen = false;
+		isComparisonPickerOpen = false;
+		try {
+			localStorage.setItem(VIEW_OPTIONS_STORAGE_KEY, String(areViewOptionsCollapsed));
+		} catch {
+			return;
+		}
+	}
+
+	let areViewOptionsCollapsed = $state(readAreViewOptionsCollapsed());
 	let isCameraSettingsOpen = $state(false);
 	let cameraSettingsButton = $state<HTMLButtonElement>();
 
@@ -53,7 +76,7 @@
 />
 
 <div
-	class="fixed top-[calc(var(--top-bar-height)+var(--gutter))] right-(--gutter) z-10 flex flex-col items-center gap-2.5 md:right-(--edge-inset)"
+	class="fixed top-[calc(var(--top-bar-height)+var(--gutter))] right-(--gutter) z-20 flex flex-col items-center gap-2.5 md:right-(--edge-inset)"
 >
 	<button
 		class="map-compass grid size-13 place-items-center rounded-full md:size-16"
@@ -120,46 +143,57 @@
 		</button>
 		<button
 			class="{controlButton} aria-pressed:bg-active-surface aria-pressed:text-active"
-			aria-label="Joysticki lotu kamerą"
-			aria-pressed={flightControls.areSticksShown}
-			title="Joysticki lotu kamerą (klawiatura: WASD, strzałki, Q/E)"
-			onclick={() => flightControls.toggleSticks()}
+			aria-label="Widok"
+			aria-expanded={!areViewOptionsCollapsed}
+			title="Widok: joysticki, rzut kamery, 2D i porównanie światów"
+			onclick={toggleViewOptions}
 		>
-			<GamepadIcon class="size-5" />
+			<EyeIcon class="size-5" />
 		</button>
-		<button
-			bind:this={cameraSettingsButton}
-			class="{controlButton} aria-pressed:bg-active-surface aria-pressed:text-active"
-			aria-label="Rzut kamery"
-			aria-pressed={appState.cameraProjection.kind === 'orthographic'}
-			aria-expanded={isCameraSettingsOpen}
-			title="Rzut kamery (klawisz P)"
-			data-camera-settings
-			onclick={() => (isCameraSettingsOpen = !isCameraSettingsOpen)}
-		>
-			<BoxIcon class="size-5" />
-		</button>
-		<button
-			class="{controlButton} aria-pressed:bg-active-surface aria-pressed:text-active"
-			aria-label="Widok 2D"
-			aria-pressed={appState.viewMode === 'view-2d'}
-			title="Widok 2D: płaska mapa z góry"
-			onclick={() =>
-				geoportal.selectViewMode(appState.viewMode === 'view-2d' ? 'view-3d' : 'view-2d')}
-		>
-			<MapIcon class="size-5" />
-		</button>
-		<button
-			class="{controlButton} aria-pressed:bg-active-surface aria-pressed:text-active"
-			aria-label="Porównaj światy"
-			aria-pressed={appState.worldComparison.status !== 'inactive'}
-			aria-expanded={isComparisonPickerOpen}
-			title="Porównaj ten świat z innym suwakiem podziału ekranu"
-			data-world-comparison
-			onclick={() => (isComparisonPickerOpen = !isComparisonPickerOpen)}
-		>
-			<Columns2Icon class="size-5" />
-		</button>
+		{#if !areViewOptionsCollapsed}
+			<button
+				class="{controlButton} aria-pressed:bg-active-surface aria-pressed:text-active"
+				aria-label="Joysticki lotu kamerą"
+				aria-pressed={flightControls.areSticksShown}
+				title="Joysticki lotu kamerą (klawiatura: WASD, strzałki, Q/E)"
+				onclick={() => flightControls.toggleSticks()}
+			>
+				<GamepadIcon class="size-5" />
+			</button>
+			<button
+				bind:this={cameraSettingsButton}
+				class="{controlButton} aria-pressed:bg-active-surface aria-pressed:text-active"
+				aria-label="Rzut kamery"
+				aria-pressed={appState.cameraProjection.kind === 'orthographic'}
+				aria-expanded={isCameraSettingsOpen}
+				title="Rzut kamery (klawisz P)"
+				data-camera-settings
+				onclick={() => (isCameraSettingsOpen = !isCameraSettingsOpen)}
+			>
+				<BoxIcon class="size-5" />
+			</button>
+			<button
+				class="{controlButton} aria-pressed:bg-active-surface aria-pressed:text-active"
+				aria-label="Widok 2D"
+				aria-pressed={appState.viewMode === 'view-2d'}
+				title="Widok 2D: płaska mapa z góry"
+				onclick={() =>
+					geoportal.selectViewMode(appState.viewMode === 'view-2d' ? 'view-3d' : 'view-2d')}
+			>
+				<MapIcon class="size-5" />
+			</button>
+			<button
+				class="{controlButton} aria-pressed:bg-active-surface aria-pressed:text-active"
+				aria-label="Porównaj światy"
+				aria-pressed={appState.worldComparison.status !== 'inactive'}
+				aria-expanded={isComparisonPickerOpen}
+				title="Porównaj ten świat z innym suwakiem podziału ekranu"
+				data-world-comparison
+				onclick={() => (isComparisonPickerOpen = !isComparisonPickerOpen)}
+			>
+				<Columns2Icon class="size-5" />
+			</button>
+		{/if}
 	</div>
 	{#if isCameraSettingsOpen}
 		<CameraSettingsPopover onClose={() => (isCameraSettingsOpen = false)} />
