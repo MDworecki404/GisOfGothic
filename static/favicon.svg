@@ -1,43 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
 	<defs>
-		<linearGradient id="iron" x1="0" y1="0" x2="0" y2="1">
-			<stop offset="0" stop-color="#5a4a33" />
-			<stop offset="0.55" stop-color="#2a2218" />
-			<stop offset="1" stop-color="#14110d" />
+		<linearGradient id="ember" x1="0" y1="0" x2="1" y2="1">
+			<stop offset="0" stop-color="#ffd08a" />
+			<stop offset="0.45" stop-color="#f2a24a" />
+			<stop offset="1" stop-color="#b8691d" />
 		</linearGradient>
-		<linearGradient id="brass" x1="0" y1="0" x2="1" y2="1">
-			<stop offset="0" stop-color="#ecd08a" />
-			<stop offset="0.5" stop-color="#c9a24a" />
-			<stop offset="1" stop-color="#7a5c22" />
-		</linearGradient>
-		<radialGradient id="ember" cx="0.5" cy="0.5" r="0.5">
-			<stop offset="0" stop-color="#ffd27a" />
-			<stop offset="0.45" stop-color="#e0662f" />
-			<stop offset="1" stop-color="#8b3a2b" />
-		</radialGradient>
 	</defs>
-	<g fill="url(#brass)" stroke="#14110d" stroke-width="1" stroke-linejoin="round">
-		<path d="M32 0 L37 10 L27 10 Z" />
-		<path d="M63 26 L54 29.5 L54 22.5 Z" />
-		<path d="M1 26 L10 22.5 L10 29.5 Z" />
-	</g>
-	<path
-		d="M32 62 C27 51 12 41 12 26 A20 20 0 1 1 52 26 C52 41 37 51 32 62 Z"
-		fill="url(#iron)"
-		stroke="url(#brass)"
-		stroke-width="2.5"
+	<rect x="2" y="2" width="60" height="60" rx="10" fill="#1e282b" stroke="#3a494f" stroke-width="2" />
+	<polygon
+		points="32,8 52,25 41,56 19,52 12,27"
+		fill="url(#ember)"
+		stroke="#0c1214"
+		stroke-width="3"
 		stroke-linejoin="round"
 	/>
-	<g fill="none" stroke="url(#brass)" stroke-linecap="round" stroke-linejoin="round">
-		<path
-			d="M20 27 C19 19 26 14 33 15 C41 15 45 21 44 27 C43 33 38 37 31 36 C25 36 21 33 20 27 Z"
-			stroke-width="1.6"
-			opacity="0.75"
-		/>
-		<path
-			d="M25 27 C25 22 29 20 33 20.5 C37.5 21 39.5 24 39 27.5 C38.5 31 35 32.5 31.5 32 C28 31.5 25.5 30 25 27 Z"
-			stroke-width="1.6"
-		/>
+	<g fill="none" stroke="#0c1214" stroke-width="1.6" stroke-linejoin="round" opacity="0.55">
+		<path d="M32 8 L30 30 L52 25" />
+		<path d="M12 27 L30 30 L41 56" />
+		<path d="M30 30 L19 52" />
 	</g>
-	<circle cx="32" cy="26.5" r="3.6" fill="url(#ember)" />
 </svg>
