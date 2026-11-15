@@ -60,3 +60,72 @@ test('Księga na telefonie ma jedną kolumnę i przycisk Wróć do wyników po w
 	await page.getByRole('button', { name: 'Wróć do wyników' }).click();
 	await expect(page.getByRole('searchbox')).toBeVisible();
 });
+
+const SELECTED_ENTRY_CARD = 'Wybrany wpis';
+
+async function selectHerbInBook(page: import('@playwright/test').Page): Promise<void> {
+	await page.goto(BOOK_URL);
+	await page.getByRole('searchbox').fill('szczaw krolewski');
+	await page.getByRole('button', { name: /Szczaw królewski/ }).click();
+	await expect(page.getByRole('region', { name: 'Karta wpisu' })).toBeVisible();
+}
+
+test('po zamknięciu Księgi wybrany wpis zostaje na karcie przy mapie', async ({ page }) => {
+	await selectHerbInBook(page);
+	await page.keyboard.press('Escape');
+	const card = page.getByRole('complementary', { name: SELECTED_ENTRY_CARD });
+	await expect(card).toContainText('Szczaw królewski');
+	await expect(page).toHaveURL(/wpis=item%3AITPL_PERM_HERB/);
+});
+
+test('„Pokaż na mapie” zamyka Księgę i zostawia kartę wpisu', async ({ page }) => {
+	await selectHerbInBook(page);
+	await page.getByRole('button', { name: 'Pokaż na mapie' }).click();
+	await expect(page.getByRole('searchbox')).toHaveCount(0);
+	await expect(page.getByRole('complementary', { name: SELECTED_ENTRY_CARD })).toBeVisible();
+});
+
+test('przycisk „Otwórz w Księdze” wraca do karty wpisu w Księdze', async ({ page }) => {
+	await selectHerbInBook(page);
+	await page.keyboard.press('Escape');
+	await page.getByRole('button', { name: 'Otwórz w Księdze' }).click();
+	await expect(page.getByRole('searchbox')).toBeVisible();
+	await expect(
+		page
+			.getByRole('region', { name: 'Karta wpisu' })
+			.getByRole('heading', { name: 'Szczaw królewski' })
+	).toBeVisible();
+});
+
+test('zamknięcie karty usuwa wpis z adresu', async ({ page }) => {
+	await selectHerbInBook(page);
+	await page.keyboard.press('Escape');
+	await page.getByRole('button', { name: 'Zamknij kartę wpisu' }).click();
+	await expect(page.getByRole('complementary', { name: SELECTED_ENTRY_CARD })).toHaveCount(0);
+	await expect(page).not.toHaveURL(/wpis=/);
+});
+
+test('adres z samym wpisem pokazuje kartę przy mapie, a nie Księgę', async ({ page }) => {
+	await page.goto('/g2nk/khorinis?wpis=item:ITPL_PERM_HERB');
+	await expect(page.getByRole('complementary', { name: SELECTED_ENTRY_CARD })).toContainText(
+		'Szczaw królewski',
+		{ timeout: 30_000 }
+	);
+	await expect(page.getByRole('searchbox')).toHaveCount(0);
+});
+
+test('karta wpisu nie nakłada się na kontrolki mapy', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 720 });
+	await page.goto('/g2nk/khorinis?wpis=item:ITPL_PERM_HERB');
+	const card = page.getByRole('complementary', { name: SELECTED_ENTRY_CARD });
+	await expect(card).toBeVisible({ timeout: 30_000 });
+	const cardBox = await card.boundingBox();
+	const compassBox = await page.getByRole('button', { name: 'Obróć mapę na północ' }).boundingBox();
+	if (!cardBox || !compassBox) throw new Error('Brak karty albo kompasu');
+	const overlaps =
+		cardBox.x < compassBox.x + compassBox.width &&
+		compassBox.x < cardBox.x + cardBox.width &&
+		cardBox.y < compassBox.y + compassBox.height &&
+		compassBox.y < cardBox.y + cardBox.height;
+	expect(overlaps).toBe(false);
+});
