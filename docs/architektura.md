@@ -662,3 +662,7 @@ według `CachingPolicy` (`services/pwa/`): strony najpierw z sieci, pliki z hash
 najpierw z pamięci, dane świata z pamięci z odświeżeniem w tle; plików z bramki zasobów (kafle świata, modele przedmiotów) nie dotyka.
 `AppInstallation` przechwytuje `beforeinstallprompt` i publikuje `app-installability-changed`;
 płyta akcji w nagłówku pokazuje wtedy przycisk „Zainstaluj”. Szczegóły i pułapki: [ADR 0011](adr/0011-pwa-z-wlasnym-service-workerem.md).
+
+## Zegar doby
+
+`DayClock` (komponent bez logiki domenowej) to płyta w prawym dolnym rogu na komputerze: godzina gry, przycisk Odtwórz/Zatrzymaj i — gdy otwarte jest narzędzie Czas albo trwa odtwarzanie — łuk 00–24 z markerem godziny (klik, przeciąganie i strzałki ustawiają godzinę przez `geoportal.setTimeOfDay`) oraz tempa 1×, 4×, 60× (`setRoutinePlaybackSpeed`). Na telefonie godzinę i odtwarzanie obsługuje panel Czas.
