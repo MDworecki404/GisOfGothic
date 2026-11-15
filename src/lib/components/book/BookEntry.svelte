@@ -274,7 +274,7 @@
 			{#if entry.encyclopediaUrl}
 				<!-- eslint-disable svelte/no-navigation-without-resolve -- zewnętrzny adres Gothicpedii, nie ścieżka aplikacji -->
 				<a
-					class="my-3 flex items-center gap-1.5 text-sm text-primary hover:underline"
+					class="my-1 flex min-h-11 items-center gap-1.5 text-sm text-primary hover:underline"
 					href={entry.encyclopediaUrl}
 					target="_blank"
 					rel="noopener noreferrer"

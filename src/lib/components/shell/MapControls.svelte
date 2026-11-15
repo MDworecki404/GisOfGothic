@@ -20,11 +20,14 @@
 	let isComparisonPickerOpen = $state(false);
 	const VIEW_OPTIONS_STORAGE_KEY = 'gisofgothic:view-options-collapsed';
 
+	/** Bez zapamiętanego wyboru opcje widoku są zwinięte na telefonie, bo długa kolumna kontrolek zasłaniałaby się z kartami. */
 	function readAreViewOptionsCollapsed(): boolean {
+		const isPhone = window.matchMedia('(max-width: 767px)').matches;
 		try {
-			return localStorage.getItem(VIEW_OPTIONS_STORAGE_KEY) === 'true';
+			const storedValue = localStorage.getItem(VIEW_OPTIONS_STORAGE_KEY);
+			return storedValue === null ? isPhone : storedValue === 'true';
 		} catch {
-			return false;
+			return isPhone;
 		}
 	}
 

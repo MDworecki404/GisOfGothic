@@ -90,7 +90,7 @@
 				</div>
 			{/if}
 
-			{#if entry.facts.length > 0}
+			{#if entry.facts.length > 0 && !guideStep}
 				<dl class="mt-3 flex flex-wrap gap-x-5 gap-y-2 tabular-nums">
 					{#each entry.facts.slice(0, MAXIMUM_FACTS) as fact (fact.label)}
 						<div class="flex flex-col-reverse">
@@ -108,7 +108,7 @@
 			{/if}
 
 			<div class="mt-4 flex flex-col gap-2">
-				{#if entry.type === 'quest'}
+				{#if entry.type === 'quest' && !guideStep}
 					<button
 						class={appState.isSelectedQuestCollected ? 'button-ochre' : 'button-quiet'}
 						aria-pressed={appState.isSelectedQuestCollected}

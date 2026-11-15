@@ -129,3 +129,18 @@ test('karta wpisu nie nakłada się na kontrolki mapy', async ({ page }) => {
 		compassBox.y < cardBox.y + cardBox.height;
 	expect(overlaps).toBe(false);
 });
+
+test('na telefonie karta wpisu nie zasłania przycisków kontrolek mapy', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto('/g2nk/khorinis?wpis=item:ITPL_PERM_HERB');
+	const card = page.getByRole('complementary', { name: SELECTED_ENTRY_CARD });
+	await expect(card).toBeVisible({ timeout: 30_000 });
+	const cardBox = await card.boundingBox();
+	if (!cardBox) throw new Error('Brak karty');
+	const controlNames = ['Obróć mapę na północ', 'Przybliż', 'Oddal', 'Pokaż cały świat', 'Widok'];
+	for (const name of controlNames) {
+		const box = await page.getByRole('button', { name, exact: true }).boundingBox();
+		if (!box) throw new Error(`Brak przycisku ${name}`);
+		expect(box.y + box.height, name).toBeLessThanOrEqual(cardBox.y + 1);
+	}
+});
