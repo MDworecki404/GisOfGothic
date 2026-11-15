@@ -25,4 +25,8 @@ Ekstraktor (paczka v5) zapisuje je w osobnym pliku `locations.json`.
 ## Konsekwencje
 
 - Świat bez `locations.json` (starsza paczka v4) pokazuje błąd wczytania warstwy; tylko ta warstwa.
-- Odłożone: lokacje w wyszukiwarce i Księdze, obrysy (`polygon`) i zasięgi na mapie, filtr po rodzaju.
+- Lokacje są też wpisami wyszukiwarki: `GeoportalDataLoader.loadSearchIndex` dokłada je do indeksu jako wpisy
+  `type: 'location'` (`buildSearchEntryFromLocation`), z kategorią równą rodzajowi lokacji. Księga ma filtr „Lokacje”,
+  a karta wpisu i `EntrySummaryCard` pokazują przycisk przejścia (`PassageTravelButton`). Warstwa na mapie czyta
+  ten sam plik osobno, więc nie wymaga otwarcia Księgi.
+- Odłożone: obrysy (`polygon`) i zasięgi na mapie, filtr po rodzaju.

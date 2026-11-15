@@ -1,6 +1,8 @@
 import { isCollectiblePlace } from './place-key.js';
 import { parseMetadata, parseSearchIndex } from './parsers.js';
 import { parseQuestCatalog } from './quest-parsers.js';
+import { parseLocationCatalog } from './location-parsers.js';
+import { buildSearchEntryFromLocation } from './location-search-entries.js';
 import { parseTreasureSetCatalog } from './treasure-set-parsers.js';
 import { parseWaypointNetwork } from './waypoint-network-parser.js';
 import type {
@@ -36,8 +38,16 @@ export class GeoportalDataLoader {
 		return this.metadataLoading;
 	}
 
+	/** Do wpisów indeksu dokładamy lokacje; świat bez `locations.json` (HTTP 404) ma po prostu ich zero. */
 	async loadSearchIndex(): Promise<SearchIndex> {
-		return parseSearchIndex(await this.fetchSearchIndexJson());
+		const [indexJson, locationsJson] = await Promise.all([
+			this.fetchSearchIndexJson(),
+			this.fetchOptionalJson('locations.json')
+		]);
+		const index = parseSearchIndex(indexJson);
+		if (locationsJson === null) return index;
+		const locationEntries = parseLocationCatalog(locationsJson).map(buildSearchEntryFromLocation);
+		return { ...index, entries: [...index.entries, ...locationEntries] };
 	}
 
 	async loadQuestCatalog(): Promise<QuestCatalog> {
@@ -80,12 +90,14 @@ export class GeoportalDataLoader {
 		let items = 0;
 		let characters = 0;
 		let quests = 0;
+		let locations = 0;
 		for (const entry of index.entries) {
 			if (entry.type === 'item') items++;
 			else if (entry.type === 'character') characters++;
-			else quests++;
+			else if (entry.type === 'quest') quests++;
+			else locations++;
 		}
-		return { items, characters, quests };
+		return { items, characters, quests, locations };
 	}
 
 	/** Liczba odhaczalnych miejsc wszystkich przedmiotów świata: mianownik postępu zbierania. */
@@ -93,6 +105,15 @@ export class GeoportalDataLoader {
 		return index.entries
 			.filter((entry) => entry.type === 'item')
 			.reduce((sum, entry) => sum + entry.places.filter(isCollectiblePlace).length, 0);
+	}
+
+	private async fetchOptionalJson(fileName: string): Promise<unknown> {
+		const response = await this.fetchResource(`${this.baseUrl}/${fileName}`);
+		if (response.status === 404) return null;
+		if (!response.ok) {
+			throw new Error(`Nie udało się pobrać ${this.baseUrl}/${fileName} (HTTP ${response.status})`);
+		}
+		return response.json();
 	}
 
 	private async fetchJson(fileName: string): Promise<unknown> {

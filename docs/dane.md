@@ -153,7 +153,8 @@ Paczka v5: `{version: 1, game, world, locations}`. Lokacja to `id`, `kind` (`cam
 `waypoints.json`). Przejście (`kind: passage`) ma dodatkowo `passage: {to_world, to_level, arrival}`: `to_world` to
 `<gra>/<świat>` (dokładnie ścieżka katalogu w `static/data/`) albo `null` poza paczką, `arrival` to punkt przybycia
 albo `null`. Aplikacja czyta plik jako warstwę „Lokacje” ([ADR 0038](adr/0038-lokacje-i-przejscia-miedzy-swiatami.md));
-nazwy `derived` pokazuje jako robocze.
+nazwy `derived` pokazują się jako robocze. Wyszukiwarka dokłada lokacje do indeksu jako wpisy `type: 'location'`;
+brak pliku (HTTP 404) oznacza zero lokacji.
 
 ## Opis przedmiotu (`description`)
 

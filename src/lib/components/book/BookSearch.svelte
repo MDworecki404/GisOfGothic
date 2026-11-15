@@ -5,7 +5,8 @@
 		{ value: 'all', label: 'Wszystko' },
 		{ value: 'item', label: 'Przedmioty' },
 		{ value: 'character', label: 'Postacie' },
-		{ value: 'quest', label: 'Questy' }
+		{ value: 'quest', label: 'Questy' },
+		{ value: 'location', label: 'Lokacje' }
 	] as const;
 
 	const isAttributeFilterActive = $derived(
@@ -181,7 +182,8 @@
 					polu wyszukiwania, np. „ziele”, „Harad” albo „Bennet”.
 					{#if appState.indexCounts}
 						Przedmioty: {appState.indexCounts.items}, unikatowe postacie: {appState.indexCounts
-							.characters}, questy: {appState.indexCounts.quests}.
+							.characters}, questy: {appState.indexCounts.quests}, lokacje: {appState.indexCounts
+							.locations}.
 					{/if}
 				</p>
 			{/if}

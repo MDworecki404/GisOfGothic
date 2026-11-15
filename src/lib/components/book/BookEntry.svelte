@@ -5,6 +5,7 @@
 	import type { Attachment } from 'svelte/attachments';
 	import { appState, geoportal } from '#lib/composition-root.js';
 	import CopyViewLinkButton from '#lib/components/shell/CopyViewLinkButton.svelte';
+	import PassageTravelButton from '#lib/components/shell/PassageTravelButton.svelte';
 	import type { QuestLinkView } from '#lib/services/search/quest-presenter.js';
 
 	const questDetails = $derived(
@@ -109,6 +110,9 @@
 					>
 						{appState.isSelectedQuestCollected ? 'Quest wykonany' : 'Oznacz jako wykonany'}
 					</button>
+				{/if}
+				{#if entry.passage}
+					<PassageTravelButton passage={entry.passage} class="button-ochre" />
 				{/if}
 				<button class="button-ochre" onclick={() => geoportal.selectTool('search')}>
 					Pokaż na mapie

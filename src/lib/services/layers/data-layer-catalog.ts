@@ -1,11 +1,11 @@
 import { describeCategory } from '#lib/data/category-names.js';
 import { parseSearchIndex } from '#lib/data/parsers.js';
 import { parseLocationCatalog } from '#lib/data/location-parsers.js';
+import { LOCATION_KIND_LABELS, LOCATION_NAME_SOURCE_NOTES } from '#lib/data/location-kinds.js';
 import { QuestPlaceLocator } from './quest-place-locator.js';
 import type {
-	Anchor,
 	LocationEntry,
-	LocationKind,
+	PassageDestination,
 	QuestPlaceRole,
 	SearchEntry
 } from '#lib/data/types.js';
@@ -29,17 +29,13 @@ import {
 	type ItemProperties
 } from '#lib/data/layer-features.js';
 
+export type { PassageDestination };
+
 export type DataLayerId = 'items' | 'containers' | 'characters' | 'npcs' | 'quests' | 'locations';
 
 export interface FeatureFact {
 	label: string;
 	value: string;
-}
-
-/** Przejście do innego świata: `toWorld` to `<gra>/<świat>`, `arrival` to punkt przybycia (WGS84) albo `null`. */
-export interface PassageDestination {
-	toWorld: string;
-	arrival: Anchor | null;
 }
 
 export interface FeatureIdentification {
@@ -249,23 +245,6 @@ function readQuestPlaces(json: unknown, routinePlacesJson?: unknown): Identifiab
 	}
 	return features;
 }
-
-const LOCATION_KIND_LABELS: Readonly<Record<LocationKind, string>> = {
-	camp: 'Obóz',
-	town: 'Miasto lub osada',
-	district: 'Dzielnica',
-	building: 'Budynek',
-	cave: 'Jaskinia lub loch',
-	region: 'Region',
-	landmark: 'Punkt orientacyjny',
-	passage: 'Przejście do innego świata'
-};
-
-const LOCATION_NAME_SOURCE_NOTES = {
-	game: null,
-	derived: 'robocza, nadana w projekcie',
-	code: 'tylko kod z gry'
-} as const;
 
 function presentLocation(location: LocationEntry): FeatureIdentification {
 	const facts: FeatureFact[] = [];

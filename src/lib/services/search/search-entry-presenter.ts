@@ -1,8 +1,10 @@
+import { LOCATION_NAME_SOURCE_NOTES } from '#lib/data/location-kinds.js';
 import { describeCategory } from '#lib/data/category-names.js';
 import { buildPlaceKey, isCollectiblePlace } from '#lib/data/place-key.js';
 import { LootPresenter } from '#lib/services/loot/loot-presenter.js';
 import { EncyclopediaLinkBuilder } from '#lib/services/encyclopedia/encyclopedia-link-builder.js';
 import type {
+	PassageDestination,
 	Place,
 	PlaceKind,
 	QuestPlaceRole,
@@ -21,7 +23,8 @@ export const PLACE_KIND_PRESENTATION: Readonly<Record<PlaceKind, PlaceKindPresen
 	container: { label: 'W skrzyni', color: '#8aa3a0' },
 	npc: { label: 'U postaci', color: '#b07ad0' },
 	spawn: { label: 'Pojawia się', color: '#c9a24a' },
-	routine: { label: 'Rutyna dnia', color: '#e0662f' }
+	routine: { label: 'Rutyna dnia', color: '#e0662f' },
+	location: { label: 'Lokacja', color: '#6fb7c9' }
 };
 
 export const QUEST_ROLE_PRESENTATION: Readonly<Record<QuestPlaceRole, PlaceKindPresentation>> = {
@@ -90,6 +93,8 @@ export interface SearchEntryDetails {
 	lootSources: string[];
 	encyclopediaUrl: string | null;
 	places: PlaceSummary[];
+	/** Lokacje: przejście do innego świata w paczce; inne wpisy mają `null`. */
+	passage: PassageDestination | null;
 }
 
 function capitalize(text: string): string {
@@ -130,13 +135,15 @@ export class SearchEntryPresenter {
 				entry.type !== 'item' ? this.encyclopediaLinkBuilder.buildSearchUrl(entry.name) : null,
 			places: entry.places.map((place, index) =>
 				this.presentPlace(place, index, entry.type === 'item')
-			)
+			),
+			passage: this.readPassage(entry)
 		};
 	}
 
 	private pickResultMarkerColor(entry: SearchEntry): string {
 		if (entry.type === 'item') return PLACE_KIND_PRESENTATION.ground.color;
 		if (entry.type === 'quest') return QUEST_ROLE_PRESENTATION.giver.color;
+		if (entry.type === 'location') return PLACE_KIND_PRESENTATION.location.color;
 		return '#c9a24a';
 	}
 
@@ -145,6 +152,7 @@ export class SearchEntryPresenter {
 			const total = entry.total ?? sumAmounts(entry.places);
 			return total === 0 && entry.loot && entry.loot.length > 0 ? 'tylko łup' : `${total} szt.`;
 		}
+		if (entry.type === 'location') return '';
 		if (entry.type === 'quest') {
 			return entry.chapter === undefined || entry.chapter === null ? '' : `rozdz. ${entry.chapter}`;
 		}
@@ -154,7 +162,30 @@ export class SearchEntryPresenter {
 	private listFacts(entry: SearchEntry): EntryFact[] {
 		if (entry.type === 'item') return this.listItemFacts(entry);
 		if (entry.type === 'quest') return this.listQuestFacts(entry);
+		if (entry.type === 'location') return this.listLocationFacts(entry);
 		return this.listCharacterFacts(entry);
+	}
+
+	private listLocationFacts(entry: SearchEntry): EntryFact[] {
+		const location = entry.location;
+		if (!location) return [];
+		const facts: EntryFact[] = [];
+		const nameNote = LOCATION_NAME_SOURCE_NOTES[location.nameSource];
+		if (nameNote) facts.push({ label: 'nazwa', value: nameNote });
+		if (location.radiusMetres !== null) {
+			facts.push({ label: 'zasięg', value: `ok. ${Math.round(location.radiusMetres)} m` });
+		}
+		if (location.waypoint) facts.push({ label: 'najbliższy punkt dróg', value: location.waypoint });
+		if (location.passage && !location.passage.toWorld) {
+			facts.push({ label: 'cel', value: 'poza dostępnymi światami' });
+		}
+		return facts;
+	}
+
+	private readPassage(entry: SearchEntry): PassageDestination | null {
+		const passage = entry.location?.passage;
+		if (!passage || !passage.toWorld) return null;
+		return { toWorld: passage.toWorld, arrival: passage.arrival };
 	}
 
 	private listQuestFacts(entry: SearchEntry): EntryFact[] {

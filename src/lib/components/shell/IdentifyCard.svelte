@@ -2,11 +2,8 @@
 	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
 	import XIcon from '@lucide/svelte/icons/x';
 	import type { Attachment } from 'svelte/attachments';
-	import { goto } from '$app/navigation';
-	import { resolve } from '$app/paths';
-	import { page } from '$app/state';
-	import type { PassageDestination } from '#lib/services/layers/data-layer-catalog.js';
 	import { appState, geoportal } from '#lib/composition-root.js';
+	import PassageTravelButton from './PassageTravelButton.svelte';
 
 	function showPreview(modelFile: string): Attachment<HTMLElement> {
 		return (container) => geoportal.showWorldModelPreview(container, modelFile);
@@ -16,22 +13,6 @@
 		geoportal.search(query);
 		if (appState.activeToolId !== 'search') geoportal.selectTool('search');
 		geoportal.closeFeatureIdentification();
-	}
-
-	function isPassageToOtherWorld(passage: PassageDestination): boolean {
-		return passage.toWorld !== `${page.params.gameId}/${page.params.worldId}`;
-	}
-
-	async function travelThroughPassage(passage: PassageDestination): Promise<void> {
-		const target = await geoportal.planPassageTravel(passage);
-		if (!target) return;
-		geoportal.closeFeatureIdentification();
-		const worldPath = resolve('/[gameId]/[worldId]', {
-			gameId: target.gameId,
-			worldId: target.worldId
-		});
-		// eslint-disable-next-line svelte/no-navigation-without-resolve -- worldPath pochodzi z resolve(), dopisujemy tylko parametry widoku
-		await goto(worldPath + target.query);
 	}
 </script>
 
@@ -97,12 +78,9 @@
 				{/if}
 			{/if}
 
-			{#if feature.passage && isPassageToOtherWorld(feature.passage)}
-				{@const passage = feature.passage}
+			{#if feature.passage}
 				<hr class="note-rule my-3" />
-				<button class="button-ink" onclick={() => travelThroughPassage(passage)}>
-					Przejdź do tego świata
-				</button>
+				<PassageTravelButton passage={feature.passage} />
 			{/if}
 
 			{#if feature.searchQuery || feature.encyclopediaUrl}

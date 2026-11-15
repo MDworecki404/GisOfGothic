@@ -33,7 +33,8 @@ export interface Metadata {
 	};
 }
 
-export type PlaceKind = 'ground' | 'script' | 'container' | 'npc' | 'spawn' | 'routine';
+export type PlaceKind =
+	'ground' | 'script' | 'container' | 'npc' | 'spawn' | 'routine' | 'location';
 
 /** Rola miejsca w queście: zleceniodawca, cel albo miejsce jednego z etapów. */
 export type QuestPlaceRole = 'giver' | 'target' | 'stage';
@@ -74,7 +75,7 @@ export interface LootSource {
 	holders: number;
 }
 
-export type SearchEntryType = 'item' | 'character' | 'quest';
+export type SearchEntryType = 'item' | 'character' | 'quest' | 'location';
 
 export interface SearchEntry {
 	id: string;
@@ -99,6 +100,8 @@ export interface SearchEntry {
 	giver?: string | null;
 	/** Questy: rozdział startu albo `null`, gdy nieznany. */
 	chapter?: number | null;
+	/** Lokacje: pełny opis lokacji (rodzaj, zasięg, przejście). */
+	location?: LocationEntry;
 	places: Place[];
 }
 
@@ -111,6 +114,7 @@ export interface IndexCounts {
 	items: number;
 	characters: number;
 	quests: number;
+	locations: number;
 }
 
 export type QuestSection = 'mission' | 'note';
@@ -203,14 +207,7 @@ export interface WaypointNetwork {
 }
 
 export type LocationKind =
-	| 'camp'
-	| 'town'
-	| 'district'
-	| 'building'
-	| 'cave'
-	| 'region'
-	| 'landmark'
-	| 'passage';
+	'camp' | 'town' | 'district' | 'building' | 'cave' | 'region' | 'landmark' | 'passage';
 
 /** `game` — nazwa z tekstów gry; `derived` — nazwa robocza nadana w ekstraktorze; `code` — tylko kod z gry. */
 export type LocationNameSource = 'game' | 'derived' | 'code';
@@ -232,4 +229,10 @@ export interface LocationEntry {
 	radiusMetres: number | null;
 	waypoint: string | null;
 	passage: LocationPassage | null;
+}
+
+/** Przejście do innego świata: `toWorld` to `<gra>/<świat>`, `arrival` to punkt przybycia (WGS84) albo `null`. */
+export interface PassageDestination {
+	toWorld: string;
+	arrival: Anchor | null;
 }

@@ -124,11 +124,61 @@ describe('parseMetadata', () => {
 	});
 });
 
+function createLoaderServingFiles(files: Record<string, unknown>): GeoportalDataLoader {
+	return new GeoportalDataLoader('/data/test', async (url) => {
+		const body = files[url.slice('/data/test/'.length)];
+		return body === undefined
+			? new Response('', { status: 404 })
+			: new Response(JSON.stringify(body), { status: 200 });
+	});
+}
+
+const locationsJson = {
+	version: 1,
+	locations: [
+		{
+			id: 'location:OC',
+			kind: 'camp',
+			name: 'Stary Obóz',
+			name_source: 'derived',
+			code: 'OC',
+			center: [0.001, 0.002, 5],
+			radius_m: 50,
+			waypoint: null
+		}
+	]
+};
+
 describe('GeoportalDataLoader', () => {
-	it('wczytuje metadata i indeks oraz liczy wpisy według typu', async () => {
-		const loader = createLoaderServing(searchIndexJson);
+	it('dokłada lokacje do indeksu wyszukiwania i liczy je osobno', async () => {
+		const loader = createLoaderServingFiles({
+			'search_index.json': searchIndexJson,
+			'locations.json': locationsJson
+		});
 		const index = await loader.loadSearchIndex();
-		expect(loader.countEntriesByType(index)).toEqual({ items: 1, characters: 1, quests: 0 });
+		expect(loader.countEntriesByType(index)).toEqual({
+			items: 1,
+			characters: 1,
+			quests: 0,
+			locations: 1
+		});
+		expect(index.entries.at(-1)).toMatchObject({ id: 'location:OC', type: 'location' });
+	});
+
+	it('wczytuje indeks świata bez pliku lokacji', async () => {
+		const loader = createLoaderServingFiles({ 'search_index.json': searchIndexJson });
+		expect((await loader.loadSearchIndex()).entries).toHaveLength(2);
+	});
+
+	it('wczytuje metadata i indeks oraz liczy wpisy według typu', async () => {
+		const loader = createLoaderServingFiles({ 'search_index.json': searchIndexJson });
+		const index = await loader.loadSearchIndex();
+		expect(loader.countEntriesByType(index)).toEqual({
+			items: 1,
+			characters: 1,
+			quests: 0,
+			locations: 0
+		});
 		expect((await createLoaderServing(metadataJson).loadMetadata()).world).toBe('NEWWORLD');
 	});
 

@@ -2,6 +2,7 @@
 	import XIcon from '@lucide/svelte/icons/x';
 	import { appState, geoportal } from '#lib/composition-root.js';
 	import CopyViewLinkButton from './CopyViewLinkButton.svelte';
+	import PassageTravelButton from './PassageTravelButton.svelte';
 
 	const MAXIMUM_FACTS = 3;
 
@@ -76,6 +77,9 @@
 					>
 						{appState.isSelectedQuestCollected ? 'Quest wykonany' : 'Oznacz jako wykonany'}
 					</button>
+				{/if}
+				{#if entry.passage}
+					<PassageTravelButton passage={entry.passage} class="button-ochre" />
 				{/if}
 				<button class="button-ochre" onclick={() => geoportal.selectTool('search')}>
 					Otwórz w Księdze
