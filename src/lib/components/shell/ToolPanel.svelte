@@ -13,7 +13,6 @@
 	import LayersPanel from '#lib/components/panels/LayersPanel.svelte';
 	import MeasurePanel from '#lib/components/panels/MeasurePanel.svelte';
 	import NotebookPanel from '#lib/components/panels/NotebookPanel.svelte';
-	import SearchPanel from '#lib/components/panels/SearchPanel.svelte';
 	import SizesPanel from '#lib/components/panels/SizesPanel.svelte';
 	import TimePanel from '#lib/components/panels/TimePanel.svelte';
 	import { TOOL_DEFINITIONS } from './tool-definitions.js';
@@ -181,9 +180,7 @@
 				</button>
 			</div>
 			<div class="min-h-0 flex-1 overflow-y-auto px-4 pt-3 pb-5" inert={isSheetCollapsed}>
-				{#if activeTool.id === 'search'}
-					<SearchPanel />
-				{:else if activeTool.id === 'layers'}
+				{#if activeTool.id === 'layers'}
 					<LayersPanel />
 				{:else if activeTool.id === 'measure'}
 					<MeasurePanel />

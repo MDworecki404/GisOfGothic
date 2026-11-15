@@ -34,6 +34,7 @@ test('service worker zapisuje aplikację i dane, więc działa bez sieci', async
 
 	await context.setOffline(true);
 	await page.reload();
+	await page.getByRole('button', { name: 'Szukaj przedmiotu lub postaci' }).click();
 	await page.getByRole('searchbox').fill('szczaw');
 	await expect(page.getByRole('button', { name: /Szczaw królewski/ })).toBeVisible();
 	await context.setOffline(false);

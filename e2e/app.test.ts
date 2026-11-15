@@ -1,6 +1,6 @@
-import { expect, test } from './support/test.js';
+import { BOOK_URL, expect, test } from './support/test.js';
 
-test('strona się ładuje: mapa Cesium, panel wyszukiwania, brak błędów w konsoli', async ({
+test('strona się ładuje: mapa Cesium, przycisk wyszukiwania, brak błędów w konsoli', async ({
 	page
 }) => {
 	const errors: string[] = [];
@@ -12,8 +12,7 @@ test('strona się ładuje: mapa Cesium, panel wyszukiwania, brak błędów w kon
 	await expect(page).toHaveTitle('Khorinis — GIS of Gothic');
 
 	await expect(page.locator('[data-testid="map"] canvas')).toBeVisible({ timeout: 30_000 });
-	await expect(page.getByPlaceholder('Szukaj przedmiotu lub postaci…')).toBeVisible();
-	await expect(page.getByRole('heading', { name: 'Wyszukiwarka' })).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Szukaj przedmiotu lub postaci' })).toBeVisible();
 	await expect(page.getByRole('navigation', { name: 'Narzędzia' })).toBeVisible();
 	await expect(page.getByTestId('status-bar')).toContainText(/Przedmioty: \d+ · Postacie: \d+/, {
 		timeout: 90_000
@@ -47,7 +46,7 @@ test('szyna narzędzi przełącza i zamyka panele', async ({ page }) => {
 test('wyszukiwarka znajduje przedmiot bez polskich znaków i zapisuje wpis w adresie', async ({
 	page
 }) => {
-	await page.goto('/g2nk/khorinis');
+	await page.goto(BOOK_URL);
 	await page.getByRole('searchbox').fill('szczaw krolewski');
 	await page.getByRole('button', { name: /Szczaw królewski/ }).click();
 	await expect(page.getByRole('heading', { name: 'Szczaw królewski' })).toBeVisible();
@@ -150,49 +149,60 @@ test('panel Warstwy pokazuje legendę ikon kategorii', async ({ page }) => {
 });
 
 test('link z wpisem otwiera kartę postaci', async ({ page }) => {
-	await page.goto('/g2nk/khorinis?wpis=character:VLK_412_HARAD');
+	await page.goto('/g2nk/khorinis?narzedzie=search&wpis=character:VLK_412_HARAD');
 	await expect(page.getByRole('heading', { name: 'Harad' })).toBeVisible({ timeout: 30_000 });
-	await expect(page.getByText('Obywatel')).toBeVisible();
+	await expect(
+		page.getByRole('region', { name: 'Karta wpisu' }).getByText('Obywatel')
+	).toBeVisible();
 	await expect(page).toHaveTitle('Harad · Khorinis — GIS of Gothic');
 });
 
 test('link z wpisem otwiera kartę questa ze zleceniodawcą i rozdziałem', async ({ page }) => {
-	await page.goto('/g2nk/khorinis?wpis=quest:TOPIC_RESCUEBENNET');
+	await page.goto('/g2nk/khorinis?narzedzie=search&wpis=quest:TOPIC_RESCUEBENNET');
 	await expect(page.getByRole('heading', { name: 'Bennet siedzi w więzieniu' })).toBeVisible({
 		timeout: 30_000
 	});
-	await expect(page.getByText('Misja')).toBeVisible();
-	await expect(page.getByText('rozdział', { exact: true })).toBeVisible();
+	await expect(page.getByRole('region', { name: 'Karta wpisu' }).getByText('Misja')).toBeVisible();
+	await expect(
+		page.getByRole('region', { name: 'Karta wpisu' }).getByText('rozdział', { exact: true })
+	).toBeVisible();
 });
 
 test('karta questa pokazuje etapy dziennika i prowadzi do karty postaci', async ({ page }) => {
-	await page.goto('/g2nk/khorinis?wpis=quest:TOPIC_BALTRAM');
+	await page.goto('/g2nk/khorinis?narzedzie=search&wpis=quest:TOPIC_BALTRAM');
 	await expect(page.getByRole('heading', { name: 'Etapy dziennika' })).toBeVisible({
 		timeout: 30_000
 	});
 	await expect(page.getByText('Nagroda:')).toBeVisible();
-	await page.getByRole('button', { name: /^Akil/ }).click();
+	await page
+		.getByRole('region', { name: 'Karta wpisu' })
+		.getByRole('button', { name: /^Akil/ })
+		.click();
 	await expect(page.getByRole('heading', { name: 'Akil', level: 3 })).toBeVisible();
 	await expect(page).toHaveURL(/wpis=character/);
 });
 
 test('karta postaci wymienia jej questy i prowadzi do karty questa', async ({ page }) => {
-	await page.goto('/g2nk/khorinis?wpis=character:SLD_809_BENNET');
+	await page.goto('/g2nk/khorinis?narzedzie=search&wpis=character:SLD_809_BENNET');
 	await expect(page.getByRole('heading', { name: /^Questy \(\d+\)$/ })).toBeVisible({
 		timeout: 30_000
 	});
-	await page.getByRole('button', { name: /^Bennet siedzi w więzieniu/ }).click();
+	await page
+		.getByRole('region', { name: 'Karta wpisu' })
+		.getByRole('button', { name: /^Bennet siedzi w więzieniu/ })
+		.click();
 	await expect(page).toHaveURL(/wpis=quest/);
 	await expect(page.getByRole('heading', { name: 'Etapy dziennika' })).toBeVisible();
 });
 
-test('zamknięcie wyszukiwarki usuwa wybraną postać z mapy i z adresu', async ({ page }) => {
-	await page.goto('/g2nk/khorinis?wpis=character:VLK_412_HARAD');
+test('zamknięcie Księgi zostawia wybraną postać w adresie', async ({ page }) => {
+	await page.goto('/g2nk/khorinis?narzedzie=search&wpis=character:VLK_412_HARAD');
 	await expect(page.getByRole('heading', { name: 'Harad' })).toBeVisible({ timeout: 30_000 });
 	await expect(page).toHaveURL(/wpis=/);
-	await page.getByRole('button', { name: 'Zamknij panel' }).click();
-	await expect(page).not.toHaveURL(/wpis=/);
-	await expect(page).toHaveTitle('Khorinis — GIS of Gothic');
+	await page.keyboard.press('Escape');
+	await expect(page.getByRole('searchbox')).toHaveCount(0);
+	await expect(page).toHaveURL(/wpis=/);
+	await expect(page).not.toHaveURL(/narzedzie=search/);
 });
 
 test('rozdział z linku zaznacza przycisk w panelu Czas i trafia do adresu', async ({ page }) => {
@@ -207,7 +217,7 @@ test('rozdział z linku zaznacza przycisk w panelu Czas i trafia do adresu', asy
 
 test('arkusz mobilny zmienia stan z klawiatury, a Esc zamyka panel', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/g2nk/khorinis');
+	await page.goto('/g2nk/khorinis?narzedzie=layers');
 	const handle = page.getByRole('slider', { name: /Wysokość panelu/ });
 	await expect(handle).toHaveAttribute('aria-valuetext', 'zwinięty');
 	await handle.focus();
@@ -221,21 +231,22 @@ test('arkusz mobilny zmienia stan z klawiatury, a Esc zamyka panel', async ({ pa
 	await expect(handle).toHaveCount(0);
 });
 
-test('na telefonie pole wyszukiwania rozwija arkusz, a okna otwiera menu „Więcej”', async ({
+test('na telefonie przycisk wyszukiwania otwiera Księgę, a okna otwiera menu „Więcej”', async ({
 	page
 }) => {
 	await page.setViewportSize({ width: 360, height: 780 });
-	await page.goto('/g2nk/khorinis');
+	await page.goto('/g2nk/khorinis?narzedzie=layers');
 	const handle = page.getByRole('slider', { name: /Wysokość panelu/ });
 	await expect(handle).toHaveAttribute('aria-valuetext', 'zwinięty');
-	await page.getByRole('searchbox').click();
-	await expect(handle).toHaveAttribute('aria-valuetext', 'połowa ekranu');
+	await page.getByRole('button', { name: 'Szukaj przedmiotu lub postaci' }).click();
+	await expect(page.getByRole('searchbox')).toBeVisible();
+	await page.keyboard.press('Escape');
+	await expect(page.getByRole('searchbox')).toHaveCount(0);
 	await page.getByRole('button', { name: 'Więcej', exact: true }).click();
 	await page.getByRole('button', { name: 'O projekcie' }).click();
 	await expect(page.getByRole('dialog')).toContainText('Trójwymiarowa wikipedia');
 	await page.keyboard.press('Escape');
 	await expect(page.getByRole('dialog')).toBeHidden();
-	await expect(handle).toBeVisible();
 });
 
 test('legenda włączonej warstwy otwiera panel Warstwy jednym kliknięciem', async ({ page }) => {
@@ -249,8 +260,10 @@ test('legenda włączonej warstwy otwiera panel Warstwy jednym kliknięciem', as
 });
 
 test('pusty wynik w jednym rodzaju proponuje szukanie we wszystkich', async ({ page }) => {
-	await page.goto('/g2nk/khorinis');
-	await expect(page.getByText(/Przedmioty: 312, unikatowe/)).toBeVisible({ timeout: 30_000 });
+	await page.goto(BOOK_URL);
+	await expect(page.getByTestId('status-bar')).toContainText(/Przedmioty: 312/, {
+		timeout: 30_000
+	});
 	await page.getByRole('button', { name: 'Przedmioty', exact: true }).click();
 	await page.getByRole('searchbox').fill('harad');
 	await page.getByRole('button', { name: 'Szukaj we wszystkich rodzajach' }).click();
@@ -275,7 +288,9 @@ test('analiza „Widoczność” prosi o punkt na mapie i ma suwak promienia', a
 
 test('przełącznik światów przenosi do Górniczej Doliny z jej danymi', async ({ page }) => {
 	await page.goto('/g2nk/khorinis');
-	await expect(page.getByText(/Przedmioty: 312, unikatowe/)).toBeVisible({ timeout: 30_000 });
+	await expect(page.getByTestId('status-bar')).toContainText(/Przedmioty: 312/, {
+		timeout: 30_000
+	});
 	await page.getByTitle('Zmień świat').click();
 	const worldMenu = page.getByRole('navigation', { name: 'Światy' });
 	await expect(worldMenu.getByRole('link')).toHaveCount(0);
@@ -283,7 +298,9 @@ test('przełącznik światów przenosi do Górniczej Doliny z jej danymi', async
 	await worldMenu.getByRole('link', { name: 'Górnicza Dolina' }).click();
 	await expect(page).toHaveURL(/\/g2nk\/gornicza-dolina(\?|$)/);
 	await expect(page).toHaveTitle('Górnicza Dolina — GIS of Gothic');
-	await expect(page.getByText(/Przedmioty: 214, unikatowe/)).toBeVisible({ timeout: 30_000 });
+	await expect(page.getByTestId('status-bar')).toContainText(/Przedmioty: 214/, {
+		timeout: 30_000
+	});
 });
 
 test('warstwa obiektów świata wczytuje tileset voba z bramki', async ({ page }) => {
@@ -292,7 +309,9 @@ test('warstwa obiektów świata wczytuje tileset voba z bramki', async ({ page }
 		if (/\/ion\/6045068\/tileset\.json/.test(request.url())) tilesetRequests.push(request.url());
 	});
 	await page.goto('/g2nk/khorinis');
-	await expect(page.getByText(/Przedmioty: 312, unikatowe/)).toBeVisible({ timeout: 30_000 });
+	await expect(page.getByTestId('status-bar')).toContainText(/Przedmioty: 312/, {
+		timeout: 30_000
+	});
 	await page
 		.getByRole('navigation', { name: 'Narzędzia' })
 		.getByRole('button', { name: 'Warstwy' })
@@ -332,7 +351,7 @@ test('ekran ładowania trwa do wczytania modelu świata, a potem znika', async (
 
 	releaseTileset();
 	await expect(launchScreen).toHaveCount(0, { timeout: 15_000 });
-	await expect(page.getByRole('searchbox')).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Szukaj przedmiotu lub postaci' })).toBeVisible();
 });
 
 test('po błędzie wczytania model świata ekran ładowania ustępuje karcie błędu', async ({
@@ -374,7 +393,7 @@ test('lista gier pokazuje światy dopiero po najechaniu i zamyka się klawiszem 
 });
 
 test('miejsca przedmiotu odhacza się osobno, a postęp widać w Notatniku', async ({ page }) => {
-	await page.goto('/g2nk/khorinis?wpis=item:HOLY_HAMMER_MIS');
+	await page.goto('/g2nk/khorinis?narzedzie=search&wpis=item:HOLY_HAMMER_MIS');
 	const placeCheckboxes = page.getByRole('checkbox', { name: /^Zebrane:/ });
 	await expect(placeCheckboxes.first()).toBeVisible({ timeout: 30_000 });
 	const placeCount = await placeCheckboxes.count();
@@ -387,6 +406,7 @@ test('miejsca przedmiotu odhacza się osobno, a postęp widać w Notatniku', asy
 	);
 	await expect(placeCheckboxes.nth(1)).not.toBeChecked();
 
+	await page.keyboard.press('Escape');
 	await page
 		.getByRole('navigation', { name: 'Narzędzia' })
 		.getByRole('button', { name: 'Notatnik' })
@@ -404,7 +424,7 @@ test('miejsca przedmiotu odhacza się osobno, a postęp widać w Notatniku', asy
 test('zbierz wszystkie odhacza wszystkie miejsca przedmiotu i można je odznaczyć', async ({
 	page
 }) => {
-	await page.goto('/g2nk/khorinis?wpis=item:HOLY_HAMMER_MIS');
+	await page.goto('/g2nk/khorinis?narzedzie=search&wpis=item:HOLY_HAMMER_MIS');
 	const placeCheckboxes = page.getByRole('checkbox', { name: /^Zebrane:/ });
 	await expect(placeCheckboxes.first()).toBeVisible({ timeout: 30_000 });
 	const placeCount = await placeCheckboxes.count();
@@ -416,7 +436,7 @@ test('zbierz wszystkie odhacza wszystkie miejsca przedmiotu i można je odznaczy
 });
 
 test('quest odhacza się jako całość i trafia na listę w Notatniku', async ({ page }) => {
-	await page.goto('/g2nk/khorinis?wpis=quest:TOPIC_RESCUEBENNET');
+	await page.goto('/g2nk/khorinis?narzedzie=search&wpis=quest:TOPIC_RESCUEBENNET');
 	const toggle = page.getByRole('button', { name: 'Oznacz jako wykonany' });
 	await expect(toggle).toBeVisible({ timeout: 30_000 });
 	await toggle.click();
@@ -425,6 +445,7 @@ test('quest odhacza się jako całość i trafia na listę w Notatniku', async (
 		'true'
 	);
 
+	await page.keyboard.press('Escape');
 	await page
 		.getByRole('navigation', { name: 'Narzędzia' })
 		.getByRole('button', { name: 'Notatnik' })
@@ -475,7 +496,7 @@ test('przycisk kopiowania linku potwierdza skopiowanie adresu widoku', async ({
 test('karta postaci pokazuje przedmioty, które ma przy sobie, z linkami do przedmiotów', async ({
 	page
 }) => {
-	await page.goto('/g2nk/khorinis?wpis=character:BAU_908_HODGES');
+	await page.goto('/g2nk/khorinis?narzedzie=search&wpis=character:BAU_908_HODGES');
 	await expect(page.getByRole('heading', { name: 'Hodges' })).toBeVisible({ timeout: 30_000 });
 	await expect(page.getByRole('heading', { name: /^Ma przy sobie \(\d+\)/ })).toBeVisible();
 	await page.getByRole('button', { name: /^Sierp/ }).click();
@@ -487,7 +508,7 @@ test('karta postaci pokazuje przedmioty, które ma przy sobie, z linkami do prze
 test('filtr poziomu zawęża postacie, a pusty wynik daje przycisk czyszczenia filtrów', async ({
 	page
 }) => {
-	await page.goto('/g2nk/khorinis');
+	await page.goto(BOOK_URL);
 	await page.getByRole('button', { name: 'Postacie' }).click();
 	await expect(page.getByText(/^Wszystko: \d+$/)).toBeVisible({ timeout: 30_000 });
 	await page.getByLabel('Poziom od').fill('101');
@@ -499,7 +520,7 @@ test('filtr poziomu zawęża postacie, a pusty wynik daje przycisk czyszczenia f
 });
 
 test('filtr rozdziału zawęża questy do jednego rozdziału', async ({ page }) => {
-	await page.goto('/g2nk/khorinis');
+	await page.goto(BOOK_URL);
 	await page.getByRole('button', { name: 'Questy' }).click();
 	await expect(page.getByText('Wszystko: 165')).toBeVisible({ timeout: 30_000 });
 	await page.getByLabel('Rozdział questa').selectOption({ label: 'Rozdział III' });

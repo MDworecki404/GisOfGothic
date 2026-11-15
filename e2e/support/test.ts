@@ -32,3 +32,6 @@ export const test = base.extend<{ stubbedTilesetGate: void }>({
 });
 
 export { expect };
+
+/** Adres Khorinis z otwartą Księgą (okno wyszukiwania). */
+export const BOOK_URL = '/g2nk/khorinis?narzedzie=search';

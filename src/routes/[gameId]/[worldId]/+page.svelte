@@ -1,5 +1,6 @@
 <script lang="ts">
 	import MapView from '#lib/components/MapView.svelte';
+	import Book from '#lib/components/book/Book.svelte';
 	import ActiveLayersLegend from '#lib/components/shell/ActiveLayersLegend.svelte';
 	import IdentifyCard from '#lib/components/shell/IdentifyCard.svelte';
 	import LaunchScreen from '#lib/components/shell/LaunchScreen.svelte';
@@ -57,6 +58,7 @@
 	<ActiveLayersLegend />
 	<MapLoadError />
 	<IdentifyCard />
+	<Book />
 	<InstrumentBar />
 </main>
 
