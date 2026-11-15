@@ -9,9 +9,9 @@ warstwa Questy, widok 2D z cięciem wysokości, rzut ortogonalny, lot kamerą, P
 
 ## Największy zysk dla użytkownika
 
-- **1. Przewodnik po questach.** Zaznaczony quest rysuje kolejność miejsc z etapów dziennika. Wymaga kolejności etapów
-  z gry: dziś `quests.json` ma `order: "script"` (kolejność w skryptach), więc trasa przez wszystkie cele byłaby zgadywaniem.
-  Sama trasa A→B po sieci dróg już jest (patrz „Zrobione”).
+- **1. Przewodnik po questach.** Zrobione w wersji podstawowej ([ADR 0039](adr/0039-przewodnik-po-questach.md)): quest z
+  `order: dependency` ma w Księdze listę przystanków i trasę na mapie z krokami „Wstecz” / „Dalej”. Do zrobienia: trasa po
+  sieci dróg między przystankami, pokazanie gałęzi alternatywnych, quest bez `place` dla etapu.
 - **2. Lokacje jako trzeci rodzaj danych.** Nazwane miejsca (obozy, jaskinie, budynki, przejścia między
   światami) z kartą i wpisem w wyszukiwarce. Pierwszy krok: wejścia do światów, np. Khorinis → Górnicza Dolina.
 

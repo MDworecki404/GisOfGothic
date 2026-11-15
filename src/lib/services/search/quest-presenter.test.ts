@@ -2,8 +2,11 @@ import { describe, expect, it } from 'vitest';
 import type { QuestRecord } from '#lib/data/types.js';
 import { QuestPresenter } from './quest-presenter.js';
 
+const NO_GUIDE_DATA = { requires: [], level: null, alternativeGroup: null, place: null };
+
 const quest: QuestRecord = {
 	id: 'quest:TOPIC_RESCUEBENNET',
+	order: 'script',
 	name: 'Bennet siedzi w więzieniu',
 	section: 'mission',
 	chapter: 3,
@@ -13,17 +16,42 @@ const quest: QuestRecord = {
 		{ code: 'SLD_809_BENNET', name: 'Bennet' }
 	],
 	stages: [
-		{ seq: 1, kind: 'status', text: null, status: 'RUNNING', chapter: 3, isConditional: false },
-		{ seq: 2, kind: 'status', text: null, status: 'RUNNING', chapter: 3, isConditional: false },
+		{
+			seq: 1,
+			kind: 'status',
+			text: null,
+			status: 'RUNNING',
+			chapter: 3,
+			isConditional: false,
+			...NO_GUIDE_DATA
+		},
+		{
+			seq: 2,
+			kind: 'status',
+			text: null,
+			status: 'RUNNING',
+			chapter: 3,
+			isConditional: false,
+			...NO_GUIDE_DATA
+		},
 		{
 			seq: 3,
 			kind: 'entry',
 			text: 'Kowal został aresztowany.',
 			status: null,
 			chapter: null,
-			isConditional: true
+			isConditional: true,
+			...NO_GUIDE_DATA
 		},
-		{ seq: 4, kind: 'status', text: null, status: 'SUCCESS', chapter: 3, isConditional: false }
+		{
+			seq: 4,
+			kind: 'status',
+			text: null,
+			status: 'SUCCESS',
+			chapter: 3,
+			isConditional: false,
+			...NO_GUIDE_DATA
+		}
 	],
 	people: [
 		{

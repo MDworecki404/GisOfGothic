@@ -18,6 +18,7 @@ import type {
 	QuestRecord,
 	QuestSection,
 	QuestStage,
+	QuestStagePlace,
 	QuestStageStatus
 } from './types.js';
 
@@ -52,6 +53,25 @@ function parseNamedPerson(value: unknown, description: string): { code: string; 
 	};
 }
 
+function readRequiredStages(record: Record<string, unknown>): number[] {
+	const value = record.requires;
+	if (!Array.isArray(value)) return [];
+	return value.filter((item) => typeof item === 'number');
+}
+
+function parseStagePlace(value: unknown, description: string): QuestStagePlace | null {
+	if (value === null || value === undefined) return null;
+	const record = requireRecord(value, description);
+	return {
+		lon: requireNumber(record, 'lon', description),
+		lat: requireNumber(record, 'lat', description),
+		h: requireNumber(record, 'h', description),
+		label: readOptionalString(record, 'label') ?? '',
+		waypoint: readOptionalString(record, 'waypoint') ?? null,
+		isDefaultRoutine: record.certainty === 'default'
+	};
+}
+
 function parseStage(value: unknown, description: string): QuestStage {
 	const record = requireRecord(value, description);
 	const kind = record.kind === 'status' ? 'status' : 'entry';
@@ -61,7 +81,11 @@ function parseStage(value: unknown, description: string): QuestStage {
 		text: readOptionalString(record, 'text') ?? null,
 		status: STAGE_STATUSES.find((status) => status === record.status) ?? null,
 		chapter: readChapterOrNull(record),
-		isConditional: readOptionalBoolean(record, 'conditional') ?? false
+		isConditional: readOptionalBoolean(record, 'conditional') ?? false,
+		requires: readRequiredStages(record),
+		level: readOptionalNumber(record, 'level') ?? null,
+		alternativeGroup: readOptionalString(record, 'alternative_group') ?? null,
+		place: parseStagePlace(record.place, `${description}, miejsce`)
 	};
 }
 
@@ -100,6 +124,7 @@ function parseQuest(value: unknown, position: number): QuestRecord {
 	const rewards = record.rewards === null ? {} : requireRecord(record.rewards ?? {}, description);
 	return {
 		id: requireString(record, 'id', description),
+		order: record.order === 'dependency' ? 'dependency' : 'script',
 		name: requireString(record, 'name', description),
 		section,
 		chapter: readChapterOrNull(record),

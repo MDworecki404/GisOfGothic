@@ -131,6 +131,16 @@ export type QuestPersonRole =
 	'giver' | 'giver_candidate' | 'target' | 'stage' | 'insert' | 'routine';
 export type QuestItemRole = 'reward' | 'handover' | 'placed';
 
+/** Miejsce etapu questu (paczka v6): gdzie gracz ma być, by etap zaszedł; `isDefaultRoutine` — to domyślna rutyna postaci. */
+export interface QuestStagePlace {
+	lon: number;
+	lat: number;
+	h: number;
+	label: string;
+	waypoint: string | null;
+	isDefaultRoutine: boolean;
+}
+
 /** Etap questu: wpis dziennika (`entry`) albo zmiana statusu (`status`). Kolejność wg skryptów, nie chronologia. */
 export interface QuestStage {
 	seq: number;
@@ -139,6 +149,13 @@ export interface QuestStage {
 	status: QuestStageStatus | null;
 	chapter: number | null;
 	isConditional: boolean;
+	/** Numery (`seq`) etapów, które muszą zajść wcześniej; pusta lista to początek. Brak w paczkach starszych niż v6. */
+	requires: number[];
+	/** Głębokość w grafie zależności (0 = start) albo `null`, gdy paczka jej nie zna. */
+	level: number | null;
+	/** Etapy z tą samą grupą wykluczają się nawzajem (rozgałęzienie fabuły). */
+	alternativeGroup: string | null;
+	place: QuestStagePlace | null;
 }
 
 /** Postać albo przedmiot powiązane z questem; `entryId` jest ustawione tylko dla wpisów z indeksu wyszukiwania. */
@@ -159,8 +176,12 @@ export interface QuestItem {
 	entryId: string | null;
 }
 
+/** `dependency` — kolejność etapów wynika z warunków w grze; `script` — tylko z kolejności w skryptach. */
+export type QuestOrder = 'dependency' | 'script';
+
 export interface QuestRecord {
 	id: string;
+	order: QuestOrder;
 	name: string;
 	section: QuestSection;
 	chapter: number | null;

@@ -1,3 +1,4 @@
+import { QuestGuidePlanner, type QuestGuideStep } from './quest-guide-planner.js';
 import type {
 	QuestPerson,
 	QuestPersonRole,
@@ -30,6 +31,8 @@ export interface QuestDetailsView {
 	people: QuestLinkView[];
 	items: QuestLinkView[];
 	experienceLabel: string | null;
+	/** Przystanki przewodnika w kolejności z gry; `null`, gdy quest nie ma pewnej kolejności. */
+	guide: QuestGuideStep[] | null;
 }
 
 const STATUS_LABELS: Readonly<Record<QuestStageStatus, string>> = {
@@ -66,6 +69,8 @@ const PERSON_ROLE_PRIORITY: readonly QuestPersonRole[] = [
 
 /** Zamienia surowy quest z `quests.json` na teksty i listy gotowe do pokazania w karcie. */
 export class QuestPresenter {
+	private readonly guidePlanner = new QuestGuidePlanner();
+
 	presentQuest(quest: QuestRecord): QuestDetailsView {
 		const hasCertainGiver = quest.giver !== null;
 		const giverNames = hasCertainGiver ? [quest.giver] : quest.giverCandidates;
@@ -85,7 +90,8 @@ export class QuestPresenter {
 				entryId: item.entryId
 			})),
 			experienceLabel:
-				quest.experiencePoints === null ? null : `${quest.experiencePoints} pkt doświadczenia`
+				quest.experiencePoints === null ? null : `${quest.experiencePoints} pkt doświadczenia`,
+			guide: this.guidePlanner.planSteps(quest)
 		};
 	}
 

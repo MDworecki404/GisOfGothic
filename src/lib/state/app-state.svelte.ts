@@ -108,6 +108,11 @@ export class AppState {
 		status: 'loading' | 'ready' | 'error';
 		details: QuestDetailsView | null;
 	} | null>(null);
+	/** Przewodnik po queście: czy trasa jest na mapie i na którym przystanku jest użytkownik. */
+	questGuide = $state.raw<{ isShown: boolean; stepIndex: number }>({
+		isShown: false,
+		stepIndex: 0
+	});
 	relatedQuests = $state.raw<{
 		entryId: string;
 		status: 'loading' | 'ready' | 'error';
@@ -252,6 +257,9 @@ export class AppState {
 			this.questDetails = null;
 			this.relatedQuests = null;
 			this.relatedEntries = null;
+		});
+		eventBus.subscribe('quest-guide-changed', ({ isShown, stepIndex }) => {
+			this.questGuide = { isShown, stepIndex };
 		});
 		eventBus.subscribe('related-entries-changed', ({ entryId, groups }) => {
 			this.relatedEntries = { entryId, groups };

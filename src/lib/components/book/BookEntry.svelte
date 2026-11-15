@@ -185,6 +185,45 @@
 					{/if}
 					{@render linkList(quest.giverHeading, quest.givers)}
 
+					{#if quest.guide}
+						<h4 class="group-label mt-4 mb-1">Przewodnik</h4>
+						<p class="text-caption text-muted-foreground">
+							Kolejność miejsc wynika z warunków w grze. Miejsca z oznaczeniem „orientacyjne” to
+							domyślne stanowisko postaci.
+						</p>
+						<ol class="mt-1 border-l border-primary/40 pl-3 text-sm">
+							{#each quest.guide as step (step.number)}
+								<li class="py-1.5">
+									<p class="font-medium">{step.number}. {step.placeLabel}</p>
+									{#if step.texts[0]}
+										<p class="leading-snug text-muted-foreground">{step.texts[0]}</p>
+									{/if}
+									{#if step.isApproximate || step.isAlternative}
+										<p class="text-caption text-muted-foreground">
+											{[
+												step.isApproximate ? 'miejsce orientacyjne' : null,
+												step.isAlternative ? 'jedna z możliwych dróg' : null
+											]
+												.filter((part) => part !== null)
+												.join(' · ')}
+										</p>
+									{/if}
+								</li>
+							{/each}
+						</ol>
+						<button
+							class="button-ochre mt-2"
+							aria-pressed={appState.questGuide.isShown}
+							onclick={() => {
+								const isShowing = !appState.questGuide.isShown;
+								geoportal.toggleQuestGuide();
+								if (isShowing) geoportal.selectTool('search');
+							}}
+						>
+							{appState.questGuide.isShown ? 'Ukryj trasę' : 'Pokaż trasę na mapie'}
+						</button>
+					{/if}
+
 					{#if quest.stages.length > 0}
 						<h4 class="group-label mt-4 mb-1">Etapy dziennika</h4>
 						<ol class="border-l border-primary/40 pl-3 text-sm">

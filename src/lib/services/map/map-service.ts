@@ -343,8 +343,12 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 		});
 	}
 
-	showPlaceMarkers(markers: readonly PlaceMarker[], shouldFlyToMarkers: boolean): void {
-		this.placeMarkers.showMarkers(markers);
+	showPlaceMarkers(
+		markers: readonly PlaceMarker[],
+		shouldFlyToMarkers: boolean,
+		showRoute = false
+	): void {
+		this.placeMarkers.showMarkers(markers, showRoute);
 		if (shouldFlyToMarkers) this.placeMarkers.flyToAllMarkers();
 	}
 

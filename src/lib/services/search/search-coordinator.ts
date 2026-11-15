@@ -2,17 +2,26 @@ import type { QuestCatalog, SearchEntry, SearchEntryType, SearchIndex } from '#l
 import type { AppEventBus } from '#lib/events/app-events.js';
 import type { PlaceMarker } from '#lib/services/map/place-markers-layer.js';
 import { QuestPresenter, type QuestLinkView } from './quest-presenter.js';
+import type { QuestGuideStep } from './quest-guide-planner.js';
 import { NO_ATTRIBUTE_FILTER, type AttributeFilter } from './attribute-filter.js';
 import { EntryRelationFinder } from './entry-relation-finder.js';
 import { buildPlaceKey, isCollectiblePlace } from '#lib/data/place-key.js';
-import { pickPlaceColor, SearchEntryPresenter } from './search-entry-presenter.js';
+import {
+	pickPlaceColor,
+	QUEST_ROLE_PRESENTATION,
+	SearchEntryPresenter
+} from './search-entry-presenter.js';
 import { SearchService, type CategoryOption, type SearchTypeFilter } from './search-service.js';
 
 /** Zebrane miejsca na mapie gasną do tego koloru, żeby od razu było widać, co zostało. */
 const COLLECTED_PLACE_COLOR = '#5d5649';
 
 export interface PlaceMarkersDisplay {
-	showPlaceMarkers(markers: readonly PlaceMarker[], shouldFlyToMarkers: boolean): void;
+	showPlaceMarkers(
+		markers: readonly PlaceMarker[],
+		shouldFlyToMarkers: boolean,
+		showRoute?: boolean
+	): void;
 	flyToPlaceMarker(index: number): void;
 	clearPlaceMarkers(): void;
 }
@@ -34,6 +43,9 @@ export class SearchCoordinator {
 	private shouldFlyToAwaitedEntry = true;
 	private modelNamespace = '';
 	private readonly questPresenter = new QuestPresenter();
+	private questGuideSteps: QuestGuideStep[] | null = null;
+	private isQuestGuideShown = false;
+	private questGuideStepIndex = 0;
 	private loadQuestCatalog: (() => Promise<QuestCatalog>) | null = null;
 	private questCatalogLoading: Promise<QuestCatalog> | null = null;
 
@@ -114,6 +126,7 @@ export class SearchCoordinator {
 		this.entryIdAwaitingIndex = null;
 		if (!entry) return;
 		this.selectedEntry = entry;
+		this.resetQuestGuide();
 		this.eventBus.publish({
 			type: 'search-entry-selected',
 			details: this.presenter.presentDetails(entry, this.modelNamespace)
@@ -127,6 +140,7 @@ export class SearchCoordinator {
 	clearSelection(): void {
 		if (!this.selectedEntry) return;
 		this.selectedEntry = null;
+		this.resetQuestGuide();
 		this.getMarkersDisplay()?.clearPlaceMarkers();
 		this.eventBus.publish({ type: 'search-entry-selected', details: null });
 	}
@@ -152,8 +166,55 @@ export class SearchCoordinator {
 		this.getMarkersDisplay()?.flyToPlaceMarker(placeIndex);
 	}
 
+	/** Pokazuje albo chowa trasę przez miejsca etapów wybranego questa; działa tylko, gdy quest ma przewodnik. */
+	toggleQuestGuide(): void {
+		if (!this.questGuideSteps) return;
+		this.isQuestGuideShown = !this.isQuestGuideShown;
+		this.questGuideStepIndex = 0;
+		this.publishQuestGuide();
+		this.showSelectedEntryOnMap(true);
+	}
+
+	/** Przechodzi do następnego (`1`) albo poprzedniego (`-1`) przystanku przewodnika i leci kamerą do jego miejsca. */
+	moveQuestGuideStep(direction: 1 | -1): void {
+		if (!this.questGuideSteps || !this.isQuestGuideShown) return;
+		const lastIndex = this.questGuideSteps.length - 1;
+		this.questGuideStepIndex = Math.min(
+			lastIndex,
+			Math.max(0, this.questGuideStepIndex + direction)
+		);
+		this.publishQuestGuide();
+		this.getMarkersDisplay()?.flyToPlaceMarker(this.questGuideStepIndex);
+	}
+
+	private resetQuestGuide(): void {
+		const hadGuide = this.questGuideSteps !== null || this.isQuestGuideShown;
+		this.questGuideSteps = null;
+		this.isQuestGuideShown = false;
+		this.questGuideStepIndex = 0;
+		if (hadGuide) this.publishQuestGuide();
+	}
+
+	private publishQuestGuide(): void {
+		this.eventBus.publish({
+			type: 'quest-guide-changed',
+			isShown: this.isQuestGuideShown,
+			stepIndex: this.questGuideStepIndex
+		});
+	}
+
 	showSelectedEntryOnMap(shouldFlyToMarkers: boolean): void {
 		if (!this.selectedEntry) return;
+		if (this.isQuestGuideShown && this.questGuideSteps) {
+			const route = this.questGuideSteps.map((step) => ({
+				lon: step.lon,
+				lat: step.lat,
+				h: step.h,
+				color: QUEST_ROLE_PRESENTATION.target.color
+			}));
+			this.getMarkersDisplay()?.showPlaceMarkers(route, shouldFlyToMarkers, true);
+			return;
+		}
 		const collectedKeys = this.getCollectedPlaceKeys(this.selectedEntry.id);
 		const markers = this.selectedEntry.places.map((place) => ({
 			lon: place.lon,
@@ -178,11 +239,13 @@ export class SearchCoordinator {
 			const catalog = await this.readQuestCatalog();
 			if (this.selectedEntry?.id !== entry.id) return;
 			const quest = catalog.quests.find((candidate) => candidate.id === entry.id);
+			const details = quest ? this.questPresenter.presentQuest(quest) : null;
+			this.questGuideSteps = details?.guide ?? null;
 			this.eventBus.publish({
 				type: 'quest-details-changed',
 				entryId: entry.id,
 				status: quest ? 'ready' : 'error',
-				details: quest ? this.questPresenter.presentQuest(quest) : null
+				details
 			});
 		} catch (error) {
 			console.error(error);

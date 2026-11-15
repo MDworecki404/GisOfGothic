@@ -156,6 +156,15 @@ albo `null`. Aplikacja czyta plik jako warstwę „Lokacje” ([ADR 0038](adr/00
 nazwy `derived` pokazują się jako robocze. Wyszukiwarka dokłada lokacje do indeksu jako wpisy `type: 'location'`;
 brak pliku (HTTP 404) oznacza zero lokacji.
 
+## Kolejność i miejsce etapów questów (`quests.json`, paczka v6)
+
+`quests.json` ma `version: 2`. Quest ma `order`: `dependency` (kolejność wynika z warunków dialogów w grze) albo `script`
+(tylko z kolejności w skryptach; aplikacja nie rysuje wtedy trasy). Etap ma `requires` (numery `seq` etapów, które muszą zajść
+wcześniej), `level` (głębokość w grafie zależności), `alternative_group` (etapy wykluczające się nawzajem), `hours` i `place`
+(`lon`, `lat`, `h`, `label`, `waypoint`, `source`, `certainty`: `only` albo `default` — domyślna rutyna postaci). Brak pól
+(paczka starsza niż v6) oznacza `order: script`. G1 i G2 mają zależności dla większości questów, Archolos i Gothic 3 w
+większości zostają na `script`. Zastosowanie: [ADR 0039](adr/0039-przewodnik-po-questach.md).
+
 ## Opis przedmiotu (`description`)
 
 Wiele przedmiotów ma w grze tę samą ogólną nazwę (`name`: „Mikstura”, „Zwój”, „Pierścień”, „Klucz”), a różni je opis ze

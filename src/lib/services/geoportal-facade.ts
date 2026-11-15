@@ -344,6 +344,15 @@ export class GeoportalFacade {
 		this.notebookCoordinator.flyToPin(pinId);
 	}
 
+	/** Pokazuje albo chowa na mapie trasę przez miejsca etapów wybranego questa. */
+	toggleQuestGuide(): void {
+		this.searchCoordinator.toggleQuestGuide();
+	}
+
+	moveQuestGuideStep(direction: 1 | -1): void {
+		this.searchCoordinator.moveQuestGuideStep(direction);
+	}
+
 	/** Odhacza albo cofa odhaczenie wybranego questa na liście „co zebrałem”. */
 	toggleCollectedStateOfSelectedQuest(): void {
 		const entry = this.searchCoordinator.selectedEntryReference;

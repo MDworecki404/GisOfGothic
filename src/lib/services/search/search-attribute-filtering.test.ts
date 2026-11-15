@@ -87,6 +87,7 @@ describe('QuestPresenter.presentQuestsOfItem', () => {
 		itemCode: string
 	): QuestRecord => ({
 		id,
+		order: 'script',
 		name,
 		section: 'mission',
 		chapter,

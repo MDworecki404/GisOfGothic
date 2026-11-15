@@ -56,6 +56,52 @@ describe('parseQuestCatalog', () => {
 		expect(quest.items[0]).toMatchObject({ entryId: null, amount: 35, certainty: 'possible' });
 	});
 
+	it('czyta zależności, poziom i miejsce etapu z paczki v6 oraz kolejność questa', () => {
+		const catalog = parseQuestCatalog({
+			version: 2,
+			quests: [
+				{
+					...questJson,
+					order: 'dependency',
+					stages: [
+						{
+							seq: 1,
+							kind: 'entry',
+							text: 'Idź do kowala.',
+							requires: [],
+							level: 0,
+							alternative_group: null,
+							place: {
+								lon: 0.1,
+								lat: 0.2,
+								h: 3,
+								label: 'Kowal: cały dzień',
+								waypoint: 'W1',
+								certainty: 'default'
+							}
+						},
+						{ seq: 2, kind: 'entry', text: 'Wróć.', requires: [1, 'x'], level: 1 }
+					]
+				}
+			]
+		});
+		const [quest] = catalog.quests;
+		expect(quest?.order).toBe('dependency');
+		expect(quest?.stages[0]?.place).toEqual({
+			lon: 0.1,
+			lat: 0.2,
+			h: 3,
+			label: 'Kowal: cały dzień',
+			waypoint: 'W1',
+			isDefaultRoutine: true
+		});
+		expect(quest?.stages[1]).toMatchObject({ requires: [1], level: 1, place: null });
+	});
+
+	it('quest z paczki bez pola order ma kolejność ze skryptów', () => {
+		expect(parseQuestCatalog({ version: 1, quests: [questJson] }).quests[0]?.order).toBe('script');
+	});
+
 	it('odrzuca quest bez sekcji z czytelnym komunikatem', () => {
 		const broken = { version: 1, quests: [{ ...questJson, section: 'x' }] };
 		expect(() => parseQuestCatalog(broken)).toThrow(/quest #0/);

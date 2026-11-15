@@ -10,6 +10,14 @@
 	const isVisible = $derived(
 		entry !== null && appState.activeToolId !== 'search' && appState.identifiedFeature === null
 	);
+	const guide = $derived(
+		entry?.type === 'quest' && appState.questDetails?.entryId === entry.id
+			? (appState.questDetails.details?.guide ?? null)
+			: null
+	);
+	const guideStep = $derived(
+		appState.questGuide.isShown && guide ? guide[appState.questGuide.stepIndex] : undefined
+	);
 	const collectedPlaceKeys = $derived(appState.collectedPlaceKeysOfSelectedEntry);
 	const collectiblePlaceCount = $derived(
 		entry?.places.filter((place) => place.isCollectible).length ?? 0
@@ -49,6 +57,37 @@
 					</span>
 					<span class="block text-primary">{appState.selectedCharacterNow.activity}</span>
 				</p>
+			{/if}
+
+			{#if guide && guideStep}
+				<div class="mt-3 text-sm" role="status">
+					<p class="text-caption text-muted-foreground tabular-nums">
+						Przewodnik · krok {guideStep.number} z {guide.length}
+					</p>
+					<p class="font-medium text-primary">{guideStep.placeLabel}</p>
+					{#if guideStep.texts[0]}
+						<p class="leading-snug">{guideStep.texts[0]}</p>
+					{/if}
+					<div class="mt-2 flex gap-2">
+						<button
+							class="button-quiet"
+							disabled={appState.questGuide.stepIndex === 0}
+							onclick={() => geoportal.moveQuestGuideStep(-1)}
+						>
+							Wstecz
+						</button>
+						<button
+							class="button-ochre"
+							disabled={appState.questGuide.stepIndex === guide.length - 1}
+							onclick={() => geoportal.moveQuestGuideStep(1)}
+						>
+							Dalej
+						</button>
+						<button class="button-quiet" onclick={() => geoportal.toggleQuestGuide()}>
+							Ukryj trasę
+						</button>
+					</div>
+				</div>
 			{/if}
 
 			{#if entry.facts.length > 0}

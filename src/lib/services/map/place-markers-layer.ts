@@ -40,17 +40,18 @@ const EXTENT_LINE_WIDTH = 3;
 export class PlaceMarkersLayer {
 	private readonly points = new PointPrimitiveCollection();
 	private positions: Cartesian3[] = [];
-	private readonly extentOutlines = new PolylineCollection();
+	private readonly outlines = new PolylineCollection();
 
 	constructor(
 		private readonly viewer: Viewer,
 		private readonly cameraFramer: CameraFramer
 	) {
 		viewer.scene.primitives.add(this.points);
-		viewer.scene.primitives.add(this.extentOutlines);
+		viewer.scene.primitives.add(this.outlines);
 	}
 
-	showMarkers(markers: readonly PlaceMarker[]): void {
+	/** `showRoute` łączy znaczniki linią w podanej kolejności (przewodnik po queście). */
+	showMarkers(markers: readonly PlaceMarker[], showRoute = false): void {
 		this.clearMarkers();
 		this.positions = markers.map((marker) =>
 			Cartesian3.fromDegrees(marker.lon, marker.lat, marker.h)
@@ -66,6 +67,15 @@ export class PlaceMarkersLayer {
 			});
 			if (marker.extent) this.addExtentOutline(marker, marker.extent);
 		});
+		if (showRoute && this.positions.length >= 2) {
+			this.outlines.add({
+				positions: [...this.positions],
+				width: EXTENT_LINE_WIDTH,
+				material: Material.fromType('Color', {
+					color: Color.fromCssColorString(MAP_PALETTE.emberLight)
+				})
+			});
+		}
 	}
 
 	highlightMarker(index: number): void {
@@ -105,13 +115,13 @@ export class PlaceMarkersLayer {
 	clearMarkers(): void {
 		this.points.removeAll();
 		this.positions = [];
-		this.extentOutlines.removeAll();
+		this.outlines.removeAll();
 	}
 
 	private addExtentOutline(marker: PlaceMarker, extent: PlaceExtent): void {
 		const ring = this.buildExtentRing(marker, extent);
 		if (ring.length < 3) return;
-		this.extentOutlines.add({
+		this.outlines.add({
 			positions: ring,
 			width: EXTENT_LINE_WIDTH,
 			material: Material.fromType('Color', { color: Color.fromCssColorString(marker.color) })

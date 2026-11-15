@@ -64,6 +64,7 @@ export type AppEvent =
 			results: SearchResult[];
 	  }
 	| { type: 'search-entry-selected'; details: SearchEntryDetails | null }
+	| { type: 'quest-guide-changed'; isShown: boolean; stepIndex: number }
 	| {
 			type: 'quest-details-changed';
 			entryId: string;
