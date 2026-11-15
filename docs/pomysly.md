@@ -31,8 +31,6 @@ warstwa Questy, widok 2D z cięciem wysokości, rzut ortogonalny, lot kamerą, P
 
 - **15. Dostępność i klawiatura:** obsługa bez myszy, ściąga skrótów pod `?`, kontrast w motywie.
 - **16. Telemetria wydajności bez śledzenia**, np. liczniki błędów ładowania kafli.
-- **17. Otwarcie repozytorium:** zrobione poza jednym krokiem ([ADR 0041](adr/0041-otwarcie-repozytorium.md)). Zostaje
-  decyzja o adresie e-mail w historii commitów i przestawienie repozytorium na publiczne w ustawieniach GitHuba.
 - **18. Wiele języków** (angielski); interfejs jest dziś tylko po polsku.
 
 ## Proponowana kolejność
@@ -42,6 +40,8 @@ jest treść: **2**.
 
 ## Zrobione
 
+- **17. Otwarcie repozytorium** — repozytorium jest publiczne: CI na GitHub Actions, `CONTRIBUTING.md`, `SECURITY.md`
+  z prywatnymi zgłoszeniami podatności, historia bez danych z gry i bez adresu e-mail autora (ADR 0041).
 - **12. Rutyny postaci jako animacja** — przycisk „Odtwórz” w panelu Czas: godzina rośnie w trzech tempach, a postacie
   idą po drogach z gry między miejscami rutyny; bez drogi skaczą (ADR 0035).
 - **6. Pomiary: tempo marszu** — czas przejścia pieszo, biegiem, skradaniem i z bronią, z prędkości z animacji gry.
