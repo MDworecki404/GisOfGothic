@@ -63,6 +63,14 @@ export interface Place {
 	npc_code?: string;
 	/** Gothic 3: kod zestawu losowego łupu, z którego przedmiot może wypaść w tym miejscu (`certainty: 'possible'`). */
 	set?: string;
+	/** Lokacje: zasięg miejsca do narysowania na mapie. */
+	extent?: PlaceExtent;
+}
+
+/** Zasięg lokacji: obrys (pierścień `[lon, lat]`) albo okrąg o promieniu w metrach; obrys ma pierwszeństwo. */
+export interface PlaceExtent {
+	radiusMetres: number | null;
+	polygon: readonly (readonly [number, number])[] | null;
 }
 
 /** Rodzaj zestawu losowego łupu (Gothic 3): skrzynia, postać, potwór, handlarz albo wydobycie. */
@@ -227,6 +235,8 @@ export interface LocationEntry {
 	code: string | null;
 	center: Anchor;
 	radiusMetres: number | null;
+	/** Obrys lokacji (pierścień `[lon, lat]`) albo `null`, gdy gra go nie daje. */
+	polygon: readonly (readonly [number, number])[] | null;
 	waypoint: string | null;
 	passage: LocationPassage | null;
 }

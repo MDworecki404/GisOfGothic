@@ -1,10 +1,15 @@
 import { MAP_PALETTE } from '#lib/services/map/map-palette.js';
+import type { PlaceExtent } from '#lib/data/types.js';
 import {
 	BoundingSphere,
 	Cartesian3,
 	Color,
 	Math as CesiumMath,
+	Material,
+	Matrix4,
 	PointPrimitiveCollection,
+	PolylineCollection,
+	Transforms,
 	type Viewer
 } from 'cesium';
 import type { CameraFramer } from './camera-framer.js';
@@ -14,6 +19,8 @@ export interface PlaceMarker {
 	lat: number;
 	h: number;
 	color: string;
+	/** Zasięg rysowany jako obrys wokół znacznika (lokacje). */
+	extent?: PlaceExtent;
 }
 
 const MARKER_PIXEL_SIZE = 11;
@@ -23,6 +30,8 @@ const HIGHLIGHT_COLOR = Color.fromCssColorString(MAP_PALETTE.emberLight);
 const OVERVIEW_PITCH_DEGREES = -55;
 const MINIMUM_OVERVIEW_RANGE_METRES = 120;
 const PLACE_CLOSE_UP_RANGE_METRES = 45;
+const EXTENT_CIRCLE_SEGMENTS = 64;
+const EXTENT_LINE_WIDTH = 3;
 
 /**
  * Znaczniki miejsc wybranego wpisu. Wszystkie punkty to jedna kolekcja prymitywów (jedno
@@ -31,12 +40,14 @@ const PLACE_CLOSE_UP_RANGE_METRES = 45;
 export class PlaceMarkersLayer {
 	private readonly points = new PointPrimitiveCollection();
 	private positions: Cartesian3[] = [];
+	private readonly extentOutlines = new PolylineCollection();
 
 	constructor(
 		private readonly viewer: Viewer,
 		private readonly cameraFramer: CameraFramer
 	) {
 		viewer.scene.primitives.add(this.points);
+		viewer.scene.primitives.add(this.extentOutlines);
 	}
 
 	showMarkers(markers: readonly PlaceMarker[]): void {
@@ -53,6 +64,7 @@ export class PlaceMarkersLayer {
 				outlineWidth: 2,
 				disableDepthTestDistance: Number.POSITIVE_INFINITY
 			});
+			if (marker.extent) this.addExtentOutline(marker, marker.extent);
 		});
 	}
 
@@ -93,5 +105,36 @@ export class PlaceMarkersLayer {
 	clearMarkers(): void {
 		this.points.removeAll();
 		this.positions = [];
+		this.extentOutlines.removeAll();
+	}
+
+	private addExtentOutline(marker: PlaceMarker, extent: PlaceExtent): void {
+		const ring = this.buildExtentRing(marker, extent);
+		if (ring.length < 3) return;
+		this.extentOutlines.add({
+			positions: ring,
+			width: EXTENT_LINE_WIDTH,
+			material: Material.fromType('Color', { color: Color.fromCssColorString(marker.color) })
+		});
+	}
+
+	/** Zamknięty pierścień punktów: obrys z danych, a bez niego okrąg o promieniu lokacji w płaszczyźnie poziomej. */
+	private buildExtentRing(marker: PlaceMarker, extent: PlaceExtent): Cartesian3[] {
+		if (extent.polygon) {
+			return extent.polygon.map(([lon, lat]) => Cartesian3.fromDegrees(lon, lat, marker.h));
+		}
+		if (extent.radiusMetres === null) return [];
+		const localToWorld = Transforms.eastNorthUpToFixedFrame(
+			Cartesian3.fromDegrees(marker.lon, marker.lat, marker.h)
+		);
+		const radius = extent.radiusMetres;
+		return Array.from({ length: EXTENT_CIRCLE_SEGMENTS + 1 }, (_, segment) => {
+			const angle = (segment / EXTENT_CIRCLE_SEGMENTS) * 2 * Math.PI;
+			return Matrix4.multiplyByPoint(
+				localToWorld,
+				new Cartesian3(radius * Math.cos(angle), radius * Math.sin(angle), 0),
+				new Cartesian3()
+			);
+		});
 	}
 }

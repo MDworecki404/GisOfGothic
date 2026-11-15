@@ -159,7 +159,10 @@ export class SearchCoordinator {
 			lon: place.lon,
 			lat: place.lat,
 			h: place.h,
-			color: collectedKeys.has(buildPlaceKey(place)) ? COLLECTED_PLACE_COLOR : pickPlaceColor(place)
+			color: collectedKeys.has(buildPlaceKey(place))
+				? COLLECTED_PLACE_COLOR
+				: pickPlaceColor(place),
+			extent: place.extent
 		}));
 		this.getMarkersDisplay()?.showPlaceMarkers(markers, shouldFlyToMarkers);
 	}

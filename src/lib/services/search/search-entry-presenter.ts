@@ -132,7 +132,9 @@ export class SearchEntryPresenter {
 			facts: this.listFacts(entry),
 			lootSources: this.lootPresenter.describeLootSources(entry.loot ?? []),
 			encyclopediaUrl:
-				entry.type !== 'item' ? this.encyclopediaLinkBuilder.buildSearchUrl(entry.name) : null,
+				entry.type !== 'item' && entry.type !== 'location'
+					? this.encyclopediaLinkBuilder.buildSearchUrl(entry.name)
+					: null,
 			places: entry.places.map((place, index) =>
 				this.presentPlace(place, index, entry.type === 'item')
 			),

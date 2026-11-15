@@ -45,6 +45,33 @@ describe('parseLocationCatalog', () => {
 		});
 	});
 
+	it('czyta obrys lokacji jako pierścień lon-lat', () => {
+		const [location] = parseLocationCatalog({
+			version: 1,
+			locations: [
+				{
+					...CAMP,
+					polygon: [
+						[0, 0],
+						[0.001, 0],
+						[0.001, 0.001],
+						[0, 0]
+					]
+				}
+			]
+		});
+		expect(location?.polygon).toEqual([
+			[0, 0],
+			[0.001, 0],
+			[0.001, 0.001],
+			[0, 0]
+		]);
+	});
+
+	it('uznaje brak obrysu za null', () => {
+		expect(parseLocationCatalog({ version: 1, locations: [CAMP] })[0]?.polygon).toBeNull();
+	});
+
 	it('odrzuca nieznany rodzaj lokacji', () => {
 		expect(() =>
 			parseLocationCatalog({ version: 1, locations: [{ ...CAMP, kind: 'ufo' }] })

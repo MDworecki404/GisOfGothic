@@ -44,6 +44,16 @@ function readPosition(value: unknown, description: string): Anchor {
 	return { lon, lat, h };
 }
 
+function readPolygon(value: unknown, description: string): [number, number][] | null {
+	if (value === null || value === undefined) return null;
+	if (!Array.isArray(value)) throw new Error(`${description}: obrys musi być tablicą punktów`);
+	const ring = value.map((point): [number, number] => {
+		const { lon, lat } = readPosition([...(Array.isArray(point) ? point : []), 0], description);
+		return [lon, lat];
+	});
+	return ring.length >= 3 ? ring : null;
+}
+
 function parsePassage(value: unknown, description: string): LocationPassage {
 	const record = requireRecord(value, `${description}.passage`);
 	const arrival = record['arrival'];
@@ -68,6 +78,7 @@ function parseLocation(value: unknown, index: number): LocationEntry {
 		code: readOptionalString(record, 'code') ?? null,
 		center: readPosition(record['center'], description),
 		radiusMetres: readOptionalNumber(record, 'radius_m') ?? null,
+		polygon: readPolygon(record['polygon'], description),
 		waypoint: readOptionalString(record, 'waypoint') ?? null,
 		passage: kind === 'passage' && isRecord(passage) ? parsePassage(passage, description) : null
 	};

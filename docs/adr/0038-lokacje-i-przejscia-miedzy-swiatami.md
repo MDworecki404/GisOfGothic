@@ -29,4 +29,6 @@ Ekstraktor (paczka v5) zapisuje je w osobnym pliku `locations.json`.
   `type: 'location'` (`buildSearchEntryFromLocation`), z kategorią równą rodzajowi lokacji. Księga ma filtr „Lokacje”,
   a karta wpisu i `EntrySummaryCard` pokazują przycisk przejścia (`PassageTravelButton`). Warstwa na mapie czyta
   ten sam plik osobno, więc nie wymaga otwarcia Księgi.
-- Odłożone: obrysy (`polygon`) i zasięgi na mapie, filtr po rodzaju.
+- Wybrana lokacja ma na mapie obrys zasięgu: `Place.extent` (obrys z `polygon` albo okrąg o `radius_m`) rysuje
+  `PlaceMarkersLayer` jako linię w kolorze znacznika; teren ją zasłania, w przeciwieństwie do znacznika.
+- Odłożone: filtr po rodzaju lokacji.

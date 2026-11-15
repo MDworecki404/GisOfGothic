@@ -17,7 +17,8 @@ export function buildSearchEntryFromLocation(location: LocationEntry): SearchEnt
 				lon: location.center.lon,
 				lat: location.center.lat,
 				h: location.center.h,
-				label: kindLabel
+				label: kindLabel,
+				extent: { radiusMetres: location.radiusMetres, polygon: location.polygon }
 			}
 		]
 	};
