@@ -54,6 +54,16 @@ test('lokacje są wpisami Księgi z filtrem rodzaju', async ({ page }) => {
 	await expect(page.getByRole('button', { name: /Przejście do: Górnicza Dolina/ })).toBeVisible();
 });
 
+test('lista kategorii zawęża lokacje do wybranego rodzaju', async ({ page }) => {
+	await page.goto(BOOK_URL);
+	await page.getByRole('button', { name: 'Lokacje', exact: true }).click();
+	const kindSelect = page.getByRole('combobox', { name: 'Kategoria' });
+	await expect(kindSelect.getByRole('option')).toHaveCount(3);
+	await kindSelect.selectOption({ label: 'Miasto lub osada (1)' });
+	await expect(page.getByRole('button', { name: /^Khorinis Miasto lub osada/ })).toBeVisible();
+	await expect(page.getByRole('button', { name: /Przejście do: Górnicza Dolina/ })).toHaveCount(0);
+});
+
 test('przejście z karty wpisu otwiera świat docelowy z widokiem na punkt przybycia', async ({
 	page
 }) => {
