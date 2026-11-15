@@ -12,7 +12,7 @@
 
 {#if isVisible}
 	<div
-		class="material-leather pointer-events-none fixed top-[calc(var(--top-bar-height)+var(--gutter))] left-[calc(var(--rail-width)+var(--panel-occupied-width)+(100vw-var(--rail-width)-var(--panel-occupied-width)-var(--map-controls-width))/2)] z-30 flex -translate-x-1/2 items-center gap-2.5 rounded-sm px-3 py-1.5 text-label whitespace-nowrap text-muted-foreground"
+		class="material-leather pointer-events-none fixed top-[calc(var(--top-bar-height)+var(--gutter))] left-[calc(var(--rail-width)+var(--panel-occupied-width)+(100vw-var(--rail-width)-var(--panel-occupied-width)-var(--map-controls-width))/2)] z-24 flex -translate-x-1/2 items-center gap-2.5 rounded-sm px-3 py-1.5 text-label whitespace-nowrap text-muted-foreground md:z-30"
 		aria-live="polite"
 		data-testid="tiles-loading-badge"
 	>
