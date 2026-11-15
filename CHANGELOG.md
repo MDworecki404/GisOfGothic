@@ -2,6 +2,77 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.13.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.12.0...v0.13.0) (2026-11-15)
+
+### Nowe funkcje
+
+* „Teraz” postaci na karcie wpisu i w Księdze ([7808f9f](https://github.com/MDworecki404/GisOfGothic/commit/7808f9f116346f42895c0435bae49fafca6a2769))
+* dok narzędzi i pięć pozycji nawigacji na telefonie ([dfa0af9](https://github.com/MDworecki404/GisOfGothic/commit/dfa0af9683063c5334340328e561cf250800ba39))
+* graf sieci waypointów z przyciąganiem do najbliższego punktu ([d018336](https://github.com/MDworecki404/GisOfGothic/commit/d0183366d8642de46598d554e0db4c4be139c312))
+* karta wpisu przy mapie po zamknięciu Księgi ([c87bc32](https://github.com/MDworecki404/GisOfGothic/commit/c87bc324a41a3bd9971891edea47eab9ae3c7c37))
+* kolory warstw mapy z jednej palety ([4f65cb7](https://github.com/MDworecki404/GisOfGothic/commit/4f65cb701802ba6ecf890c5c188e140160190ccd))
+* Księga z listą i kartą wpisu zamiast panelu wyszukiwania ([041ce78](https://github.com/MDworecki404/GisOfGothic/commit/041ce78b7140187bf07a93936d918867fe6761da))
+* nowe ikony PWA i favicon z żarowym kryształem ([88f30c4](https://github.com/MDworecki404/GisOfGothic/commit/88f30c46b9737b28196bb567c295384a2ba16eb7))
+* odtwarzanie doby w trzech tempach ([488e896](https://github.com/MDworecki404/GisOfGothic/commit/488e8962de8f101c7afcf0eb529f7a0bf87f9d98))
+* odtwarzanie rutyn postaci po drogach w koordynatorze czasu ([b72c03d](https://github.com/MDworecki404/GisOfGothic/commit/b72c03d794ffc143ed0a5173f095a1b11f55b2e6))
+* odwrotne rzutowanie lokalnych metrów na współrzędne geodezyjne ([aa2eba2](https://github.com/MDworecki404/GisOfGothic/commit/aa2eba2df359ad79495aa1569f1720b58b9301c7))
+* ograniczenie ruchu przy prefers-reduced-motion ([6f39c7f](https://github.com/MDworecki404/GisOfGothic/commit/6f39c7fc58cd1cfebb3224c52eae5890dcdfef68))
+* oś czasu postaci z rutyn dnia ([a9362cd](https://github.com/MDworecki404/GisOfGothic/commit/a9362cdfdba1761e591f1167c0cb5345cf586070))
+* paleta i pismo nowego motywu ([d0505f5](https://github.com/MDworecki404/GisOfGothic/commit/d0505f562ce44c52ff50ade3b4cff64a276d2a20))
+* panel trasy i przycisk „Prowadź tutaj” ([7513ad9](https://github.com/MDworecki404/GisOfGothic/commit/7513ad97d4f88082bd2f1e663383c960a998f646))
+* planista trasy z dojściem spoza sieci ([7796d5f](https://github.com/MDworecki404/GisOfGothic/commit/7796d5fb79473161028e55779fadb86ada525cf1))
+* planowanie marszu postaci po sieci dróg ([be52233](https://github.com/MDworecki404/GisOfGothic/commit/be522330441c7a40792269ed0d4286e5ac60c406))
+* płyty, przyciski i żetony nowego motywu ([fc7d506](https://github.com/MDworecki404/GisOfGothic/commit/fc7d506297b50266ccdb4a22e08e5a8d84c1e45c))
+* pływające panele, sterowanie mapą i odczyt współrzędnych ([be73327](https://github.com/MDworecki404/GisOfGothic/commit/be73327d4f83e9c5ce5df688ce29ac6d1ebba192))
+* pływający nagłówek z tytułem świata, wyszukiwarką i akcjami ([1777427](https://github.com/MDworecki404/GisOfGothic/commit/17774278467f83671970942bc2b67a4a80e77349))
+* pola, karty i powierzchnie mapy w nowym motywie ([ef59484](https://github.com/MDworecki404/GisOfGothic/commit/ef59484c700f775834c093b46eb1deafd976c0b6))
+* pozycje postaci w minucie doby z marszem po drodze ([ff12e3f](https://github.com/MDworecki404/GisOfGothic/commit/ff12e3f5759bc58e6be64256488299be47bc132d))
+* prowadzenie do miejsca z karty wpisu ([a6f4671](https://github.com/MDworecki404/GisOfGothic/commit/a6f46711702cdc54a7f7a3c9351dcba6f550c5f7))
+* przycisk Odtwórz doby w panelu Czas ([2c43f7c](https://github.com/MDworecki404/GisOfGothic/commit/2c43f7ccf5b9155639d00bc27fbdcdbac04910ed))
+* przycisk Widok zwija rzadziej używane przyciski mapy ([d70909d](https://github.com/MDworecki404/GisOfGothic/commit/d70909d17f32015cb9876dd1a2c3aea86d493646))
+* trasa odtwarzana z linku ([6071a86](https://github.com/MDworecki404/GisOfGothic/commit/6071a86d8fb6ab1a40cda176024e0ded8e9b8391))
+* tryb trasy w narzędziu Pomiary ([6fdc979](https://github.com/MDworecki404/GisOfGothic/commit/6fdc979ab61e4b82224d2cbca6313c72f0f16541))
+* wczytywanie sieci waypointów świata ([3ae23f9](https://github.com/MDworecki404/GisOfGothic/commit/3ae23f9d0bd92f60a633a188ff9d431e2b9b7752))
+* wyszukiwanie najkrótszej drogi algorytmem A* ([d1d22aa](https://github.com/MDworecki404/GisOfGothic/commit/d1d22aaa4a6c0de89d5870920a35d3f977953119))
+* zegar doby z łukiem godzin i odtwarzaniem rutyn ([9b383ce](https://github.com/MDworecki404/GisOfGothic/commit/9b383cef601d14f63eabaa08639c8423712e6392))
+
+### Poprawki błędów
+
+* odstępy dokującego układu, atrybucja i stała szerokość odczytu ([c5c3bf4](https://github.com/MDworecki404/GisOfGothic/commit/c5c3bf4d35065971f3371c2069abb265dcc16724))
+* zegar doby nie zasłania atrybucji mapy ([f556387](https://github.com/MDworecki404/GisOfGothic/commit/f5563879fbd5e521bf800d3abe04f5a264194a8c))
+* zegar doby nie zwija się po przesunięciu godziny ([31c6c5e](https://github.com/MDworecki404/GisOfGothic/commit/31c6c5ead9c1d99fbc2df9ad10762fad1ac3a614))
+
+### Wydajność
+
+* przesuwanie punktów warstwy bez jej przebudowy ([9971c13](https://github.com/MDworecki404/GisOfGothic/commit/9971c130275d2659fd2c008223c9bf53e4a946b0))
+
+### Refaktoryzacja
+
+* Księga jako narzędzie bez panelu bocznego ([6ca81cf](https://github.com/MDworecki404/GisOfGothic/commit/6ca81cffdb233124b0f3a06863a63b3d256d3399))
+* usunięcie aliasów starych tokenów motywu ([74b76af](https://github.com/MDworecki404/GisOfGothic/commit/74b76af56aeefb705bc50f14f7faa4c9eb582d20))
+
+### Dokumentacja
+
+* ADR 0033 i opis tras po sieci waypointów ([f13ae92](https://github.com/MDworecki404/GisOfGothic/commit/f13ae92d4615d085b761631e93b35b64bc030e04))
+* ADR 0034 o sieci dróg Gothica 3 ([132b83d](https://github.com/MDworecki404/GisOfGothic/commit/132b83d9866bb31c90a45d1eea4c04db300fd717))
+* ADR 0035 i opis animacji rutyn postaci ([d3482e7](https://github.com/MDworecki404/GisOfGothic/commit/d3482e72e041cb6877c15a01c8d91d8001ad55f4))
+* ADR 0036 i opis nowego motywu ([5b101c2](https://github.com/MDworecki404/GisOfGothic/commit/5b101c20f0b0a1e361544dfc6f964dd550def16f))
+* ADR 0037 Księga i karta wpisu, opis w architekturze i glosariuszu ([721cd94](https://github.com/MDworecki404/GisOfGothic/commit/721cd94b1799ba2f97c621103d41470297109273))
+* opis nowego układu ekranu ([2beaef1](https://github.com/MDworecki404/GisOfGothic/commit/2beaef1e483412bd0d8f2eda39db5aa63c996cb5))
+* plan implementacji animacji rutyn postaci ([ed80785](https://github.com/MDworecki404/GisOfGothic/commit/ed807858a445ea0d9b4b5b827908b6a1262296f9))
+* plan implementacji nowego interfejsu, etap 3 ([05978a1](https://github.com/MDworecki404/GisOfGothic/commit/05978a115e5bca1dd29766ae447541e483042008))
+* plan implementacji nowego interfejsu, etapy 1 i 2 ([5435a79](https://github.com/MDworecki404/GisOfGothic/commit/5435a79ddff6982d3e3326172e67f0551efac4b4))
+* plan implementacji tras po sieci waypointów ([091a182](https://github.com/MDworecki404/GisOfGothic/commit/091a18223cf035fc4387a1f5483dd5b204350b9b))
+* projekt animacji rutyn postaci po drogach ([eb8f2a7](https://github.com/MDworecki404/GisOfGothic/commit/eb8f2a7ccd7a5be2eb3be6cd109b4c95c21346f6))
+* projekt tras po sieci waypointów ([656aeca](https://github.com/MDworecki404/GisOfGothic/commit/656aeca33f2e4e55fa8cf6a4c084636711846e21))
+* projekt wdrożenia nowego interfejsu ([fea9de2](https://github.com/MDworecki404/GisOfGothic/commit/fea9de239c0b04f4e04ead527f0bed0eb24b07b0))
+* status nowego interfejsu po wdrożeniu etapu 5 ([7e018b6](https://github.com/MDworecki404/GisOfGothic/commit/7e018b6952ceeb84d32d7c265d47c597ee44f044))
+* trasy korzystają ze zwartego pliku sieci waypointów ([3e51bb2](https://github.com/MDworecki404/GisOfGothic/commit/3e51bb2790b3af09b8892a40545a53252972d154))
+
+### Budowanie
+
+* aktualizacja zależności usuwa wysoką podatność ([63accb1](https://github.com/MDworecki404/GisOfGothic/commit/63accb1d88d9e8bfb1d2868a59340b79eafb90f9))
+
 ## [0.12.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.11.3...v0.12.0) (2026-11-02)
 
 ### Nowe funkcje
