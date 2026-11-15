@@ -4,6 +4,7 @@ import { buildPlaceKey, isCollectiblePlace } from '#lib/data/place-key.js';
 import { LootPresenter } from '#lib/services/loot/loot-presenter.js';
 import { EncyclopediaLinkBuilder } from '#lib/services/encyclopedia/encyclopedia-link-builder.js';
 import type {
+	CharacterModelParts,
 	PassageDestination,
 	Place,
 	PlaceKind,
@@ -88,6 +89,8 @@ export interface SearchEntryDetails {
 	categoryLabel: string;
 	/** Logiczna ścieżka podglądu 3D (np. `g2nk/khorinis/previews/x.glb`), nie adres pliku. */
 	modelPath: string | null;
+	/** Postacie: części modelu 3D (ścieżki względem adresu modeli świata) albo `null`. */
+	characterModel: CharacterModelParts | null;
 	facts: EntryFact[];
 	/** Gothic 3: skąd przedmiot może wypaść z losowego łupu. */
 	lootSources: string[];
@@ -129,6 +132,7 @@ export class SearchEntryPresenter {
 			code: entry.code,
 			categoryLabel: describeCategory(entry.category),
 			modelPath: entry.model ? `${modelNamespace}/${entry.model}` : null,
+			characterModel: entry.characterModel ?? null,
 			facts: this.listFacts(entry),
 			lootSources: this.lootPresenter.describeLootSources(entry.loot ?? []),
 			encyclopediaUrl:

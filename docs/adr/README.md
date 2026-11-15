@@ -45,3 +45,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0039](0039-przewodnik-po-questach.md)                         | Przewodnik po questach                               | przyjęta          |
 | [0040](0040-trasa-przewodnika-po-drogach.md)                   | Trasa przewodnika po drogach i gałęzie alternatywne  | przyjęta          |
 | [0041](0041-otwarcie-repozytorium.md)                          | Otwarcie repozytorium i CI bez danych z gry          | przyjęta          |
+| [0042](0042-podglad-postaci-skladany-z-czesci.md)              | Podgląd 3D postaci składany z części                 | przyjęta          |

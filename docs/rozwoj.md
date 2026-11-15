@@ -107,7 +107,10 @@ Modele są szyfrowane i wydawane tylko przez bramkę ([ADR 0012](adr/0012-ochron
 1. `node scripts/protect-item-models.mjs <dist>/<gra>/<świat>/models/previews <folder-wynikowy> <gra>/<świat>`
    — wbudowuje tekstury, szyfruje kluczem `PUBLIC_MODEL_KEY` z `.env` (tworzy go, jeśli brak).
 2. `node scripts/upload-models-to-r2.mjs <folder-wynikowy> gis-of-gothic-models <gra>/<świat>/items`.
-3. Podgląd i wydanie jak wyżej — klucz z `.env` trafia do strony.
+3. Części postaci (G1, G2 NK, Archolos; [ADR 0042](adr/0042-podglad-postaci-skladany-z-czesci.md)): ten sam skrypt z
+   czwartym argumentem — `node scripts/protect-item-models.mjs <dist>/<gra>/<świat>/models/characters <folder-wynikowy> <gra>/<świat> characters`
+   — i wgranie do tego samego prefiksu `<gra>/<świat>/items` (nazwy to HMAC, więc nic się nie nadpisuje).
+4. Podgląd i wydanie jak wyżej — klucz z `.env` trafia do strony.
 
 Bucket nie może mieć publicznego adresu (domena własna ani `r2.dev`) — tylko bramka ma do niego dostęp.
 

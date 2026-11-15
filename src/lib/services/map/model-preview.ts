@@ -22,6 +22,17 @@ const PREVIEW_HEADING_DEGREES = 35;
 const RANGE_IN_BOUNDING_RADII = 2.6;
 const STANDING_RANGE_IN_BOUNDING_RADII = 4.2;
 
+/** Z której strony i jak daleko (w promieniach bryły modelu) patrzy kamera; `null` dobiera odległość do ułożenia. */
+export interface PreviewView {
+	headingDegrees: number;
+	rangeInBoundingRadii: number | null;
+}
+
+const OBJECT_PREVIEW_VIEW: PreviewView = {
+	headingDegrees: PREVIEW_HEADING_DEGREES,
+	rangeInBoundingRadii: null
+};
+
 /**
  * Mały, osobny widok 3D jednego przedmiotu w karcie wpisu. Używa tego samego układu osi co
  * modele świata (glTF: Wschód, Góra, −Północ), bez globusa, nieba i podkładu. Użytkownik może
@@ -29,7 +40,8 @@ const STANDING_RANGE_IN_BOUNDING_RADII = 4.2;
  */
 export class ModelPreview {
 	private readonly widget: CesiumWidget;
-	private model: Model | null = null;
+	private models: Model[] = [];
+	private view: PreviewView = OBJECT_PREVIEW_VIEW;
 	private latestRequest = 0;
 	private orientation: PreviewOrientation = 'as-saved';
 
@@ -58,29 +70,49 @@ export class ModelPreview {
 		cacheKey: string,
 		orientation: PreviewOrientation
 	): Promise<void> {
+		await this.showModels([{ glb, cacheKey }], orientation, OBJECT_PREVIEW_VIEW);
+	}
+
+	/**
+	 * Pokazuje kilka modeli w tym samym miejscu sceny (części jednej postaci) i kadruje kamerę
+	 * na ich wspólnej bryle według `view`.
+	 */
+	async showModels(
+		parts: readonly { glb: Uint8Array<ArrayBuffer>; cacheKey: string }[],
+		orientation: PreviewOrientation,
+		view: PreviewView
+	): Promise<void> {
 		const request = ++this.latestRequest;
-		this.removeModel();
+		this.removeModels();
 		this.orientation = orientation;
-		const model = await Model.fromGltfAsync({
-			url: new InMemoryModelResource(glb, cacheKey),
-			modelMatrix: this.buildModelMatrix(orientation),
-			upAxis: Axis.Y,
-			forwardAxis: Axis.X
-		});
+		this.view = view;
+		const modelMatrix = this.buildModelMatrix(orientation);
+		const models = await Promise.all(
+			parts.map((part) =>
+				Model.fromGltfAsync({
+					url: new InMemoryModelResource(part.glb, part.cacheKey),
+					modelMatrix,
+					upAxis: Axis.Y,
+					forwardAxis: Axis.X
+				})
+			)
+		);
 		if (this.widget.isDestroyed() || request !== this.latestRequest) {
-			model.destroy();
+			models.forEach((model) => model.destroy());
 			return;
 		}
-		this.model = model;
-		this.widget.scene.primitives.add(model);
-		model.readyEvent.addEventListener(() => this.frameModel(model));
-		if (model.ready) this.frameModel(model);
+		this.models = models;
+		models.forEach((model) => {
+			this.widget.scene.primitives.add(model);
+			model.readyEvent.addEventListener(() => this.frameModelsWhenReady());
+		});
+		this.frameModelsWhenReady();
 	}
 
 	destroy(): void {
 		this.latestRequest++;
 		if (!this.widget.isDestroyed()) this.widget.destroy();
-		this.model = null;
+		this.models = [];
 	}
 
 	/**
@@ -102,23 +134,30 @@ export class ModelPreview {
 		);
 	}
 
-	private frameModel(model: Model): void {
-		const sphere = BoundingSphere.clone(model.boundingSphere);
+	private frameModelsWhenReady(): void {
+		if (this.models.length === 0 || this.models.some((model) => !model.ready)) return;
+		const sphere = this.models
+			.map((model) => model.boundingSphere)
+			.reduce((union, next) => BoundingSphere.union(union, next, new BoundingSphere()));
 		const camera = this.widget.camera;
 		camera.lookAt(
 			sphere.center,
 			new HeadingPitchRange(
-				CesiumMath.toRadians(PREVIEW_HEADING_DEGREES),
+				CesiumMath.toRadians(this.view.headingDegrees),
 				CesiumMath.toRadians(this.choosePitchDegrees()),
-				Math.max(sphere.radius, 0.01) *
-					(this.orientation === 'as-saved'
-						? RANGE_IN_BOUNDING_RADII
-						: STANDING_RANGE_IN_BOUNDING_RADII)
+				Math.max(sphere.radius, 0.01) * this.chooseRangeInBoundingRadii()
 			)
 		);
 		this.widget.scene.screenSpaceCameraController.minimumZoomDistance = sphere.radius * 0.8;
 		this.widget.scene.screenSpaceCameraController.maximumZoomDistance = sphere.radius * 8;
 		this.widget.scene.requestRender();
+	}
+
+	private chooseRangeInBoundingRadii(): number {
+		if (this.view.rangeInBoundingRadii !== null) return this.view.rangeInBoundingRadii;
+		return this.orientation === 'as-saved'
+			? RANGE_IN_BOUNDING_RADII
+			: STANDING_RANGE_IN_BOUNDING_RADII;
 	}
 
 	private isStanding(): boolean {
@@ -131,9 +170,8 @@ export class ModelPreview {
 		return PREVIEW_PITCH_DEGREES;
 	}
 
-	private removeModel(): void {
-		if (!this.model) return;
-		this.widget.scene.primitives.remove(this.model);
-		this.model = null;
+	private removeModels(): void {
+		this.models.forEach((model) => this.widget.scene.primitives.remove(model));
+		this.models = [];
 	}
 }

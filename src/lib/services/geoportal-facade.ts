@@ -1,5 +1,6 @@
 import { guildNameBook } from '#lib/data/category-names.js';
 import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
+import type { CharacterModelParts } from '#lib/data/types.js';
 import { worldCatalog, type WorldDefinition } from '#lib/data/world-catalog.js';
 import { PassageTravelPlanner, type PassageTravelTarget } from './travel/passage-travel-planner.js';
 import type { PassageDestination } from './layers/data-layer-catalog.js';
@@ -19,7 +20,8 @@ import type { NotebookStore } from './notebook/notebook-store.js';
 import type { CameraView } from './bookmarks/camera-view-codec.js';
 import { ViewLinkCodec, type SharedViewState } from './bookmarks/view-link-codec.js';
 import type { MapViewInsets } from './map/free-area-calculator.js';
-import { ModelPreview } from './map/model-preview.js';
+import { ModelPreview, type PreviewView } from './map/model-preview.js';
+import { CharacterModelAssembler } from './models/character-model-assembler.js';
 import type { ProtectedModelLoader } from './models/protected-model-loader.js';
 import { PreviewOrientationChooser } from './models/preview-orientation.js';
 import { AnalysisCoordinator, type AnalysisMode } from './analysis/analysis-coordinator.js';
@@ -62,6 +64,9 @@ import type { ToolId } from './tools/tool-id.js';
 export type FlightStick = 'move' | 'look';
 
 export type DataLoaderFactory = (dataBaseUrl: string) => GeoportalDataLoader;
+
+/** Postacie w plikach patrzą na północ, więc kamera stoi z północnej strony, lekko z boku. */
+const CHARACTER_PREVIEW_VIEW: PreviewView = { headingDegrees: 205, rangeInBoundingRadii: 3.0 };
 
 const OFFLINE_WORLD_MESSAGE =
 	'brak połączenia z internetem. Model świata jest pobierany z sieci; wyszukiwarka i dane działają dalej';
@@ -688,6 +693,29 @@ export class GeoportalFacade {
 						model.glb,
 						model.fileId,
 						this.previewOrientationChooser.chooseOrientation(model.bounds, modelPath)
+					)
+				)
+				.catch((error: unknown) => console.error(error));
+		}
+		return () => preview.destroy();
+	}
+
+	/**
+	 * Podgląd 3D postaci złożonej z części (ciało albo pancerz, głowa, broń) w podanym kontenerze;
+	 * zwraca funkcję sprzątającą. Części przychodzą z bramki tak jak modele przedmiotów.
+	 */
+	showCharacterPreview(container: HTMLElement, parts: CharacterModelParts): () => void {
+		const preview = new ModelPreview(container);
+		const world = this.currentWorld;
+		const loader = this.protectedModelLoader;
+		if (world && loader) {
+			new CharacterModelAssembler(loader)
+				.loadParts(world.protectedModelsUrl, parts, world.modelNamespace)
+				.then((models) =>
+					preview.showModels(
+						models.map((model) => ({ glb: model.glb, cacheKey: model.fileId })),
+						'as-saved',
+						CHARACTER_PREVIEW_VIEW
 					)
 				)
 				.catch((error: unknown) => console.error(error));

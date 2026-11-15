@@ -85,6 +85,14 @@ export interface LootSource {
 
 export type SearchEntryType = 'item' | 'character' | 'quest' | 'location';
 
+/** Części modelu postaci (ścieżki względem adresu modeli świata); każda część może nie istnieć. */
+export interface CharacterModelParts {
+	body: string | null;
+	head: string | null;
+	armor: string | null;
+	weapon: string | null;
+}
+
 export interface SearchEntry {
 	id: string;
 	type: SearchEntryType;
@@ -96,6 +104,8 @@ export interface SearchEntry {
 	category: string | null;
 	/** Przedmioty: plik modelu podglądu względem adresu modeli świata albo `null`. */
 	model?: string | null;
+	/** Postacie: części modelu 3D albo `null`, gdy postaci nie da się pokazać. */
+	characterModel?: CharacterModelParts | null;
 	/** Przedmioty: liczba pewnych sztuk. */
 	total?: number;
 	/** Postacie: poziom. */

@@ -572,6 +572,10 @@ tylko logiczną ścieżkę modelu (`modelPath`, np. `g2nk/khorinis/previews/x.gl
 (adres `protectedModelsUrl` w katalogu światów) i odszyfrowuje go w pamięci (`ProtectedModelCodec`);
 `ModelPreview` podaje bajty do Cesium przez `InMemoryModelResource`, bez żadnego adresu pliku.
 
+Karta postaci (G1, G2 NK, Archolos) pokazuje ją złożoną z części: `CharacterModelAssembler` wybiera pancerz zamiast ciała,
+głowę i broń, pobiera je równolegle, a `ModelPreview.showModels` ustawia je w jednej scenie ze wspólnym kadrem
+(`PreviewView`). Pole `model` postaci to obiekt `{ body, head, armor, weapon }` (ADR 0042).
+
 Przedmioty w grze leżą na ziemi, więc modele są płaskie. Wymiary zapisane w chronionym pliku
 trafiają do `PreviewOrientationChooser`, który dobiera ułożenie:
 

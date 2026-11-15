@@ -23,7 +23,6 @@ warstwa Questy, widok 2D z cięciem wysokości, rzut ortogonalny, lot kamerą, P
 
 ## Treść i wiki
 
-- **13. Podgląd 3D w karcie dla postaci i potworów**, jak dla przedmiotów.
 - **19. Filtr wartości przedmiotów** (cena, obrażenia). Indeks nie niesie tych pól, więc najpierw trzeba je dodać
   w ekstraktorze danych.
 
@@ -40,6 +39,8 @@ jest treść: **2**.
 
 ## Zrobione
 
+- **13. Podgląd 3D postaci i potworów** — karta postaci w Księdze pokazuje ją złożoną z części (ciało albo pancerz, głowa,
+  broń) w G1, G2 NK i Archolosie; Gothic 3 później (ADR 0042).
 - **17. Otwarcie repozytorium** — repozytorium jest publiczne: CI na GitHub Actions, `CONTRIBUTING.md`, `SECURITY.md`
   z prywatnymi zgłoszeniami podatności, historia bez danych z gry i bez adresu e-mail autora (ADR 0041).
 - **12. Rutyny postaci jako animacja** — przycisk „Odtwórz” w panelu Czas: godzina rośnie w trzech tempach, a postacie

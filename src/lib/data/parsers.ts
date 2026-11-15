@@ -1,5 +1,6 @@
 import type {
 	Anchor,
+	CharacterModelParts,
 	LootSource,
 	Metadata,
 	MovementSpeeds,
@@ -253,6 +254,19 @@ function parseLootSources(value: unknown, description: string): LootSource[] | u
 	});
 }
 
+/** `null` także wtedy, gdy wszystkie części są puste albo pole ma inny kształt (np. ścieżka przedmiotu). */
+export function parseCharacterModelParts(value: unknown): CharacterModelParts | null {
+	if (typeof value !== 'object' || value === null || Array.isArray(value)) return null;
+	const record: Record<string, unknown> = { ...value };
+	const parts: CharacterModelParts = {
+		body: readOptionalString(record, 'body') ?? null,
+		head: readOptionalString(record, 'head') ?? null,
+		armor: readOptionalString(record, 'armor') ?? null,
+		weapon: readOptionalString(record, 'weapon') ?? null
+	};
+	return parts.body || parts.head || parts.armor ? parts : null;
+}
+
 function parseSearchEntry(value: unknown, position: number): SearchEntry {
 	const description = `search_index.json: wpis #${position}`;
 	const record = requireRecord(value, description);
@@ -269,6 +283,7 @@ function parseSearchEntry(value: unknown, position: number): SearchEntry {
 		genericName: names.genericName,
 		category: readOptionalString(record, 'category') ?? null,
 		model: readOptionalString(record, 'model') ?? null,
+		characterModel: type === 'character' ? parseCharacterModelParts(record.model) : undefined,
 		total: readOptionalNumber(record, 'total'),
 		level: readOptionalNumber(record, 'level'),
 		codes: readStringList(record, 'codes'),

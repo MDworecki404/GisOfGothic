@@ -6,6 +6,7 @@
 	import { appState, geoportal } from '#lib/composition-root.js';
 	import CopyViewLinkButton from '#lib/components/shell/CopyViewLinkButton.svelte';
 	import PassageTravelButton from '#lib/components/shell/PassageTravelButton.svelte';
+	import type { CharacterModelParts } from '#lib/data/types.js';
 	import type { QuestLinkView } from '#lib/services/search/quest-presenter.js';
 
 	const questDetails = $derived(
@@ -40,6 +41,10 @@
 
 	function showPreview(modelPath: string): Attachment<HTMLElement> {
 		return (container) => geoportal.showModelPreview(container, modelPath);
+	}
+
+	function showCharacterPreview(parts: CharacterModelParts): Attachment<HTMLElement> {
+		return (container) => geoportal.showCharacterPreview(container, parts);
 	}
 </script>
 
@@ -126,6 +131,15 @@
 					aria-label="Podgląd 3D: {entry.name}"
 					role="img"
 					{@attach showPreview(entry.modelPath)}
+				></div>
+			{/if}
+
+			{#if entry.characterModel}
+				<div
+					class="my-3 h-64 overflow-hidden rounded-md border border-edge bg-background shadow-well"
+					aria-label="Podgląd 3D: {entry.name}"
+					role="img"
+					{@attach showCharacterPreview(entry.characterModel)}
 				></div>
 			{/if}
 

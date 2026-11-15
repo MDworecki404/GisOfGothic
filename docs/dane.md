@@ -59,6 +59,8 @@ zasobów przepuszcza podglądy przedmiotów ze ścieżek `/g1/…` i `/g2nk/…`
    do tego czasu produkcyjna mapa nie ładuje kafli.
 3. **Dopuść asset w bramce:** `ALLOWED_ION_ASSETS` w `workers/model-gate/wrangler.jsonc`, potem `npm run deploy:gate`.
 4. **Skopiuj lekkie dane** do `static/data/<gra>/<świat>/` — bez `world.glb` i `models/`.
+   Pole `model` wpisu postaci jest obiektem `{ body, head, armor, weapon }` (części modelu 3D; ścieżki względem `models/`)
+   albo `null`, a przedmiotu — ścieżką do podglądu ([ADR 0042](adr/0042-podglad-postaci-skladany-z-czesci.md)).
 5. **Zaszyfruj i wgraj podglądy przedmiotów** z przestrzenią `<gra>/<świat>` (docs/rozwoj.md, „Modele przedmiotów”).
 6. **Dodaj wpis** do `WorldCatalog` w `world-catalog.ts`: `id`, `name`, `localCoordinateSystemName`,
    `dataBaseUrl`, `modelNamespace`, `protectedModelsUrl`, `worldTilesetUrl` i `staticObjectsTilesetUrl`
