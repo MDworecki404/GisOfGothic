@@ -83,7 +83,7 @@ export class GeoportalFacade {
 	private worldRoutingContext: WorldRoutingContext | null = null;
 	private pendingRoute: RouteEndpoints | null = null;
 	private worldLoadGeneration = 0;
-	private activeToolId: ToolId | null = 'search';
+	private activeToolId: ToolId | null = null;
 	private selectedChapter: ChapterNumber | null = null;
 	private coordinateSystemId: CoordinateSystemId = 'khorinis-1992';
 	private readonly coordinateFormatter = new CoordinateFormatter();
@@ -770,7 +770,6 @@ export class GeoportalFacade {
 		}
 		if (this.activeToolId === 'notebook' && toolId !== 'notebook')
 			this.notebookCoordinator.cancelPlacingPin();
-		if (this.activeToolId === 'search' && toolId === null) this.searchCoordinator.clearSelection();
 		if (toolId === 'analysis' && this.activeToolId !== 'analysis')
 			this.analysisCoordinator.activate();
 		this.activeToolId = toolId;

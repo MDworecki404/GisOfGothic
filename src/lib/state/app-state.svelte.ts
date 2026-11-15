@@ -89,7 +89,7 @@ export class AppState {
 	indexCounts = $state<IndexCounts | null>(null);
 	openedWorldName = $state<string | null>(null);
 	localCoordinateSystemName = $state<string | null>(null);
-	activeToolId = $state<ToolId | null>('search');
+	activeToolId = $state<ToolId | null>(null);
 	cursorPosition = $state<WorldPosition | null>(null);
 	headingDegrees = $state(0);
 	metresPerPixel = $state<number | null>(null);

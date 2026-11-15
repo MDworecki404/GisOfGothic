@@ -20,6 +20,8 @@ export interface ToolDefinition {
 	group: ToolGroup;
 	/** Narzędzia spoza paska telefonu są w menu „Inne”. */
 	isOnPhoneBar: boolean;
+	/** `book` otwiera okno Księgi, `panel` panel przy doku (albo arkusz na telefonie). */
+	presentation: 'panel' | 'book';
 }
 
 export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
@@ -29,7 +31,8 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		panelTitle: 'Wyszukiwarka',
 		icon: SearchIcon,
 		group: 'find',
-		isOnPhoneBar: true
+		isOnPhoneBar: true,
+		presentation: 'book'
 	},
 	{
 		id: 'layers',
@@ -37,7 +40,8 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		panelTitle: 'Warstwy',
 		icon: LayersIcon,
 		group: 'find',
-		isOnPhoneBar: true
+		isOnPhoneBar: true,
+		presentation: 'panel'
 	},
 	{
 		id: 'measure',
@@ -45,7 +49,8 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		panelTitle: 'Pomiary',
 		icon: RulerIcon,
 		group: 'measure',
-		isOnPhoneBar: true
+		isOnPhoneBar: true,
+		presentation: 'panel'
 	},
 	{
 		id: 'analysis',
@@ -53,7 +58,8 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		panelTitle: 'Analizy',
 		icon: RadarIcon,
 		group: 'measure',
-		isOnPhoneBar: false
+		isOnPhoneBar: false,
+		presentation: 'panel'
 	},
 	{
 		id: 'sizes',
@@ -61,7 +67,8 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		panelTitle: 'Rozmiary światów',
 		icon: ScalingIcon,
 		group: 'measure',
-		isOnPhoneBar: false
+		isOnPhoneBar: false,
+		presentation: 'panel'
 	},
 	{
 		id: 'time',
@@ -69,7 +76,8 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		panelTitle: 'Czas i rozdział',
 		icon: ClockIcon,
 		group: 'time',
-		isOnPhoneBar: true
+		isOnPhoneBar: true,
+		presentation: 'panel'
 	},
 	{
 		id: 'notebook',
@@ -77,7 +85,8 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		panelTitle: 'Notatnik',
 		icon: NotebookPenIcon,
 		group: 'time',
-		isOnPhoneBar: false
+		isOnPhoneBar: false,
+		presentation: 'panel'
 	},
 	{
 		id: 'bookmarks',
@@ -85,6 +94,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		panelTitle: 'Zakładki',
 		icon: BookmarkIcon,
 		group: 'time',
-		isOnPhoneBar: false
+		isOnPhoneBar: false,
+		presentation: 'panel'
 	}
 ];

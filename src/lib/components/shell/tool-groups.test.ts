@@ -37,4 +37,12 @@ describe('TOOL_DEFINITIONS: grupy i pasek telefonu', () => {
 		const identifiers = TOOL_DEFINITIONS.map((tool) => tool.id);
 		expect(new Set(identifiers).size).toBe(identifiers.length);
 	});
+
+	it('tylko Szukaj otwiera Księgę, pozostałe narzędzia mają panel', () => {
+		const book = TOOL_DEFINITIONS.filter((tool) => tool.presentation === 'book');
+		expect(book.map((tool) => tool.id)).toEqual(['search']);
+		expect(TOOL_DEFINITIONS.filter((tool) => tool.presentation === 'panel')).toHaveLength(
+			TOOL_DEFINITIONS.length - 1
+		);
+	});
 });

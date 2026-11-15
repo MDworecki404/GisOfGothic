@@ -10,7 +10,7 @@ describe('ViewLinkCodec', () => {
 			codec.buildQuery({
 				entryId: null,
 				camera: null,
-				toolId: 'search',
+				toolId: null,
 				chapter: null,
 				projection: null,
 				viewMode: 'view-3d',
@@ -38,7 +38,7 @@ describe('ViewLinkCodec', () => {
 		expect(codec.parseQuery(query)).toEqual(state);
 	});
 
-	it('zamknięty panel to osobna wartość', () => {
+	it('brak narzędzia nie dodaje parametru, a stary zamkniete nadal działa', () => {
 		const query = codec.buildQuery({
 			entryId: null,
 			camera: null,
@@ -49,15 +49,34 @@ describe('ViewLinkCodec', () => {
 			sliceHeightMetres: null,
 			route: null
 		});
-		expect(query).toBe('?narzedzie=zamkniete');
-		expect(codec.parseQuery(query).toolId).toBeNull();
+		expect(query).toBe('');
+		expect(codec.parseQuery('?narzedzie=zamkniete').toolId).toBeNull();
 	});
 
-	it('brak parametrów daje wyszukiwarkę i brak kamery', () => {
-		expect(codec.parseQuery('')).toEqual({
+	it('Księga (narzędzie search) zapisuje narzedzie=search i wraca z adresu', () => {
+		const query = codec.buildQuery({
 			entryId: null,
 			camera: null,
 			toolId: 'search',
+			chapter: null,
+			projection: null,
+			viewMode: 'view-3d',
+			sliceHeightMetres: null,
+			route: null
+		});
+		expect(query).toBe('?narzedzie=search');
+		expect(codec.parseQuery(query).toolId).toBe('search');
+	});
+
+	it('adres bez parametru narzedzie nie otwiera żadnego narzędzia', () => {
+		expect(codec.parseQuery('?wpis=item%3AX').toolId).toBeNull();
+	});
+
+	it('brak parametrów daje brak narzędzia i brak kamery', () => {
+		expect(codec.parseQuery('')).toEqual({
+			entryId: null,
+			camera: null,
+			toolId: null,
 			chapter: null,
 			projection: null,
 			viewMode: 'view-3d',
@@ -70,7 +89,7 @@ describe('ViewLinkCodec', () => {
 		expect(codec.parseQuery('?wpis=a&widok=zepsute&narzedzie=hologram')).toEqual({
 			entryId: 'a',
 			camera: null,
-			toolId: 'search',
+			toolId: null,
 			chapter: null,
 			projection: null,
 			viewMode: 'view-3d',
@@ -89,7 +108,7 @@ describe('ViewLinkCodec', () => {
 		const base = {
 			entryId: null,
 			camera: null,
-			toolId: 'search',
+			toolId: null,
 			chapter: null,
 			viewMode: 'view-3d',
 			sliceHeightMetres: null,
@@ -134,7 +153,7 @@ describe('ViewLinkCodec: widok 2D', () => {
 	const base = {
 		entryId: null,
 		camera: null,
-		toolId: 'search',
+		toolId: null,
 		chapter: null,
 		projection: null,
 		route: null

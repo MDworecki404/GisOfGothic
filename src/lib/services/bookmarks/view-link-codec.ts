@@ -35,11 +35,11 @@ const TOOL_PARAMETER = 'narzedzie';
 const CHAPTER_PARAMETER = 'rozdzial';
 const ROUTE_PARAMETER = 'trasa';
 const CLOSED_TOOL_VALUE = 'zamkniete';
-export const DEFAULT_TOOL_ID: ToolId = 'search';
+export const DEFAULT_TOOL_ID: ToolId | null = null;
 
 /**
  * Zamienia widok na parametry adresu (`?wpis=…&widok=…&rzut=…&tryb=2d&ciecie=…&narzedzie=…&rozdzial=…`) i z powrotem.
- * Parametry z wartością domyślną (brak wpisu, kamery, rzutu domyślnego, trybu 3D, cięcia, rozdziału, otwarte wyszukiwanie)
+ * Parametry z wartością domyślną (brak wpisu, kamery, rzutu domyślnego, trybu 3D, cięcia, rozdziału, brak otwartego narzędzia)
  * są pomijane, żeby adres był krótki. Cięcie obowiązuje tylko z trybem 2D.
  */
 export class ViewLinkCodec {
@@ -64,8 +64,9 @@ export class ViewLinkCodec {
 				parameters.set(SLICE_HEIGHT_PARAMETER, String(roundedHeight));
 			}
 		}
-		if (state.toolId === null) parameters.set(TOOL_PARAMETER, CLOSED_TOOL_VALUE);
-		else if (state.toolId !== DEFAULT_TOOL_ID) parameters.set(TOOL_PARAMETER, state.toolId);
+		if (state.toolId !== DEFAULT_TOOL_ID) {
+			parameters.set(TOOL_PARAMETER, state.toolId === null ? CLOSED_TOOL_VALUE : state.toolId);
+		}
 		if (state.chapter !== null) parameters.set(CHAPTER_PARAMETER, String(state.chapter));
 		if (state.route) parameters.set(ROUTE_PARAMETER, this.routeCodec.serialize(state.route));
 		const query = parameters.toString();

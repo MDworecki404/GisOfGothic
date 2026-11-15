@@ -36,7 +36,11 @@
 	}
 
 	const isPhone = new MediaQuery('max-width: 767px');
-	const activeTool = $derived(TOOL_DEFINITIONS.find((tool) => tool.id === appState.activeToolId));
+	const activeTool = $derived(
+		TOOL_DEFINITIONS.find(
+			(tool) => tool.id === appState.activeToolId && tool.presentation === 'panel'
+		)
+	);
 
 	let viewportHeight = $state(window.innerHeight);
 	let dragStart: DragStart | null = null;
