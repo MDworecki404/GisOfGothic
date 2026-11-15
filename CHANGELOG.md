@@ -2,6 +2,20 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.14.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.13.0...v0.14.0) (2026-11-15)
+
+### Nowe funkcje
+
+* kliknięcie lokacji na mapie wybiera jej wpis ([9b9fc34](https://github.com/MDworecki404/GisOfGothic/commit/9b9fc34b12ab2f9613642f67e8c468fa21a462f5))
+* lokacje w wyszukiwarce i Księdze ([abb0a26](https://github.com/MDworecki404/GisOfGothic/commit/abb0a26d2cfa05b2d316b48a8db13f6ab17dc1b9))
+* przewodnik po questach z trasą przez miejsca etapów ([6bb05b5](https://github.com/MDworecki404/GisOfGothic/commit/6bb05b52c5fd041a032c1e9e08eefc6a821788ed))
+* warstwa Lokacje i przejścia między światami ([ba11d8d](https://github.com/MDworecki404/GisOfGothic/commit/ba11d8d3bba12b7617d5e178301c3b7bd2e5f3e0))
+* zasięg wybranej lokacji na mapie ([4103e2d](https://github.com/MDworecki404/GisOfGothic/commit/4103e2ddf456a995538397b92155dccb8e4f22aa))
+
+### Poprawki błędów
+
+* układ na telefonie — opcje widoku zwinięte domyślnie, zwarta karta przewodnika ([75ccd1c](https://github.com/MDworecki404/GisOfGothic/commit/75ccd1c4e1ac7e66b893f3b55020a345730b6707))
+
 ## [0.13.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.12.0...v0.13.0) (2026-11-15)
 
 ### Nowe funkcje
