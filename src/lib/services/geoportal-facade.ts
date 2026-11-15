@@ -806,7 +806,13 @@ export class GeoportalFacade {
 		else if (pick.layerId === ROUTINE_LAYER_ID) {
 			this.dataLayersCoordinator.cancelPendingIdentification();
 			this.timeCoordinator.identifyCharacter(pick.featureIndex);
-		} else this.dataLayersCoordinator.identifyFeature(pick);
+		} else {
+			const entryId = this.dataLayersCoordinator.findEntryIdOfPick(pick);
+			if (entryId) {
+				this.closeFeatureIdentification();
+				this.searchCoordinator.selectEntry(entryId, false);
+			} else this.dataLayersCoordinator.identifyFeature(pick);
+		}
 	}
 
 	private async loadSearchIndexOfCurrentWorld(): Promise<void> {

@@ -127,6 +127,13 @@ export class DataLayersCoordinator {
 		return load;
 	}
 
+	/** Identyfikator wpisu wyszukiwarki, którym jest wskazany punkt (lokacje); `null` dla zwykłych obiektów. */
+	findEntryIdOfPick(pick: FeaturePick): string | null {
+		const layer = DATA_LAYERS.find((definition) => definition.id === pick.layerId);
+		if (!layer) return null;
+		return this.shownFeatures.get(layer.id)?.at(pick.featureIndex)?.entryId ?? null;
+	}
+
 	identifyFeature(pick: FeaturePick): void {
 		const layer = DATA_LAYERS.find((definition) => definition.id === pick.layerId);
 		const feature = layer ? this.shownFeatures.get(layer.id)?.at(pick.featureIndex) : undefined;

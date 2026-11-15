@@ -31,4 +31,6 @@ Ekstraktor (paczka v5) zapisuje je w osobnym pliku `locations.json`.
   ten sam plik osobno, więc nie wymaga otwarcia Księgi.
 - Wybrana lokacja ma na mapie obrys zasięgu: `Place.extent` (obrys z `polygon` albo okrąg o `radius_m`) rysuje
   `PlaceMarkersLayer` jako linię w kolorze znacznika; teren ją zasłania, w przeciwieństwie do znacznika.
+- Kliknięcie ikony w warstwie „Lokacje” wybiera wpis lokacji (`IdentifiableFeature.entryId`, `GeoportalFacade.reactToMapClick`)
+  zamiast otwierać kartę obiektu, więc obrys zasięgu i karta przy mapie wyglądają tak samo jak po wyborze w Księdze.
 - Odłożone: filtr po rodzaju lokacji.

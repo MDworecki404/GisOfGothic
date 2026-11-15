@@ -65,6 +65,8 @@ export interface IdentifiableFeature {
 	spawnChapter: number | null;
 	/** Kolor tego punktu zamiast koloru warstwy. */
 	cssColor?: string;
+	/** Punkt jest wpisem wyszukiwarki (lokacje): kliknięcie wybiera ten wpis zamiast pokazywać kartę obiektu. */
+	entryId?: string;
 	identification: FeatureIdentification;
 }
 
@@ -285,6 +287,7 @@ function readLocations(json: unknown): IdentifiableFeature[] {
 		quantity: 1,
 		iconId: location.kind === 'passage' ? 'passage' : 'location',
 		spawnChapter: null,
+		entryId: location.id,
 		identification: presentLocation(location)
 	}));
 }
