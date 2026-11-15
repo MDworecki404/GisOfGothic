@@ -43,6 +43,11 @@ UI po polsku.
 | [docs/adr/](docs/adr/)                       | zapisy decyzji architektonicznych                        |
 | [CHANGELOG.md](CHANGELOG.md)                 | historia wersji (generowana z commitów)                  |
 
+## Współpraca
+
+[CONTRIBUTING.md](CONTRIBUTING.md) — zasady wkładu, [SECURITY.md](SECURITY.md) — zgłaszanie podatności.
+Każda zmiana na `main` przechodzi CI (`check`, `lint`, testy, `build`).
+
 ## Licencja i prawa
 
 Kod i dokumentacja: [MIT](LICENSE). Licencja **nie obejmuje zasobów z gry**.

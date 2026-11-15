@@ -70,5 +70,13 @@
 		"cesium": "^1.146.0",
 		"minisearch": "^7.2.0"
 	},
-	"license": "MIT"
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/MDworecki404/GisOfGothic.git"
+	},
+	"homepage": "https://gisofgothic.dworecki.dev",
+	"bugs": {
+		"url": "https://github.com/MDworecki404/GisOfGothic/issues"
+	}
 }

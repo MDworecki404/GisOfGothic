@@ -56,6 +56,12 @@ Pełne zasady: [`CLAUDE.md`](../CLAUDE.md). Najważniejsze:
   sprawdzamy atrybutem `data-world-status` na mapie, nie migającym wskaźnikiem ładowania. Strona się ładuje, jest canvas Cesium i panel wyszukiwania, brak błędów
   w konsoli, nieznany świat daje stronę 404.
 
+## Ciągła integracja
+
+`.github/workflows/ci.yml` uruchamia `check`, `lint`, `test` i `build` przy każdym pushu na `main` i w pull requestach
+(Node 24, `HUSKY=0`). CI nie ma danych z gry ani sekretów: nie puszcza `test:e2e` (potrzebuje lokalnych danych w
+`static/data/`) i niczego nie wdraża — wdrożenia robi się lokalnie z wydania (ADR 0010, 0014). Decyzja: ADR 0041.
+
 ## Commity i wydania
 
 ```
