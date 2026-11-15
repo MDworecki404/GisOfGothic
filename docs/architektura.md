@@ -207,6 +207,10 @@ generowane z pakietu `@lucide/svelte`) w kolorze warstwy i z ciemną obwódką; 
 kolekcją punktów. Warstwa „postacie o tej godzinie” też rysuje ikony postaci. Kształty ikon są danymi
 (`MapIconNode`), więc ten sam zestaw służy legendzie w panelu Warstwy (`DataLayerView.legend`) bez
 importowania logiki do komponentu.
+Warstwa „Lokacje” (`locations.json`, parser `data/location-parsers.ts`) ma dwie ikony: lokacja i przejście.
+Karta przejścia (`IdentifyCard`) ma przycisk „Przejdź do tego świata”: fasada `planPassageTravel` woła
+`PassageTravelPlanner` (`services/travel/`), który zamienia punkt przybycia na widok kamery w adresie świata
+docelowego, a komponent tylko nawiguje (ADR 0038).
 `DataLayersRenderer` rysuje każdą warstwę jako kolekcję, której identyfikatorem jest
 `{ layerId, featureIndex }`; kliknięcie mapy (`MapViewObserver` → `onMapClicked`) wskazuje obiekt
 w danych bez dodatkowych map, a fasada publikuje `feature-identified`.

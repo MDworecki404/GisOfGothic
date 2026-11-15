@@ -1,7 +1,14 @@
 import { describeCategory } from '#lib/data/category-names.js';
 import { parseSearchIndex } from '#lib/data/parsers.js';
+import { parseLocationCatalog } from '#lib/data/location-parsers.js';
 import { QuestPlaceLocator } from './quest-place-locator.js';
-import type { QuestPlaceRole, SearchEntry } from '#lib/data/types.js';
+import type {
+	Anchor,
+	LocationEntry,
+	LocationKind,
+	QuestPlaceRole,
+	SearchEntry
+} from '#lib/data/types.js';
 import { QUEST_ROLE_PRESENTATION } from '#lib/services/search/search-entry-presenter.js';
 import { EncyclopediaLinkBuilder } from '#lib/services/encyclopedia/encyclopedia-link-builder.js';
 import {
@@ -22,11 +29,17 @@ import {
 	type ItemProperties
 } from '#lib/data/layer-features.js';
 
-export type DataLayerId = 'items' | 'containers' | 'characters' | 'npcs' | 'quests';
+export type DataLayerId = 'items' | 'containers' | 'characters' | 'npcs' | 'quests' | 'locations';
 
 export interface FeatureFact {
 	label: string;
 	value: string;
+}
+
+/** Przejście do innego świata: `toWorld` to `<gra>/<świat>`, `arrival` to punkt przybycia (WGS84) albo `null`. */
+export interface PassageDestination {
+	toWorld: string;
+	arrival: Anchor | null;
 }
 
 export interface FeatureIdentification {
@@ -43,6 +56,8 @@ export interface FeatureIdentification {
 	possibleItems: string[];
 	/** Plik podglądu 3D względem adresu modeli świata albo `null`. */
 	modelFile: string | null;
+	/** Lokacje: przejście do innego świata, gdy cel leży w paczce; w pozostałych warstwach brak pola. */
+	passage?: PassageDestination;
 }
 
 export interface IdentifiableFeature {
@@ -235,6 +250,66 @@ function readQuestPlaces(json: unknown, routinePlacesJson?: unknown): Identifiab
 	return features;
 }
 
+const LOCATION_KIND_LABELS: Readonly<Record<LocationKind, string>> = {
+	camp: 'Obóz',
+	town: 'Miasto lub osada',
+	district: 'Dzielnica',
+	building: 'Budynek',
+	cave: 'Jaskinia lub loch',
+	region: 'Region',
+	landmark: 'Punkt orientacyjny',
+	passage: 'Przejście do innego świata'
+};
+
+const LOCATION_NAME_SOURCE_NOTES = {
+	game: null,
+	derived: 'robocza, nadana w projekcie',
+	code: 'tylko kod z gry'
+} as const;
+
+function presentLocation(location: LocationEntry): FeatureIdentification {
+	const facts: FeatureFact[] = [];
+	const nameNote = LOCATION_NAME_SOURCE_NOTES[location.nameSource];
+	if (nameNote) facts.push({ label: 'Nazwa', value: nameNote });
+	if (location.radiusMetres !== null) {
+		facts.push({ label: 'Zasięg', value: `ok. ${Math.round(location.radiusMetres)} m` });
+	}
+	if (location.waypoint) facts.push({ label: 'Najbliższy punkt dróg', value: location.waypoint });
+	if (location.code) facts.push({ label: 'Kod', value: location.code });
+	const passage = location.passage;
+	const destination =
+		passage && passage.toWorld ? { toWorld: passage.toWorld, arrival: passage.arrival } : null;
+	if (passage && !destination) {
+		facts.push({ label: 'Cel', value: 'poza dostępnymi światami' });
+	}
+	return {
+		layerName: 'Lokacje',
+		title: location.name,
+		subtitle: LOCATION_KIND_LABELS[location.kind],
+		facts,
+		listTitle: null,
+		listItems: [],
+		searchQuery: null,
+		encyclopediaUrl: null,
+		treasureSetCodes: [],
+		possibleItems: [],
+		modelFile: null,
+		...(destination ? { passage: destination } : {})
+	};
+}
+
+function readLocations(json: unknown): IdentifiableFeature[] {
+	return parseLocationCatalog(json).map((location) => ({
+		lon: location.center.lon,
+		lat: location.center.lat,
+		h: location.center.h,
+		quantity: 1,
+		iconId: location.kind === 'passage' ? 'passage' : 'location',
+		spawnChapter: null,
+		identification: presentLocation(location)
+	}));
+}
+
 function readPresentedFeatures<P>(
 	json: unknown,
 	description: string,
@@ -352,5 +427,20 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 		],
 		isFilteredByChapter: true,
 		readFeatures: readQuestPlaces
+	},
+	{
+		id: 'locations',
+		name: 'Lokacje',
+		description: 'obozy, miasta, budynki i przejścia do innych światów',
+		fileName: 'locations.json',
+		companionFileName: null,
+		metadataCountKey: 'locations',
+		color: '#6fb7c9',
+		legend: [
+			{ label: 'Lokacja', iconId: 'location' },
+			{ label: 'Przejście do innego świata', iconId: 'passage' }
+		],
+		isFilteredByChapter: false,
+		readFeatures: readLocations
 	}
 ];

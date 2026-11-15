@@ -1,6 +1,8 @@
 import { guildNameBook } from '#lib/data/category-names.js';
 import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
-import type { WorldDefinition } from '#lib/data/world-catalog.js';
+import { worldCatalog, type WorldDefinition } from '#lib/data/world-catalog.js';
+import { PassageTravelPlanner, type PassageTravelTarget } from './travel/passage-travel-planner.js';
+import type { PassageDestination } from './layers/data-layer-catalog.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
 import type { BookmarkStore } from './bookmarks/bookmark-store.js';
 import { BookmarksCoordinator } from './bookmarks/bookmarks-coordinator.js';
@@ -441,6 +443,16 @@ export class GeoportalFacade {
 
 	toggleDataLayer(layerId: DataLayerId): void {
 		void this.dataLayersCoordinator.toggleLayer(layerId);
+	}
+
+	/** Wyznacza świat i widok, do których prowadzi przejście; `null`, gdy świata nie ma w katalogu. */
+	planPassageTravel(destination: PassageDestination): Promise<PassageTravelTarget | null> {
+		const planner = new PassageTravelPlanner(worldCatalog, async (gameId, worldId) => {
+			const world = worldCatalog.findWorld(gameId, worldId);
+			if (!world) throw new Error(`Nieznany świat ${gameId}/${worldId}`);
+			return (await this.createDataLoader(world.dataBaseUrl).loadMetadata()).anchor;
+		});
+		return planner.planTravel(destination);
 	}
 
 	closeFeatureIdentification(): void {

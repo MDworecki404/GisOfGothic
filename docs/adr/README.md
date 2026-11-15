@@ -41,3 +41,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0035](0035-animacja-rutyn-po-sieci-drog.md)                   | Animacja rutyn postaci po sieci dróg                 | przyjęta          |
 | [0036](0036-motyw-latarnia-w-kopalni.md)                       | Motyw „latarnia w kopalni”                           | przyjęta          |
 | [0037](0037-ksiega-i-karta-wpisu.md)                           | Księga i karta wpisu zamiast panelu wyszukiwania     | przyjęta          |
+| [0038](0038-lokacje-i-przejscia-miedzy-swiatami.md)            | Lokacje i przejścia między światami                  | przyjęta          |

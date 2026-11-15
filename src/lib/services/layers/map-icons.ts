@@ -12,7 +12,9 @@ export type MapIconId =
 	| 'armor'
 	| 'chest'
 	| 'person'
-	| 'quest';
+	| 'quest'
+	| 'location'
+	| 'passage';
 
 /** Jeden element SVG ikony: nazwa znacznika i jego atrybuty (np. `['path', { d: '…' }]`). */
 export type MapIconNode = readonly [string, Readonly<Record<string, string>>];

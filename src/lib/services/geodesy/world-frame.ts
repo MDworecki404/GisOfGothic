@@ -44,6 +44,11 @@ export class WorldFrame {
 		};
 	}
 
+	/** Punkt podany w WGS84 (`h` nad elipsoidą) w metrach od kotwicy świata. */
+	toLocalPosition(point: Anchor): WorldPosition {
+		return this.toWorldPosition(Cartesian3.fromDegrees(point.lon, point.lat, point.h));
+	}
+
 	toSceneCartesian(east: number, north: number, height: number): Cartesian3 {
 		return Matrix4.multiplyByPoint(
 			this.anchorToEcef,

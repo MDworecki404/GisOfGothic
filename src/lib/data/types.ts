@@ -201,3 +201,35 @@ export interface WaypointNetwork {
 	nodes: WaypointNode[];
 	edges: WaypointEdge[];
 }
+
+export type LocationKind =
+	| 'camp'
+	| 'town'
+	| 'district'
+	| 'building'
+	| 'cave'
+	| 'region'
+	| 'landmark'
+	| 'passage';
+
+/** `game` — nazwa z tekstów gry; `derived` — nazwa robocza nadana w ekstraktorze; `code` — tylko kod z gry. */
+export type LocationNameSource = 'game' | 'derived' | 'code';
+
+/** Przejście do innego świata; `toWorld` ma postać `<gra>/<świat>` albo `null`, gdy cel leży poza paczką. */
+export interface LocationPassage {
+	toWorld: string | null;
+	toLevel: string;
+	arrival: Anchor | null;
+}
+
+export interface LocationEntry {
+	id: string;
+	kind: LocationKind;
+	name: string;
+	nameSource: LocationNameSource;
+	code: string | null;
+	center: Anchor;
+	radiusMetres: number | null;
+	waypoint: string | null;
+	passage: LocationPassage | null;
+}

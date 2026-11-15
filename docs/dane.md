@@ -145,6 +145,16 @@ i jego krawędzie. Gothic 3 nie ma waynetu; jego sieć exporter buduje z stref i
 (HTTP 404), a tryb Trasa w Pomiarach mówi, że świat nie ma sieci dróg. Parser (`waypoint-network-parser.ts`) waliduje
 kształt wierszy i zakres indeksów; zastosowanie opisuje [ADR 0033](adr/0033-trasy-po-sieci-waypointow.md).
 
+## Lokacje (`locations.json`)
+
+Paczka v5: `{version: 1, game, world, locations}`. Lokacja to `id`, `kind` (`camp`, `town`, `district`, `building`,
+`cave`, `region`, `landmark`, `passage`), `name` (po polsku), `name_source` (`game`, `derived` albo `code`), `code`,
+`center` (`[lon, lat, h]`), `radius_m` (albo `null`), `polygon` (obrys albo `null`) i `waypoint` (najbliższy węzeł z
+`waypoints.json`). Przejście (`kind: passage`) ma dodatkowo `passage: {to_world, to_level, arrival}`: `to_world` to
+`<gra>/<świat>` (dokładnie ścieżka katalogu w `static/data/`) albo `null` poza paczką, `arrival` to punkt przybycia
+albo `null`. Aplikacja czyta plik jako warstwę „Lokacje” ([ADR 0038](adr/0038-lokacje-i-przejscia-miedzy-swiatami.md));
+nazwy `derived` pokazuje jako robocze.
+
 ## Opis przedmiotu (`description`)
 
 Wiele przedmiotów ma w grze tę samą ogólną nazwę (`name`: „Mikstura”, „Zwój”, „Pierścień”, „Klucz”), a różni je opis ze
