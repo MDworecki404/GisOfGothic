@@ -6,6 +6,8 @@ rzeczownika odczasownikowego („Wczytywanie warstwy: {nazwa}”), bez pierwszej
 
 | Pojęcie                                    | Termin                                                        | Uwagi                                                                                           |
 | ------------------------------------------ | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Okno wyszukiwania z kartą wpisu            | Księga                                                        | lista po lewej, karta wpisu po prawej; skrót Ctrl K                                             |
+| Zwarta karta wybranego wpisu przy mapie    | karta wpisu                                                   | przycisk „Otwórz w Księdze”                                                                     |
 | Zapisany widok kamery                      | zakładka (lista: „Zapisane widoki”, przycisk: „Zapisz widok”) | dominujący wariant w aplikacji                                                                  |
 | Włączany zestaw danych na mapie            | warstwa                                                       |                                                                                                 |
 | Punkt na mapie                             | punkt, miejsce                                                | „znacznik” nie występuje w aplikacji                                                            |

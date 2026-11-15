@@ -40,3 +40,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0034](0034-siec-drog-gothica-3.md)                            | Sieć dróg Gothica 3 ze stref nawigacyjnych           | przyjęta          |
 | [0035](0035-animacja-rutyn-po-sieci-drog.md)                   | Animacja rutyn postaci po sieci dróg                 | przyjęta          |
 | [0036](0036-motyw-latarnia-w-kopalni.md)                       | Motyw „latarnia w kopalni”                           | przyjęta          |
+| [0037](0037-ksiega-i-karta-wpisu.md)                           | Księga i karta wpisu zamiast panelu wyszukiwania     | przyjęta          |

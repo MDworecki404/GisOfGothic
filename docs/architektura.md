@@ -146,9 +146,10 @@ aplikacji w `AppState`.
 Mieszczanin) i kod; wyszukiwanie po początku słowa, z tolerancją literówek w dłuższych słowach i bez
 polskich znaków (`normalizeSearchTerm`). `SearchEntryPresenter` zamienia wpisy na teksty dla UI,
 a `PlaceMarkersLayer` rysuje miejsca wybranego wpisu jako jedną kolekcję punktów Cesium.
-Bez wpisanej frazy panel pokazuje wszystkie wpisy świata alfabetycznie (`SearchService.listAll`, z filtrem rodzaju), po 60 na stronę
+Wyszukiwanie to Księga: okno otwierane narzędziem Szukaj albo Ctrl K (`Book`: `BookSearch` z listą i filtrami po lewej, `BookEntry` z kartą wpisu po prawej; narzędzie ma `presentation: 'book'`, reszta `'panel'`). „Pokaż na mapie” zamyka Księgę i zostawia wpis wybrany, a `EntrySummaryCard` pokazuje go zwarto przy mapie (akcje, „Otwórz w Księdze”, zamknięcie czyści wpis). Zamknięcie Księgi nie czyści wyboru.
+Bez wpisanej frazy Księga pokazuje wszystkie wpisy świata alfabetycznie (`SearchService.listAll`, z filtrem rodzaju), po 60 na stronę
 z przyciskiem „Pokaż więcej”; fraza zawęża listę do trafień wyszukiwarki.
-Po wybraniu rodzaju wpisu panel pokazuje listę rozwijaną kategorii z liczbami (`SearchService.listCategories`: kategorie przedmiotów,
+Po wybraniu rodzaju wpisu Księga pokazuje listę rozwijaną kategorii z liczbami (`SearchService.listCategories`: kategorie przedmiotów,
 nazwy gildii postaci); filtr kategorii działa i na liście, i na trafieniach frazy, a zmiana rodzaju go czyści.
 
 Wpisy `quest` mają ten sam przepływ co postacie: filtr „Questy”, wynik z kategorią „Misja” albo „Notatka”, imię zleceniodawcy
@@ -286,7 +287,7 @@ na czyste klasy i renderer: [ADR 0006](adr/0006-analizy-na-czystych-klasach-i-lo
 
 Stan widoku to cztery rzeczy: wybrany wpis, kamera, otwarte narzędzie i rozdział. `ViewLinkCodec` zamienia je na
 parametry adresu i z powrotem: `?wpis=item:…&widok=E_N_H_kierunek_nachylenie&narzedzie=measure&rozdzial=3`
-(parametry domyślne są pomijane, zamknięty panel to `narzedzie=zamkniete`). Kamerę koduje
+(parametry domyślne są pomijane, brak narzędzia to stan domyślny, `narzedzie=search` otwiera Księgę, a stary `narzedzie=zamkniete` jest nadal rozpoznawany). Kamerę koduje
 `CameraViewCodec` w metrach od kotwicy i stopniach, więc link nie zależy od globusa Cesium; uszkodzony
 parametr jest ignorowany, a reszta widoku odtwarzana.
 Rzut kamery (`CameraProjectionCodec`) to opcjonalny parametr `rzut`: `o` dla rzutu ortogonalnego albo `p_<fov>` dla

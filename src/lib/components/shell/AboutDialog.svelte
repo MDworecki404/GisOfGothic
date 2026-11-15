@@ -2,6 +2,7 @@
 	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
 	import GlobeIcon from '@lucide/svelte/icons/globe';
 	import InfoIcon from '@lucide/svelte/icons/info';
+	import BrandMark from './BrandMark.svelte';
 	import * as Dialog from '#lib/components/ui/dialog/index.js';
 
 	const repositoryUrl = 'https://github.com/MDworecki404/GisOfGothic';
@@ -28,15 +29,7 @@
 	>
 		<div class="px-6 pt-8 pb-6 sm:px-9">
 			<div class="flex items-center gap-4">
-				<svg width="52" height="52" viewBox="0 0 64 64" aria-hidden="true" class="shrink-0">
-					<path
-						d="M32 62 C27 51 12 41 12 26 A20 20 0 1 1 52 26 C52 41 37 51 32 62 Z"
-						fill="#2a2218"
-						stroke="#c9a24a"
-						stroke-width="3"
-					/>
-					<circle cx="32" cy="26.5" r="5" fill="#e0662f" />
-				</svg>
+				<BrandMark />
 				<div>
 					<Dialog.Title class="text-display text-primary">GIS of Gothic</Dialog.Title>
 					<Dialog.Description class="mt-0.5 text-muted-foreground">

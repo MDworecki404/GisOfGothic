@@ -1,6 +1,6 @@
 # Nowy interfejs „latarnia w kopalni” — projekt wdrożenia
 
-Data: 2026-11-14. Status: zatwierdzony; etapy 1 i 2 wdrożone (plan: `docs/superpowers/plans/2026-11-14-nowy-interfejs-etapy-1-2.md`), etapy 3–5 do zrobienia. Odstępstwa: przycisk „Widok” (zwinięcie rzadko używanych przycisków mapy) przesunięty do etapu 5, bo testy e2e zależą od obecnych etykiet; menu telefonu nazwano „Inne”, nie „Więcej”, bo „Więcej” to nazwa istniejącego menu w nagłówku. Makiety: <https://claude.ai/artifact/BDmMuX3VahcCsZiuBAnD77> (artefakt prywatny
+Data: 2026-11-14. Status: zatwierdzony; etapy 1–3 wdrożone (plan: `docs/superpowers/plans/2026-11-14-nowy-interfejs-etapy-1-2.md`), etapy 4–5 do zrobienia. Odstępstwa: przycisk „Widok” (zwinięcie rzadko używanych przycisków mapy) przesunięty do etapu 5, bo testy e2e zależą od obecnych etykiet; menu telefonu nazwano „Inne”, nie „Więcej”, bo „Więcej” to nazwa istniejącego menu w nagłówku. Makiety: <https://claude.ai/artifact/BDmMuX3VahcCsZiuBAnD77> (artefakt prywatny
 właściciela). Zastępuje motyw z [ADR 0019](../../adr/0019-motyw-mapa-z-sakwy-i-tokeny-ukladu.md) po wdrożeniu etapu 1.
 
 ## Po co
