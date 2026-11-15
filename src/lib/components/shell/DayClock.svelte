@@ -64,7 +64,7 @@
 </script>
 
 <section
-	class="material-leather fixed right-(--edge-inset) bottom-[calc(var(--edge-inset)+3.25rem)] z-20 hidden items-center gap-3 px-3 py-2 [--cut:10px] md:flex md:flex-col"
+	class="material-leather fixed right-(--edge-inset) bottom-[calc(var(--edge-inset)+5.25rem)] z-20 hidden items-center gap-3 px-3 py-2 [--cut:10px] md:flex md:flex-col"
 	aria-label="Zegar doby"
 >
 	<div class="flex items-center gap-3">
