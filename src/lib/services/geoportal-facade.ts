@@ -40,6 +40,7 @@ import {
 	type MeasurementMode
 } from './measurement/measurement-coordinator.js';
 import type { RouteEndpoints } from './routing/route-endpoints-codec.js';
+import { RoadPathFinder } from './routing/road-path-finder.js';
 import { WorldRoutingContext } from './routing/world-routing-context.js';
 import type { PlaybackSpeed } from './time/routine-playback.js';
 import type { MapClick, MapViewListeners } from './map/map-view-observer.js';
@@ -205,6 +206,7 @@ export class GeoportalFacade {
 		this.treasureSetBook.useWorld(this.currentDataLoader);
 		this.dataLayersCoordinator.useWorld(this.currentDataLoader, {});
 		this.worldRoutingContext = null;
+		this.searchCoordinator.useRoadPathFinderSource(null);
 		this.pendingRoute = null;
 		this.measurementCoordinator.useRoutePlannerSource(null);
 		this.measurementCoordinator.clear();
@@ -878,6 +880,12 @@ export class GeoportalFacade {
 			this.worldRoutingContext = routingContext;
 			this.measurementCoordinator.useRoutePlannerSource(() => routingContext.loadRoutePlanner());
 			this.timeCoordinator.useRoutingContext(routingContext);
+			this.searchCoordinator.useRoadPathFinderSource(async () => {
+				const routePlanner = await routingContext.loadRoutePlanner();
+				return routePlanner
+					? new RoadPathFinder(routePlanner, routingContext.readProjector())
+					: null;
+			});
 			this.timeCoordinator.useWalkingSpeed(metadata.movement_speeds_m_s?.walk ?? null);
 			this.applyPendingRoute();
 			mapService.useTileColorGrade(world.tileColorGrade);

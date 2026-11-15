@@ -10,8 +10,8 @@ warstwa Questy, widok 2D z cięciem wysokości, rzut ortogonalny, lot kamerą, P
 ## Największy zysk dla użytkownika
 
 - **1. Przewodnik po questach.** Zrobione w wersji podstawowej ([ADR 0039](adr/0039-przewodnik-po-questach.md)): quest z
-  `order: dependency` ma w Księdze listę przystanków i trasę na mapie z krokami „Wstecz” / „Dalej”. Do zrobienia: trasa po
-  sieci dróg między przystankami, pokazanie gałęzi alternatywnych, quest bez `place` dla etapu.
+  `order: dependency` ma w Księdze listę przystanków i trasę na mapie z krokami „Wstecz” / „Dalej”. Trasa idzie po drogach, a gałęzie alternatywne
+  są przerywane ([ADR 0040](adr/0040-trasa-przewodnika-po-drogach.md)). Do zrobienia: przewodnik dla questów z `order: script`.
 - **2. Lokacje jako trzeci rodzaj danych.** Nazwane miejsca (obozy, jaskinie, budynki, przejścia między
   światami) z kartą i wpisem w wyszukiwarce. Pierwszy krok: wejścia do światów, np. Khorinis → Górnicza Dolina.
 

@@ -51,7 +51,7 @@ import { WorldExtentReader, type WorldExtent } from './world-extent-reader.js';
 import type { SizeWorldPlacement } from './world-placement-calculator.js';
 import { WorldSizeLayer, type SizeWorldListener } from './world-size-layer.js';
 import type { PinMarker } from '#lib/services/notebook/notebook-coordinator.js';
-import { PlaceMarkersLayer, type PlaceMarker } from './place-markers-layer.js';
+import { PlaceMarkersLayer, type PlaceMarker, type PlaceRoute } from './place-markers-layer.js';
 import { ViewerOptionsBuilder } from './viewer-options-builder.js';
 import { FlatMapPanController } from './flat-map-pan-controller.js';
 import { WorldSliceController } from './world-slice-controller.js';
@@ -343,13 +343,13 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 		});
 	}
 
-	showPlaceMarkers(
-		markers: readonly PlaceMarker[],
-		shouldFlyToMarkers: boolean,
-		showRoute = false
-	): void {
-		this.placeMarkers.showMarkers(markers, showRoute);
+	showPlaceMarkers(markers: readonly PlaceMarker[], shouldFlyToMarkers: boolean): void {
+		this.placeMarkers.showMarkers(markers);
 		if (shouldFlyToMarkers) this.placeMarkers.flyToAllMarkers();
+	}
+
+	showPlaceRoutes(routes: readonly PlaceRoute[]): void {
+		this.placeMarkers.showRoutes(routes);
 	}
 
 	flyToPlaceMarker(index: number): void {

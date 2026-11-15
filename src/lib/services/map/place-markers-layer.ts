@@ -1,5 +1,6 @@
 import { MAP_PALETTE } from '#lib/services/map/map-palette.js';
 import type { PlaceExtent } from '#lib/data/types.js';
+import type { GeodeticPoint } from '#lib/services/analysis/local-projector.js';
 import {
 	BoundingSphere,
 	Cartesian3,
@@ -23,6 +24,12 @@ export interface PlaceMarker {
 	extent?: PlaceExtent;
 }
 
+/** Odcinek trasy między miejscami; przerywany oznacza jedną z możliwych dróg. */
+export interface PlaceRoute {
+	points: readonly GeodeticPoint[];
+	isAlternative: boolean;
+}
+
 const MARKER_PIXEL_SIZE = 11;
 const HIGHLIGHT_PIXEL_SIZE = 18;
 const MARKER_OUTLINE_COLOR = Color.fromCssColorString(MAP_PALETTE.edge);
@@ -41,6 +48,7 @@ export class PlaceMarkersLayer {
 	private readonly points = new PointPrimitiveCollection();
 	private positions: Cartesian3[] = [];
 	private readonly outlines = new PolylineCollection();
+	private readonly routeLines = new PolylineCollection();
 
 	constructor(
 		private readonly viewer: Viewer,
@@ -48,10 +56,10 @@ export class PlaceMarkersLayer {
 	) {
 		viewer.scene.primitives.add(this.points);
 		viewer.scene.primitives.add(this.outlines);
+		viewer.scene.primitives.add(this.routeLines);
 	}
 
-	/** `showRoute` łączy znaczniki linią w podanej kolejności (przewodnik po queście). */
-	showMarkers(markers: readonly PlaceMarker[], showRoute = false): void {
+	showMarkers(markers: readonly PlaceMarker[]): void {
 		this.clearMarkers();
 		this.positions = markers.map((marker) =>
 			Cartesian3.fromDegrees(marker.lon, marker.lat, marker.h)
@@ -67,13 +75,22 @@ export class PlaceMarkersLayer {
 			});
 			if (marker.extent) this.addExtentOutline(marker, marker.extent);
 		});
-		if (showRoute && this.positions.length >= 2) {
-			this.outlines.add({
-				positions: [...this.positions],
+	}
+
+	/** Rysuje trasy (przewodnik po queście) w miejsce poprzednich; znaczniki zostają bez zmian. */
+	showRoutes(routes: readonly PlaceRoute[]): void {
+		this.routeLines.removeAll();
+		const color = Color.fromCssColorString(MAP_PALETTE.emberLight);
+		for (const route of routes) {
+			if (route.points.length < 2) continue;
+			this.routeLines.add({
+				positions: route.points.map((point) =>
+					Cartesian3.fromDegrees(point.lon, point.lat, point.h)
+				),
 				width: EXTENT_LINE_WIDTH,
-				material: Material.fromType('Color', {
-					color: Color.fromCssColorString(MAP_PALETTE.emberLight)
-				})
+				material: route.isAlternative
+					? Material.fromType('PolylineDash', { color, dashLength: 16 })
+					: Material.fromType('Color', { color })
 			});
 		}
 	}
@@ -116,6 +133,7 @@ export class PlaceMarkersLayer {
 		this.points.removeAll();
 		this.positions = [];
 		this.outlines.removeAll();
+		this.routeLines.removeAll();
 	}
 
 	private addExtentOutline(marker: PlaceMarker, extent: PlaceExtent): void {

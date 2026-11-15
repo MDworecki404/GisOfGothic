@@ -43,3 +43,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0037](0037-ksiega-i-karta-wpisu.md)                           | Księga i karta wpisu zamiast panelu wyszukiwania     | przyjęta          |
 | [0038](0038-lokacje-i-przejscia-miedzy-swiatami.md)            | Lokacje i przejścia między światami                  | przyjęta          |
 | [0039](0039-przewodnik-po-questach.md)                         | Przewodnik po questach                               | przyjęta          |
+| [0040](0040-trasa-przewodnika-po-drogach.md)                   | Trasa przewodnika po drogach i gałęzie alternatywne  | przyjęta          |

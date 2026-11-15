@@ -12,6 +12,8 @@ export interface QuestGuideStep {
 	isApproximate: boolean;
 	/** Przystanek należy do rozgałęzienia: wystarczy jedna z gałęzi. */
 	isAlternative: boolean;
+	/** Grupa wykluczających się gałęzi, do której należy przystanek; `null`, gdy nie jest alternatywą. */
+	alternativeGroup: string | null;
 }
 
 const MINIMUM_STEPS_OF_GUIDE = 2;
@@ -54,6 +56,7 @@ export class QuestGuidePlanner {
 			if (previous && isSamePosition(previous, place)) {
 				if (text && !previous.texts.includes(text)) previous.texts.push(text);
 				previous.isAlternative ||= stage.alternativeGroup !== null;
+				previous.alternativeGroup ??= stage.alternativeGroup;
 				continue;
 			}
 			steps.push({
@@ -64,7 +67,8 @@ export class QuestGuidePlanner {
 				lat: place.lat,
 				h: place.h,
 				isApproximate: place.isDefaultRoutine,
-				isAlternative: stage.alternativeGroup !== null
+				isAlternative: stage.alternativeGroup !== null,
+				alternativeGroup: stage.alternativeGroup
 			});
 		}
 		return steps.length >= MINIMUM_STEPS_OF_GUIDE ? steps : null;

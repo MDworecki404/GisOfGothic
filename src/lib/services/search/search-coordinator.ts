@@ -1,6 +1,8 @@
 import type { QuestCatalog, SearchEntry, SearchEntryType, SearchIndex } from '#lib/data/types.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
-import type { PlaceMarker } from '#lib/services/map/place-markers-layer.js';
+import type { PlaceMarker, PlaceRoute } from '#lib/services/map/place-markers-layer.js';
+import type { RoadPathFinder } from '#lib/services/routing/road-path-finder.js';
+import { QuestGuideLegPlanner } from './quest-guide-leg-planner.js';
 import { QuestPresenter, type QuestLinkView } from './quest-presenter.js';
 import type { QuestGuideStep } from './quest-guide-planner.js';
 import { NO_ATTRIBUTE_FILTER, type AttributeFilter } from './attribute-filter.js';
@@ -17,11 +19,8 @@ import { SearchService, type CategoryOption, type SearchTypeFilter } from './sea
 const COLLECTED_PLACE_COLOR = '#5d5649';
 
 export interface PlaceMarkersDisplay {
-	showPlaceMarkers(
-		markers: readonly PlaceMarker[],
-		shouldFlyToMarkers: boolean,
-		showRoute?: boolean
-	): void;
+	showPlaceMarkers(markers: readonly PlaceMarker[], shouldFlyToMarkers: boolean): void;
+	showPlaceRoutes(routes: readonly PlaceRoute[]): void;
 	flyToPlaceMarker(index: number): void;
 	clearPlaceMarkers(): void;
 }
@@ -48,6 +47,8 @@ export class SearchCoordinator {
 	private questGuideStepIndex = 0;
 	private loadQuestCatalog: (() => Promise<QuestCatalog>) | null = null;
 	private questCatalogLoading: Promise<QuestCatalog> | null = null;
+	private readonly questGuideLegPlanner = new QuestGuideLegPlanner();
+	private loadRoadPathFinder: (() => Promise<RoadPathFinder | null>) | null = null;
 
 	constructor(
 		private readonly eventBus: AppEventBus,
@@ -74,6 +75,11 @@ export class SearchCoordinator {
 	useQuestCatalogSource(loadQuestCatalog: (() => Promise<QuestCatalog>) | null): void {
 		this.loadQuestCatalog = loadQuestCatalog;
 		this.questCatalogLoading = null;
+	}
+
+	/** Źródło wyszukiwarki dróg bieżącego świata; dopóki go brak albo się wczytuje, trasa przewodnika idzie linią prostą. */
+	useRoadPathFinderSource(loadRoadPathFinder: (() => Promise<RoadPathFinder | null>) | null): void {
+		this.loadRoadPathFinder = loadRoadPathFinder;
 	}
 
 	useIndex(index: SearchIndex | null): void {
@@ -212,7 +218,8 @@ export class SearchCoordinator {
 				h: step.h,
 				color: QUEST_ROLE_PRESENTATION.target.color
 			}));
-			this.getMarkersDisplay()?.showPlaceMarkers(route, shouldFlyToMarkers, true);
+			this.getMarkersDisplay()?.showPlaceMarkers(route, shouldFlyToMarkers);
+			void this.showQuestGuideRoutes(this.questGuideSteps, this.selectedEntry.id);
 			return;
 		}
 		const collectedKeys = this.getCollectedPlaceKeys(this.selectedEntry.id);
@@ -226,6 +233,32 @@ export class SearchCoordinator {
 			extent: place.extent
 		}));
 		this.getMarkersDisplay()?.showPlaceMarkers(markers, shouldFlyToMarkers);
+	}
+
+	/** Rysuje odcinki trasy najpierw prosto, a po wczytaniu sieci dróg świata po drogach. */
+	private async showQuestGuideRoutes(
+		steps: readonly QuestGuideStep[],
+		entryId: string
+	): Promise<void> {
+		const legs = this.questGuideLegPlanner.planLegs(steps);
+		const readPoint = (step: QuestGuideStep) => ({ lon: step.lon, lat: step.lat, h: step.h });
+		this.getMarkersDisplay()?.showPlaceRoutes(
+			legs.map((leg) => ({
+				points: [readPoint(steps[leg.fromIndex]), readPoint(steps[leg.toIndex])],
+				isAlternative: leg.isAlternative
+			}))
+		);
+		const finder = await this.loadRoadPathFinder?.().catch((error: unknown) => {
+			console.error(error);
+			return null;
+		});
+		if (!finder || !this.isQuestGuideShown || this.selectedEntry?.id !== entryId) return;
+		this.getMarkersDisplay()?.showPlaceRoutes(
+			legs.map((leg) => ({
+				points: finder.findPath(readPoint(steps[leg.fromIndex]), readPoint(steps[leg.toIndex])),
+				isAlternative: leg.isAlternative
+			}))
+		);
 	}
 
 	private async showQuestDetails(entry: SearchEntry): Promise<void> {

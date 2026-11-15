@@ -213,8 +213,8 @@ Karta przejścia (`IdentifyCard`) ma przycisk „Przejdź do tego świata”: fa
 docelowego, a komponent (`PassageTravelButton`, używany w karcie obiektu, Księdze i karcie wpisu) tylko nawiguje
 (ADR 0038). Te same lokacje trafiają do indeksu wyszukiwania jako wpisy `location` (`GeoportalDataLoader.loadSearchIndex`).
 Przewodnik po questach (ADR 0039): `QuestGuidePlanner` układa przystanki z `quests.json` v6 (`order: dependency`),
-`SearchCoordinator` (`toggleQuestGuide`, `moveQuestGuideStep`) rysuje je jako znaczniki z linią (`PlaceMarkersLayer`)
-i publikuje `quest-guide-changed`; Księga ma listę przystanków, a `EntrySummaryCard` kroki „Wstecz” / „Dalej”.
+`SearchCoordinator` (`toggleQuestGuide`, `moveQuestGuideStep`) rysuje je jako znaczniki (`PlaceMarkersLayer`) z trasą po drogach
+(`QuestGuideLegPlanner` dzieli gałęzie alternatywne, `RoadPathFinder` szuka dróg; ADR 0040) i publikuje `quest-guide-changed`; Księga ma listę przystanków, a `EntrySummaryCard` kroki „Wstecz” / „Dalej”.
 `DataLayersRenderer` rysuje każdą warstwę jako kolekcję, której identyfikatorem jest
 `{ layerId, featureIndex }`; kliknięcie mapy (`MapViewObserver` → `onMapClicked`) wskazuje obiekt
 w danych bez dodatkowych map, a fasada publikuje `feature-identified`.
