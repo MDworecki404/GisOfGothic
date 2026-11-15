@@ -74,14 +74,14 @@
 				cy="27"
 				r="23"
 				fill="none"
-				stroke="var(--ochre)"
+				stroke="var(--zar)"
 				stroke-opacity="0.4"
 				stroke-dasharray="2 3"
 			/>
-			<path d="M5 27 27 23 24 27 27 31Z" fill="var(--stone)" opacity="0.7" />
-			<path d="M49 27 27 23 30 27 27 31Z" fill="var(--stone)" opacity="0.7" />
-			<path d="M27 49 31 27 27 30 23 27Z" fill="var(--iron-light)" />
-			<path d="M27 4 31 27 27 24 23 27Z" fill="var(--ochre)" />
+			<path d="M5 27 27 23 24 27 27 31Z" fill="var(--mgla)" opacity="0.7" />
+			<path d="M49 27 27 23 30 27 27 31Z" fill="var(--mgla)" opacity="0.7" />
+			<path d="M27 49 31 27 27 30 23 27Z" fill="var(--mgla)" />
+			<path d="M27 4 31 27 27 24 23 27Z" fill="var(--zar)" />
 			<text
 				x="27"
 				y="16"
@@ -89,7 +89,7 @@
 				font-family="Grenze, serif"
 				font-size="9"
 				font-weight="600"
-				fill="var(--pitch)">N</text
+				fill="var(--woda)">N</text
 			>
 		</svg>
 	</button>

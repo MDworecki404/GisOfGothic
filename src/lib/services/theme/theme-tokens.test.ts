@@ -39,8 +39,8 @@ describe('tokeny motywu „latarnia w kopalni”', () => {
 		expect(readContrast('primary-foreground', 'zar')).toBeGreaterThanOrEqual(4.5);
 	});
 
-	it('ramka pól (iron) na łupku ma kontrast co najmniej 3', () => {
-		expect(readContrast('iron', 'lupek')).toBeGreaterThanOrEqual(3);
+	it('ramka pól (żelazo) na łupku ma kontrast co najmniej 3', () => {
+		expect(readContrast('zelazo', 'lupek')).toBeGreaterThanOrEqual(3);
 	});
 
 	it('app.css nie importuje starych paczek pisma', () => {

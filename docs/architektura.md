@@ -500,8 +500,7 @@ widzi aktualny zasłonięty dół. Decyzje: [ADR 0009](adr/0009-wlasny-arkusz-mo
 Wszystkie tokeny wyglądu są w `src/app.css` ([ADR 0036](adr/0036-motyw-latarnia-w-kopalni.md), motyw „latarnia w
 kopalni”): paleta (łupek, łupek wysoki, woda, krawędź, linia, popiół, mgła, żar, bariera, krew), role (zmienne shadcn oraz
 `--hover` i `--active`), skala pisma (`text-caption` … `text-hero`) i promienie. Żar oznacza działanie, najechanie i
-ładowanie, bariera wybór, aktywne narzędzie i fokus. Stare nazwy tokenów (`--ochre`, `--torch`, `--ore`…) są aliasami
-do etapu 5. Materiały to klasy `material-leather` (płyta ze ściętym rogiem, `clip-path`, bez cienia zewnętrznego i bez
+ładowanie, bariera wybór, aktywne narzędzie i fokus. Dawne aliasy tokenów (`--ochre`, `--torch`, `--ore`…) usunięto w etapie 5; do żelaznych ramek służą `--zelazo` i `--lupek-podniesiony`. Materiały to klasy `material-leather` (płyta ze ściętym rogiem, `clip-path`, bez cienia zewnętrznego i bez
 `backdrop-filter`), `material-iron` i `material-parchment` (płaska płyta). Krój Grenze jest w nazwach i nagłówkach, a
 Barlow Semi Condensed w reszcie interfejsu (oba z `@fontsource`). Kontrast kolorów pilnuje `ColorContrastCalculator`
 (`services/theme/`), a kolory warstw mapy trzyma `MAP_PALETTE` (`services/map/map-palette.ts`).
