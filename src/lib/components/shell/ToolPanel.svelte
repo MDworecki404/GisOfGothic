@@ -141,7 +141,7 @@
 
 {#if activeTool}
 	<section
-		class="material-leather fixed inset-x-0 bottom-(--bottom-nav-height) z-20 flex h-(--sheet-height) flex-col overflow-hidden rounded-t-2xl transition-[height] duration-200 ease-out motion-reduce:transition-none md:top-[calc(var(--top-bar-height)+var(--gutter))] md:right-auto md:bottom-auto md:left-[calc(var(--rail-width)+var(--gutter))] md:h-auto md:max-h-[calc(100dvh-var(--top-bar-height)-var(--status-bar-height)-2*var(--gutter))] md:w-(--panel-width) md:rounded-md md:transition-none {mobileSheet.isDragging
+		class="material-leather fixed inset-x-0 bottom-(--bottom-nav-height) z-25 flex h-(--sheet-height) flex-col overflow-hidden rounded-t-2xl transition-[height] duration-200 ease-out motion-reduce:transition-none md:top-[calc(var(--top-bar-height)+var(--gutter))] md:right-auto md:bottom-auto md:left-[calc(var(--rail-width)+var(--gutter))] md:z-20 md:h-auto md:max-h-[calc(100dvh-var(--top-bar-height)-var(--status-bar-height)-2*var(--gutter))] md:w-(--panel-width) md:rounded-md md:transition-none {mobileSheet.isDragging
 			? 'transition-none'
 			: ''}"
 		style:--sheet-height="{sheetHeightPixels}px"
