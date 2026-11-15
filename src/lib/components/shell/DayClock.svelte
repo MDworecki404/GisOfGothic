@@ -1,4 +1,6 @@
 <script lang="ts">
+	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+	import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
 	import PauseIcon from '@lucide/svelte/icons/pause';
 	import PlayIcon from '@lucide/svelte/icons/play';
 	import { appState, geoportal } from '#lib/composition-root.js';
@@ -17,9 +19,11 @@
 		{ value: 'very-fast', label: '60×' }
 	] as const;
 
-	const isExpanded = $derived(
-		appState.activeToolId === 'time' || appState.routinePlayback.isPlaying
-	);
+	let isExpanded = $state(false);
+
+	$effect(() => {
+		if (appState.activeToolId === 'time' || appState.routinePlayback.isPlaying) isExpanded = true;
+	});
 	const dayFraction = $derived(appState.minuteOfDay / MINUTES_IN_DAY);
 	const markerAngle = $derived(Math.PI * (1 - dayFraction));
 	const markerX = $derived(ARC_CENTER_X + ARC_RADIUS_X * Math.cos(markerAngle));
@@ -81,6 +85,14 @@
 		<span class="font-heading text-display text-primary tabular-nums"
 			>{appState.timeOfDayLabel}</span
 		>
+		<button
+			class="grid size-11 place-items-center text-muted-foreground hover:bg-hover-surface hover:text-hover"
+			aria-label={isExpanded ? 'Zwiń zegar doby' : 'Rozwiń zegar doby'}
+			aria-expanded={isExpanded}
+			onclick={() => (isExpanded = !isExpanded)}
+		>
+			{#if isExpanded}<ChevronDownIcon class="size-5" />{:else}<ChevronUpIcon class="size-5" />{/if}
+		</button>
 	</div>
 	{#if isExpanded}
 		<svg
