@@ -2,6 +2,13 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.14.2](https://github.com/MDworecki404/GisOfGothic/compare/v0.14.1...v0.14.2) (2026-11-15)
+
+### Poprawki błędów
+
+* arkusz panelu na telefonie leży nad kontrolkami mapy ([9fda4ad](https://github.com/MDworecki404/GisOfGothic/commit/9fda4ad7f0e0fe3839db7971debd2352b39a7bda))
+* pełny arkusz panelu na telefonie nie wchodzi pod pasek górny ([505cff3](https://github.com/MDworecki404/GisOfGothic/commit/505cff3903c0c8b48276233dc8cd982dc9cc37ac))
+
 ## [0.14.1](https://github.com/MDworecki404/GisOfGothic/compare/v0.14.0...v0.14.1) (2026-11-15)
 
 ## [0.14.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.13.0...v0.14.0) (2026-11-15)
