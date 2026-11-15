@@ -33,6 +33,10 @@ function readCameraPlaceFromAddress(page: Page): { east: number; north: number }
 }
 
 async function openCameraSettings(page: Page): Promise<void> {
+	const viewOptionsButton = page.getByRole('button', { name: 'Widok', exact: true });
+	if ((await viewOptionsButton.getAttribute('aria-expanded')) === 'false') {
+		await viewOptionsButton.click();
+	}
 	await page.getByRole('button', { name: 'Rzut kamery' }).click();
 	await expect(page.getByRole('group', { name: 'Widok kamery' })).toBeVisible();
 }
