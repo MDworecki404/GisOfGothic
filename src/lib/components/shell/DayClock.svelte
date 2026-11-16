@@ -96,7 +96,7 @@
 </script>
 
 <section
-	class="material-leather fixed right-(--edge-inset) bottom-[calc(var(--edge-inset)+5.25rem)] z-10 hidden items-center gap-3 px-3 py-2 [--cut:10px] md:flex md:flex-col"
+	class="material-leather fixed right-[calc(var(--edge-inset)+var(--map-controls-width))] bottom-[calc(var(--edge-inset)+5.25rem)] z-10 hidden w-60 items-center gap-3 px-3 py-2 [--cut:10px] md:flex md:flex-col"
 	aria-label="Zegar doby"
 >
 	<div class="flex items-center gap-3">
@@ -110,7 +110,7 @@
 					class="size-5"
 				/>{/if}
 		</button>
-		<span class="font-heading text-display text-primary tabular-nums"
+		<span class="w-24 text-center font-heading text-display text-primary"
 			>{appState.timeOfDayLabel}</span
 		>
 		<button
@@ -123,76 +123,78 @@
 		</button>
 	</div>
 	{#if isExpanded}
-		<svg
-			class="size-33 cursor-pointer touch-none"
-			viewBox="0 0 {DIAL_SIZE} {DIAL_SIZE}"
-			role="slider"
-			tabindex="0"
-			aria-label="Godzina na zegarze doby"
-			aria-valuemin={0}
-			aria-valuemax={MINUTES_IN_DAY - 5}
-			aria-valuenow={appState.minuteOfDay}
-			aria-valuetext={appState.timeOfDayLabel}
-			onpointerdown={setTimeFromPointer}
-			onpointermove={setTimeWhileDragging}
-			onkeydown={setTimeFromKeyboard}
-		>
-			<circle
-				cx={DIAL_CENTER}
-				cy={DIAL_CENTER}
-				r={DIAL_TRACK_RADIUS}
-				fill="none"
-				stroke="var(--linia)"
-				stroke-width="3"
-			/>
-			<path
-				d={daylightArc}
-				fill="none"
-				stroke="var(--zar)"
-				stroke-width="3"
-				stroke-linecap="round"
-			/>
-			{#each hourTicks as tick (tick.hour)}
-				<line
-					x1={tick.inner.x}
-					y1={tick.inner.y}
-					x2={tick.outer.x}
-					y2={tick.outer.y}
-					stroke="var(--mgla)"
-					stroke-width="1.5"
+		<div class="flex items-center gap-3">
+			<svg
+				class="size-27 shrink-0 cursor-pointer touch-none"
+				viewBox="0 0 {DIAL_SIZE} {DIAL_SIZE}"
+				role="slider"
+				tabindex="0"
+				aria-label="Godzina na zegarze doby"
+				aria-valuemin={0}
+				aria-valuemax={MINUTES_IN_DAY - 5}
+				aria-valuenow={appState.minuteOfDay}
+				aria-valuetext={appState.timeOfDayLabel}
+				onpointerdown={setTimeFromPointer}
+				onpointermove={setTimeWhileDragging}
+				onkeydown={setTimeFromKeyboard}
+			>
+				<circle
+					cx={DIAL_CENTER}
+					cy={DIAL_CENTER}
+					r={DIAL_TRACK_RADIUS}
+					fill="none"
+					stroke="var(--linia)"
+					stroke-width="3"
 				/>
-			{/each}
-			<text
-				x={DIAL_CENTER}
-				y={DIAL_CENTER - 4}
-				class="fill-foreground text-[15px] font-medium tabular-nums"
-				text-anchor="middle">{appState.timeOfDayLabel}</text
-			>
-			<text
-				x={DIAL_CENTER}
-				y={DIAL_CENTER + 14}
-				class="fill-muted-foreground text-[10px]"
-				text-anchor="middle">doba</text
-			>
-			<circle
-				cx={marker.x}
-				cy={marker.y}
-				r="7"
-				fill="var(--zar)"
-				stroke="var(--krawedz)"
-				stroke-width="2"
-			/>
-		</svg>
-		<div class="flex gap-1.5" role="group" aria-label="Tempo zegara doby">
-			{#each SPEEDS as speed (speed.value)}
-				<button
-					class="chip tabular-nums"
-					aria-pressed={appState.routinePlayback.speed === speed.value}
-					onclick={() => geoportal.setRoutinePlaybackSpeed(speed.value)}
+				<path
+					d={daylightArc}
+					fill="none"
+					stroke="var(--zar)"
+					stroke-width="3"
+					stroke-linecap="round"
+				/>
+				{#each hourTicks as tick (tick.hour)}
+					<line
+						x1={tick.inner.x}
+						y1={tick.inner.y}
+						x2={tick.outer.x}
+						y2={tick.outer.y}
+						stroke="var(--mgla)"
+						stroke-width="1.5"
+					/>
+				{/each}
+				<text
+					x={DIAL_CENTER}
+					y={DIAL_CENTER - 4}
+					class="fill-foreground text-[15px] font-medium tabular-nums"
+					text-anchor="middle">{appState.timeOfDayLabel}</text
 				>
-					{speed.label}
-				</button>
-			{/each}
+				<text
+					x={DIAL_CENTER}
+					y={DIAL_CENTER + 14}
+					class="fill-muted-foreground text-[10px]"
+					text-anchor="middle">doba</text
+				>
+				<circle
+					cx={marker.x}
+					cy={marker.y}
+					r="7"
+					fill="var(--zar)"
+					stroke="var(--krawedz)"
+					stroke-width="2"
+				/>
+			</svg>
+			<div class="flex flex-col gap-1.5" role="group" aria-label="Tempo zegara doby">
+				{#each SPEEDS as speed (speed.value)}
+					<button
+						class="chip tabular-nums"
+						aria-pressed={appState.routinePlayback.speed === speed.value}
+						onclick={() => geoportal.setRoutinePlaybackSpeed(speed.value)}
+					>
+						{speed.label}
+					</button>
+				{/each}
+			</div>
 		</div>
 	{/if}
 </section>

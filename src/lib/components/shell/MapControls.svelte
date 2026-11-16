@@ -2,6 +2,8 @@
 	import BoxIcon from '@lucide/svelte/icons/box';
 	import GamepadIcon from '@lucide/svelte/icons/gamepad-2';
 	import HouseIcon from '@lucide/svelte/icons/house';
+	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+	import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
 	import EyeIcon from '@lucide/svelte/icons/eye';
 	import MapIcon from '@lucide/svelte/icons/map';
 	import MinusIcon from '@lucide/svelte/icons/minus';
@@ -151,7 +153,14 @@
 			title="Widok: joysticki, rzut kamery, 2D i porównanie światów"
 			onclick={toggleViewOptions}
 		>
-			<EyeIcon class="size-5" />
+			<span class="flex flex-col items-center leading-none">
+				<EyeIcon class="size-4.5" />
+				{#if areViewOptionsCollapsed}
+					<ChevronDownIcon class="-mb-1 size-3.5 text-muted-foreground" />
+				{:else}
+					<ChevronUpIcon class="-mb-1 size-3.5 text-muted-foreground" />
+				{/if}
+			</span>
 		</button>
 		{#if !areViewOptionsCollapsed}
 			<button

@@ -10,11 +10,11 @@
 		angleDegrees: number;
 	}
 
-	const INNER_RING_RADIUS_PIXELS = 104;
-	const OUTER_RING_RADIUS_PIXELS = 172;
+	const INNER_RING_RADIUS_PIXELS = 124;
+	const OUTER_RING_RADIUS_PIXELS = 212;
 	const INNER_RING_SIZE = 4;
-	const FAN_START_DEGREES = 8;
-	const FAN_END_DEGREES = 82;
+	const FAN_START_DEGREES = 4;
+	const FAN_END_DEGREES = 86;
 
 	/** Rozkłada narzędzia na dwóch łukach w ćwiartce nad piastą, bo piasta stoi w rogu ekranu. */
 	function placeSpokes(tools: readonly ToolDefinition[]): SpokePlacement[] {

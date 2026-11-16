@@ -794,6 +794,7 @@
 
 	.tool-wheel-spoke:hover,
 	.tool-wheel-spoke:focus-visible {
+		z-index: 2;
 		color: var(--hover);
 		background: var(--lupek-podniesiony);
 	}
