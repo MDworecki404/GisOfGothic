@@ -2,6 +2,14 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [1.1.0](https://github.com/MDworecki404/GisOfGothic/compare/v1.0.0...v1.1.0) (2026-11-16)
+
+### Nowe funkcje
+
+* skróty klawiszowe do narzędzi, mapy, warstw i pomiarów ([3f9a96e](https://github.com/MDworecki404/GisOfGothic/commit/3f9a96eda6a8f4da2765d04309f5e9a3daab1001))
+* wersja aplikacji i link do listy zmian w oknie O projekcie ([a05654a](https://github.com/MDworecki404/GisOfGothic/commit/a05654af8472cbc9dc801d34e7395730bdc28df6))
+* zgłoszenia z aplikacji, ściąga skrótów pod ? i podgląd linku ([f6d1453](https://github.com/MDworecki404/GisOfGothic/commit/f6d1453478ffdc0020f9ad2c85641974d758304b))
+
 ## [1.0.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.15.0...v1.0.0) (2026-11-16)
 
 ### Poprawki błędów
