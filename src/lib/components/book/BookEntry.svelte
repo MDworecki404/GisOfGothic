@@ -101,8 +101,8 @@
 		</button>
 
 		<article aria-labelledby="entry-name">
-			<h3 id="entry-name" class="font-serif text-title">{entry.name}</h3>
-			<p class="text-sm text-muted-foreground">
+			<h3 id="entry-name" class="font-serif text-title [overflow-wrap:anywhere]">{entry.name}</h3>
+			<p class="text-sm [overflow-wrap:anywhere] text-muted-foreground">
 				{entry.categoryLabel} · <span class="text-caption">{entry.code}</span>
 			</p>
 

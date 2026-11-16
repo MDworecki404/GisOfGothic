@@ -46,7 +46,7 @@
 					<h3 class="font-heading text-title leading-tight [overflow-wrap:anywhere]">
 						{entry.name}
 					</h3>
-					<p class="mt-0.5 text-sm text-muted-foreground">
+					<p class="mt-0.5 text-sm [overflow-wrap:anywhere] text-muted-foreground">
 						{entry.categoryLabel} · <span class="text-caption">{entry.code}</span>
 					</p>
 				</div>

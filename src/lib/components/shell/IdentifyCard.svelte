@@ -29,7 +29,7 @@
 					<h3 class="font-heading text-title leading-tight [overflow-wrap:anywhere]">
 						{feature.title}
 					</h3>
-					<p class="note-faded font-serif italic">{feature.subtitle}</p>
+					<p class="note-faded font-serif [overflow-wrap:anywhere] italic">{feature.subtitle}</p>
 				</div>
 				<button
 					class="note-faded -mt-2 -mr-3 grid size-11 shrink-0 place-items-center rounded-sm hover:bg-hover-surface hover:text-hover"
