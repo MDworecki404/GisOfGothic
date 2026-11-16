@@ -40,13 +40,16 @@
 
 			<div class="mt-6 space-y-3 text-body leading-relaxed text-foreground/90">
 				<p>
-					Atlas Gothica zbudowany na modelu 3D świata gry. Wybierasz przedmiot albo postać, a mapa
-					pokazuje, gdzie ich szukać.
+					Wybierz przedmiot, postać albo quest, a na trójwymiarowym modelu świata zobaczysz, gdzie
+					go znaleźć. Są światy z Gothica 1, Gothica 2: Nocy Kruka, Archolosa i Gothica 3.
 				</p>
 				<p>
-					Zmierzysz dystans między punktami, sprawdzisz profil terenu, odłożysz miejsca do zakładek
-					i przesuniesz suwak czasu. Instalujesz jak zwykłą aplikację, na telefonie albo komputerze.
-					Bez konta i rejestracji.
+					Możesz zmierzyć odległość i sprawdzić profil terenu, zapisać zakładki i notatki, a pora
+					dnia pokaże, gdzie postacie są o danej godzinie.
+				</p>
+				<p>
+					Działa w przeglądarce, bez konta. Możesz też zainstalować ją jak zwykłą aplikację na
+					telefonie albo komputerze.
 				</p>
 				<p class="text-sm text-muted-foreground">
 					Opisy postaci i questów pochodzą z Gothicpedii, na licencji CC BY-SA. Z karty przejdziesz
