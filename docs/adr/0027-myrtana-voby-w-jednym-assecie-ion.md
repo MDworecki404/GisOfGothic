@@ -13,6 +13,9 @@ ADR 0023 dzielił `vobs.glb` Myrtany na 4 części, bo ion odrzucił cały plik.
 
 - Myrtana: teren `6104068`, voby `6104066` (jeden asset; kolejny poprawiony eksport, który zastąpił `6104039` i `6104032`); stare `6088791` i części `6088864`, `6088836`,
   `6088838`, `6088842` zostają w bramce do końca weryfikacji.
+- Aktualizacja 2026-11-16: po naprawie tekstur G3 w ekstraktorze (błąd kolejności mipmap w dekoderze `.ximg`) Myrtana
+  korzysta z assetów `G3_World_Fixed_2` (teren `6164237`) i `G3_Vobs_Fixed_2` (voby `6164239`); `6104068` i `6104066`
+  zostają w bramce, dopóki stare wersje aplikacji w pamięci podręcznej (PWA) nie zostaną odświeżone.
 - Kolonia Karna: teren `6104037`; voby `6067768` bez zmian.
 - Lista `staticObjectsTilesetUrls` zostaje listą (jeden element); `scripts/split-vobs-glb.mjs` zostaje w repozytorium,
   ale nie jest używany dla Myrtany.
