@@ -265,6 +265,7 @@ test('cyfry otwierają narzędzia, a Ctrl K i / otwierają Księgę', async ({ p
 	await page.keyboard.press('Control+k');
 	await expect(page.getByRole('searchbox')).toBeVisible();
 	await page.keyboard.press('Escape');
+	await expect(page.getByRole('searchbox')).toHaveCount(0);
 	await page.keyboard.press('/');
 	await expect(page.getByRole('searchbox')).toBeVisible();
 });
