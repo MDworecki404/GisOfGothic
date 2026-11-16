@@ -2,6 +2,31 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [0.15.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.14.2...v0.15.0) (2026-11-16)
+
+### Nowe funkcje
+
+* koło narzędzi, tarcza zegara doby i pieczęć na karcie wpisu ([e08c0d3](https://github.com/MDworecki404/GisOfGothic/commit/e08c0d3b81fd065eba4cefdfc637fff95858675f))
+* motyw „Krąg” w trybie jasnym i ciemnym ([c9da984](https://github.com/MDworecki404/GisOfGothic/commit/c9da984c485f21ebf14ace10e7ce1437aa441a06))
+* podgląd 3D postaci i potworów złożony z części ([32b185b](https://github.com/MDworecki404/GisOfGothic/commit/32b185bb456c5efd62fb3010a8b16a785d2ab8de))
+* trasa przewodnika po questach biegnie po drogach, a gałęzie alternatywne są osobno ([27345d8](https://github.com/MDworecki404/GisOfGothic/commit/27345d846c477d888b8dd56118ef3446bd98dd90))
+
+### Poprawki błędów
+
+* bramka modeli wydaje pliki Gothica 3 ([c4bd400](https://github.com/MDworecki404/GisOfGothic/commit/c4bd400686efd2cef85f838727daa333f622dcf2))
+* długie kody i podtytuły wpisów zawijają się w karcie i w Księdze ([0fb6a08](https://github.com/MDworecki404/GisOfGothic/commit/0fb6a08d8b66ba59131c9ee4d3c1d87d23bae094))
+* joysticki nad odczytem i atrybucją oraz zawijanie wartości na karcie wpisu ([9cbc451](https://github.com/MDworecki404/GisOfGothic/commit/9cbc45197140fedb1b3af0ec40df84a7c1d2c067))
+* Myrtana korzysta z assetów ion z naprawionymi teksturami ([77d3334](https://github.com/MDworecki404/GisOfGothic/commit/77d33343c35c980e21ee86d0a6c6437c4f442c90))
+* odstępy w kole narzędzi, stabilna tarcza zegara i strzałka przy oku ([21e490d](https://github.com/MDworecki404/GisOfGothic/commit/21e490df216a31c4ddf7c3748a27f4a8197915c2))
+* tytuły kart wpisu i obiektu mieszczą się w karcie ([091e710](https://github.com/MDworecki404/GisOfGothic/commit/091e710ce8dcff5e732b2c2ae205f16bcf267d2c))
+
+### Dokumentacja
+
+* makiety trzynastu kierunków wyglądu w trybie jasnym i ciemnym ([1e5321a](https://github.com/MDworecki404/GisOfGothic/commit/1e5321a4a82385d39a2bb446645ddc11ddd026e0))
+* odnośniki do commitów w CHANGELOG po przepisaniu historii ([ddb6f3f](https://github.com/MDworecki404/GisOfGothic/commit/ddb6f3f3d516cbc1fe6b32d45a6cf3694f927dac))
+* otwarcie repozytorium w pozycjach zrobionych ([5f8bf0b](https://github.com/MDworecki404/GisOfGothic/commit/5f8bf0bfbc19d5827a11a5a1100948284a8c60e1))
+* przygotowanie repozytorium do otwarcia i CI na GitHub Actions ([60fdd54](https://github.com/MDworecki404/GisOfGothic/commit/60fdd544e00eb76fe1d73da34f531e7cc7c5f11b))
+
 ## [0.14.2](https://github.com/MDworecki404/GisOfGothic/compare/v0.14.1...v0.14.2) (2026-11-15)
 
 ### Poprawki błędów
