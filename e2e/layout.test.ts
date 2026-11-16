@@ -185,3 +185,32 @@ test('płyta odczytu ma stałą szerokość, więc nie przesuwa się pod kursore
 		if (query === '?narzedzie=zamkniete') expect(before.width).toBe(896);
 	}
 });
+
+test('joysticki lotu nie nachodzą na odczyt, atrybucję, zegar, koło ani kolumnę przycisków mapy', async ({
+	page
+}) => {
+	await page.setViewportSize({ width: 1440, height: 800 });
+	await page.goto('/g2nk/khorinis');
+	await page.getByRole('button', { name: 'Joysticki lotu kamerą' }).click();
+
+	const sticks = [
+		page.getByLabel('Joystick ruchu: do przodu, do tyłu i w bok'),
+		page.getByLabel('Joystick rozglądania: obrót i pochylenie kamery')
+	];
+	const obstacles = {
+		odczyt: page.locator('footer[aria-label="Pozycja kursora, skala i stan"]'),
+		atrybucja: page.locator('.map-attribution'),
+		zegar: page.getByRole('region', { name: 'Zegar doby' }),
+		koło: page.getByRole('navigation', { name: 'Narzędzia' }),
+		'kolumna przycisków mapy': page.getByRole('button', { name: 'Przybliż' })
+	};
+	for (const stick of sticks) {
+		const stickBox = await stick.boundingBox();
+		if (!stickBox) throw new Error('Brak joysticka');
+		for (const [name, obstacle] of Object.entries(obstacles)) {
+			const obstacleBox = await obstacle.boundingBox();
+			if (!obstacleBox) throw new Error(`Brak elementu: ${name}`);
+			expect(intersects(stickBox, obstacleBox), `joystick nakłada się na: ${name}`).toBe(false);
+		}
+	}
+});

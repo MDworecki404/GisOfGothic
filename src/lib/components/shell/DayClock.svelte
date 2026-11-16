@@ -3,7 +3,7 @@
 	import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
 	import PauseIcon from '@lucide/svelte/icons/pause';
 	import PlayIcon from '@lucide/svelte/icons/play';
-	import { appState, geoportal } from '#lib/composition-root.js';
+	import { appState, flightControls, geoportal } from '#lib/composition-root.js';
 
 	const MINUTES_IN_DAY = 24 * 60;
 	const KEYBOARD_STEP_MINUTES = 30;
@@ -96,7 +96,9 @@
 </script>
 
 <section
-	class="material-leather fixed right-[calc(var(--edge-inset)+var(--map-controls-width))] bottom-[calc(var(--edge-inset)+5.25rem)] z-10 hidden w-60 items-center gap-3 px-3 py-2 [--cut:10px] md:flex md:flex-col"
+	class="material-leather fixed right-[calc(var(--edge-inset)+var(--map-controls-width))] {flightControls.areSticksShown
+		? 'bottom-[calc(var(--edge-inset)+5rem+var(--gutter)*2+8rem)]'
+		: 'bottom-[calc(var(--edge-inset)+5.25rem)]'} z-10 hidden w-60 items-center gap-3 px-3 py-2 [--cut:10px] md:flex md:flex-col"
 	aria-label="Zegar doby"
 >
 	<div class="flex items-center gap-3">

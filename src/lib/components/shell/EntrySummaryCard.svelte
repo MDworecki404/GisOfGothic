@@ -100,9 +100,11 @@
 			{#if entry.facts.length > 0 && !guideStep}
 				<dl class="mt-3 flex flex-wrap gap-x-5 gap-y-2 tabular-nums">
 					{#each entry.facts.slice(0, MAXIMUM_FACTS) as fact (fact.label)}
-						<div class="flex flex-col-reverse">
+						<div class="flex max-w-full min-w-0 flex-col-reverse">
 							<dt class="text-caption text-muted-foreground">{fact.label}</dt>
-							<dd class="text-xl text-primary">{fact.value}</dd>
+							<dd class="min-w-0 text-lead font-medium [overflow-wrap:anywhere] text-primary">
+								{fact.value}
+							</dd>
 						</div>
 					{/each}
 				</dl>

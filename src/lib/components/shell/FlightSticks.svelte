@@ -7,7 +7,7 @@
 	const riseButton =
 		'material-leather pointer-events-auto grid size-12 touch-none place-items-center rounded-full text-foreground select-none active:bg-active-surface';
 	const verticalPlacement =
-		'bottom-[calc(var(--bottom-nav-height)+var(--sheet-occupied-height)+14px)] md:bottom-[calc(var(--status-bar-height)+16px)]';
+		'bottom-[calc(var(--bottom-nav-height)+var(--sheet-occupied-height)+14px)] md:bottom-[calc(var(--edge-inset)+5rem+var(--gutter))]';
 	const moveStickPlacement =
 		'left-3 md:left-[calc(var(--rail-width)+var(--panel-occupied-width)+var(--gutter)+6px)]';
 </script>
@@ -20,7 +20,9 @@
 			onRelease={() => geoportal.releaseFlightStick('move')}
 		/>
 	</div>
-	<div class="pointer-events-none fixed right-3 z-10 flex items-end gap-3 {verticalPlacement}">
+	<div
+		class="pointer-events-none fixed right-3 z-10 flex items-end gap-3 md:right-[calc(var(--edge-inset)+var(--map-controls-width))] {verticalPlacement}"
+	>
 		<div class="flex flex-col gap-2">
 			<button
 				class={riseButton}
