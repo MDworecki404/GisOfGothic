@@ -13,9 +13,8 @@
 
 {#if appState.isWalking}
 	<div
-		class="material-leather pointer-events-auto fixed bottom-[calc(var(--edge-inset)+4.5rem)] left-1/2 z-20 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-3 px-4 py-2.5 text-label text-muted-foreground md:bottom-(--edge-inset)"
+		class="material-leather pointer-events-auto fixed top-[calc(var(--top-bar-height)+0.5rem)] left-1/2 z-30 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-3 px-4 py-2.5 text-label text-muted-foreground"
 		role="status"
-		data-map-obstacle
 	>
 		<FootprintsIcon class="size-4 shrink-0 text-primary" />
 		<span class="min-w-0"

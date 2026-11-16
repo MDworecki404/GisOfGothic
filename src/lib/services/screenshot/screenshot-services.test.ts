@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ScreenshotBandLayoutCalculator } from './screenshot-band-layout-calculator.js';
+import { ScreenshotFrameLayoutCalculator } from './screenshot-frame-layout-calculator.js';
 import { ScreenshotFileNameBuilder } from './screenshot-file-name-builder.js';
 import {
 	type ScreenshotCaption,
@@ -10,30 +10,39 @@ import { ViewScreenshotTaker } from './view-screenshot-taker.js';
 
 const palette: ScreenshotPalette = {
 	mapBackground: '#000',
-	bandBackground: '#111',
-	bandBorder: '#222',
-	titleColor: '#333',
-	detailColor: '#444',
+	frameBackground: '#111',
+	goldColor: '#cc0',
+	primaryTextColor: '#eee',
+	mutedTextColor: '#999',
 	titleFontFamily: 'serif',
 	detailFontFamily: 'sans-serif'
 };
 
-describe('ScreenshotBandLayoutCalculator', () => {
-	const calculator = new ScreenshotBandLayoutCalculator();
+describe('ScreenshotFrameLayoutCalculator', () => {
+	const calculator = new ScreenshotFrameLayoutCalculator();
 
-	it('skaluje pasek razem ze szerokością zdjęcia', () => {
-		expect(calculator.calculate(1600).bandHeight).toBe(80);
+	it('skaluje margines i podpis razem ze szerokością zdjęcia', () => {
+		const layout = calculator.calculate(1600);
+		expect(layout.marginPixels).toBe(35);
+		expect(layout.captionHeightPixels).toBe(144);
 	});
 
 	it('nie schodzi poniżej minimum ani nie przekracza maksimum', () => {
-		expect(calculator.calculate(200).bandHeight).toBe(44);
-		expect(calculator.calculate(8000).bandHeight).toBe(120);
+		const small = calculator.calculate(200);
+		const large = calculator.calculate(8000);
+		expect(small.marginPixels).toBe(14);
+		expect(small.captionHeightPixels).toBe(76);
+		expect(large.marginPixels).toBe(44);
+		expect(large.captionHeightPixels).toBe(170);
 	});
 
-	it('dobiera pismo i odstęp do wysokości paska', () => {
+	it('dobiera pismo, linie i ozdoby do wymiarów oprawy', () => {
 		const layout = calculator.calculate(1600);
-		expect(layout.fontSizePixels).toBe(32);
-		expect(layout.paddingPixels).toBe(40);
+		expect(layout.titleFontPixels).toBe(43);
+		expect(layout.detailFontPixels).toBe(23);
+		expect(layout.frameLinePixels).toBe(2);
+		expect(layout.outerLineGapPixels).toBe(14);
+		expect(layout.cornerDiamondPixels).toBe(7);
 	});
 });
 
@@ -106,7 +115,8 @@ describe('ViewScreenshotTaker', () => {
 		expect(screenshot?.fileName).toBe('gis-of-gothic-khorinis-2026-11-16-1230.png');
 		expect(captions[0]).toEqual({
 			title: 'GIS of Gothic',
-			detail: 'Khorinis · gisofgothic.example · wersja 1.2.0'
+			subtitle: 'Khorinis',
+			detailLines: ['gisofgothic.example', 'wersja 1.2.0']
 		});
 	});
 });

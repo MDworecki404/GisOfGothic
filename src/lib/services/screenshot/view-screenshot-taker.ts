@@ -44,10 +44,10 @@ export class ViewScreenshotTaker {
 	}
 
 	private buildCaption(context: ViewScreenshotContext): ScreenshotCaption {
-		const worldPart = context.worldName ? `${context.worldName} · ` : '';
 		return {
 			title: 'GIS of Gothic',
-			detail: `${worldPart}${context.siteAddress} · wersja ${context.appVersion}`
+			subtitle: context.worldName ?? '',
+			detailLines: [context.siteAddress, `wersja ${context.appVersion}`]
 		};
 	}
 }

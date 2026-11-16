@@ -696,12 +696,12 @@ znikaniu postaci. Filtr dotyczy warstw „Unikatowe postacie” i „Wszyscy NPC
 
 ## Zdjęcie widoku
 
-Przycisk aparatu w `MapControls` (`TakeScreenshotButton`) pobiera PNG kadru mapy z paskiem podpisu (tytuł, świat, adres
-strony, wersja). Przepływ: `takeViewScreenshot` w `composition-root.ts` woła `ViewScreenshotTaker` (`services/screenshot/`),
+Przycisk aparatu w `MapControls` (`TakeScreenshotButton`) pobiera PNG kadru mapy w oprawie (ciemna rama z podwójną złotą linią i rombami w rogach, przyciemnione brzegi kadru, pod
+obrazem podpis: tytuł i świat z lewej, adres strony i wersja z prawej). Przepływ: `takeViewScreenshot` w `composition-root.ts` woła `ViewScreenshotTaker` (`services/screenshot/`),
 który prosi fasadę o klatkę (`captureViewImage` → `MapService.captureViewImage`: `scene.render()` tuż przed odczytem,
-bo bufor płótna Cesium jest czyszczony po wyświetleniu), a `ScreenshotComposer` dokłada tło, pasek i zapisuje PNG.
-Kolory i kroje pisma paska czyta `ScreenshotPaletteReader` ze zmiennych CSS motywu (więc zdjęcie ma tryb jasny albo
-ciemny jak aplikacja), układ paska liczy `ScreenshotBandLayoutCalculator`, nazwę pliku `ScreenshotFileNameBuilder`.
+bo bufor płótna Cesium jest czyszczony po wyświetleniu), a `ScreenshotComposer` składa oprawę i zapisuje PNG.
+Kolory i kroje pisma oprawy czyta `ScreenshotPaletteReader` ze zmiennych CSS motywu (więc zdjęcie ma tryb jasny albo
+ciemny jak aplikacja), wymiary oprawy liczy `ScreenshotFrameLayoutCalculator`, nazwę pliku `ScreenshotFileNameBuilder`.
 W kadrze są markery, trasy i pomiary (to elementy Cesium), ale nie interfejs HTML. Plik powstaje w przeglądarce użytkownika
 i nigdzie nie jest wysyłany.
 
