@@ -43,7 +43,9 @@
 			<div class="flex items-start justify-between gap-3">
 				<span class="entry-seal" aria-hidden="true"><SealIcon class="size-5" /></span>
 				<div class="min-w-0 flex-1">
-					<h3 class="font-heading text-display leading-tight">{entry.name}</h3>
+					<h3 class="font-heading text-title leading-tight [overflow-wrap:anywhere]">
+						{entry.name}
+					</h3>
 					<p class="mt-0.5 text-sm text-muted-foreground">
 						{entry.categoryLabel} · <span class="text-caption">{entry.code}</span>
 					</p>

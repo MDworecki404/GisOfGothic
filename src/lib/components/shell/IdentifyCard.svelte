@@ -26,7 +26,9 @@
 			<div class="flex items-start justify-between gap-2">
 				<div class="min-w-0 pt-1">
 					<p class="note-faded text-caption font-medium">{feature.layerName}</p>
-					<h3 class="font-heading text-display break-words">{feature.title}</h3>
+					<h3 class="font-heading text-title leading-tight [overflow-wrap:anywhere]">
+						{feature.title}
+					</h3>
 					<p class="note-faded font-serif italic">{feature.subtitle}</p>
 				</div>
 				<button
