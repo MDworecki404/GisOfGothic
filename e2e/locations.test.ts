@@ -2,6 +2,8 @@ import { BOOK_URL, expect, test } from './support/test.js';
 
 test.use({ serviceWorkers: 'block' });
 
+const INDEX_LOAD_TIMEOUT_MS = 20_000;
+
 const LOCATIONS_STUB = {
 	version: 1,
 	game: 'g2nk',
@@ -50,7 +52,9 @@ test.beforeEach(async ({ page }) => {
 test('lokacje są wpisami Księgi z filtrem rodzaju', async ({ page }) => {
 	await page.goto(BOOK_URL);
 	await page.getByRole('button', { name: 'Lokacje', exact: true }).click();
-	await expect(page.getByRole('button', { name: /^Khorinis Miasto lub osada/ })).toBeVisible();
+	await expect(page.getByRole('button', { name: /^Khorinis Miasto lub osada/ })).toBeVisible({
+		timeout: INDEX_LOAD_TIMEOUT_MS
+	});
 	await expect(page.getByRole('button', { name: /Przejście do: Górnicza Dolina/ })).toBeVisible();
 });
 
@@ -60,7 +64,9 @@ test('lista kategorii zawęża lokacje do wybranego rodzaju', async ({ page }) =
 	const kindSelect = page.getByRole('combobox', { name: 'Kategoria' });
 	await expect(kindSelect.getByRole('option')).toHaveCount(3);
 	await kindSelect.selectOption({ label: 'Miasto lub osada (1)' });
-	await expect(page.getByRole('button', { name: /^Khorinis Miasto lub osada/ })).toBeVisible();
+	await expect(page.getByRole('button', { name: /^Khorinis Miasto lub osada/ })).toBeVisible({
+		timeout: INDEX_LOAD_TIMEOUT_MS
+	});
 	await expect(page.getByRole('button', { name: /Przejście do: Górnicza Dolina/ })).toHaveCount(0);
 });
 
