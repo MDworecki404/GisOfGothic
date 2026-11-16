@@ -2,6 +2,12 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [1.3.0](https://github.com/MDworecki404/GisOfGothic/compare/v1.2.1...v1.3.0) (2026-11-16)
+
+### Nowe funkcje
+
+* sterowanie kamerą podglądu 3D (przechył, zoom, reset, obrót automatyczny, pełny ekran) ([2a88378](https://github.com/MDworecki404/GisOfGothic/commit/2a88378ebbd29a34a554e0493fa2d4caf69b4c95))
+
 ## [1.2.1](https://github.com/MDworecki404/GisOfGothic/compare/v1.2.0...v1.2.1) (2026-11-16)
 
 ## [1.2.0](https://github.com/MDworecki404/GisOfGothic/compare/v1.1.0...v1.2.0) (2026-11-16)
