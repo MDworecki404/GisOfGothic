@@ -19,6 +19,9 @@ const PREVIEW_PITCH_DEGREES = -30;
 const STANDING_PREVIEW_PITCH_DEGREES = -8;
 const FROM_ABOVE_PREVIEW_PITCH_DEGREES = -62;
 const PREVIEW_HEADING_DEGREES = 35;
+const MAXIMUM_FORCED_RENDER_MILLISECONDS = 15000;
+const FRAMES_AFTER_MODELS_READY = 5;
+const FRAMES_WAITING_FOR_TEXTURES = 120;
 const RANGE_IN_BOUNDING_RADII = 2.6;
 const STANDING_RANGE_IN_BOUNDING_RADII = 4.2;
 
@@ -41,6 +44,7 @@ const OBJECT_PREVIEW_VIEW: PreviewView = {
 export class ModelPreview {
 	private readonly widget: CesiumWidget;
 	private models: Model[] = [];
+	private texturesLoadedCount = 0;
 	private view: PreviewView = OBJECT_PREVIEW_VIEW;
 	private latestRequest = 0;
 	private orientation: PreviewOrientation = 'as-saved';
@@ -102,12 +106,43 @@ export class ModelPreview {
 			return;
 		}
 		this.models = models;
+		this.texturesLoadedCount = 0;
 		models.forEach((model) => {
 			this.widget.scene.primitives.add(model);
 			model.readyEvent.addEventListener(() => this.frameModelsWhenReady());
-			model.texturesReadyEvent.addEventListener(() => this.widget.scene.requestRender());
+			model.texturesReadyEvent.addEventListener(() => {
+				this.texturesLoadedCount++;
+				this.widget.scene.requestRender();
+			});
 		});
 		this.frameModelsWhenReady();
+		this.keepRenderingUntilModelsAreDrawn(request);
+	}
+
+	/**
+	 * Widget renderuje tylko na żądanie, a model i jego tekstury trafiają na kartę graficzną w kolejnych klatkach,
+	 * po których nic nie prosi o następną. Bez tego podgląd zostaje pusty, dopóki użytkownik nie ruszy kamerą,
+	 * więc wymuszamy klatki, aż wszystkie modele będą gotowe (z limitem czasu na wypadek błędu wczytywania).
+	 */
+	private keepRenderingUntilModelsAreDrawn(request: number): void {
+		const startedAtMilliseconds = performance.now();
+		let framesAfterReady = 0;
+		const requestFrame = (): void => {
+			if (this.widget.isDestroyed() || request !== this.latestRequest) return;
+			this.widget.scene.requestRender();
+			const areModelsReady = this.models.every((model) => model.ready);
+			framesAfterReady = areModelsReady ? framesAfterReady + 1 : 0;
+			const framesToWait =
+				this.texturesLoadedCount >= this.models.length
+					? FRAMES_AFTER_MODELS_READY
+					: FRAMES_WAITING_FOR_TEXTURES;
+			const hasTimedOut =
+				performance.now() - startedAtMilliseconds > MAXIMUM_FORCED_RENDER_MILLISECONDS;
+			if (framesAfterReady < framesToWait && !hasTimedOut) {
+				requestAnimationFrame(requestFrame);
+			}
+		};
+		requestAnimationFrame(requestFrame);
 	}
 
 	destroy(): void {
