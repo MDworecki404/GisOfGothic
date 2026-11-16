@@ -1,4 +1,5 @@
-import { Cartesian3, Ellipsoid, Math as CesiumMath, type Viewer } from 'cesium';
+import { Math as CesiumMath, type Viewer } from 'cesium';
+import { CameraHorizontalBasisReader } from './camera-horizontal-basis-reader.js';
 import {
 	FlightMotionCalculator,
 	type FlightStep
@@ -12,7 +13,6 @@ import {
 const FALLBACK_REFERENCE_DISTANCE_METRES = 200;
 const FRAMES_BETWEEN_REFERENCE_MEASUREMENTS = 12;
 const MAXIMUM_PITCH_RADIANS = CesiumMath.toRadians(85);
-const NEARLY_VERTICAL_LENGTH = 1e-3;
 
 /**
  * Lot kamerą sterowany klawiaturą i joystickami. Co klatkę przesuwa i obraca kamerę o krok
@@ -22,6 +22,7 @@ const NEARLY_VERTICAL_LENGTH = 1e-3;
  */
 export class CameraFlightController {
 	private readonly motionCalculator = new FlightMotionCalculator();
+	private readonly basisReader = new CameraHorizontalBasisReader();
 	private readonly stopListeningToRender: () => void;
 	private input: FlightInput = IDLE_FLIGHT_INPUT;
 	private previousFrameMilliseconds: number | null = null;
@@ -79,12 +80,7 @@ export class CameraFlightController {
 
 	private applyStep(step: FlightStep): void {
 		const camera = this.viewer.camera;
-		const surfaceUp = Ellipsoid.WGS84.geodeticSurfaceNormal(camera.positionWC, new Cartesian3());
-		const forward = this.findHorizontalForward(surfaceUp);
-		const right = Cartesian3.normalize(
-			Cartesian3.cross(forward, surfaceUp, new Cartesian3()),
-			new Cartesian3()
-		);
+		const { up: surfaceUp, forward, right } = this.basisReader.read(camera);
 		if (step.forwardMetres !== 0) camera.move(forward, step.forwardMetres);
 		if (step.rightMetres !== 0) camera.move(right, step.rightMetres);
 		if (step.riseMetres !== 0) {
@@ -101,25 +97,5 @@ export class CameraFlightController {
 			);
 			camera.lookUp(tiltedPitch - camera.pitch);
 		}
-	}
-
-	/** Kierunek patrzenia rzutowany na poziom; przy spojrzeniu prosto w dół używa góry ekranu. */
-	private findHorizontalForward(surfaceUp: Cartesian3): Cartesian3 {
-		const camera = this.viewer.camera;
-		const projected = this.projectOntoHorizontalPlane(camera.directionWC, surfaceUp);
-		if (Cartesian3.magnitude(projected) > NEARLY_VERTICAL_LENGTH) {
-			return Cartesian3.normalize(projected, projected);
-		}
-		const fromScreenTop = this.projectOntoHorizontalPlane(camera.upWC, surfaceUp);
-		return Cartesian3.normalize(fromScreenTop, fromScreenTop);
-	}
-
-	private projectOntoHorizontalPlane(vector: Cartesian3, surfaceUp: Cartesian3): Cartesian3 {
-		const verticalPart = Cartesian3.multiplyByScalar(
-			surfaceUp,
-			Cartesian3.dot(vector, surfaceUp),
-			new Cartesian3()
-		);
-		return Cartesian3.subtract(vector, verticalPart, new Cartesian3());
 	}
 }

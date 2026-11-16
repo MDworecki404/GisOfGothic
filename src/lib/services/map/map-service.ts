@@ -23,13 +23,15 @@ import type { DensityCell } from '#lib/services/analysis/density-grid-builder.js
 import type { LocalPoint } from '#lib/services/measurement/measurement-calculator.js';
 import type { PerformanceProfile } from '#lib/services/performance/performance-profiles.js';
 import type { ShadowSettings } from '#lib/services/time/time-coordinator.js';
-import type { FlightInput } from '#lib/services/flight/flight-input.js';
+import { IDLE_FLIGHT_INPUT, type FlightInput } from '#lib/services/flight/flight-input.js';
+import type { WalkingSpeeds } from '#lib/services/walking/walking-motion-calculator.js';
 import { AnalysisRenderer } from './analysis-renderer.js';
 import {
 	CameraPresetBuilder,
 	type CameraPreset
 } from '#lib/services/camera/camera-preset-builder.js';
 import { CameraFlightController } from './camera-flight-controller.js';
+import { WalkingController } from './walking-controller.js';
 import { CameraFramer } from './camera-framer.js';
 import { CameraProjectionController } from './camera-projection-controller.js';
 import type { MapViewInsets } from './free-area-calculator.js';
@@ -99,6 +101,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 	private readonly projectionController: CameraProjectionController;
 	private readonly presetBuilder = new CameraPresetBuilder();
 	private readonly flightController: CameraFlightController;
+	private readonly walkingController: WalkingController;
 	private readonly sliceController = new WorldSliceController(
 		() => this.worldTileset,
 		() => this.staticObjectsTilesets,
@@ -156,6 +159,10 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 			() => this.projectionController.isOrthographic(),
 			() => this.viewMode === 'view-2d'
 		);
+		this.walkingController = new WalkingController(this.viewer, () => [
+			...this.measurement.primitivesToIgnoreWhenSampling,
+			...this.analysis.primitivesToIgnoreWhenSampling
+		]);
 		this.flatMapPanController = new FlatMapPanController(this.viewer, () =>
 			this.projectionController.readOrthographicMetresPerPixel()
 		);
@@ -328,7 +335,27 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 
 	/** Ustawia bieżący zamiar lotu kamerą (klawiatura, joysticki); lot trwa, dopóki zamiar nie jest zerowy. */
 	setFlightInput(input: FlightInput): void {
+		if (this.walkingController.isRequested) {
+			this.flightController.replaceInput(IDLE_FLIGHT_INPUT);
+			this.walkingController.replaceInput(input);
+			return;
+		}
 		this.flightController.replaceInput(input);
+	}
+
+	/** Ustawia prędkości marszu i biegu z danych świata; `null` przywraca wartości domyślne. */
+	useWalkingSpeeds(speeds: WalkingSpeeds | null): void {
+		this.walkingController.useSpeeds(speeds);
+	}
+
+	/** Sprowadza kamerę do punktu pod środkiem ekranu i zaczyna spacer; `false`, gdy tam nie ma modelu. */
+	beginWalking(): Promise<boolean> {
+		this.flightController.replaceInput(IDLE_FLIGHT_INPUT);
+		return this.walkingController.begin();
+	}
+
+	endWalking(): void {
+		this.walkingController.end();
 	}
 
 	zoomIn(): void {
@@ -727,6 +754,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 		this.isDestroyed = true;
 		this.worldSizes.destroy();
 		this.flightController.destroy();
+		this.walkingController.destroy();
 		this.flatMapPanController.stop();
 		this.projectionController.destroy();
 		this.viewObserver.destroy();

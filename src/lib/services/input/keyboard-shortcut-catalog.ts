@@ -6,7 +6,8 @@ export type KeyboardShortcutGroup =
 	| 'Mapa i kamera'
 	| 'Warstwy i czas'
 	| 'Pomiary i przewodnik'
-	| 'Lot kamerą';
+	| 'Lot kamerą'
+	| 'Spacer';
 
 export interface ShortcutTrigger {
 	codes: readonly string[];
@@ -41,6 +42,7 @@ export interface KeyboardShortcutActions {
 	toggleContours(): void;
 	toggleGrid(): void;
 	toggleStaticObjects(): void;
+	toggleWalking(): void;
 	toggleCharactersAtTimeOfDay(): void;
 	switchToNextCoordinateSystem(): void;
 	moveQuestGuideToPreviousStep(): void;
@@ -67,7 +69,10 @@ const INFORMATIONAL_ENTRIES: readonly KeyboardShortcutHelpEntry[] = [
 	{ group: 'Lot kamerą', keyLabel: 'Q E', description: 'W dół i w górę' },
 	{ group: 'Lot kamerą', keyLabel: '← →', description: 'Obrót' },
 	{ group: 'Lot kamerą', keyLabel: '↑ ↓', description: 'Pochylenie spojrzenia' },
-	{ group: 'Lot kamerą', keyLabel: 'Shift', description: 'Przyspieszenie lotu' }
+	{ group: 'Lot kamerą', keyLabel: 'Shift', description: 'Przyspieszenie lotu' },
+	{ group: 'Spacer', keyLabel: 'W A S D', description: 'Idź (Shift – biegnij)' },
+	{ group: 'Spacer', keyLabel: '← → ↑ ↓', description: 'Rozglądaj się' },
+	{ group: 'Spacer', keyLabel: 'Przeciągnięcie', description: 'Rozglądaj się myszą lub palcem' }
 ];
 
 /**
@@ -168,6 +173,13 @@ export class KeyboardShortcutCatalog {
 				description: 'Zmień układ współrzędnych',
 				codes: ['KeyC'],
 				run: () => actions.switchToNextCoordinateSystem()
+			},
+			{
+				group: 'Mapa i kamera',
+				keyLabel: 'F',
+				description: 'Spacer pierwszoosobowy (włącz i wyłącz)',
+				codes: ['KeyF'],
+				run: () => actions.toggleWalking()
 			},
 			{
 				group: 'Warstwy i czas',

@@ -52,6 +52,7 @@ export type AppEvent =
 	| { type: 'search-index-load-failed'; message: string }
 	| { type: 'cursor-moved'; position: WorldPosition | null }
 	| { type: 'camera-heading-changed'; headingDegrees: number }
+	| { type: 'walking-changed'; isWalking: boolean }
 	| { type: 'map-scale-changed'; metresPerPixel: number | null }
 	| { type: 'tool-selected'; toolId: ToolId | null }
 	| { type: 'coordinate-system-changed'; systemId: CoordinateSystemId }

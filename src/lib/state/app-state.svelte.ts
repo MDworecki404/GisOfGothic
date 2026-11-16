@@ -130,6 +130,7 @@ export class AppState {
 	cameraProjection = $state.raw<CameraProjectionSetting>(DEFAULT_CAMERA_PROJECTION);
 	fieldOfViewDegrees = $state(DEFAULT_FIELD_OF_VIEW_DEGREES);
 	viewMode = $state<ViewMode>('view-3d');
+	isWalking = $state(false);
 	sliceHeightMetres = $state<number | null>(null);
 	sliceHeightRange = $state.raw<SliceHeightRange | null>(null);
 	mapOverlays = $state.raw<MapOverlays>(NO_MAP_OVERLAYS);
@@ -283,6 +284,9 @@ export class AppState {
 		});
 		eventBus.subscribe('cursor-moved', ({ position }) => {
 			this.cursorPosition = position;
+		});
+		eventBus.subscribe('walking-changed', ({ isWalking }) => {
+			this.isWalking = isWalking;
 		});
 		eventBus.subscribe('camera-heading-changed', ({ headingDegrees }) => {
 			this.headingDegrees = headingDegrees;

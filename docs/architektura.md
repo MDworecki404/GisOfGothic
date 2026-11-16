@@ -386,6 +386,23 @@ przyciski wysokości działają tam jak zoom. Stan widoczności
 joysticków (`FlightControlsState`, `flightControls`) jest wyłącznie stanem interfejsu. Po zatrzymaniu kamery
 adres strony i zakładki aktualizują się jak po zwykłym ruchu myszą.
 
+## Spacer pierwszoosobowy
+
+Przycisk „Spacer” w `MapControls` i klawisz **F** (`GeoportalFacade.toggleWalking`) sprowadzają kamerę lotem (1,8 s)
+do punktu pod środkiem ekranu, na wysokość oczu postaci (`EYE_HEIGHT_METRES`, 1,7 m), i zaczynają chodzenie. Stan
+`isWalking` (zdarzenie `walking-changed`) pokazuje `WalkingHint` z podpowiedzią i przyciskiem „Zejdź” (też `Esc`).
+Spacer kończy przejście do widoku 2D, zmiana świata i odłączenie mapy; bez modelu pod środkiem ekranu się nie zaczyna.
+
+`WalkingController` (`services/map/`) działa co klatkę (`scene.preRender`). Wejście to ten sam `FlightInput`, co przy
+locie (WASD, strzałki, joysticki; `MapService.setFlightInput` kieruje je do spaceru, gdy jest włączony), a Shift oznacza bieg.
+Prędkość marszu i biegu pochodzi z `movement_speeds_m_s` w `metadata.json` świata (`WalkingMotionCalculator`, wartości
+domyślne bez metadanych). Wysokość gruntu odczytuje `scene.sampleHeight` z modelu świata. Model nie odróżnia terenu od dachów
+i ścian, więc `WalkingGroundResolver` blokuje krok w miejsce, gdzie powierzchnia wznosi się zbyt stromo względem długości kroku
+(ściana, krawędź dachu), a spadek łagodzi ograniczoną prędkością opadania; przy zablokowanym ruchu ukośnym próbuje ruchu
+tylko do przodu, potem tylko w bok (ślizg po ścianie). Do budynków nie da się wejść. Rozglądać się można strzałkami albo
+przeciągając po mapie (`pointer` na płótnie); na czas spaceru wyłączone jest domyślne sterowanie kamerą Cesium.
+Wspólny odczyt poziomych kierunków kamery to `CameraHorizontalBasisReader`, używany też przez lot.
+
 ## Rzut kamery
 
 Kamera może być w rzucie środkowym (perspektywa, kąt widzenia 30–100°, domyślnie 60°) albo ortogonalnym

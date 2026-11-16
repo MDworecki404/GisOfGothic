@@ -1,6 +1,7 @@
 import { guildNameBook } from '#lib/data/category-names.js';
 import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
-import type { CharacterModelParts } from '#lib/data/types.js';
+import type { CharacterModelParts, MovementSpeeds } from '#lib/data/types.js';
+import type { WalkingSpeeds } from './walking/walking-motion-calculator.js';
 import { worldCatalog, type WorldDefinition } from '#lib/data/world-catalog.js';
 import { PassageTravelPlanner, type PassageTravelTarget } from './travel/passage-travel-planner.js';
 import type { PassageDestination } from './layers/data-layer-catalog.js';
@@ -96,6 +97,7 @@ export class GeoportalFacade {
 	private pendingRoute: RouteEndpoints | null = null;
 	private worldLoadGeneration = 0;
 	private activeToolId: ToolId | null = null;
+	private isWalking = false;
 	private readonly keyboardShortcutCatalog = new KeyboardShortcutCatalog({
 		openSearch: () => {
 			if (this.activeToolId !== 'search') this.selectTool('search');
@@ -116,6 +118,7 @@ export class GeoportalFacade {
 		toggleGrid: () => this.toggleMapOverlay('isGridVisible'),
 		toggleStaticObjects: () => this.toggleStaticObjects(),
 		toggleCharactersAtTimeOfDay: () => this.toggleCharactersAtTimeOfDay(),
+		toggleWalking: () => void this.toggleWalking(),
 		switchToNextCoordinateSystem: () => this.switchToNextCoordinateSystem(),
 		moveQuestGuideToPreviousStep: () => this.moveQuestGuideStep(-1),
 		moveQuestGuideToNextStep: () => this.moveQuestGuideStep(1),
@@ -220,6 +223,7 @@ export class GeoportalFacade {
 	/** `displayName` to podpis świata w porównaniu (z nazwą gry); domyślnie sama nazwa świata. */
 	openWorld(world: WorldDefinition, displayName: string = world.name): void {
 		if (this.currentWorld?.id === world.id && this.currentWorld.gameId === world.gameId) return;
+		this.stopWalking();
 		this.currentWorld = world;
 		this.isWorldShownOnMap = false;
 		this.pendingCameraView = null;
@@ -684,6 +688,7 @@ export class GeoportalFacade {
 	}
 
 	selectViewMode(mode: ViewMode): void {
+		if (mode === 'view-2d') this.stopWalking();
 		this.viewModeCoordinator.selectMode(mode);
 	}
 
@@ -717,6 +722,30 @@ export class GeoportalFacade {
 	/** Zwraca obraz bieżącego kadru mapy albo `null`, gdy mapa nie jest podłączona. */
 	captureViewImage(): Promise<ImageBitmap | null> {
 		return this.mapService?.captureViewImage() ?? Promise.resolve(null);
+	}
+
+	/**
+	 * Włącza albo wyłącza spacer pierwszoosobowy po modelu świata. Wejście sprowadza kamerę do punktu
+	 * pod środkiem ekranu; gdy tam nie ma modelu, spacer się nie zaczyna.
+	 */
+	async toggleWalking(): Promise<void> {
+		if (this.isWalking) {
+			this.stopWalking();
+			return;
+		}
+		const mapService = this.mapService;
+		if (!mapService || this.viewModeCoordinator.currentMode === 'view-2d') return;
+		const hasStarted = await mapService.beginWalking();
+		if (!hasStarted || this.mapService !== mapService) return;
+		this.isWalking = true;
+		this.eventBus.publish({ type: 'walking-changed', isWalking: true });
+	}
+
+	stopWalking(): void {
+		this.mapService?.endWalking();
+		if (!this.isWalking) return;
+		this.isWalking = false;
+		this.eventBus.publish({ type: 'walking-changed', isWalking: false });
 	}
 
 	turnMapToNorth(): void {
@@ -778,10 +807,15 @@ export class GeoportalFacade {
 	}
 
 	detachMap(): void {
+		this.stopWalking();
 		this.worldLoadGeneration++;
 		this.isWorldShownOnMap = false;
 		this.mapService?.destroy();
 		this.mapService = null;
+	}
+
+	private readWalkingSpeeds(speeds: MovementSpeeds | undefined): WalkingSpeeds | null {
+		return speeds ? { walkMetresPerSecond: speeds.walk, runMetresPerSecond: speeds.run } : null;
 	}
 
 	private sendFlightInputToMap(): void {
@@ -948,6 +982,7 @@ export class GeoportalFacade {
 			this.dataLayersCoordinator.updateFeatureCounts(metadata.package.counts);
 			this.analysisCoordinator.useAnchor(metadata.anchor);
 			this.measurementCoordinator.useMovementSpeeds(metadata.movement_speeds_m_s ?? null);
+			mapService.useWalkingSpeeds(this.readWalkingSpeeds(metadata.movement_speeds_m_s));
 			const routingContext = new WorldRoutingContext(
 				() => dataLoader.loadWaypointNetwork(),
 				metadata.anchor

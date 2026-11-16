@@ -12,6 +12,7 @@
 	import TilesLoadingBadge from '#lib/components/shell/TilesLoadingBadge.svelte';
 	import FlightSticks from '#lib/components/shell/FlightSticks.svelte';
 	import MapControls from '#lib/components/shell/MapControls.svelte';
+	import WalkingHint from '#lib/components/shell/WalkingHint.svelte';
 	import ToolPanel from '#lib/components/shell/ToolPanel.svelte';
 	import ToolRail from '#lib/components/shell/ToolRail.svelte';
 	import TopBar from '#lib/components/shell/TopBar.svelte';
@@ -54,6 +55,7 @@
 	<ToolPanel />
 	<MapInsetsReporter />
 	<MapControls currentGameId={data.game.id} currentWorldId={data.world.id} />
+	<WalkingHint />
 	<WorldComparisonSlider />
 	<FlightSticks />
 	<TilesLoadingBadge />

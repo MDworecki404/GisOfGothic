@@ -5,6 +5,7 @@
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
 	import EyeIcon from '@lucide/svelte/icons/eye';
+	import FootprintsIcon from '@lucide/svelte/icons/footprints';
 	import MapIcon from '@lucide/svelte/icons/map';
 	import MinusIcon from '@lucide/svelte/icons/minus';
 	import PlusIcon from '@lucide/svelte/icons/plus';
@@ -146,6 +147,16 @@
 			onclick={() => geoportal.showWholeWorld()}
 		>
 			<HouseIcon class="size-5" />
+		</button>
+		<button
+			class="{controlButton} aria-pressed:bg-active-surface aria-pressed:text-active"
+			aria-label="Spacer"
+			aria-pressed={appState.isWalking}
+			title="Spacer pierwszoosobowy po świecie (klawisz F)"
+			disabled={appState.viewMode === 'view-2d'}
+			onclick={() => void geoportal.toggleWalking()}
+		>
+			<FootprintsIcon class="size-5" />
 		</button>
 		<TakeScreenshotButton class={controlButton} />
 		<button

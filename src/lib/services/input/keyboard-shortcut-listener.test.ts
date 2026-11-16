@@ -58,6 +58,7 @@ function createRecordingActions(calls: string[]): KeyboardShortcutActions {
 		toggleContours: () => calls.push('toggleContours'),
 		toggleGrid: () => calls.push('toggleGrid'),
 		toggleStaticObjects: () => calls.push('toggleStaticObjects'),
+		toggleWalking: () => calls.push('toggleWalking'),
 		toggleCharactersAtTimeOfDay: () => calls.push('toggleCharactersAtTimeOfDay'),
 		switchToNextCoordinateSystem: () => calls.push('switchToNextCoordinateSystem'),
 		moveQuestGuideToPreviousStep: () => calls.push('moveQuestGuideToPreviousStep'),
