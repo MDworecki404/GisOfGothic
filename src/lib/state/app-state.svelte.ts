@@ -18,6 +18,7 @@ import {
 } from '#lib/services/camera/camera-projection.js';
 import type { SliceHeightRange, ViewMode } from '#lib/services/camera/view-mode.js';
 import { NO_MAP_OVERLAYS, type MapOverlays } from '#lib/services/overlays/map-overlays.js';
+import type { WalkingStage } from '#lib/services/walking/walking-stage.js';
 import { ViewLinkCodec } from '#lib/services/bookmarks/view-link-codec.js';
 import type { AnalysisView } from '#lib/services/analysis/analysis-coordinator.js';
 import {
@@ -130,7 +131,7 @@ export class AppState {
 	cameraProjection = $state.raw<CameraProjectionSetting>(DEFAULT_CAMERA_PROJECTION);
 	fieldOfViewDegrees = $state(DEFAULT_FIELD_OF_VIEW_DEGREES);
 	viewMode = $state<ViewMode>('view-3d');
-	isWalking = $state(false);
+	walkingStage = $state<WalkingStage>('off');
 	sliceHeightMetres = $state<number | null>(null);
 	sliceHeightRange = $state.raw<SliceHeightRange | null>(null);
 	mapOverlays = $state.raw<MapOverlays>(NO_MAP_OVERLAYS);
@@ -285,8 +286,8 @@ export class AppState {
 		eventBus.subscribe('cursor-moved', ({ position }) => {
 			this.cursorPosition = position;
 		});
-		eventBus.subscribe('walking-changed', ({ isWalking }) => {
-			this.isWalking = isWalking;
+		eventBus.subscribe('walking-changed', ({ stage }) => {
+			this.walkingStage = stage;
 		});
 		eventBus.subscribe('camera-heading-changed', ({ headingDegrees }) => {
 			this.headingDegrees = headingDegrees;

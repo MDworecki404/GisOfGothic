@@ -34,6 +34,7 @@ import type { SliceHeightRange, ViewMode } from '#lib/services/camera/view-mode.
 import type { MapOverlays } from '#lib/services/overlays/map-overlays.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
 import type { ResolvedTheme, ThemePreference } from '#lib/services/theme/theme-preference.js';
+import type { WalkingStage } from '#lib/services/walking/walking-stage.js';
 import { EventBus } from './event-bus.js';
 
 export type AppEvent =
@@ -52,7 +53,7 @@ export type AppEvent =
 	| { type: 'search-index-load-failed'; message: string }
 	| { type: 'cursor-moved'; position: WorldPosition | null }
 	| { type: 'camera-heading-changed'; headingDegrees: number }
-	| { type: 'walking-changed'; isWalking: boolean }
+	| { type: 'walking-changed'; stage: WalkingStage }
 	| { type: 'map-scale-changed'; metresPerPixel: number | null }
 	| { type: 'tool-selected'; toolId: ToolId | null }
 	| { type: 'coordinate-system-changed'; systemId: CoordinateSystemId }

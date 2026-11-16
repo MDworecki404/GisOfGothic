@@ -21,6 +21,7 @@ import {
 	type WalkingSpeeds,
 	type WalkingStep
 } from '#lib/services/walking/walking-motion-calculator.js';
+import { PointerClickDetector } from '#lib/services/walking/pointer-click-detector.js';
 import { CameraHorizontalBasisReader } from './camera-horizontal-basis-reader.js';
 
 const LANDING_SECONDS = 1.8;
@@ -41,7 +42,8 @@ export class WalkingController {
 	private readonly stopListeningToRender: () => void;
 	private input: FlightInput = IDLE_FLIGHT_INPUT;
 	private speeds: WalkingSpeeds = DEFAULT_WALKING_SPEEDS;
-	private phase: 'off' | 'landing' | 'walking' = 'off';
+	private phase: 'off' | 'choosing' | 'landing' | 'walking' = 'off';
+	private cancelChoosingPlace: (() => void) | null = null;
 	private previousFrameMilliseconds: number | null = null;
 	private groundHeightMetres: number | null = null;
 	private stopListeningToDrag: (() => void) | null = null;
@@ -56,8 +58,9 @@ export class WalkingController {
 		);
 	}
 
-	get isRequested(): boolean {
-		return this.phase !== 'off';
+	/** Czy spacer przejął sterowanie kamerą (po wyborze miejsca); w czasie wyboru nadal można latać. */
+	get isControllingCamera(): boolean {
+		return this.phase === 'landing' || this.phase === 'walking';
 	}
 
 	useSpeeds(speeds: WalkingSpeeds | null): void {
@@ -69,20 +72,25 @@ export class WalkingController {
 		if (isFlightInputIdle(input)) this.previousFrameMilliseconds = null;
 	}
 
-	/** Sprowadza kamerę do punktu pod środkiem ekranu i zaczyna spacer; `false`, gdy tam nie ma modelu. */
-	async begin(): Promise<boolean> {
+	/**
+	 * Czeka, aż użytkownik kliknie teren na mapie (w tym czasie mapą można normalnie poruszać), potem sprowadza
+	 * kamerę lotem w wybrane miejsce i zaczyna spacer. `onPlaceChosen` woła się tuż po kliknięciu. Zwraca `false`,
+	 * gdy wybór przerwano albo przeglądarka nie potrafi odczytać wysokości.
+	 */
+	async begin(onPlaceChosen: () => void): Promise<boolean> {
 		const { scene, camera } = this.viewer;
 		if (this.phase !== 'off' || !scene.sampleHeightSupported || !scene.pickPositionSupported) {
 			return false;
 		}
-		const canvas = scene.canvas;
-		const picked = scene.pickPosition(
-			new Cartesian2(canvas.clientWidth / 2, canvas.clientHeight / 2)
-		);
-		if (!picked) return false;
-		const ground = Cartographic.fromCartesian(picked);
-		this.phase = 'landing';
+		this.phase = 'choosing';
 		this.input = IDLE_FLIGHT_INPUT;
+		const ground = await this.waitForClickedGround();
+		if (!ground || this.phase !== 'choosing') {
+			this.phase = 'off';
+			return false;
+		}
+		this.phase = 'landing';
+		onPlaceChosen();
 		const hasLanded = await this.landOn(camera, ground);
 		if (!hasLanded || this.phase !== 'landing') {
 			this.phase = 'off';
@@ -99,7 +107,9 @@ export class WalkingController {
 	end(): void {
 		if (this.phase === 'off') return;
 		const wasLanding = this.phase === 'landing';
+		const cancelChoosing = this.cancelChoosingPlace;
 		this.phase = 'off';
+		cancelChoosing?.();
 		this.input = IDLE_FLIGHT_INPUT;
 		this.groundHeightMetres = null;
 		this.previousFrameMilliseconds = null;
@@ -112,6 +122,41 @@ export class WalkingController {
 	destroy(): void {
 		this.end();
 		this.stopListeningToRender();
+	}
+
+	private waitForClickedGround(): Promise<Cartographic | null> {
+		const canvas = this.viewer.scene.canvas;
+		const clickDetector = new PointerClickDetector();
+		const previousCursor = canvas.style.cursor;
+		canvas.style.cursor = 'crosshair';
+		return new Promise((resolve) => {
+			const finish = (ground: Cartographic | null): void => {
+				canvas.removeEventListener('pointerdown', press);
+				canvas.removeEventListener('pointermove', move);
+				canvas.removeEventListener('pointerup', release);
+				canvas.removeEventListener('pointercancel', cancel);
+				canvas.style.cursor = previousCursor;
+				this.cancelChoosingPlace = null;
+				resolve(ground);
+			};
+			const press = (event: PointerEvent): void =>
+				clickDetector.press(event.clientX, event.clientY, performance.now());
+			const move = (event: PointerEvent): void => clickDetector.move(event.clientX, event.clientY);
+			const cancel = (): void => clickDetector.cancel();
+			const release = (event: PointerEvent): void => {
+				if (!clickDetector.release(performance.now())) return;
+				const bounds = canvas.getBoundingClientRect();
+				const picked = this.viewer.scene.pickPosition(
+					new Cartesian2(event.clientX - bounds.left, event.clientY - bounds.top)
+				);
+				if (picked) finish(Cartographic.fromCartesian(picked));
+			};
+			canvas.addEventListener('pointerdown', press);
+			canvas.addEventListener('pointermove', move);
+			canvas.addEventListener('pointerup', release);
+			canvas.addEventListener('pointercancel', cancel);
+			this.cancelChoosingPlace = () => finish(null);
+		});
 	}
 
 	private landOn(camera: Camera, ground: Cartographic): Promise<boolean> {

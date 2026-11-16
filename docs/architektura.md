@@ -388,10 +388,12 @@ adres strony i zakładki aktualizują się jak po zwykłym ruchu myszą.
 
 ## Spacer pierwszoosobowy
 
-Przycisk „Spacer” w `MapControls` i klawisz **F** (`GeoportalFacade.toggleWalking`) sprowadzają kamerę lotem (1,8 s)
-do punktu pod środkiem ekranu, na wysokość oczu postaci (`EYE_HEIGHT_METRES`, 1,7 m), i zaczynają chodzenie. Stan
-`isWalking` (zdarzenie `walking-changed`) pokazuje `WalkingHint` z podpowiedzią i przyciskiem „Zejdź” (też `Esc`).
-Spacer kończy przejście do widoku 2D, zmiana świata i odłączenie mapy; bez modelu pod środkiem ekranu się nie zaczyna.
+Przycisk „Spacer” w `MapControls` i klawisz **F** (`GeoportalFacade.toggleWalking`) zaczynają od wyboru miejsca: `WalkingHint`
+pokazuje komunikat „Kliknij miejsce na mapie…”, kursor zmienia się w celownik, a mapą można dalej poruszać (obracać, przybliżać,
+latać), żeby znaleźć miejsce. Kliknięcie terenu (`PointerClickDetector` odróżnia je od przeciągnięcia) sprowadza kamerę lotem (1,8 s)
+w to miejsce, na wysokość oczu postaci (`EYE_HEIGHT_METRES`, 1,7 m), i zaczyna chodzenie. Etap (`WalkingStage`: `off`, `choosing`,
+`walking`; zdarzenie `walking-changed`, `AppState.walkingStage`) decyduje o treści `WalkingHint`; ponowne naciśnięcie przycisku,
+`Esc` albo „Zejdź” kończą spacer na każdym etapie. Spacer kończy też przejście do widoku 2D, zmiana świata i odłączenie mapy.
 
 `WalkingController` (`services/map/`) działa co klatkę (`scene.preRender`). Wejście to ten sam `FlightInput`, co przy
 locie (WASD, strzałki, joysticki; `MapService.setFlightInput` kieruje je do spaceru, gdy jest włączony), a Shift oznacza bieg.

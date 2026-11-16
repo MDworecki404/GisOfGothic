@@ -2,6 +2,7 @@ import { guildNameBook } from '#lib/data/category-names.js';
 import type { GeoportalDataLoader } from '#lib/data/geoportal-data-loader.js';
 import type { CharacterModelParts, MovementSpeeds } from '#lib/data/types.js';
 import type { WalkingSpeeds } from './walking/walking-motion-calculator.js';
+import type { WalkingStage } from './walking/walking-stage.js';
 import { worldCatalog, type WorldDefinition } from '#lib/data/world-catalog.js';
 import { PassageTravelPlanner, type PassageTravelTarget } from './travel/passage-travel-planner.js';
 import type { PassageDestination } from './layers/data-layer-catalog.js';
@@ -97,7 +98,7 @@ export class GeoportalFacade {
 	private pendingRoute: RouteEndpoints | null = null;
 	private worldLoadGeneration = 0;
 	private activeToolId: ToolId | null = null;
-	private isWalking = false;
+	private walkingStage: WalkingStage = 'off';
 	private readonly keyboardShortcutCatalog = new KeyboardShortcutCatalog({
 		openSearch: () => {
 			if (this.activeToolId !== 'search') this.selectTool('search');
@@ -725,27 +726,31 @@ export class GeoportalFacade {
 	}
 
 	/**
-	 * Włącza albo wyłącza spacer pierwszoosobowy po modelu świata. Wejście sprowadza kamerę do punktu
-	 * pod środkiem ekranu; gdy tam nie ma modelu, spacer się nie zaczyna.
+	 * Włącza albo wyłącza spacer pierwszoosobowy po modelu świata. Włączenie zaczyna od wyboru miejsca:
+	 * użytkownik klika teren na mapie, kamera ląduje tam na wysokości oczu i można iść. Ponowne wywołanie
+	 * (w czasie wyboru albo spaceru) kończy spacer.
 	 */
 	async toggleWalking(): Promise<void> {
-		if (this.isWalking) {
+		if (this.walkingStage !== 'off') {
 			this.stopWalking();
 			return;
 		}
 		const mapService = this.mapService;
 		if (!mapService || this.viewModeCoordinator.currentMode === 'view-2d') return;
-		const hasStarted = await mapService.beginWalking();
-		if (!hasStarted || this.mapService !== mapService) return;
-		this.isWalking = true;
-		this.eventBus.publish({ type: 'walking-changed', isWalking: true });
+		this.publishWalkingStage('choosing');
+		const hasStarted = await mapService.beginWalking(() => this.publishWalkingStage('walking'));
+		if (!hasStarted && this.mapService === mapService) this.publishWalkingStage('off');
 	}
 
 	stopWalking(): void {
 		this.mapService?.endWalking();
-		if (!this.isWalking) return;
-		this.isWalking = false;
-		this.eventBus.publish({ type: 'walking-changed', isWalking: false });
+		this.publishWalkingStage('off');
+	}
+
+	private publishWalkingStage(stage: WalkingStage): void {
+		if (this.walkingStage === stage) return;
+		this.walkingStage = stage;
+		this.eventBus.publish({ type: 'walking-changed', stage });
 	}
 
 	turnMapToNorth(): void {

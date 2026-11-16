@@ -335,7 +335,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 
 	/** Ustawia bieżący zamiar lotu kamerą (klawiatura, joysticki); lot trwa, dopóki zamiar nie jest zerowy. */
 	setFlightInput(input: FlightInput): void {
-		if (this.walkingController.isRequested) {
+		if (this.walkingController.isControllingCamera) {
 			this.flightController.replaceInput(IDLE_FLIGHT_INPUT);
 			this.walkingController.replaceInput(input);
 			return;
@@ -348,10 +348,12 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 		this.walkingController.useSpeeds(speeds);
 	}
 
-	/** Sprowadza kamerę do punktu pod środkiem ekranu i zaczyna spacer; `false`, gdy tam nie ma modelu. */
-	beginWalking(): Promise<boolean> {
-		this.flightController.replaceInput(IDLE_FLIGHT_INPUT);
-		return this.walkingController.begin();
+	/** Czeka na kliknięcie terenu, sprowadza tam kamerę i zaczyna spacer; `false`, gdy wybór przerwano. */
+	beginWalking(onPlaceChosen: () => void): Promise<boolean> {
+		return this.walkingController.begin(() => {
+			this.flightController.replaceInput(IDLE_FLIGHT_INPUT);
+			onPlaceChosen();
+		});
 	}
 
 	endWalking(): void {

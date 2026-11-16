@@ -151,8 +151,8 @@
 		<button
 			class="{controlButton} aria-pressed:bg-active-surface aria-pressed:text-active"
 			aria-label="Spacer"
-			aria-pressed={appState.isWalking}
-			title="Spacer pierwszoosobowy po świecie (klawisz F)"
+			aria-pressed={appState.walkingStage !== 'off'}
+			title="Spacer pierwszoosobowy: kliknij, a potem wskaż miejsce na mapie (klawisz F)"
 			disabled={appState.viewMode === 'view-2d'}
 			onclick={() => void geoportal.toggleWalking()}
 		>

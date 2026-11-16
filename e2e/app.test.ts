@@ -278,15 +278,17 @@ test('przycisk zdjęcia pobiera obraz PNG z podpisem w nazwie pliku', async ({ p
 	expect(download.suggestedFilename()).toMatch(/^gis-of-gothic-.*\.png$/);
 });
 
-test('spacer: przycisk istnieje, a bez modelu pod środkiem ekranu spacer się nie zaczyna', async ({
-	page
-}) => {
+test('spacer: przycisk prosi o wskazanie miejsca, a Esc anuluje wybór', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 800 });
 	await page.goto('/g2nk/khorinis');
 	const walkingButton = page.getByRole('button', { name: 'Spacer', exact: true });
 	await expect(walkingButton).toBeEnabled();
-	await page.keyboard.press('f');
-	await expect(page.getByRole('button', { name: /Zejdź/ })).toHaveCount(0);
+	await expect(walkingButton).toHaveAttribute('aria-pressed', 'false');
+	await walkingButton.click();
+	await expect(page.getByTestId('walking-hint')).toContainText('Kliknij miejsce na mapie');
+	await expect(walkingButton).toHaveAttribute('aria-pressed', 'true');
+	await page.keyboard.press('Escape');
+	await expect(page.getByTestId('walking-hint')).toHaveCount(0);
 	await expect(walkingButton).toHaveAttribute('aria-pressed', 'false');
 });
 
