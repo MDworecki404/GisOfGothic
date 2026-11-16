@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DensityGridBuilder, type WeightedPoint } from './density-grid-builder.js';
+import { MAP_PALETTE } from '#lib/services/map/map-palette.js';
 
 const builder = new DensityGridBuilder();
 
@@ -68,7 +69,7 @@ describe('DensityGridBuilder', () => {
 			[9, 10]
 		]);
 		expect(legend[0].color).toBe('#8b3a2b');
-		expect(legend[4].color).toBe('#ffd27a');
+		expect(legend[4].color).toBe(MAP_PALETTE.emberLight);
 	});
 
 	it('przy małym maksimum legenda ma tyle kroków, ile sztuk', () => {
@@ -83,7 +84,7 @@ describe('DensityGridBuilder', () => {
 	it('najgęstsza komórka ma kolor końca skali, najrzadsza początku', () => {
 		const grid = builder.build([point(1, 1, 10), point(100, 100, 1)], 'square', 25);
 		const colors = grid.cells.map((cell) => cell.color);
-		expect(colors).toContain('#ffd27a');
+		expect(colors).toContain(MAP_PALETTE.emberLight);
 		expect(colors).toContain('#8b3a2b');
 	});
 

@@ -115,6 +115,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `app-installability-changed` | `canInstall`                                                                                         | przeglądarka pozwala zainstalować aplikację albo instalacja się zakończyła                        |
 | `static-objects-changed`     | `status`, `errorMessage`                                                                             | włączenie, wczytywanie albo błąd warstwy obiektów świata                                          |
 | `performance-changed`        | `preference`, `effectiveLevel`, `wasLoweredAutomatically`, `measuredFramesPerSecond`                 | wybór jakości przez użytkownika, automatyczne obniżenie jakości albo nowy pomiar FPS              |
+| `theme-changed`              | `preference` (`system`, `light`, `dark`), `theme` (`light`, `dark`)                                  | wybór motywu przez użytkownika, start aplikacji albo zmiana ustawienia jasnego trybu w systemie   |
 | `tiles-load-progress`        | `layer`, `pendingTiles`                                                                              | zmiana liczby kafli 3D Tiles w trakcie wczytywania (0 = gotowe)                                   |
 
 ## Cesium a reaktywność Svelte
@@ -507,13 +508,23 @@ widzi aktualny zasłonięty dół. Decyzje: [ADR 0009](adr/0009-wlasny-arkusz-mo
 
 ## Motyw i układ ekranu
 
-Wszystkie tokeny wyglądu są w `src/app.css` ([ADR 0036](adr/0036-motyw-latarnia-w-kopalni.md), motyw „latarnia w
-kopalni”): paleta (łupek, łupek wysoki, woda, krawędź, linia, popiół, mgła, żar, bariera, krew), role (zmienne shadcn oraz
-`--hover` i `--active`), skala pisma (`text-caption` … `text-hero`) i promienie. Żar oznacza działanie, najechanie i
-ładowanie, bariera wybór, aktywne narzędzie i fokus. Dawne aliasy tokenów (`--ochre`, `--torch`, `--ore`…) usunięto w etapie 5; do żelaznych ramek służą `--zelazo` i `--lupek-podniesiony`. Przy `prefers-reduced-motion: reduce` ogólna reguła na końcu `app.css` skraca animacje i przejścia (okna, panele, przyciski), a przeloty kamery są natychmiastowe. Materiały to klasy `material-leather` (płyta ze ściętym rogiem, `clip-path`, bez cienia zewnętrznego i bez
-`backdrop-filter`), `material-iron` i `material-parchment` (płaska płyta). Krój Grenze jest w nazwach i nagłówkach, a
-Barlow Semi Condensed w reszcie interfejsu (oba z `@fontsource`). Kontrast kolorów pilnuje `ColorContrastCalculator`
-(`services/theme/`), a kolory warstw mapy trzyma `MAP_PALETTE` (`services/map/map-palette.ts`).
+Wszystkie tokeny wyglądu są w `src/app.css` ([ADR 0043](adr/0043-motyw-krag-i-tryb-jasny.md), motyw „Krąg”): paleta
+(łupek, łupek wysoki, woda, krawędź, linia, popiół, mgła, żar, bariera, krew) w dwóch zestawach, ciemnym na `:root` i
+jasnym pod `:root[data-theme='light']`, role (zmienne shadcn oraz `--hover` i `--active`), skala pisma
+(`text-caption` … `text-hero`) i promienie. Żar oznacza działanie, najechanie i ładowanie, bariera wybór, aktywne
+narzędzie i fokus. Do żelaznych ramek służą `--zelazo` i `--lupek-podniesiony`. Przy `prefers-reduced-motion: reduce`
+ogólna reguła na końcu `app.css` skraca animacje i przejścia (okna, panele, przyciski), a przeloty kamery są
+natychmiastowe. Materiały to klasy `material-leather` (zaokrąglona tafla z cieniem, bez `clip-path` i bez rozmywania
+tła), `material-iron` i `material-parchment` (płaska płyta). Krój Uncial Antiqua jest w nazwach i nagłówkach, a Lexend
+w reszcie interfejsu (oba z `@fontsource`). Kontrast kolorów obu trybów pilnuje `ColorContrastCalculator`
+(`services/theme/`), a kolory warstw mapy trzyma `MAP_PALETTE` (`services/map/map-palette.ts`, na razie wartości
+trybu ciemnego).
+
+Motyw jasny i ciemny: `ThemeCoordinator` (`services/theme/`) wczytuje wybór z `ThemePreferenceStore` (`localStorage`),
+ustawia `data-theme` i klasę `dark` na `<html>` przez `BrowserThemeDocument` i przy wyborze „system” podąża za
+`prefers-color-scheme`. Publikuje zdarzenie `theme-changed`; `AppState` trzyma `themePreference` i `theme`.
+Komponent `ThemeToggle` woła `selectTheme` z `composition-root`. Skrypt w `src/app.html` ustawia `data-theme` przed
+pierwszym malowaniem.
 
 Kontrolki mają klasy w `src/app.css` zamiast powtarzanych list klas Tailwind: przyciski `button-iron`
 (zwykła akcja), `button-ochre` (jedna główna akcja w widoku) i `button-quiet`, przełączniki `chip` i

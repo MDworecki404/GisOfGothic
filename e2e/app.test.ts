@@ -616,3 +616,25 @@ test('narzędzie Rozmiary: otwarty świat ma swój wiersz, a nowy świat jest wy
 		.uncheck();
 	await expect(irdorath).toHaveAttribute('aria-pressed', 'true');
 });
+
+test('motyw jasny i ciemny: przełącznik przechodzi system, jasny, ciemny, a wybór przetrwa odświeżenie', async ({
+	page
+}) => {
+	await page.emulateMedia({ colorScheme: 'dark' });
+	await page.goto('/g2nk/khorinis');
+	const html = page.locator('html');
+	await expect(html).toHaveAttribute('data-theme', 'dark');
+
+	await page.getByRole('button', { name: /^Motyw: Zgodny z systemem/ }).click();
+	await expect(html).toHaveAttribute('data-theme', 'light');
+
+	await page.reload();
+	await expect(html).toHaveAttribute('data-theme', 'light');
+
+	await page.getByRole('button', { name: /^Motyw: Jasny/ }).click();
+	await expect(html).toHaveAttribute('data-theme', 'dark');
+
+	await page.getByRole('button', { name: /^Motyw: Ciemny/ }).click();
+	await expect(page.getByRole('button', { name: /^Motyw: Zgodny z systemem/ })).toBeVisible();
+	await expect(html).toHaveAttribute('data-theme', 'dark');
+});

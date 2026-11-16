@@ -73,7 +73,7 @@
 {#if sizes.reference}
 	{@const reference = sizes.reference}
 	<div
-		class="mt-3 rounded-md border bg-black/15 p-2.5 {reference.isHighlighted
+		class="mt-3 rounded-md border bg-muted/50 p-2.5 {reference.isHighlighted
 			? 'border-primary'
 			: 'border-border'}"
 		role="status"

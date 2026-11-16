@@ -1,6 +1,6 @@
 # 0036. Motyw „latarnia w kopalni”
 
-Status: przyjęta (zastępuje ADR 0019 w części motywu i pisma; tokeny układu z ADR 0019 zostają)
+Status: zastąpiona przez [ADR 0043](0043-motyw-krag-i-tryb-jasny.md) w części palety, pisma i kształtu płyt (zastępowała ADR 0019 w części motywu i pisma; tokeny układu z ADR 0019 zostają)
 
 ## Kontekst
 

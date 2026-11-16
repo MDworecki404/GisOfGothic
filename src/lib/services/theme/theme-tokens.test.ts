@@ -5,48 +5,81 @@ import { ColorContrastCalculator } from './color-contrast-calculator.js';
 const appCss = readFileSync(new URL('../../../app.css', import.meta.url), 'utf-8');
 const calculator = new ColorContrastCalculator();
 
-function readColorToken(name: string): string {
-	const match = new RegExp('--' + name + ': *(#[0-9a-fA-F]{6});').exec(appCss);
-	if (!match) throw new Error(`Brak tokenu koloru --${name} w app.css`);
+type ThemeMode = 'dark' | 'light';
+
+const PALETTE_BLOCK_START: Record<ThemeMode, string> = {
+	dark: '\n:root {',
+	light: "\n:root[data-theme='light'] {"
+};
+
+function readPaletteBlock(mode: ThemeMode): string {
+	const start = appCss.indexOf(PALETTE_BLOCK_START[mode]);
+	if (start < 0) throw new Error(`Brak bloku palety trybu ${mode} w app.css`);
+	return appCss.slice(start, appCss.indexOf('\n}', start));
+}
+
+function readColorToken(name: string, mode: ThemeMode): string {
+	const match = new RegExp('--' + name + ': *(#[0-9a-fA-F]{6});').exec(readPaletteBlock(mode));
+	if (!match) throw new Error(`Brak tokenu koloru --${name} w trybie ${mode}`);
 	return match[1];
 }
 
-function readContrast(foregroundToken: string, backgroundToken: string): number {
+function readContrast(foregroundToken: string, backgroundToken: string, mode: ThemeMode): number {
 	return calculator.calculateContrastRatio(
-		readColorToken(foregroundToken),
-		readColorToken(backgroundToken)
+		readColorToken(foregroundToken, mode),
+		readColorToken(backgroundToken, mode)
 	);
 }
 
-describe('tokeny motywu „latarnia w kopalni”', () => {
+describe.each<ThemeMode>(['dark', 'light'])('tokeny motywu „Krąg”, tryb %s', (mode) => {
 	it('popiół na łupku i na wodzie ma kontrast co najmniej 7', () => {
-		expect(readContrast('popiol', 'lupek')).toBeGreaterThanOrEqual(7);
-		expect(readContrast('popiol', 'woda')).toBeGreaterThanOrEqual(7);
+		expect(readContrast('popiol', 'lupek', mode)).toBeGreaterThanOrEqual(7);
+		expect(readContrast('popiol', 'woda', mode)).toBeGreaterThanOrEqual(7);
 	});
 
 	it('mgła, żar, bariera i krew na łupku mają kontrast co najmniej 4,5', () => {
 		for (const token of ['mgla', 'zar', 'bariera', 'krew']) {
-			expect(readContrast(token, 'lupek'), token).toBeGreaterThanOrEqual(4.5);
+			expect(readContrast(token, 'lupek', mode), token).toBeGreaterThanOrEqual(4.5);
 		}
 	});
 
-	it('żar i bariera na wodzie mają kontrast co najmniej 4,5', () => {
-		expect(readContrast('zar', 'woda')).toBeGreaterThanOrEqual(4.5);
-		expect(readContrast('bariera', 'woda')).toBeGreaterThanOrEqual(4.5);
+	it('żar i bariera na wodzie mają kontrast co najmniej 3 (elementy graficzne na mapie)', () => {
+		expect(readContrast('zar', 'woda', mode)).toBeGreaterThanOrEqual(3);
+		expect(readContrast('bariera', 'woda', mode)).toBeGreaterThanOrEqual(3);
 	});
 
-	it('tekst na żarze (primary-foreground) ma kontrast co najmniej 4,5', () => {
-		expect(readContrast('primary-foreground', 'zar')).toBeGreaterThanOrEqual(4.5);
+	it('tekst na żarze (na-zarze) ma kontrast co najmniej 4,5', () => {
+		expect(readContrast('na-zarze', 'zar', mode)).toBeGreaterThanOrEqual(4.5);
 	});
 
 	it('ramka pól (żelazo) na łupku ma kontrast co najmniej 3', () => {
-		expect(readContrast('zelazo', 'lupek')).toBeGreaterThanOrEqual(3);
+		expect(readContrast('zelazo', 'lupek', mode)).toBeGreaterThanOrEqual(3);
 	});
 
+	it('tryb definiuje wszystkie tokeny palety, które ma drugi tryb', () => {
+		const otherMode: ThemeMode = mode === 'dark' ? 'light' : 'dark';
+		const readNames = (block: string) =>
+			[...block.matchAll(/--([a-z-]+):/g)].map((match) => match[1]);
+		const paletteNames = readNames(readPaletteBlock('light'));
+		const definedHere = new Set(readNames(readPaletteBlock(mode)));
+		const definedThere = new Set(readNames(readPaletteBlock(otherMode)));
+		for (const name of paletteNames.filter((token) => definedThere.has(token))) {
+			expect(definedHere.has(name), name).toBe(true);
+		}
+	});
+});
+
+describe('pismo i tryby', () => {
 	it('app.css nie importuje starych paczek pisma', () => {
-		expect(appCss).not.toMatch(/grenze-gotisch|alegreya/i);
-		expect(appCss).toMatch(/@fontsource\/grenze\//);
-		expect(appCss).toMatch(/@fontsource\/barlow-semi-condensed\//);
+		expect(appCss).not.toMatch(/grenze|alegreya|barlow/i);
+		expect(appCss).toMatch(/@fontsource\/uncial-antiqua\//);
+		expect(appCss).toMatch(/@fontsource\/lexend\//);
+	});
+
+	it('jasny tryb jest pod atrybutem data-theme, a ciemny jest domyślny', () => {
+		expect(appCss).toContain("[data-theme='light']");
+		expect(appCss).toMatch(/:root \{\s*color-scheme: dark;/);
+		expect(appCss).toMatch(/\[data-theme='light'\] \{\s*color-scheme: light;/);
 	});
 });
 
@@ -58,10 +91,10 @@ describe('klasy materiałów', () => {
 		return appCss.slice(blockStart, appCss.indexOf('}', blockStart));
 	}
 
-	it.each(['.button-iron', '.button-ochre', '.button-quiet'])(
-		'ścięty przycisk %s ma fokus widoczny wewnątrz kształtu',
+	it.each(['.button-iron', '.button-ochre', '.button-quiet', '.button-ink'])(
+		'przycisk %s ma widoczny fokus',
 		(selector) => {
-			expect(readRuleBlock(`${selector}:focus-visible`)).toContain('outline-offset: -');
+			expect(readRuleBlock(`${selector}:focus-visible`)).toContain('outline: 2px solid');
 		}
 	);
 
@@ -69,25 +102,20 @@ describe('klasy materiałów', () => {
 		expect(appCss).not.toContain('backdrop-filter');
 	});
 
-	it('kształt płyty dają warstwy ozdobne, a sam element nie jest przycinany', () => {
-		expect(readRuleBlock('.material-leather::before')).toContain('clip-path');
-		expect(readRuleBlock('.material-leather,')).not.toContain('clip-path');
-		expect(readRuleBlock('.parchment-note::before')).toContain('clip-path');
-		expect(appCss).not.toContain('.material-leather-riveted::after');
+	it('płyta ma zaokrąglone rogi i cień, a nie ścięty róg', () => {
+		const plate = readRuleBlock('.material-leather,');
+		expect(plate).toContain('border-radius');
+		expect(plate).toContain('box-shadow');
+		expect(appCss).not.toContain('clip-path');
 	});
 
-	it('klasy komponentów nie używają już pergaminu, nitów ani przeszycia', () => {
+	it('klasy komponentów nie używają surowych kolorów', () => {
 		const components = appCss.slice(appCss.indexOf('@layer components'));
-		expect(components).not.toContain('var(--parchment');
-		expect(components).not.toContain('var(--rivet');
-		expect(components).not.toContain('var(--stitch');
+		expect(components).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
+		expect(components).not.toMatch(/rgb\(\s*\d/);
 	});
 
 	it('tło pod mapą to woda', () => {
 		expect(readRuleBlock('.map-parchment {')).toContain('var(--woda)');
-	});
-
-	it('przycisk atramentowy też ma fokus wewnątrz kształtu', () => {
-		expect(readRuleBlock('.button-ink:focus-visible')).toContain('outline-offset: -');
 	});
 });

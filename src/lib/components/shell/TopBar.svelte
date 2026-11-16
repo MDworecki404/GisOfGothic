@@ -8,6 +8,7 @@
 	import CopyViewLinkButton from './CopyViewLinkButton.svelte';
 	import MoreMenu from './MoreMenu.svelte';
 	import PerformanceDialog from './PerformanceDialog.svelte';
+	import ThemeToggle from './ThemeToggle.svelte';
 	import WorldSwitcher, { type WorldSwitcherGame } from './WorldSwitcher.svelte';
 
 	interface Props {
@@ -88,6 +89,9 @@
 			</button>
 		{/if}
 
+		<ThemeToggle
+			class="hidden size-11 shrink-0 place-items-center rounded-sm text-muted-foreground hover:bg-hover-surface hover:text-hover md:grid"
+		/>
 		<PerformanceDialog bind:open={isPerformanceOpen} />
 		<AboutDialog bind:open={isAboutOpen} />
 		<MoreMenu

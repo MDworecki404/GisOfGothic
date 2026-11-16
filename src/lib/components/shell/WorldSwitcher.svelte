@@ -127,7 +127,7 @@
 						</button>
 						{#if isOpenGame}
 							<ul
-								class="material-leather max-md:border-t max-md:border-border/60 max-md:bg-black/20 md:absolute md:top-0 md:left-full md:-ml-px md:min-w-52 md:rounded-sm md:py-1.5"
+								class="material-leather max-md:border-t max-md:border-border/60 max-md:bg-secondary md:absolute md:top-0 md:left-full md:-ml-px md:min-w-52 md:rounded-sm md:py-1.5"
 								aria-label="Światy gry {game.name}"
 							>
 								{#each game.worlds as world (world.id)}

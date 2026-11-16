@@ -2,45 +2,63 @@
 @import "tw-animate-css";
 @import "shadcn-svelte/tailwind.css";
 @import "cesium/Build/Cesium/Widgets/widgets.css";
-@import "@fontsource/grenze/latin-ext-500.css";
-@import "@fontsource/grenze/latin-500.css";
-@import "@fontsource/grenze/latin-ext-600.css";
-@import "@fontsource/grenze/latin-600.css";
-@import "@fontsource/grenze/latin-ext-700.css";
-@import "@fontsource/grenze/latin-700.css";
-@import "@fontsource/barlow-semi-condensed/latin-ext-400.css";
-@import "@fontsource/barlow-semi-condensed/latin-400.css";
-@import "@fontsource/barlow-semi-condensed/latin-ext-500.css";
-@import "@fontsource/barlow-semi-condensed/latin-500.css";
-@import "@fontsource/barlow-semi-condensed/latin-ext-600.css";
-@import "@fontsource/barlow-semi-condensed/latin-600.css";
+@import "@fontsource/uncial-antiqua/latin-ext-400.css";
+@import "@fontsource/uncial-antiqua/latin-400.css";
+@import "@fontsource/lexend/latin-ext-400.css";
+@import "@fontsource/lexend/latin-400.css";
+@import "@fontsource/lexend/latin-ext-500.css";
+@import "@fontsource/lexend/latin-500.css";
+@import "@fontsource/lexend/latin-ext-600.css";
+@import "@fontsource/lexend/latin-600.css";
 
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Motyw „latarnia w kopalni” (ADR 0036; zastępuje ADR 0019). Jedno źródło tokenów:
- * 1. surowa paleta materiałów, 2. role (zmienne shadcn i własne), 3. układ ekranu.
- * Komponenty używają ról i układu, nie surowej palety.
+ * Motyw „Krąg” (ADR 0043; zastępuje ADR 0036): kamienny krąg w mchu, tryb ciemny (świetliki nocą)
+ * i jasny (porosty w słońcu). Jedno źródło tokenów:
+ * 1. surowa paleta jednego trybu (ciemny na :root, jasny pod [data-theme='light']),
+ * 2. role (zmienne shadcn i własne), wspólne dla obu trybów, 3. układ ekranu.
+ * Komponenty używają ról i układu, nie surowej palety. Stare nazwy palety (łupek, żar, bariera…)
+ * zostają jako role: „łupek” to powierzchnia, „żar” akcent działania, „bariera” wybór i fokus.
  */
 :root {
 	color-scheme: dark;
 
-	/* 1. Paleta: ciemny łupek oświetlony pochodnią (żar) i chłodną barierą */
-	--lupek: #1e282b;
-	--lupek-wysoki: #27353a;
-	--woda: #121b1e;
-	--krawedz: #0c1214;
-	--linia: #3a494f;
-	--popiol: #e1dac8;
-	--mgla: #9aa6a3;
-	--zar: #f2a24a;
-	--zar-ciemny: #b8691d;
-	--bariera: #a3b4ff;
-	--bariera-ciemna: #55659e;
-	--krew: #ee7d68;
+	/* 1. Paleta, tryb ciemny: mech nocą, księżyc i świetlik */
+	--lupek: #171c17;
+	--lupek-wysoki: #20271f;
+	--lupek-podniesiony: #2a3328;
+	--woda: #0f1c1d;
+	--krawedz: #0b100b;
+	--linia: #313b2f;
+	--popiol: #e3e8d6;
+	--mgla: #98a28c;
+	--zar: #cfd36b;
+	--zar-ciemny: #8e9338;
+	--zar-jasny: #e0e47d;
+	--bariera: #8db4e0;
+	--bariera-ciemna: #4f6f96;
+	--krew: #e6967a;
+	--zelazo: #66776a;
+	--na-zarze: #141a10;
 
-	--lupek-podniesiony: #31434a;
-	--zelazo: #66777c;
+	--zar-ramka: rgb(207 211 107 / 0.35);
+	--zar-tlo: rgb(207 211 107 / 0.1);
+	--bariera-tlo: rgb(141 180 224 / 0.14);
+	--chip-wypelnienie: rgb(255 255 255 / 0.04);
+	--chip-linia: #3b4739;
+	--plyta-krawedz: #3d4a3b;
+	--plyta-poswiata: rgb(207 211 107 / 0.1);
+	--cien-plyty: 0 10px 28px rgb(0 0 0 / 0.5);
+	--cien-wnetrza: rgb(0 0 0 / 0.6);
+	--cien-karty: rgb(0 0 0 / 0.55);
+	--fale-mapy: rgb(163 212 224 / 0.05);
+	--cien-mapy: rgb(6 10 12 / 0.6);
+	--atrybucja-tlo: rgb(15 28 29 / 0.88);
+	--glow-zar: 0 0 14px rgb(207 211 107 / 0.35);
+	--glow-bariera: 0 0 10px rgb(141 180 224 / 0.35);
+	--podzial: rgb(0 0 0 / 0.45);
+	--podzial-swiatlo: rgb(207 211 107 / 0.1);
 
 	/* 2. Role: zmienne shadcn */
 	--background: var(--woda);
@@ -50,7 +68,7 @@
 	--popover: var(--lupek);
 	--popover-foreground: var(--popiol);
 	--primary: var(--zar);
-	--primary-foreground: #261504;
+	--primary-foreground: var(--na-zarze);
 	--secondary: var(--lupek-wysoki);
 	--secondary-foreground: var(--popiol);
 	--muted: var(--lupek-wysoki);
@@ -67,11 +85,11 @@
 	--chart-3: var(--bariera);
 	--chart-4: var(--mgla);
 	--chart-5: var(--linia);
-	--radius: 3px;
+	--radius: 12px;
 	--sidebar: var(--lupek);
 	--sidebar-foreground: var(--popiol);
 	--sidebar-primary: var(--zar);
-	--sidebar-primary-foreground: #261504;
+	--sidebar-primary-foreground: var(--na-zarze);
 	--sidebar-accent: var(--lupek-wysoki);
 	--sidebar-accent-foreground: var(--popiol);
 	--sidebar-border: var(--linia);
@@ -79,20 +97,18 @@
 
 	/* Role: własne */
 	--hover: var(--zar);
-	--hover-surface: rgb(242 162 74 / 0.1);
+	--hover-surface: var(--zar-tlo);
 	--active: var(--bariera);
-	--active-surface: rgb(163 180 255 / 0.14);
-	--divider: rgb(0 0 0 / 0.45);
-	--divider-highlight: rgb(242 162 74 / 0.1);
-	--rivet: var(--mgla);
-	--stitch: rgb(242 162 74 / 0.22);
+	--active-surface: var(--bariera-tlo);
+	--divider: var(--podzial);
+	--divider-highlight: var(--podzial-swiatlo);
 
-	/* Cienie i poświaty (płyty mają clip-path, więc cień zewnętrzny by je przycinał) */
-	--shadow-panel: inset 0 1px 0 rgb(242 162 74 / 0.06);
+	/* Cienie i poświaty */
+	--shadow-panel: var(--cien-plyty);
 	--shadow-raised: inset 0 1px 0 rgb(255 255 255 / 0.08), inset 0 -1px 0 rgb(0 0 0 / 0.4);
-	--shadow-well: inset 0 1px 3px rgb(0 0 0 / 0.6);
-	--glow-torch: 0 0 14px rgb(242 162 74 / 0.35);
-	--glow-ore: 0 0 10px rgb(163 180 255 / 0.35);
+	--shadow-well: inset 0 1px 3px var(--cien-wnetrza);
+	--glow-torch: var(--glow-zar);
+	--glow-ore: var(--glow-bariera);
 
 	/* 3. Układ ekranu (telefon; większe ekrany niżej) */
 	--edge-inset: 0.75rem;
@@ -108,6 +124,48 @@
 	/* Wartości ustawiane w biegu przez ToolPanel: ile miejsca zajmuje otwarty panel lub arkusz */
 	--sheet-occupied-height: 0px;
 	--panel-occupied-width: 0px;
+}
+
+/* Paleta, tryb jasny: porosty w słońcu, kamień i oliwka. Role z :root zostają bez zmian. */
+:root[data-theme='light'] {
+	color-scheme: light;
+
+	--lupek: #eef0e6;
+	--lupek-wysoki: #e0e4d4;
+	--lupek-podniesiony: #d5dac6;
+	--woda: #a8bdb5;
+	--krawedz: #f8f9f3;
+	--linia: #c3c9b4;
+	--popiol: #1e2419;
+	--mgla: #59614f;
+	--zar: #586b10;
+	--zar-ciemny: #3f4e0a;
+	--zar-jasny: #6d8416;
+	--bariera: #2e5a86;
+	--bariera-ciemna: #9bb8d6;
+	--krew: #a6482a;
+	--zelazo: #727b66;
+	--na-zarze: #f6f7ef;
+
+	--zar-ramka: rgb(88 107 16 / 0.45);
+	--zar-tlo: rgb(88 107 16 / 0.1);
+	--bariera-tlo: rgb(46 90 134 / 0.1);
+	--chip-wypelnienie: rgb(30 36 25 / 0.04);
+	--chip-linia: #b3baa2;
+	--plyta-krawedz: #c3c9b4;
+	--plyta-poswiata: rgb(88 107 16 / 0.08);
+	--cien-plyty: 0 8px 24px rgb(30 36 25 / 0.22);
+	--cien-wnetrza: rgb(30 36 25 / 0.18);
+	--cien-karty: rgb(30 36 25 / 0.3);
+	--fale-mapy: rgb(30 60 60 / 0.05);
+	--cien-mapy: rgb(238 240 230 / 0.5);
+	--atrybucja-tlo: rgb(238 240 230 / 0.9);
+	--glow-zar: 0 0 10px rgb(88 107 16 / 0.3);
+	--glow-bariera: 0 0 8px rgb(46 90 134 / 0.3);
+	--podzial: rgb(30 36 25 / 0.15);
+	--podzial-swiatlo: rgb(255 255 255 / 0.6);
+
+	--shadow-raised: inset 0 1px 0 rgb(255 255 255 / 0.6), inset 0 -1px 0 rgb(30 36 25 / 0.12);
 }
 
 @media (min-width: 48rem) {
@@ -129,9 +187,9 @@
 }
 
 @theme inline {
-	--font-sans: 'Barlow Semi Condensed', ui-sans-serif, sans-serif;
-	--font-serif: 'Grenze', Georgia, serif;
-	--font-heading: 'Grenze', Georgia, serif;
+	--font-sans: 'Lexend', ui-sans-serif, sans-serif;
+	--font-serif: 'Uncial Antiqua', Georgia, serif;
+	--font-heading: 'Uncial Antiqua', Georgia, serif;
 
 	--text-caption: 0.8125rem;
 	--text-caption--line-height: 1.4;
@@ -221,7 +279,7 @@
 	h1,
 	h2 {
 		font-family: var(--font-heading);
-		font-weight: 600;
+		font-weight: 400;
 		letter-spacing: 0.01em;
 	}
 	:focus-visible {
@@ -231,57 +289,27 @@
 }
 
 @layer components {
-	/* Płyta: ciosany łupek ze ściętym rogiem, światło pochodni pada z lewej-góry (ADR 0036).
-	   Kształt dają dwie warstwy ozdobne (::before to krawędź, ::after to wnętrze), a sam element
-	   nie jest przycinany, więc rozwijane menu i podpowiedzi mogą wystawać poza płytę. */
+	/* Płyta: kamienna tafla o zaokrąglonych rogach na mapie (ADR 0043). Promień rośnie z `--cut`,
+	   który komponenty mogą zmniejszyć dla mniejszych płyt. Bez rozmywania tła (kosztowne nad płótnem WebGL).
+	   Sam element nie jest przycinany, więc rozwijane menu i podpowiedzi mogą wystawać poza płytę. */
 	.material-leather,
 	.parchment-note {
 		--cut: 14px;
 		position: relative;
-		isolation: isolate;
 		color: var(--popiol);
-	}
-
-	.material-leather::before,
-	.parchment-note::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		z-index: -1;
-		pointer-events: none;
-		background: linear-gradient(135deg, rgb(242 162 74 / 0.7), #40515a 28%, #2a373d 70%, #232e33);
-		clip-path: polygon(
-			var(--cut) 0,
-			100% 0,
-			100% calc(100% - var(--cut)),
-			calc(100% - var(--cut)) 100%,
-			0 100%,
-			0 var(--cut)
-		);
-	}
-
-	.material-leather::after,
-	.parchment-note::after {
-		content: '';
-		position: absolute;
-		inset: 1px;
-		z-index: -1;
-		pointer-events: none;
 		background:
-			radial-gradient(120% 80% at 0 0, rgb(242 162 74 / 0.13), transparent 58%), var(--lupek);
-		clip-path: polygon(
-			calc(var(--cut) - 0.4px) 0,
-			100% 0,
-			100% calc(100% - var(--cut) + 0.4px),
-			calc(100% - var(--cut) + 0.4px) 100%,
-			0 100%,
-			0 calc(var(--cut) - 0.4px)
-		);
+			radial-gradient(120% 80% at 0 0, var(--plyta-poswiata), transparent 58%), var(--lupek);
+		border: 1px solid var(--plyta-krawedz);
+		border-radius: calc(var(--cut) * 1.5);
+		box-shadow: var(--cien-plyty);
 	}
 
 	/* Wybrana płyta: krawędź w kolorze bariery */
-	.material-leather.plate-selected::before {
-		background: linear-gradient(135deg, var(--bariera), #55659e 40%, #2a373d);
+	.material-leather.plate-selected {
+		border-color: var(--bariera);
+		box-shadow:
+			var(--cien-plyty),
+			var(--glow-bariera);
 	}
 
 	/* Wypukła płyta: tło przycisków i dźwigni */
@@ -311,7 +339,7 @@
 		font-size: var(--text-body);
 		font-weight: 500;
 		white-space: nowrap;
-		clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+		border-radius: 999px;
 		transition:
 			color 120ms,
 			background-color 120ms,
@@ -333,7 +361,7 @@
 	.button-quiet {
 		color: var(--foreground);
 		background: transparent;
-		box-shadow: inset 0 0 0 1px rgb(242 162 74 / 0.35);
+		box-shadow: inset 0 0 0 1px var(--zar-ramka);
 	}
 
 	.button-iron:hover {
@@ -342,7 +370,7 @@
 	}
 
 	.button-ochre:hover {
-		background: #ffb867;
+		background: var(--zar-jasny);
 	}
 
 	.button-quiet:hover {
@@ -363,7 +391,7 @@
 		cursor: not-allowed;
 	}
 
-	/* Obrys fokusu leży wewnątrz kształtu, bo clip-path ucinałby go na zewnątrz */
+	/* Obrys fokusu leży wewnątrz przycisku, żeby nie nachodził na sąsiednie elementy */
 	.button-iron:focus-visible,
 	.button-ochre:focus-visible,
 	.button-quiet:focus-visible {
@@ -380,8 +408,8 @@
 		border-radius: 999px;
 		color: var(--popiol);
 		font-size: var(--text-label);
-		background: rgb(255 255 255 / 0.04);
-		box-shadow: inset 0 0 0 1px #3d4d53;
+		background: var(--chip-wypelnienie);
+		box-shadow: inset 0 0 0 1px var(--chip-linia);
 	}
 
 	.chip:hover {
@@ -390,7 +418,7 @@
 	}
 
 	.chip[aria-pressed='true'] {
-		color: #fff;
+		color: var(--foreground);
 		background: var(--active-surface);
 		box-shadow: inset 0 0 0 1px var(--active);
 	}
@@ -403,8 +431,8 @@
 		padding: 0.5rem 0.625rem;
 		border-radius: var(--radius);
 		text-align: left;
-		background: rgb(255 255 255 / 0.04);
-		box-shadow: inset 0 0 0 1px #3d4d53;
+		background: var(--chip-wypelnienie);
+		box-shadow: inset 0 0 0 1px var(--chip-linia);
 	}
 
 	.choice-card:hover {
@@ -530,7 +558,7 @@
 		border-radius: 999px;
 		border: 2px solid var(--krawedz);
 		background: var(--popiol);
-		box-shadow: 0 1px 3px rgb(0 0 0 / 0.6);
+		box-shadow: 0 1px 3px var(--cien-wnetrza);
 	}
 
 	.range-forged::-moz-range-thumb {
@@ -539,12 +567,12 @@
 		border-radius: 999px;
 		border: 2px solid var(--krawedz);
 		background: var(--popiol);
-		box-shadow: 0 1px 3px rgb(0 0 0 / 0.6);
+		box-shadow: 0 1px 3px var(--cien-wnetrza);
 	}
 
 	.range-forged:hover::-webkit-slider-thumb {
 		box-shadow:
-			0 2px 3px rgb(0 0 0 / 0.6),
+			0 2px 3px var(--cien-wnetrza),
 			var(--glow-torch);
 	}
 
@@ -596,9 +624,9 @@
 	}
 
 	/* Karta obiektu: płyta jak reszta interfejsu (dawna notatka na pergaminie); kształt z reguł wyżej */
-	/* Cień karty na elemencie nadrzędnym, bo clip-path karty przyciąłby cień */
+	/* Dodatkowy cień karty na elemencie nadrzędnym */
 	.parchment-note-shadow {
-		filter: drop-shadow(0 8px 14px rgb(0 0 0 / 0.55));
+		filter: drop-shadow(0 8px 14px var(--cien-karty));
 	}
 
 	.parchment-note .note-faded {
@@ -632,7 +660,7 @@
 		font-weight: 500;
 		background: var(--lupek-wysoki);
 		box-shadow: inset 0 0 0 1px var(--linia);
-		clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+		border-radius: 999px;
 	}
 
 	.button-ink:hover {
@@ -648,8 +676,8 @@
 	/* Tło pod przezroczystym płótnem Cesium (widać je poza modelem świata): ciemna woda z delikatnymi falami */
 	.map-parchment {
 		background:
-			radial-gradient(ellipse at 50% 45%, rgb(163 212 224 / 0.05) 0%, transparent 55%, rgb(6 10 12 / 0.6) 100%),
-			repeating-linear-gradient(0deg, rgb(163 212 224 / 0.035) 0 1px, transparent 1px 24px),
+			radial-gradient(ellipse at 50% 45%, var(--fale-mapy) 0%, transparent 55%, var(--cien-mapy) 100%),
+			repeating-linear-gradient(0deg, var(--fale-mapy) 0 1px, transparent 1px 24px),
 			var(--woda);
 	}
 
@@ -657,7 +685,7 @@
 	.map-parchment-frame {
 		box-shadow:
 			inset 0 0 0 1px var(--edge),
-			inset 0 0 90px 10px rgb(6 10 12 / 0.55);
+			inset 0 0 90px 10px var(--cien-mapy);
 	}
 
 	/* Kompas: tarcza z łupka w kutym pierścieniu */
@@ -694,7 +722,7 @@
 	/* Atrybucja na brzegu mapy */
 	.map-attribution {
 		color: var(--mgla);
-		background: rgb(18 27 30 / 0.85);
+		background: var(--atrybucja-tlo);
 		border: 1px solid var(--linia);
 	}
 
@@ -783,7 +811,7 @@ input[type='search']::-webkit-search-cancel-button {
 	display: inline-block;
 	width: 14px;
 	height: 14px;
-	border: 2px solid rgb(242 162 74 / 0.3);
+	border: 2px solid var(--zar-ramka);
 	border-top-color: var(--zar);
 	border-radius: 50%;
 	animation: tile-loader-spin 0.9s linear infinite;

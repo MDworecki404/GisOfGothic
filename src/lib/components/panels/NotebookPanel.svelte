@@ -36,7 +36,7 @@
 {:else}
 	<ul class="mt-3 space-y-2" aria-label="Pinezki">
 		{#each notebook.pins as pin (pin.id)}
-			<li class="rounded-md border border-border bg-black/15 p-2.5">
+			<li class="rounded-md border border-border bg-muted/50 p-2.5">
 				<input
 					type="text"
 					class="field w-full font-serif"
@@ -87,7 +87,7 @@
 							: ` z ${progress.total}`}{progress.percentLabel ? ` · ${progress.percentLabel}` : ''}
 					</span>
 				</div>
-				<div class="mt-1 h-1.5 overflow-hidden rounded-full bg-black/30" aria-hidden="true">
+				<div class="mt-1 h-1.5 overflow-hidden rounded-full bg-muted" aria-hidden="true">
 					<div
 						class="h-full rounded-full bg-primary"
 						style:width="{readPercent(progress.collected, progress.total)}%"

@@ -66,6 +66,7 @@ import type {
 	QualityLevel
 } from '#lib/services/performance/performance-profiles.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
+import type { ResolvedTheme, ThemePreference } from '#lib/services/theme/theme-preference.js';
 
 const coordinateFormatter = new CoordinateFormatter();
 const durationFormatter = new DurationFormatter();
@@ -157,6 +158,9 @@ export class AppState {
 	performanceWasLoweredAutomatically = $state(false);
 	measuredFramesPerSecond = $state<number | null>(null);
 
+	themePreference = $state<ThemePreference>('system');
+	theme = $state<ResolvedTheme>('dark');
+
 	canInstallApp = $state(false);
 	worldTilesPending = $state(0);
 	staticObjectsTilesPending = $state(0);
@@ -181,6 +185,10 @@ export class AppState {
 				this.measuredFramesPerSecond = measuredFramesPerSecond;
 			}
 		);
+		eventBus.subscribe('theme-changed', ({ preference, theme }) => {
+			this.themePreference = preference;
+			this.theme = theme;
+		});
 		eventBus.subscribe('app-installability-changed', ({ canInstall }) => {
 			this.canInstallApp = canInstall;
 		});

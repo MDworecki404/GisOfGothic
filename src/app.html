@@ -5,7 +5,7 @@
 		<link rel="icon" href="%sveltekit.assets%/favicon.svg" />
 		<link rel="manifest" href="%sveltekit.assets%/manifest.webmanifest" />
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/icons/apple-touch-icon-180.png" />
-		<meta name="theme-color" content="#121b1e" />
+		<meta name="theme-color" content="#0f1c1d" />
 		<meta
 			name="description"
 			content="Trójwymiarowa wikipedia świata Gothic: przedmioty, postacie i ich miejsca na mapie 3D."
@@ -13,9 +13,30 @@
 		<meta name="apple-mobile-web-app-title" content="GIS of Gothic" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="text-scale" content="scale" />
+		<script>
+			(function () {
+				try {
+					var saved = localStorage.getItem('gisofgothic:theme:v1');
+					var isLight =
+						saved === 'light' ||
+						(saved !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+					var root = document.documentElement;
+					root.dataset.theme = isLight ? 'light' : 'dark';
+					root.classList.toggle('dark', !isLight);
+				} catch (error) {
+					document.documentElement.dataset.theme = 'dark';
+				}
+			})();
+		</script>
 		<style>
 			html {
-				background: #121b1e;
+				--splash-background: #0f1c1d;
+				--splash-accent: #cfd36b;
+				background: var(--splash-background);
+			}
+			html[data-theme='light'] {
+				--splash-background: #a8bdb5;
+				--splash-accent: #586b10;
 			}
 			#app-splash {
 				position: fixed;
@@ -23,8 +44,8 @@
 				z-index: 99;
 				display: grid;
 				place-items: center;
-				background: #121b1e;
-				color: #f2a24a;
+				background: var(--splash-background);
+				color: var(--splash-accent);
 				font:
 					600 1.75rem/1.1 Georgia,
 					serif;
@@ -34,8 +55,8 @@
 				width: 22px;
 				height: 22px;
 				margin: 1rem auto 0;
-				border: 3px solid rgb(201 154 69 / 0.3);
-				border-top-color: #f2a24a;
+				border: 3px solid var(--splash-accent);
+				border-top-color: transparent;
 				border-radius: 50%;
 				animation: app-splash-spin 0.9s linear infinite;
 			}
@@ -47,7 +68,7 @@
 			@media (prefers-reduced-motion: reduce) {
 				#app-splash i {
 					animation: none;
-					border-color: #f2a24a;
+					border-top-color: var(--splash-accent);
 				}
 			}
 		</style>

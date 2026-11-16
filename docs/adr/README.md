@@ -39,10 +39,11 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0033](0033-trasy-po-sieci-waypointow.md)                      | Trasy po sieci waypointów                            | przyjęta          |
 | [0034](0034-siec-drog-gothica-3.md)                            | Sieć dróg Gothica 3 ze stref nawigacyjnych           | przyjęta          |
 | [0035](0035-animacja-rutyn-po-sieci-drog.md)                   | Animacja rutyn postaci po sieci dróg                 | przyjęta          |
-| [0036](0036-motyw-latarnia-w-kopalni.md)                       | Motyw „latarnia w kopalni”                           | przyjęta          |
+| [0036](0036-motyw-latarnia-w-kopalni.md)                       | Motyw „latarnia w kopalni”                           | zastąpiona (0043) |
 | [0037](0037-ksiega-i-karta-wpisu.md)                           | Księga i karta wpisu zamiast panelu wyszukiwania     | przyjęta          |
 | [0038](0038-lokacje-i-przejscia-miedzy-swiatami.md)            | Lokacje i przejścia między światami                  | przyjęta          |
 | [0039](0039-przewodnik-po-questach.md)                         | Przewodnik po questach                               | przyjęta          |
 | [0040](0040-trasa-przewodnika-po-drogach.md)                   | Trasa przewodnika po drogach i gałęzie alternatywne  | przyjęta          |
 | [0041](0041-otwarcie-repozytorium.md)                          | Otwarcie repozytorium i CI bez danych z gry          | przyjęta          |
 | [0042](0042-podglad-postaci-skladany-z-czesci.md)              | Podgląd 3D postaci składany z części                 | przyjęta          |
+| [0043](0043-motyw-krag-i-tryb-jasny.md)                        | Motyw „Krąg” i tryb jasny                            | przyjęta          |

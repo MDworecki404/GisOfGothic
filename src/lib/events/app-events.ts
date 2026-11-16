@@ -33,6 +33,7 @@ import type { CameraProjectionSetting } from '#lib/services/camera/camera-projec
 import type { SliceHeightRange, ViewMode } from '#lib/services/camera/view-mode.js';
 import type { MapOverlays } from '#lib/services/overlays/map-overlays.js';
 import type { ToolId } from '#lib/services/tools/tool-id.js';
+import type { ResolvedTheme, ThemePreference } from '#lib/services/theme/theme-preference.js';
 import { EventBus } from './event-bus.js';
 
 export type AppEvent =
@@ -114,6 +115,7 @@ export type AppEvent =
 			wasLoweredAutomatically: boolean;
 			measuredFramesPerSecond: number | null;
 	  }
+	| { type: 'theme-changed'; preference: ThemePreference; theme: ResolvedTheme }
 	| { type: 'tiles-load-progress'; layer: 'world' | 'static-objects'; pendingTiles: number };
 
 export type AppEventBus = EventBus<AppEvent>;

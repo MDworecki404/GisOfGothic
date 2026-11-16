@@ -15,7 +15,7 @@
 <Dialog.Root open={isOpen} onOpenChange={changeOpenState}>
 	<Dialog.Content
 		showCloseButton={false}
-		class="material-leather h-[min(48rem,calc(100dvh-3rem))] w-[min(72rem,calc(100vw-3rem))] max-w-none gap-0 bg-transparent p-0 ring-0 max-md:top-0 max-md:left-0 max-md:h-dvh max-md:w-screen max-md:translate-x-0 max-md:translate-y-0 sm:max-w-none"
+		class="material-leather h-[min(48rem,calc(100dvh-3rem))] w-[min(72rem,calc(100vw-3rem))] max-w-none gap-0 p-0 ring-0 max-md:top-0 max-md:left-0 max-md:h-dvh max-md:w-screen max-md:translate-x-0 max-md:translate-y-0 sm:max-w-none"
 	>
 		<Dialog.Title class="sr-only">Wyszukiwarka</Dialog.Title>
 		<Dialog.Description class="sr-only">

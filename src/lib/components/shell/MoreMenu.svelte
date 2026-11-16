@@ -3,6 +3,7 @@
 	import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
 	import GaugeIcon from '@lucide/svelte/icons/gauge';
 	import InfoIcon from '@lucide/svelte/icons/info';
+	import ThemeToggle from './ThemeToggle.svelte';
 
 	interface Props {
 		canInstallApp: boolean;
@@ -58,6 +59,7 @@
 					Zainstaluj aplikację
 				</button>
 			{/if}
+			<ThemeToggle class={menuItem} showLabel />
 			<button class={menuItem} onclick={() => chooseItem(onOpenPerformance)}>
 				<GaugeIcon class="size-4.5 text-muted-foreground" />
 				Wydajność

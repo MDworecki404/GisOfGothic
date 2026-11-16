@@ -97,8 +97,9 @@ Korzystaj z pluginów i skilli: `superpowers` (planowanie, TDD, weryfikacja, rev
 - **Zasoby gry nie mogą być do pobrania** (ADR 0012): modele tylko zaszyfrowane, przez bramkę
   `workers/model-gate/`, odszyfrowane w pamięci; nigdy publiczny adres bucketu, adres `blob:` ani link do pliku.
   Model świata tylko przez bramkę do ion (ADR 0013); token ion nigdy nie trafia do kodu strony.
-- Motyw „latarnia w kopalni” (ADR 0036, tokeny układu z ADR 0019): wszystkie tokeny (kolory, pismo, układ) w `src/app.css`,
-  komponenty używają ról i klas `material-*`, nie surowych kolorów; bez logo, czcionek i grafik z gry.
+- Motyw „Krąg” w trybie jasnym i ciemnym (ADR 0043, tokeny układu z ADR 0019): wszystkie tokeny (kolory, pismo, układ)
+  w `src/app.css`, komponenty używają ról i klas `material-*`, nie surowych kolorów (ani `bg-black/*`, `text-white`);
+  bez logo, czcionek i grafik z gry. Makiety w `docs/makiety/` nie są usuwane.
 
 ## Weryfikacja przed oddaniem
 

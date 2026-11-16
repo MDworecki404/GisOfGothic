@@ -112,7 +112,7 @@
 				x="27"
 				y="16"
 				text-anchor="middle"
-				font-family="Grenze, serif"
+				font-family="Uncial Antiqua, serif"
 				font-size="9"
 				font-weight="600"
 				fill="var(--woda)">N</text

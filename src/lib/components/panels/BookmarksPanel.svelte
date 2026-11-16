@@ -59,7 +59,7 @@
 {:else}
 	<ul class="space-y-2" aria-label="Zapisane widoki">
 		{#each appState.bookmarks as bookmark (bookmark.id)}
-			<li class="rounded-md border border-border bg-black/15 p-2.5">
+			<li class="rounded-md border border-border bg-muted/50 p-2.5">
 				<button
 					class="list-row block w-full px-1 py-1 text-left"
 					aria-label="Przywróć widok „{bookmark.name}”"
