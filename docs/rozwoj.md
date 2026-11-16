@@ -74,6 +74,7 @@ Pełne zasady: [`CLAUDE.md`](../CLAUDE.md). Najważniejsze:
   `build`, `ci`, `chore`, `revert`. Treść jest obowiązkowa.
 - Hook `commit-msg` (commitlint) sprawdza format, hook `pre-commit` uruchamia check, lint i testy.
 - `npm run release` generuje `CHANGELOG.md` z commitów `feat`, `fix`, `perf`, `refactor`, `docs`, `build`.
+- Okno „O projekcie” (`AboutDialog`) pokazuje wersję z `package.json` (stała `__APP_VERSION__`, wstrzykiwana w `vite.config.ts`) i linkuje do `CHANGELOG.md` na GitHubie.
 - Zmiana architektury, danych albo konfiguracji aktualizuje dokumentację w tym samym commicie.
 
 ## Wdrożenie

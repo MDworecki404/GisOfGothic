@@ -2,11 +2,14 @@
 	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
 	import GlobeIcon from '@lucide/svelte/icons/globe';
 	import InfoIcon from '@lucide/svelte/icons/info';
+	import HistoryIcon from '@lucide/svelte/icons/history';
 	import BrandMark from './BrandMark.svelte';
 	import * as Dialog from '#lib/components/ui/dialog/index.js';
 
 	const repositoryUrl = 'https://github.com/MDworecki404/GisOfGothic';
 	const authorUrl = 'https://dworecki.dev';
+	const changelogUrl = 'https://github.com/MDworecki404/GisOfGothic/blob/main/CHANGELOG.md';
+	const appVersion = __APP_VERSION__;
 
 	interface Props {
 		open?: boolean;
@@ -33,7 +36,7 @@
 				<div>
 					<Dialog.Title class="text-display text-primary">GIS of Gothic</Dialog.Title>
 					<Dialog.Description class="mt-0.5 text-muted-foreground">
-						Trójwymiarowa wikipedia światów Gothic
+						Trójwymiarowa wikipedia światów Gothic · wersja {appVersion}
 					</Dialog.Description>
 				</div>
 			</div>
@@ -74,6 +77,24 @@
 							<span class="block font-medium">Kod źródłowy</span>
 							<span class="block text-sm text-muted-foreground"
 								>github.com/MDworecki404/GisOfGothic</span
+							>
+						</span>
+						<ExternalLinkIcon class="size-4 text-muted-foreground group-hover:text-primary" />
+						<span class="sr-only">(otwiera się w nowej karcie)</span>
+					</a>
+				</li>
+				<li>
+					<a
+						class="group flex min-h-11 items-center gap-3 py-3 hover:text-hover"
+						href={changelogUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						<HistoryIcon class="size-5 shrink-0" />
+						<span class="flex-1">
+							<span class="block font-medium">Co nowego (wersja {appVersion})</span>
+							<span class="block text-sm text-muted-foreground"
+								>Lista zmian w kolejnych wydaniach</span
 							>
 						</span>
 						<ExternalLinkIcon class="size-4 text-muted-foreground group-hover:text-primary" />

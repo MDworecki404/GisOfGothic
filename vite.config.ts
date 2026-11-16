@@ -1,9 +1,11 @@
+import { readFileSync } from 'node:fs';
 import adapter from '@sveltejs/adapter-static';
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import { defineConfig } from 'vitest/config';
 
+const packageVersion: unknown = JSON.parse(readFileSync('package.json', 'utf-8')).version;
 const cesiumSource = 'node_modules/cesium/Build/Cesium';
 
 export default defineConfig({
@@ -27,7 +29,8 @@ export default defineConfig({
 		})
 	],
 	define: {
-		CESIUM_BASE_URL: JSON.stringify('/cesiumStatic')
+		CESIUM_BASE_URL: JSON.stringify('/cesiumStatic'),
+		__APP_VERSION__: JSON.stringify(packageVersion)
 	},
 	test: {
 		include: ['src/**/*.{test,spec}.ts']

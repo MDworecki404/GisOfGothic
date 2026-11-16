@@ -224,6 +224,11 @@ test('na telefonie przycisk wyszukiwania otwiera Księgę, a okna otwiera menu �
 	await page.getByRole('button', { name: 'Więcej', exact: true }).click();
 	await page.getByRole('button', { name: 'O projekcie' }).click();
 	await expect(page.getByRole('dialog')).toContainText('Trójwymiarowa wikipedia');
+	await expect(page.getByRole('dialog')).toContainText(/wersja \d+\.\d+\.\d+/);
+	await expect(page.getByRole('link', { name: /Co nowego/ })).toHaveAttribute(
+		'href',
+		/CHANGELOG\.md$/
+	);
 	await page.keyboard.press('Escape');
 	await expect(page.getByRole('dialog')).toBeHidden();
 });
