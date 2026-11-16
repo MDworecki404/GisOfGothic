@@ -50,7 +50,11 @@ import { SearchCoordinator } from './search/search-coordinator.js';
 import type { SearchTypeFilter } from './search/search-service.js';
 import { CameraProjectionCoordinator } from './camera/camera-projection-coordinator.js';
 import type { CameraPreset } from './camera/camera-preset-builder.js';
-import { KeyboardProjectionListener } from './camera/keyboard-projection-listener.js';
+import {
+	KeyboardShortcutCatalog,
+	type KeyboardShortcutHelpEntry
+} from './input/keyboard-shortcut-catalog.js';
+import { KeyboardShortcutListener } from './input/keyboard-shortcut-listener.js';
 import { ViewModeCoordinator } from './camera/view-mode-coordinator.js';
 import type { MapOverlayId } from './overlays/map-overlays.js';
 import { MapOverlaysCoordinator } from './overlays/map-overlays-coordinator.js';
@@ -92,6 +96,36 @@ export class GeoportalFacade {
 	private pendingRoute: RouteEndpoints | null = null;
 	private worldLoadGeneration = 0;
 	private activeToolId: ToolId | null = null;
+	private readonly keyboardShortcutCatalog = new KeyboardShortcutCatalog({
+		openSearch: () => {
+			if (this.activeToolId !== 'search') this.selectTool('search');
+		},
+		selectTool: (toolId) => this.selectTool(toolId),
+		zoomIn: () => this.zoomIn(),
+		zoomOut: () => this.zoomOut(),
+		showWholeWorld: () => this.showWholeWorld(),
+		turnMapToNorth: () => this.turnMapToNorth(),
+		toggleCameraProjection: () => this.toggleCameraProjection(),
+		toggleViewMode: () =>
+			this.selectViewMode(
+				this.viewModeCoordinator.currentMode === 'view-2d' ? 'view-3d' : 'view-2d'
+			),
+		showTopDownView: () => this.showCameraPreset('top'),
+		showObliqueView: () => this.showCameraPreset('oblique'),
+		toggleContours: () => this.toggleMapOverlay('areContoursVisible'),
+		toggleGrid: () => this.toggleMapOverlay('isGridVisible'),
+		toggleStaticObjects: () => this.toggleStaticObjects(),
+		toggleCharactersAtTimeOfDay: () => this.toggleCharactersAtTimeOfDay(),
+		switchToNextCoordinateSystem: () => this.switchToNextCoordinateSystem(),
+		moveQuestGuideToPreviousStep: () => this.moveQuestGuideStep(-1),
+		moveQuestGuideToNextStep: () => this.moveQuestGuideStep(1),
+		removeLastMeasurementPoint: () => {
+			if (this.activeToolId === 'measure') this.removeLastMeasurementPoint();
+		},
+		clearMeasurement: () => {
+			if (this.activeToolId === 'measure') this.clearMeasurement();
+		}
+	});
 	private selectedChapter: ChapterNumber | null = null;
 	private coordinateSystemId: CoordinateSystemId = 'khorinis-1992';
 	private readonly coordinateFormatter = new CoordinateFormatter();
@@ -663,9 +697,17 @@ export class GeoportalFacade {
 		this.cameraProjectionCoordinator.setFieldOfView(degrees);
 	}
 
-	/** Włącza przełączanie rzutu klawiszem P; zwraca funkcję wyłączającą. */
-	listenToProjectionKeyboard(eventSource: Window): () => void {
-		return new KeyboardProjectionListener(eventSource, () => this.toggleCameraProjection()).start();
+	/** Włącza skróty klawiszowe aplikacji (zob. `KeyboardShortcutCatalog`); zwraca funkcję wyłączającą. */
+	listenToKeyboardShortcuts(eventSource: Window): () => void {
+		return new KeyboardShortcutListener(
+			eventSource,
+			this.keyboardShortcutCatalog.listShortcuts()
+		).start();
+	}
+
+	/** Lista skrótów do okna ściągi: grupa, nazwa klawisza i opis. */
+	listKeyboardShortcutHelp(): readonly KeyboardShortcutHelpEntry[] {
+		return this.keyboardShortcutCatalog.listHelpEntries();
 	}
 
 	showCameraPreset(preset: CameraPreset): void {

@@ -1,31 +1,14 @@
 <script lang="ts">
+	import { geoportal } from '#lib/composition-root.js';
 	import * as Dialog from '#lib/components/ui/dialog/index.js';
+	import type { KeyboardShortcutHelpEntry } from '#lib/services/input/keyboard-shortcut-catalog.js';
 
-	interface ShortcutGroup {
-		title: string;
-		shortcuts: readonly { keys: string; description: string }[];
+	const entries = geoportal.listKeyboardShortcutHelp();
+	const groupTitles = [...new Set(entries.map((entry) => entry.group))];
+
+	function listEntriesOfGroup(groupTitle: string): readonly KeyboardShortcutHelpEntry[] {
+		return entries.filter((entry) => entry.group === groupTitle);
 	}
-
-	const groups: readonly ShortcutGroup[] = [
-		{
-			title: 'Ogólne',
-			shortcuts: [
-				{ keys: 'Ctrl K', description: 'Otwórz Księgę i wyszukiwarkę' },
-				{ keys: 'Esc', description: 'Zamknij okno, menu albo panel narzędzia' },
-				{ keys: '?', description: 'Pokaż tę ściągę' }
-			]
-		},
-		{
-			title: 'Lot kamerą',
-			shortcuts: [
-				{ keys: 'W A S D', description: 'Przód, lewo, tył, prawo' },
-				{ keys: 'Q E', description: 'W dół i w górę' },
-				{ keys: '← →', description: 'Obrót' },
-				{ keys: '↑ ↓', description: 'Pochylenie spojrzenia' },
-				{ keys: 'Shift', description: 'Przyspieszenie' }
-			]
-		}
-	];
 
 	interface Props {
 		open?: boolean;
@@ -44,16 +27,16 @@
 				Skróty nie działają, gdy piszesz w polu tekstowym.
 			</Dialog.Description>
 
-			{#each groups as group (group.title)}
-				<h3 class="mt-6 text-label text-muted-foreground">{group.title}</h3>
+			{#each groupTitles as groupTitle (groupTitle)}
+				<h3 class="mt-6 text-label text-muted-foreground">{groupTitle}</h3>
 				<dl class="mt-2 divide-y divide-border border-y border-border">
-					{#each group.shortcuts as shortcut (shortcut.keys)}
+					{#each listEntriesOfGroup(groupTitle) as shortcut, index (index)}
 						<div class="flex min-h-11 items-center justify-between gap-4 py-2">
 							<dt class="text-foreground/90">{shortcut.description}</dt>
 							<dd>
 								<kbd
 									class="rounded-sm border border-border px-1.5 py-0.5 font-sans text-caption whitespace-nowrap"
-									>{shortcut.keys}</kbd
+									>{shortcut.keyLabel}</kbd
 								>
 							</dd>
 						</div>

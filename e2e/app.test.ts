@@ -239,7 +239,7 @@ test('na komputerze ? otwiera ściągę skrótów, a okno O projekcie ma odnośn
 	await page.setViewportSize({ width: 1280, height: 800 });
 	await page.goto('/g2nk/khorinis');
 	await page.getByRole('button', { name: 'Szukaj przedmiotu lub postaci' }).waitFor();
-	await page.keyboard.press('?');
+	await page.keyboard.press('Shift+Slash');
 	await expect(page.getByRole('dialog')).toContainText('Skróty klawiszowe');
 	await page.keyboard.press('Escape');
 	await expect(page.getByRole('dialog')).toBeHidden();
@@ -252,6 +252,21 @@ test('na komputerze ? otwiera ściągę skrótów, a okno O projekcie ma odnośn
 		'href',
 		/template=idea\.yml$/
 	);
+});
+
+test('cyfry otwierają narzędzia, a Ctrl K i / otwierają Księgę', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 800 });
+	await page.goto('/g2nk/khorinis');
+	await page.getByRole('button', { name: 'Szukaj przedmiotu lub postaci' }).waitFor();
+	await page.keyboard.press('2');
+	await expect(page.getByRole('heading', { name: 'Warstwy' })).toBeVisible();
+	await page.keyboard.press('2');
+	await expect(page.getByRole('heading', { name: 'Warstwy' })).toHaveCount(0);
+	await page.keyboard.press('Control+k');
+	await expect(page.getByRole('searchbox')).toBeVisible();
+	await page.keyboard.press('Escape');
+	await page.keyboard.press('/');
+	await expect(page.getByRole('searchbox')).toBeVisible();
 });
 
 test('legenda włączonej warstwy otwiera panel Warstwy jednym kliknięciem', async ({ page }) => {

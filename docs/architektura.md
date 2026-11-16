@@ -394,8 +394,7 @@ Kamera może być w rzucie środkowym (perspektywa, kąt widzenia 30–100°, do
 widzenia (także w ortho, żeby powrót do perspektywy go przywrócił), stosuje go na mapie przez
 `CameraProjectionDisplay` (`MapService.showCameraProjection`) i publikuje `camera-projection-changed`, który
 odbiera `AppState` (`cameraProjection`, `fieldOfViewDegrees`). Fasada udostępnia `selectCameraProjection`,
-`toggleCameraProjection`, `setCameraFieldOfView`, `showCameraPreset` i `listenToProjectionKeyboard` (klawisz **P**,
-`KeyboardProjectionListener` ze wspólnym strażnikiem `isKeyboardTargetUsingKeysItself`).
+`toggleCameraProjection`, `setCameraFieldOfView`, `showCameraPreset`; klawisz **P** przełącza rzut przez katalog skrótów (zob. „Zgłoszenia i skróty klawiszowe”).
 
 Jedynym miejscem, które zmienia frustum Cesium, jest `CameraProjectionController` (`services/map/`). W rzucie
 ortogonalnym Cesium ustawia szerokość widoku równą odległości kamery od punktu pod środkiem ekranu, więc przy
@@ -687,9 +686,26 @@ oraz `view_link` (adres widoku). Nazwy pól muszą zgadzać się z `id` w szablo
 dane widać w formularzu na GitHubie i to użytkownik go wysyła; pomysł nie niesie żadnych danych. Kontekst składa
 `buildIssueReportLink` w `composition-root.ts` (wersja z `__APP_VERSION__`, nazwa świata z `appState`).
 
-Klawisz `?` (pomijany w polach tekstowych, suwakach i oknach przez `isKeyboardTargetUsingKeysItself`) otwiera
-`ShortcutsDialog`, listę skrótów: `Ctrl K`, `Esc` i lot kamerą (`KeyboardFlightMapper`). Nowy skrót dopisuje się też
-do tej listy.
+Skróty klawiszowe mają jedno źródło prawdy: `KeyboardShortcutCatalog` (`services/input/`). Każdy skrót to grupa,
+etykieta klawisza, opis, fizyczny kod klawisza (`code`, więc działa przy każdym układzie klawiatury), modyfikatory
+i zamiar zgłaszany przez interfejs `KeyboardShortcutActions`, który implementuje `GeoportalFacade`. Z katalogu korzystają:
+`KeyboardShortcutListener` (`geoportal.listenToKeyboardShortcuts`, uruchamiany w `MapView`) oraz `ShortcutsDialog`
+(`geoportal.listKeyboardShortcutHelp`), więc ściąga nie rozjeżdża się z działaniem. Skróty bez Ctrl/Cmd pomijają pola,
+które same używają klawiszy (`isKeyboardTargetUsingKeysItself`: pola tekstowe, suwaki, okna, listy, menu); `Ctrl K`
+działa wszędzie. Powtórzenia przytrzymanego klawisza przechodzą tylko przy zbliżaniu i oddalaniu.
+
+| Grupa                | Klawisze                                                                                                                    |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Ogólne               | `Ctrl K` i `/` Księga, `?` ściąga, `Esc` zamyka                                                                             |
+| Narzędzia            | `1`–`8` w kolejności `TOOL_IDS` (ponowne naciśnięcie zamyka panel)                                                          |
+| Mapa i kamera        | `+` `−` zoom, `0` cały świat, `N` północ, `P` rzut, `V` widok 2D/3D, `T` z góry, `Shift T` ukośnie, `C` układ współrzędnych |
+| Warstwy i czas       | `K` poziomice, `G` siatka, `O` obiekty świata, `H` postacie o godzinie                                                      |
+| Pomiary i przewodnik | `Backspace` cofnij punkt i `Delete` wyczyść (tylko przy narzędziu Pomiary), `[` `]` kroki przewodnika                       |
+| Lot kamerą           | `W A S D`, `Q E`, strzałki, `Shift` (`KeyboardFlightListener`, osobno, bo wymaga puszczania klawiszy)                       |
+
+Klawisz `?` obsługuje `TopBar` (otwiera `ShortcutsDialog`, to stan samego interfejsu). Nowy skrót dopisuje się w katalogu,
+w tabeli powyżej i, jeśli to nowy zamiar, w `KeyboardShortcutActions` oraz fasadzie; test w
+`keyboard-shortcut-listener.test.ts` pilnuje, żeby żadne dwa skróty nie dzieliły klawisza i żeby nie przejmowały klawiszy lotu.
 
 ## PWA
 

@@ -35,18 +35,15 @@
 		isShortcutsOpen = true;
 	}
 
-	function openDialogOnShortcut(event: KeyboardEvent): void {
-		if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
-			event.preventDefault();
-			openBook();
-		} else if (event.key === '?' && !isKeyboardTargetUsingKeysItself(event.target)) {
+	function openShortcutsOnQuestionMark(event: KeyboardEvent): void {
+		if (event.key === '?' && !isKeyboardTargetUsingKeysItself(event.target)) {
 			event.preventDefault();
 			isShortcutsOpen = true;
 		}
 	}
 </script>
 
-<svelte:window onkeydown={openDialogOnShortcut} />
+<svelte:window onkeydown={openShortcutsOnQuestionMark} />
 
 <header
 	class="pointer-events-none fixed inset-x-0 top-0 z-40 flex items-start gap-2 p-(--edge-inset) md:gap-4"
