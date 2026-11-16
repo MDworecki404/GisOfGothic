@@ -741,6 +741,108 @@
 		box-shadow: none;
 	}
 
+	/* Pieczęć na karcie wpisu: okrągły medalion z ikoną rodzaju wpisu */
+	.entry-seal {
+		display: grid;
+		flex-shrink: 0;
+		place-items: center;
+		width: 2.75rem;
+		height: 2.75rem;
+		border-radius: 999px;
+		color: var(--zar);
+		background: var(--lupek-wysoki);
+		border: 2px solid var(--zar);
+		box-shadow: inset 0 0 0 2px var(--lupek);
+	}
+
+	/* Koło narzędzi (ADR 0044): piasta w rogu, narzędzia rozchodzą się po jej otwarciu na dwa łuki */
+	.tool-wheel-spokes {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 0;
+		height: 0;
+	}
+
+	.tool-wheel-spoke {
+		position: absolute;
+		display: grid;
+		place-items: center;
+		width: 2.75rem;
+		height: 2.75rem;
+		margin: -1.375rem;
+		border-radius: 999px;
+		color: var(--popiol);
+		background: var(--lupek-wysoki);
+		border: 1px solid var(--plyta-krawedz);
+		box-shadow: var(--cien-plyty);
+		opacity: 0;
+		visibility: hidden;
+		transform: translate(0, 0) scale(0.4);
+		transition:
+			transform 160ms ease-out,
+			opacity 160ms ease-out,
+			visibility 0s linear 160ms;
+	}
+
+	[data-open='true'] > .tool-wheel-spoke {
+		opacity: 1;
+		visibility: visible;
+		transform: translate(var(--spoke-x), var(--spoke-y)) scale(1);
+		transition-delay: 0s;
+	}
+
+	.tool-wheel-spoke:hover,
+	.tool-wheel-spoke:focus-visible {
+		color: var(--hover);
+		background: var(--lupek-podniesiony);
+	}
+
+	.tool-wheel-spoke[aria-pressed='true'] {
+		color: var(--active);
+		border-color: var(--active);
+		background: var(--active-surface);
+		box-shadow:
+			var(--cien-plyty),
+			var(--glow-ore);
+	}
+
+	.tool-wheel-label {
+		position: absolute;
+		top: 50%;
+		left: calc(100% + 0.5rem);
+		padding: 0.125rem 0.625rem;
+		border-radius: 999px;
+		color: var(--foreground);
+		background: var(--lupek);
+		border: 1px solid var(--plyta-krawedz);
+		font-size: var(--text-label);
+		white-space: nowrap;
+		pointer-events: none;
+		opacity: 0;
+		transform: translateY(-50%);
+	}
+
+	.tool-wheel-spoke:hover > .tool-wheel-label,
+	.tool-wheel-spoke:focus-visible > .tool-wheel-label {
+		opacity: 1;
+	}
+
+	.tool-wheel-hub:hover {
+		color: var(--hover);
+	}
+
+	.tool-wheel-hub[aria-expanded='true'] {
+		border-color: var(--active);
+		color: var(--active);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.tool-wheel-spoke {
+			transition: none;
+		}
+	}
+
 	.tool-rail-button:hover {
 		color: var(--foreground);
 		background: var(--hover-surface);

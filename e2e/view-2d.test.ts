@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { expect, test } from './support/test.js';
+import { expect, test, selectTool } from './support/test.js';
 
 const SEEN_FROM_ABOVE_ISLAND_LINK = '/g2nk/khorinis?widok=72.7_13.3_800_0_-45&narzedzie=zamkniete';
 const FLAT_MAP_BUTTON = 'Widok 2D';
@@ -240,10 +240,7 @@ test('uszkodzone cięcie w linku zostawia 2D bez cięcia', async ({ page }) => {
 test('zakładka zachowuje tryb 2D i cięcie', async ({ page }) => {
 	await page.goto(`${SEEN_FROM_ABOVE_ISLAND_LINK}&tryb=2d&ciecie=25`);
 	await waitForMapToSettle(page);
-	await page
-		.getByRole('navigation', { name: 'Narzędzia' })
-		.getByRole('button', { name: 'Zakładki' })
-		.click();
+	await selectTool(page, 'Zakładki');
 	await page.getByLabel('Nazwa zakładki').fill('Plan z cięciem');
 	await page.getByRole('button', { name: 'Zapisz widok' }).click();
 	await expect(page.getByRole('list', { name: 'Zapisane widoki' })).toContainText('Widok 2D');
@@ -254,10 +251,7 @@ test('zakładka zachowuje tryb 2D i cięcie', async ({ page }) => {
 		'aria-pressed',
 		'false'
 	);
-	await page
-		.getByRole('navigation', { name: 'Narzędzia' })
-		.getByRole('button', { name: 'Zakładki' })
-		.click();
+	await selectTool(page, 'Zakładki');
 	await page.getByRole('button', { name: /Przywróć widok „Plan z cięciem”/ }).click();
 	await expect(page.getByRole('button', { name: FLAT_MAP_BUTTON })).toHaveAttribute(
 		'aria-pressed',

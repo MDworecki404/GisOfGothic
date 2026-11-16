@@ -552,12 +552,13 @@ Stany interfejsu:
 Układ ekranu ([ADR 0036](adr/0036-motyw-latarnia-w-kopalni.md)): mapa wypełnia cały ekran, a interfejs pływa nad nią
 w płytach. Nagłówek to trzy płyty (`TopBar`): tytuł świata z `WorldSwitcher` (`data-testid="header-title"`),
 wyszukiwarka (`header-search`) i akcje (`header-actions`: kopiuj link, wydajność, „O projekcie”, instalacja). Narzędzia
-tworzą na komputerze pionowy dok (`ToolRail`) z trzema grupami (`ToolDefinition.group`: `find`, `measure`, `time`)
-oddzielonymi kreską, znacznikiem aktywnego i podpisem po najechaniu; na telefonie dolna nawigacja ma cztery narzędzia
+tworzą na komputerze koło (`ToolWheel`, wybierane w `ToolRail`; [ADR 0044](adr/0044-uklad-krag-kolo-narzedzi-i-tarcza-zegara.md)):
+piasta w lewym dolnym rogu pokazuje aktywne narzędzie, a po kliknięciu rozkłada osiem narzędzi na dwóch łukach
+(`ToolDefinition.group` nadal dzieli je na `find`, `measure`, `time`); na telefonie dolna nawigacja ma cztery narzędzia
 (`ToolDefinition.isOnPhoneBar`) i menu „Inne” z resztą. Pasek stanu zastępuje narożna płyta odczytu (`InstrumentBar`:
 układ współrzędnych, tekst stanu `data-testid="status-bar"`, skala, odczyt kursora), której szerokość liczy się z
-tokenów, żeby nie nachodziła na panel narzędzia. `data-map-obstacle` mają tylko elementy, które zasłaniają lewy albo dolny brzeg mapy (dok, panel, arkusz i nawigacja telefonu), bo `MapInsetsReporter` liczy z nich wolny obszar kadrowania; płyty nagłówka i narożny odczyt go nie mają (płyta wyszukiwarki sięgająca prawej strony ekranu uznana za zasłonięty brzeg zepsułaby kadrowanie i dawała błąd NaN). Wymiary układu są tokenami: `--edge-inset` (margines pływających elementów), `--top-bar-height`
-(strefa nagłówka), `--bottom-nav-height`, `--rail-width` (margines i dok), `--status-bar-height` (dolny odstęp), `--panel-width`
+tokenów, żeby nie nachodziła na panel narzędzia. `data-map-obstacle` mają tylko elementy, które zasłaniają lewy albo dolny brzeg mapy (piasta koła, panel, arkusz i nawigacja telefonu), bo `MapInsetsReporter` liczy z nich wolny obszar kadrowania; płyty nagłówka i narożny odczyt go nie mają (płyta wyszukiwarki sięgająca prawej strony ekranu uznana za zasłonięty brzeg zepsułaby kadrowanie i dawała błąd NaN). Wymiary układu są tokenami: `--edge-inset` (margines pływających elementów), `--top-bar-height`
+(strefa nagłówka), `--bottom-nav-height`, `--rail-width` (margines i kolumna piasty koła), `--status-bar-height` (dolny odstęp), `--panel-width`
 i `--map-controls-width` zmieniają się z szerokością ekranu.
 `ToolPanel` ustawia w biegu na `:root` `--sheet-occupied-height` (wysokość arkusza na telefonie) oraz
 `--panel-occupied-width` (szerokość panelu na większych ekranach). Płyta odczytu, joysticki i plakietka
@@ -689,4 +690,4 @@ płyta akcji w nagłówku pokazuje wtedy przycisk „Zainstaluj”. Szczegóły 
 
 ## Zegar doby
 
-`DayClock` (komponent bez logiki domenowej) to płyta w prawym dolnym rogu na komputerze: godzina gry, przycisk Odtwórz/Zatrzymaj i — gdy otwarte jest narzędzie Czas albo trwa odtwarzanie — łuk 00–24 z markerem godziny (klik, przeciąganie i strzałki ustawiają godzinę przez `geoportal.setTimeOfDay`) oraz tempa 1×, 4×, 60× (`setRoutinePlaybackSpeed`). Na telefonie godzinę i odtwarzanie obsługuje panel Czas.
+`DayClock` (komponent bez logiki domenowej) to płyta w prawym dolnym rogu na komputerze: godzina gry, przycisk Odtwórz/Zatrzymaj i — gdy otwarte jest narzędzie Czas albo trwa odtwarzanie — tarczę 24 h z jasnym łukiem dnia i markerem godziny, północ na dole, a południe u góry (klik, przeciąganie po tarczy i strzałki ustawiają godzinę przez `geoportal.setTimeOfDay`) oraz tempa 1×, 4×, 60× (`setRoutinePlaybackSpeed`). Na telefonie godzinę i odtwarzanie obsługuje panel Czas.

@@ -1,4 +1,4 @@
-import { BOOK_URL, expect, test } from './support/test.js';
+import { BOOK_URL, expect, test, selectTool } from './support/test.js';
 
 test('strona się ładuje: mapa Cesium, przycisk wyszukiwania, brak błędów w konsoli', async ({
 	page
@@ -31,12 +31,9 @@ test('nieznany świat pokazuje stronę błędu z linkiem do Khorinis', async ({ 
 test('szyna narzędzi przełącza i zamyka panele', async ({ page }) => {
 	await page.goto('/g2nk/khorinis');
 	const tools = page.getByRole('navigation', { name: 'Narzędzia' });
-	await tools.getByRole('button', { name: 'Pomiary' }).click();
+	await selectTool(page, 'Pomiary');
 	await expect(page.getByRole('heading', { name: 'Pomiary' })).toBeVisible();
-	await expect(tools.getByRole('button', { name: 'Pomiary' })).toHaveAttribute(
-		'aria-pressed',
-		'true'
-	);
+	await expect(tools.getByRole('button', { name: 'Narzędzia, aktywne: Pomiary' })).toBeVisible();
 	await page.keyboard.press('Escape');
 	await expect(page.getByRole('heading', { name: 'Pomiary' })).toBeHidden();
 	await page.keyboard.press('Control+k');
@@ -57,10 +54,7 @@ test('wyszukiwarka znajduje przedmiot bez polskich znaków i zapisuje wpis w adr
 
 test('analiza „Najbliższe” pozwala wybrać przedmiot jako temat', async ({ page }) => {
 	await page.goto('/g2nk/khorinis');
-	await page
-		.getByRole('navigation', { name: 'Narzędzia' })
-		.getByRole('button', { name: 'Analizy' })
-		.click();
+	await selectTool(page, 'Analizy');
 	await expect(page.getByRole('heading', { name: 'Analizy' })).toBeVisible();
 	await page.getByLabel('Temat analizy').fill('szczaw krolewski');
 	await page.getByRole('button', { name: /Szczaw królewski/ }).click();
@@ -70,10 +64,7 @@ test('analiza „Najbliższe” pozwala wybrać przedmiot jako temat', async ({ 
 
 test('analiza „Zasięg” pokazuje promień i prosi o punkt na mapie', async ({ page }) => {
 	await page.goto('/g2nk/khorinis');
-	await page
-		.getByRole('navigation', { name: 'Narzędzia' })
-		.getByRole('button', { name: 'Analizy' })
-		.click();
+	await selectTool(page, 'Analizy');
 	await page.getByRole('button', { name: /Zasięg/ }).click();
 	await expect(page.getByLabel('Promień zasięgu w metrach')).toBeVisible();
 	await page.getByLabel('Promień zasięgu w metrach').fill('200');
@@ -83,10 +74,7 @@ test('analiza „Zasięg” pokazuje promień i prosi o punkt na mapie', async (
 
 test('analiza „Zagęszczenie” rysuje siatkę i pokazuje legendę', async ({ page }) => {
 	await page.goto('/g2nk/khorinis');
-	await page
-		.getByRole('navigation', { name: 'Narzędzia' })
-		.getByRole('button', { name: 'Analizy' })
-		.click();
+	await selectTool(page, 'Analizy');
 	await page.getByRole('button', { name: /Zagęszczenie/ }).click();
 	await page.getByLabel('Temat analizy').fill('roslina lecznicza');
 	await page
@@ -104,10 +92,7 @@ test('analiza „Zagęszczenie” rysuje siatkę i pokazuje legendę', async ({ 
 
 test('pomiar pola prosi o wierzchołki wielokąta', async ({ page }) => {
 	await page.goto('/g2nk/khorinis');
-	await page
-		.getByRole('navigation', { name: 'Narzędzia' })
-		.getByRole('button', { name: 'Pomiary' })
-		.click();
+	await selectTool(page, 'Pomiary');
 	await page.getByRole('button', { name: /^Pole/ }).click();
 	await expect(page.getByRole('button', { name: /^Pole/ })).toHaveAttribute('aria-pressed', 'true');
 	await expect(page.getByText(/Pole i obwód pojawią się od trzeciego/)).toBeVisible();
@@ -115,10 +100,7 @@ test('pomiar pola prosi o wierzchołki wielokąta', async ({ page }) => {
 
 test('zakładki zapisują widok, przeżywają odświeżenie i dają się usunąć', async ({ page }) => {
 	await page.goto('/g2nk/khorinis');
-	await page
-		.getByRole('navigation', { name: 'Narzędzia' })
-		.getByRole('button', { name: 'Zakładki' })
-		.click();
+	await selectTool(page, 'Zakładki');
 	await page.getByLabel('Nazwa zakładki').fill('Widok testowy');
 	await page.getByRole('button', { name: 'Zapisz widok' }).click();
 	await expect(page.getByRole('list', { name: 'Zapisane widoki' })).toContainText('Widok testowy');
@@ -138,10 +120,7 @@ test('link z narzędziem otwiera panel, a uszkodzona kamera jest ignorowana', as
 
 test('panel Warstwy pokazuje legendę ikon kategorii', async ({ page }) => {
 	await page.goto('/g2nk/khorinis');
-	await page
-		.getByRole('navigation', { name: 'Narzędzia' })
-		.getByRole('button', { name: 'Warstwy' })
-		.click();
+	await selectTool(page, 'Warstwy');
 	const itemIcons = page.getByLabel('Ikony: Przedmioty w świecie');
 	await expect(itemIcons).toContainText('Rośliny');
 	await expect(itemIcons).toContainText('Broń biała');
@@ -312,10 +291,7 @@ test('warstwa obiektów świata wczytuje tileset voba z bramki', async ({ page }
 	await expect(page.getByTestId('status-bar')).toContainText(/Przedmioty: 312/, {
 		timeout: 30_000
 	});
-	await page
-		.getByRole('navigation', { name: 'Narzędzia' })
-		.getByRole('button', { name: 'Warstwy' })
-		.click();
+	await selectTool(page, 'Warstwy');
 	const checkbox = page.getByRole('checkbox', { name: /Obiekty świata/ });
 	await expect(checkbox).not.toBeChecked();
 	await checkbox.check();
@@ -407,10 +383,7 @@ test('miejsca przedmiotu odhacza się osobno, a postęp widać w Notatniku', asy
 	await expect(placeCheckboxes.nth(1)).not.toBeChecked();
 
 	await page.keyboard.press('Escape');
-	await page
-		.getByRole('navigation', { name: 'Narzędzia' })
-		.getByRole('button', { name: 'Notatnik' })
-		.click();
+	await selectTool(page, 'Notatnik');
 	await expect(page.getByRole('list', { name: 'Zebrane przedmioty' })).toContainText('1 miejsce');
 	await expect(page.getByRole('list', { name: 'Postęp zbierania' })).toContainText(
 		/Miejsca przedmiotów\s*1 z/
@@ -446,10 +419,7 @@ test('quest odhacza się jako całość i trafia na listę w Notatniku', async (
 	);
 
 	await page.keyboard.press('Escape');
-	await page
-		.getByRole('navigation', { name: 'Narzędzia' })
-		.getByRole('button', { name: 'Notatnik' })
-		.click();
+	await selectTool(page, 'Notatnik');
 	await expect(page.getByRole('list', { name: 'Wykonane questy' })).toContainText('quest');
 	await page.getByRole('button', { name: /Usuń z listy/ }).click();
 	await expect(page.getByRole('list', { name: 'Wykonane questy' })).toHaveCount(0);
@@ -587,10 +557,7 @@ test('zamknięcie narzędzia Rozmiary zdejmuje wybrane światy', async ({ page }
 	await page.getByRole('checkbox', { name: 'Pokaż świat Jarkendar (Gothic 2: Noc Kruka)' }).check();
 	await expect(page.getByLabel('Środek: wschód (m)')).toBeVisible({ timeout: 30_000 });
 	await page.getByRole('button', { name: 'Zamknij panel' }).click();
-	await page
-		.getByRole('navigation', { name: 'Narzędzia' })
-		.getByRole('button', { name: 'Rozmiary' })
-		.click();
+	await selectTool(page, 'Rozmiary');
 	await expect(page.getByRole('checkbox', { name: /Jarkendar/ })).not.toBeChecked();
 });
 

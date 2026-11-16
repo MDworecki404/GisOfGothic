@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { expect, test } from './support/test.js';
+import { expect, test, selectTool } from './support/test.js';
 
 const SEEN_FROM_ABOVE_ISLAND_LINK = '/g2nk/khorinis?widok=72.7_13.3_800_0_-45&narzedzie=zamkniete';
 
@@ -121,10 +121,7 @@ test('cienie włączone i dwukrotne przełączenie rzutu nie przerywają rendero
 test('zakładka zapisana w ortho wraca z rzutem w adresie', async ({ page }) => {
 	await page.goto(`${SEEN_FROM_ABOVE_ISLAND_LINK}&rzut=o`);
 	await waitForMapToSettle(page);
-	await page
-		.getByRole('navigation', { name: 'Narzędzia' })
-		.getByRole('button', { name: 'Zakładki' })
-		.click();
+	await selectTool(page, 'Zakładki');
 	await page.getByLabel('Nazwa zakładki').fill('Plan z góry');
 	await page.getByRole('button', { name: 'Zapisz widok' }).click();
 	await expect(page.getByRole('list', { name: 'Zapisane widoki' })).toContainText(

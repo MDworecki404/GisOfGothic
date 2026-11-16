@@ -72,12 +72,22 @@ test('na telefonie menu „Inne” otwiera narzędzie spoza paska', async ({ pag
 	await expect(tools.getByRole('button', { name: 'Inne' })).toHaveAttribute('aria-pressed', 'true');
 });
 
-test('dok narzędzi na desktopie ma osiem przycisków i znacznik aktywnego', async ({ page }) => {
+test('koło narzędzi na desktopie ma osiem narzędzi i znacznik aktywnego', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 720 });
 	await page.goto('/g2nk/khorinis?narzedzie=time');
-	const tools = page.getByRole('navigation', { name: 'Narzędzia' });
-	await expect(tools.getByRole('button')).toHaveCount(8);
-	await expect(tools.getByRole('button', { name: 'Czas' })).toHaveAttribute('aria-pressed', 'true');
+	const wheel = page.getByRole('navigation', { name: 'Narzędzia' });
+	const hub = wheel.getByRole('button', { name: 'Narzędzia, aktywne: Czas' });
+	await expect(hub).toHaveAttribute('aria-expanded', 'false');
+	await expect(wheel.getByRole('button')).toHaveCount(1);
+	await hub.click();
+	await expect(wheel.getByRole('button')).toHaveCount(9);
+	await expect(wheel.getByRole('button', { name: 'Czas', exact: true })).toHaveAttribute(
+		'aria-pressed',
+		'true'
+	);
+	await page.keyboard.press('Escape');
+	await expect(hub).toHaveAttribute('aria-expanded', 'false');
+	await expect(page.getByRole('region', { name: 'Czas' })).toBeVisible();
 });
 
 test('otwarty panel narzędzia nie zasłania doku ani nagłówka', async ({ page }) => {
@@ -134,9 +144,7 @@ for (const viewport of [
 		expect(readout.x + readout.width, 'odczyt wychodzi poza ekran').toBeLessThanOrEqual(
 			viewport.width
 		);
-		expect(dock.y + dock.height, 'dok jest rozciągnięty do dołu ekranu').toBeLessThan(
-			viewport.height - 80
-		);
+		expect(dock.height, 'zamknięte koło to sama piasta').toBeLessThanOrEqual(80);
 	});
 }
 

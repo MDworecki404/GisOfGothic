@@ -2,6 +2,7 @@
 	import EllipsisIcon from '@lucide/svelte/icons/ellipsis';
 	import { MediaQuery } from 'svelte/reactivity';
 	import { appState, geoportal } from '#lib/composition-root.js';
+	import ToolWheel from './ToolWheel.svelte';
 	import { TOOL_DEFINITIONS, type ToolDefinition } from './tool-definitions.js';
 
 	const isPhone = new MediaQuery('max-width: 767px');
@@ -28,10 +29,6 @@
 			event.stopPropagation();
 			isOtherToolsMenuOpen = false;
 		}
-	}
-
-	function startsNewGroup(tool: ToolDefinition, index: number): boolean {
-		return index > 0 && TOOL_DEFINITIONS[index - 1].group !== tool.group;
 	}
 </script>
 
@@ -87,29 +84,5 @@
 		</div>
 	</nav>
 {:else}
-	<nav
-		class="material-leather fixed top-[calc(var(--top-bar-height)+var(--gutter))] left-(--edge-inset) z-30 flex max-h-[calc(100dvh-var(--top-bar-height)-var(--gutter)-var(--edge-inset))] w-16 flex-col items-center gap-0.5 py-1.5 [--cut:12px]"
-		aria-label="Narzędzia"
-		data-map-obstacle
-	>
-		{#each TOOL_DEFINITIONS as tool, index (tool.id)}
-			{#if startsNewGroup(tool, index)}
-				<div class="my-1.5 h-px w-9 bg-border" role="presentation"></div>
-			{/if}
-			<button
-				class="tool-rail-button group relative grid size-12 place-items-center rounded-sm text-muted-foreground [@media(max-height:640px)]:size-11"
-				aria-pressed={appState.activeToolId === tool.id}
-				aria-label={tool.label}
-				onclick={() => geoportal.selectTool(tool.id)}
-			>
-				<tool.icon class="size-5.5" />
-				<span
-					class="pointer-events-none absolute top-1/2 left-[calc(100%+0.75rem)] z-40 -translate-y-1/2 bg-edge px-2.5 py-1 text-label whitespace-nowrap text-foreground opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"
-					aria-hidden="true"
-				>
-					{tool.label}
-				</span>
-			</button>
-		{/each}
-	</nav>
+	<ToolWheel />
 {/if}

@@ -1,12 +1,18 @@
 <script lang="ts">
+	import FlagIcon from '@lucide/svelte/icons/flag';
+	import GemIcon from '@lucide/svelte/icons/gem';
+	import MapPinIcon from '@lucide/svelte/icons/map-pin';
+	import UserIcon from '@lucide/svelte/icons/user';
 	import XIcon from '@lucide/svelte/icons/x';
 	import { appState, geoportal } from '#lib/composition-root.js';
 	import CopyViewLinkButton from './CopyViewLinkButton.svelte';
 	import PassageTravelButton from './PassageTravelButton.svelte';
 
 	const MAXIMUM_FACTS = 3;
+	const SEAL_ICONS = { character: UserIcon, item: GemIcon, quest: FlagIcon, location: MapPinIcon };
 
 	const entry = $derived(appState.selectedEntry);
+	const SealIcon = $derived(entry ? SEAL_ICONS[entry.type] : UserIcon);
 	const isVisible = $derived(
 		entry !== null && appState.activeToolId !== 'search' && appState.identifiedFeature === null
 	);
@@ -34,8 +40,9 @@
 		aria-label="Wybrany wpis"
 	>
 		<div class="px-5 pt-4 pb-4">
-			<div class="flex items-start justify-between gap-2">
-				<div class="min-w-0">
+			<div class="flex items-start justify-between gap-3">
+				<span class="entry-seal" aria-hidden="true"><SealIcon class="size-5" /></span>
+				<div class="min-w-0 flex-1">
 					<h3 class="font-heading text-display leading-tight">{entry.name}</h3>
 					<p class="mt-0.5 text-sm text-muted-foreground">
 						{entry.categoryLabel} · <span class="text-caption">{entry.code}</span>

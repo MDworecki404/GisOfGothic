@@ -7,12 +7,14 @@
 
 	const MINUTES_IN_DAY = 24 * 60;
 	const KEYBOARD_STEP_MINUTES = 30;
-	const ARC_WIDTH = 240;
-	const ARC_HEIGHT = 70;
-	const ARC_CENTER_X = ARC_WIDTH / 2;
-	const ARC_BASE_Y = 64;
-	const ARC_RADIUS_X = 108;
-	const ARC_RADIUS_Y = 56;
+	const DIAL_SIZE = 132;
+	const DIAL_CENTER = DIAL_SIZE / 2;
+	const DIAL_TRACK_RADIUS = 52;
+	const DIAL_TICK_INNER_RADIUS = 44;
+	const DIAL_TICK_OUTER_RADIUS = 60;
+	const DIAL_HOURS_WITH_TICK = [0, 6, 12, 18];
+	const DAYLIGHT_START_MINUTE = 6 * 60;
+	const DAYLIGHT_END_MINUTE = 20 * 60;
 	const SPEEDS = [
 		{ value: 'game', label: '1×' },
 		{ value: 'fast', label: '4×' },
@@ -24,11 +26,37 @@
 	$effect(() => {
 		if (appState.activeToolId === 'time' || appState.routinePlayback.isPlaying) isExpanded = true;
 	});
-	const dayFraction = $derived(appState.minuteOfDay / MINUTES_IN_DAY);
-	const markerAngle = $derived(Math.PI * (1 - dayFraction));
-	const markerX = $derived(ARC_CENTER_X + ARC_RADIUS_X * Math.cos(markerAngle));
-	const markerY = $derived(ARC_BASE_Y - ARC_RADIUS_Y * Math.sin(markerAngle));
-	const arcPath = `M ${ARC_CENTER_X - ARC_RADIUS_X} ${ARC_BASE_Y} A ${ARC_RADIUS_X} ${ARC_RADIUS_Y} 0 0 1 ${ARC_CENTER_X + ARC_RADIUS_X} ${ARC_BASE_Y}`;
+	/** Kąt na tarczy mierzony od dołu zgodnie z ruchem wskazówek: północ jest na dole, południe u góry. */
+	function minuteToAngle(minute: number): number {
+		return (minute / MINUTES_IN_DAY) * 2 * Math.PI + Math.PI;
+	}
+
+	function pointOnDial(minute: number, radius: number): { x: number; y: number } {
+		const angle = minuteToAngle(minute);
+		return {
+			x: DIAL_CENTER + radius * Math.sin(angle),
+			y: DIAL_CENTER - radius * Math.cos(angle)
+		};
+	}
+
+	function describeDialArc(fromMinute: number, toMinute: number, radius: number): string {
+		const start = pointOnDial(fromMinute, radius);
+		const end = pointOnDial(toMinute, radius);
+		const isLargeArc = toMinute - fromMinute > MINUTES_IN_DAY / 2 ? 1 : 0;
+		return `M ${start.x.toFixed(2)} ${start.y.toFixed(2)} A ${radius} ${radius} 0 ${isLargeArc} 1 ${end.x.toFixed(2)} ${end.y.toFixed(2)}`;
+	}
+
+	const marker = $derived(pointOnDial(appState.minuteOfDay, DIAL_TRACK_RADIUS));
+	const daylightArc = describeDialArc(
+		DAYLIGHT_START_MINUTE,
+		DAYLIGHT_END_MINUTE,
+		DIAL_TRACK_RADIUS
+	);
+	const hourTicks = DIAL_HOURS_WITH_TICK.map((hour) => ({
+		hour,
+		inner: pointOnDial(hour * 60, DIAL_TICK_INNER_RADIUS),
+		outer: pointOnDial(hour * 60, DIAL_TICK_OUTER_RADIUS)
+	}));
 
 	function togglePlayback(): void {
 		if (appState.routinePlayback.isPlaying) geoportal.stopRoutinePlayback();
@@ -39,11 +67,11 @@
 		const bounds =
 			event.currentTarget instanceof Element ? event.currentTarget.getBoundingClientRect() : null;
 		if (bounds === null) return;
-		const relativeX = (event.clientX - bounds.left) / bounds.width;
-		const fraction = Math.min(
-			1,
-			Math.max(0, (relativeX * ARC_WIDTH - (ARC_CENTER_X - ARC_RADIUS_X)) / (2 * ARC_RADIUS_X))
-		);
+		const offsetX = event.clientX - (bounds.left + bounds.width / 2);
+		const offsetY = event.clientY - (bounds.top + bounds.height / 2);
+		const angle = Math.atan2(offsetX, -offsetY);
+		const fullTurn = 2 * Math.PI;
+		const fraction = ((((angle - Math.PI) % fullTurn) + fullTurn) % fullTurn) / fullTurn;
 		geoportal.setTimeOfDay(
 			Math.min(MINUTES_IN_DAY - 5, Math.round((fraction * MINUTES_IN_DAY) / 5) * 5)
 		);
@@ -96,8 +124,8 @@
 	</div>
 	{#if isExpanded}
 		<svg
-			class="w-60 cursor-pointer touch-none"
-			viewBox="0 0 {ARC_WIDTH} {ARC_HEIGHT}"
+			class="size-33 cursor-pointer touch-none"
+			viewBox="0 0 {DIAL_SIZE} {DIAL_SIZE}"
 			role="slider"
 			tabindex="0"
 			aria-label="Godzina na zegarze doby"
@@ -109,30 +137,51 @@
 			onpointermove={setTimeWhileDragging}
 			onkeydown={setTimeFromKeyboard}
 		>
-			<path d={arcPath} fill="none" stroke="var(--linia)" stroke-width="3" stroke-linecap="round" />
 			<circle
-				cx={markerX}
-				cy={markerY}
+				cx={DIAL_CENTER}
+				cy={DIAL_CENTER}
+				r={DIAL_TRACK_RADIUS}
+				fill="none"
+				stroke="var(--linia)"
+				stroke-width="3"
+			/>
+			<path
+				d={daylightArc}
+				fill="none"
+				stroke="var(--zar)"
+				stroke-width="3"
+				stroke-linecap="round"
+			/>
+			{#each hourTicks as tick (tick.hour)}
+				<line
+					x1={tick.inner.x}
+					y1={tick.inner.y}
+					x2={tick.outer.x}
+					y2={tick.outer.y}
+					stroke="var(--mgla)"
+					stroke-width="1.5"
+				/>
+			{/each}
+			<text
+				x={DIAL_CENTER}
+				y={DIAL_CENTER - 4}
+				class="fill-foreground text-[15px] font-medium tabular-nums"
+				text-anchor="middle">{appState.timeOfDayLabel}</text
+			>
+			<text
+				x={DIAL_CENTER}
+				y={DIAL_CENTER + 14}
+				class="fill-muted-foreground text-[10px]"
+				text-anchor="middle">doba</text
+			>
+			<circle
+				cx={marker.x}
+				cy={marker.y}
 				r="7"
 				fill="var(--zar)"
 				stroke="var(--krawedz)"
 				stroke-width="2"
 			/>
-			<text
-				x={ARC_CENTER_X - ARC_RADIUS_X}
-				y={ARC_HEIGHT - 1}
-				class="fill-muted-foreground text-[10px]"
-				text-anchor="middle">00</text
-			>
-			<text x={ARC_CENTER_X} y="10" class="fill-muted-foreground text-[10px]" text-anchor="middle"
-				>12</text
-			>
-			<text
-				x={ARC_CENTER_X + ARC_RADIUS_X}
-				y={ARC_HEIGHT - 1}
-				class="fill-muted-foreground text-[10px]"
-				text-anchor="middle">24</text
-			>
 		</svg>
 		<div class="flex gap-1.5" role="group" aria-label="Tempo zegara doby">
 			{#each SPEEDS as speed (speed.value)}

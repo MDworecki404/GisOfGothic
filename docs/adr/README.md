@@ -47,3 +47,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0041](0041-otwarcie-repozytorium.md)                          | Otwarcie repozytorium i CI bez danych z gry          | przyjęta          |
 | [0042](0042-podglad-postaci-skladany-z-czesci.md)              | Podgląd 3D postaci składany z części                 | przyjęta          |
 | [0043](0043-motyw-krag-i-tryb-jasny.md)                        | Motyw „Krąg” i tryb jasny                            | przyjęta          |
+| [0044](0044-uklad-krag-kolo-narzedzi-i-tarcza-zegara.md)       | Układ „Krąg”: koło narzędzi i tarcza zegara          | przyjęta          |
