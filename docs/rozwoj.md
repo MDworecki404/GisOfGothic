@@ -73,7 +73,7 @@ Pełne zasady: [`CLAUDE.md`](../CLAUDE.md). Najważniejsze:
 - `type` z Angular Conventional Commits: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`,
   `build`, `ci`, `chore`, `revert`. Treść jest obowiązkowa.
 - Hook `commit-msg` (commitlint) sprawdza format, hook `pre-commit` uruchamia check, lint i testy.
-- `npm run release` generuje `CHANGELOG.md` z commitów `feat`, `fix`, `perf`, `refactor`, `docs`, `build`.
+- `npm run release` generuje `CHANGELOG.md` z commitów `feat`, `fix`, `perf`, `refactor`, `docs`, `build`, `test` (sekcja „Testy”; `style`, `ci` i `chore` są pomijane).
 - Okno „O projekcie” (`AboutDialog`) pokazuje wersję z `package.json` (stała `__APP_VERSION__`, wstrzykiwana w `vite.config.ts`) i linkuje do `CHANGELOG.md` na GitHubie.
 - Formularze zgłoszeń to `.github/ISSUE_TEMPLATE/*.yml`; okno „O projekcie” wypełnia ich pola (zob. `docs/architektura.md`, „Zgłoszenia i skróty klawiszowe”).
 - Zmiana architektury, danych albo konfiguracji aktualizuje dokumentację w tym samym commicie.

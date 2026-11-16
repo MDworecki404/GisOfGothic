@@ -33,7 +33,8 @@
 		},
 		{
 			"type": "test",
-			"hidden": true
+			"section": "Testy",
+			"hidden": false
 		},
 		{
 			"type": "ci",

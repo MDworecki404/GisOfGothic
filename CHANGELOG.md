@@ -10,6 +10,10 @@ Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run rele
 
 ## [1.2.1](https://github.com/MDworecki404/GisOfGothic/compare/v1.2.0...v1.2.1) (2026-11-16)
 
+### Testy
+
+* dłuższe oczekiwanie na indeks w testach lokacji ([ac70fee](https://github.com/MDworecki404/GisOfGothic/commit/ac70feec335be3e2751b85b3c1eb886baee9157b))
+
 ## [1.2.0](https://github.com/MDworecki404/GisOfGothic/compare/v1.1.0...v1.2.0) (2026-11-16)
 
 ### Nowe funkcje
