@@ -233,6 +233,27 @@ test('na telefonie przycisk wyszukiwania otwiera Księgę, a okna otwiera menu �
 	await expect(page.getByRole('dialog')).toBeHidden();
 });
 
+test('na komputerze ? otwiera ściągę skrótów, a okno O projekcie ma odnośniki do zgłoszeń', async ({
+	page
+}) => {
+	await page.setViewportSize({ width: 1280, height: 800 });
+	await page.goto('/g2nk/khorinis');
+	await page.getByRole('button', { name: 'Szukaj przedmiotu lub postaci' }).waitFor();
+	await page.keyboard.press('?');
+	await expect(page.getByRole('dialog')).toContainText('Skróty klawiszowe');
+	await page.keyboard.press('Escape');
+	await expect(page.getByRole('dialog')).toBeHidden();
+	await page.getByRole('button', { name: 'O projekcie' }).click();
+	await expect(page.locator('a[href*="template=bug.yml"]')).toHaveAttribute(
+		'href',
+		/issues\/new\?template=bug\.yml.*environment=/
+	);
+	await expect(page.getByRole('link', { name: /Zaproponuj pomysł/ })).toHaveAttribute(
+		'href',
+		/template=idea\.yml$/
+	);
+});
+
 test('legenda włączonej warstwy otwiera panel Warstwy jednym kliknięciem', async ({ page }) => {
 	await page.goto('/g2nk/khorinis?narzedzie=layers');
 	await page.getByRole('checkbox', { name: /Unikatowe postacie/ }).check();

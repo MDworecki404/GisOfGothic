@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Luka w zabezpieczeniach
+    url: https://github.com/MDworecki404/GisOfGothic/security/advisories/new
+    about: Podatności zgłaszaj prywatnie, nie jako publiczne zgłoszenie (zob. SECURITY.md).

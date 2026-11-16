@@ -7,7 +7,12 @@ import { BookmarkStore } from '#lib/services/bookmarks/bookmark-store.js';
 import { NotebookStore } from '#lib/services/notebook/notebook-store.js';
 import { GeoportalFacade } from '#lib/services/geoportal-facade.js';
 import { ProtectedModelLoader } from '#lib/services/models/protected-model-loader.js';
+import {
+	IssueReportLinkBuilder,
+	type IssueReportKind
+} from '#lib/services/feedback/issue-report-link-builder.js';
 import { PerformancePreferenceStore } from '#lib/services/performance/performance-preference-store.js';
+import { QUALITY_LEVEL_LABELS } from '#lib/services/performance/performance-profiles.js';
 import { AppInstallation } from '#lib/services/pwa/app-installation.js';
 import { ThemeCoordinator } from '#lib/services/theme/theme-coordinator.js';
 import { BrowserThemeDocument, NO_THEME_DOCUMENT } from '#lib/services/theme/theme-document.js';
@@ -50,6 +55,21 @@ if (browser) appInstallation.listenForInstallability();
 
 export function installApp(): Promise<void> {
 	return appInstallation.promptInstallation();
+}
+
+const issueReportLinkBuilder = new IssueReportLinkBuilder(
+	'https://github.com/MDworecki404/GisOfGothic'
+);
+
+export function buildIssueReportLink(kind: IssueReportKind): string {
+	return issueReportLinkBuilder.build(kind, {
+		appVersion: __APP_VERSION__,
+		worldName: appState.openedWorldName,
+		viewUrl: window.location.href,
+		userAgent: navigator.userAgent,
+		viewportSize: `${window.innerWidth}×${window.innerHeight}`,
+		graphicsQualityLabel: QUALITY_LEVEL_LABELS[appState.performanceLevel]
+	});
 }
 
 export { worldCatalog } from '#lib/data/world-catalog.js';

@@ -28,7 +28,7 @@ warstwa Questy, widok 2D z cięciem wysokości, rzut ortogonalny, lot kamerą, P
 
 ## Jakość i publikacja
 
-- **15. Dostępność i klawiatura:** obsługa bez myszy, ściąga skrótów pod `?`, kontrast w motywie.
+- **15. Dostępność i klawiatura:** obsługa bez myszy, kontrast w motywie. Ściąga skrótów pod `?` jest już gotowa.
 - **16. Telemetria wydajności bez śledzenia**, np. liczniki błędów ładowania kafli.
 - **18. Wiele języków** (angielski); interfejs jest dziś tylko po polsku.
 

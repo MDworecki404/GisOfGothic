@@ -3,10 +3,12 @@
 	import SearchIcon from '@lucide/svelte/icons/search';
 	import { MediaQuery } from 'svelte/reactivity';
 	import { appState, geoportal, installApp } from '#lib/composition-root.js';
+	import { isKeyboardTargetUsingKeysItself } from '#lib/services/input/keyboard-focus-guard.js';
 	import AboutDialog from './AboutDialog.svelte';
 	import BrandMark from './BrandMark.svelte';
 	import CopyViewLinkButton from './CopyViewLinkButton.svelte';
 	import MoreMenu from './MoreMenu.svelte';
+	import ShortcutsDialog from './ShortcutsDialog.svelte';
 	import PerformanceDialog from './PerformanceDialog.svelte';
 	import ThemeToggle from './ThemeToggle.svelte';
 	import WorldSwitcher, { type WorldSwitcherGame } from './WorldSwitcher.svelte';
@@ -20,6 +22,7 @@
 	let { games, currentGameId, currentWorldId }: Props = $props();
 	let isPerformanceOpen = $state(false);
 	let isAboutOpen = $state(false);
+	let isShortcutsOpen = $state(false);
 
 	const isPhone = new MediaQuery('max-width: 767px');
 
@@ -27,15 +30,23 @@
 		if (appState.activeToolId !== 'search') geoportal.selectTool('search');
 	}
 
-	function openBookOnShortcut(event: KeyboardEvent): void {
+	function openShortcutsFromAbout(): void {
+		isAboutOpen = false;
+		isShortcutsOpen = true;
+	}
+
+	function openDialogOnShortcut(event: KeyboardEvent): void {
 		if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
 			event.preventDefault();
 			openBook();
+		} else if (event.key === '?' && !isKeyboardTargetUsingKeysItself(event.target)) {
+			event.preventDefault();
+			isShortcutsOpen = true;
 		}
 	}
 </script>
 
-<svelte:window onkeydown={openBookOnShortcut} />
+<svelte:window onkeydown={openDialogOnShortcut} />
 
 <header
 	class="pointer-events-none fixed inset-x-0 top-0 z-40 flex items-start gap-2 p-(--edge-inset) md:gap-4"
@@ -93,7 +104,8 @@
 			class="hidden size-11 shrink-0 place-items-center rounded-sm text-muted-foreground hover:bg-hover-surface hover:text-hover md:grid"
 		/>
 		<PerformanceDialog bind:open={isPerformanceOpen} />
-		<AboutDialog bind:open={isAboutOpen} />
+		<AboutDialog bind:open={isAboutOpen} onOpenShortcuts={openShortcutsFromAbout} />
+		<ShortcutsDialog bind:open={isShortcutsOpen} />
 		<MoreMenu
 			canInstallApp={appState.canInstallApp}
 			onInstallApp={() => void installApp()}

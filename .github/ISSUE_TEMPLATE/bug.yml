@@ -1,0 +1,22 @@
+name: Błąd w aplikacji
+description: Coś nie działa albo wygląda źle
+title: 'Błąd: '
+labels: ['bug']
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Co się stało?
+      description: Opisz, co robiłeś, czego oczekiwałeś i co zobaczyłeś.
+    validations:
+      required: true
+  - type: input
+    id: view_link
+    attributes:
+      label: Link do widoku
+      description: Przycisk „Kopiuj link” w aplikacji odtwarza świat, wpis i kamerę.
+  - type: textarea
+    id: environment
+    attributes:
+      label: Środowisko
+      description: Wypełnia się samo, gdy zgłaszasz z okna „O projekcie”.

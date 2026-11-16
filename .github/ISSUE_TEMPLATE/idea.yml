@@ -1,0 +1,12 @@
+name: Pomysł
+description: Propozycja nowej funkcji albo ulepszenia
+title: 'Pomysł: '
+labels: ['enhancement']
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Co chcesz zobaczyć w aplikacji?
+      description: Opisz potrzebę, nie tylko rozwiązanie. Do czego by Ci się przydało?
+    validations:
+      required: true

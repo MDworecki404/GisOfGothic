@@ -678,6 +678,19 @@ znikaniu postaci. Filtr dotyczy warstw „Unikatowe postacie” i „Wszyscy NPC
 (z `npcs.geojson`, pobieranego razem z rutynami) daje im najwcześniejszy rozdział wstawienia postaci o tym
 `npc_code`. Rozdział trafia do adresu (`rozdzial=1…6`) i do zakładek (`SavedView.chapter`).
 
+## Zgłoszenia i skróty klawiszowe
+
+Okno „O projekcie” (`AboutDialog`) ma trzy odnośniki do zgłoszeń: błąd, błąd w danych i pomysł. Adres buduje
+`IssueReportLinkBuilder` (`services/feedback/`): otwiera formularz GitHuba z `.github/ISSUE_TEMPLATE/` (`bug.yml`,
+`data.yml`, `idea.yml`) i wypełnia pola `environment` (wersja, świat, przeglądarka, rozmiar okna, jakość grafiki)
+oraz `view_link` (adres widoku). Nazwy pól muszą zgadzać się z `id` w szablonach. Z aplikacji nic nie jest wysyłane:
+dane widać w formularzu na GitHubie i to użytkownik go wysyła; pomysł nie niesie żadnych danych. Kontekst składa
+`buildIssueReportLink` w `composition-root.ts` (wersja z `__APP_VERSION__`, nazwa świata z `appState`).
+
+Klawisz `?` (pomijany w polach tekstowych, suwakach i oknach przez `isKeyboardTargetUsingKeysItself`) otwiera
+`ShortcutsDialog`, listę skrótów: `Ctrl K`, `Esc` i lot kamerą (`KeyboardFlightMapper`). Nowy skrót dopisuje się też
+do tej listy.
+
 ## PWA
 
 Aplikację da się zainstalować (manifest, ikony, service worker) i działa bez sieci — poza modelem

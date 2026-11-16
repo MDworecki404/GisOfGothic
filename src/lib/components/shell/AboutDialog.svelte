@@ -2,8 +2,13 @@
 	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
 	import GlobeIcon from '@lucide/svelte/icons/globe';
 	import InfoIcon from '@lucide/svelte/icons/info';
+	import BugIcon from '@lucide/svelte/icons/bug';
+	import DatabaseIcon from '@lucide/svelte/icons/database';
 	import HistoryIcon from '@lucide/svelte/icons/history';
+	import KeyboardIcon from '@lucide/svelte/icons/keyboard';
+	import LightbulbIcon from '@lucide/svelte/icons/lightbulb';
 	import BrandMark from './BrandMark.svelte';
+	import { buildIssueReportLink } from '#lib/composition-root.js';
 	import * as Dialog from '#lib/components/ui/dialog/index.js';
 
 	const repositoryUrl = 'https://github.com/MDworecki404/GisOfGothic';
@@ -13,9 +18,20 @@
 
 	interface Props {
 		open?: boolean;
+		onOpenShortcuts?: () => void;
 	}
 
-	let { open: isOpen = $bindable(false) }: Props = $props();
+	let { open: isOpen = $bindable(false), onOpenShortcuts }: Props = $props();
+
+	const reportLinks = $derived(
+		isOpen
+			? {
+					bug: buildIssueReportLink('bug'),
+					data: buildIssueReportLink('data'),
+					idea: buildIssueReportLink('idea')
+				}
+			: null
+	);
 </script>
 
 <Dialog.Root bind:open={isOpen}>
@@ -101,6 +117,43 @@
 						<span class="sr-only">(otwiera się w nowej karcie)</span>
 					</a>
 				</li>
+				{#if reportLinks}
+					{#each [{ href: reportLinks.bug, title: 'Zgłoś błąd', hint: 'Dołączymy wersję, świat i przeglądarkę', icon: BugIcon }, { href: reportLinks.data, title: 'Zgłoś błąd w danych', hint: 'Zły opis, miejsce albo poziom', icon: DatabaseIcon }, { href: reportLinks.idea, title: 'Zaproponuj pomysł', hint: 'Bez żadnych danych o Tobie', icon: LightbulbIcon }] as report (report.title)}
+						<li>
+							<!-- eslint-disable svelte/no-navigation-without-resolve -- zewnętrzny adres formularza na GitHubie, nie ścieżka aplikacji -->
+							<a
+								class="group flex min-h-11 items-center gap-3 py-3 hover:text-hover"
+								href={report.href}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<report.icon class="size-5 shrink-0" />
+								<span class="flex-1">
+									<span class="block font-medium">{report.title}</span>
+									<span class="block text-sm text-muted-foreground">{report.hint}</span>
+								</span>
+								<ExternalLinkIcon class="size-4 text-muted-foreground group-hover:text-primary" />
+								<span class="sr-only">(otwiera się na GitHubie w nowej karcie)</span>
+							</a>
+							<!-- eslint-enable svelte/no-navigation-without-resolve -->
+						</li>
+					{/each}
+				{/if}
+				{#if onOpenShortcuts}
+					<li class="hidden md:block">
+						<button
+							class="group flex min-h-11 w-full items-center gap-3 py-3 text-left hover:text-hover"
+							onclick={onOpenShortcuts}
+						>
+							<KeyboardIcon class="size-5 shrink-0" />
+							<span class="flex-1">
+								<span class="block font-medium">Skróty klawiszowe</span>
+								<span class="block text-sm text-muted-foreground">Naciśnij ? w dowolnej chwili</span
+								>
+							</span>
+						</button>
+					</li>
+				{/if}
 				<li>
 					<a
 						class="group flex min-h-11 items-center gap-3 py-3 hover:text-hover"
