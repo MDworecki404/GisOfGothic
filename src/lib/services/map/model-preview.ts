@@ -105,6 +105,7 @@ export class ModelPreview {
 		models.forEach((model) => {
 			this.widget.scene.primitives.add(model);
 			model.readyEvent.addEventListener(() => this.frameModelsWhenReady());
+			model.texturesReadyEvent.addEventListener(() => this.widget.scene.requestRender());
 		});
 		this.frameModelsWhenReady();
 	}
