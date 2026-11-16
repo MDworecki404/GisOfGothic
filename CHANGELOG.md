@@ -2,6 +2,14 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [1.0.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.15.0...v1.0.0) (2026-11-16)
+
+### Poprawki błędów
+
+* czytelniejszy opis w oknie O aplikacji ([73d975f](https://github.com/MDworecki404/GisOfGothic/commit/73d975fbca49d49ba01b43e6a7c03608dd2d8040))
+* podgląd 3D odświeża się po wczytaniu tekstur ([e43a4b4](https://github.com/MDworecki404/GisOfGothic/commit/e43a4b4de6453f6c14d8e25a13476e11e6716506))
+* podgląd 3D w Księdze pojawia się bez ruszania myszką ([07203e6](https://github.com/MDworecki404/GisOfGothic/commit/07203e6b066d29a76c5a5b7c96986f76704ac06f))
+
 ## [0.15.0](https://github.com/MDworecki404/GisOfGothic/compare/v0.14.2...v0.15.0) (2026-11-16)
 
 ### Nowe funkcje
