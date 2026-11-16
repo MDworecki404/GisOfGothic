@@ -1,0 +1,1410 @@
+<title>Kierunki wyglądu GIS of Gothic</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;600;700&family=Atkinson+Hyperlegible:wght@400;700&family=Chivo+Mono:wght@400;500&family=Chivo:wght@400;500;600;700&family=Cormorant+SC:wght@500;600&family=Eczar:wght@500;600;700&family=Familjen+Grotesk:wght@400;500;600&family=Geist:wght@400;500;600&family=Gloock&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IM+Fell+English:ital@0;1&family=Lexend:wght@400;500;600&family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Marcellus&family=Pirata+One&family=Schibsted+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600&family=Spectral+SC:wght@500;600&family=Uncial+Antiqua&family=UnifrakturCook:wght@700&family=Vollkorn+SC:wght@400;600&family=Vollkorn:ital,wght@0,400;0,500;0,600;1,400&family=Young+Serif&display=swap">
+<style>
+/* Układ: przegląd wszystkich kierunków w miniaturach, pod nim wybrany kierunek (komputer 1280×800 i telefon 360×760 w skali) w trybie jasnym albo ciemnym oraz uzasadnienie. */
+:root {
+	color-scheme: dark;
+	--shell-bg: #17181a;
+	--shell-raise: #212226;
+	--shell-line: #34363b;
+	--shell-fg: #e9e5dc;
+	--shell-dim: #a19d94;
+	--shell-pick: #e6c27a;
+	--f-shell: 'Schibsted Grotesk', system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+	background: var(--shell-bg);
+	color: var(--shell-fg);
+	font: 16px/1.55 var(--f-shell);
+	padding-left: max(16px, env(safe-area-inset-left, 0px));
+	padding-right: max(16px, env(safe-area-inset-right, 0px));
+	padding-block: 40px 80px;
+}
+.page { max-width: 1240px; margin: 0 auto; display: grid; gap: 28px; }
+.intro { display: grid; gap: 12px; max-width: 72ch; }
+.intro h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.1; margin: 0; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+.intro p { margin: 0; color: var(--shell-dim); }
+.controls { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--shell-bg); padding-block: 10px; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--shell-bg); }
+.picker, .modes { display: flex; flex-wrap: wrap; gap: 6px; }
+.picker button, .modes button {
+	font: 500 14px/1 var(--f-shell); color: var(--shell-dim); background: transparent;
+	border: 1px solid var(--shell-line); border-radius: 999px; padding: 9px 14px; cursor: pointer;
+}
+.picker button:hover, .modes button:hover { color: var(--shell-fg); border-color: var(--shell-dim); }
+.picker button[aria-selected="true"], .modes button[aria-pressed="true"] { color: #1a1508; background: var(--shell-pick); border-color: var(--shell-pick); }
+.picker .new::after { content: "nowy"; font-size: 11px; margin-left: 6px; opacity: 0.7; }
+.modes { padding: 3px; border: 1px solid var(--shell-line); border-radius: 999px; gap: 2px; }
+.modes button { border-color: transparent; padding: 8px 14px; }
+button:focus-visible { outline: 2px solid var(--shell-pick); outline-offset: 2px; }
+
+.overview { display: grid; gap: 12px; }
+.overview h2, .detail-title { margin: 0; font-size: 20px; }
+.thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.thumb { display: grid; gap: 8px; text-align: left; padding: 0; background: none; border: 0; color: var(--shell-fg); cursor: pointer; font: inherit; }
+.thumb .frame { box-shadow: 0 0 0 1px var(--shell-line); }
+.thumb[aria-current="true"] .frame { box-shadow: 0 0 0 2px var(--shell-pick); }
+.thumb:hover .frame { box-shadow: 0 0 0 1px var(--shell-dim); }
+.thumb span { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; }
+.thumb b { font-weight: 600; }
+.thumb small { color: var(--shell-dim); font-size: 13px; }
+
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 20px; align-items: start; scroll-margin-top: 150px; }
+.frame { position: relative; width: 100%; overflow: hidden; border-radius: 6px; background: #000; box-shadow: 0 0 0 1px var(--shell-line); aspect-ratio: 1280 / 800; }
+.frame.phone-frame { aspect-ratio: 360 / 760; border-radius: 22px; box-shadow: 0 0 0 6px #0b0b0c, 0 0 0 7px var(--shell-line); }
+.frame > .mock { position: absolute; top: 0; left: 0; transform-origin: 0 0; transform: scale(var(--s, 1)); pointer-events: none; }
+.stage .frame > .mock { pointer-events: auto; }
+@media (max-width: 860px) {
+	.stage { grid-template-columns: minmax(0, 1fr); }
+	.frame.phone-frame { max-width: 300px; justify-self: center; width: 100%; }
+}
+
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px 40px; }
+.notes section { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.notes h2 { font-size: 26px; margin: 0; line-height: 1.15; }
+.notes h3 { font-size: 15px; margin: 0; color: var(--shell-pick); font-weight: 600; }
+.notes p, .notes li { margin: 0; color: var(--shell-dim); }
+.notes ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.lede { grid-column: 1 / -1; display: grid; gap: 6px; max-width: 75ch; }
+.lede p { color: var(--shell-fg); font-size: 18px; }
+.lede .layout-tag { color: var(--shell-dim); font-size: 15px; }
+.swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+.sw { display: grid; gap: 4px; font-size: 13px; color: var(--shell-dim); width: 74px; }
+.sw i { display: block; height: 40px; border-radius: 4px; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12); }
+.sw b { color: var(--shell-fg); font-weight: 500; }
+.typespec { display: grid; gap: 6px; }
+.typespec span { font-size: 26px; line-height: 1.1; color: var(--shell-fg); }
+.howto { display: grid; gap: 10px; max-width: 80ch; padding-top: 24px; border-top: 1px solid var(--shell-line); }
+.howto h2 { margin: 0; font-size: 22px; }
+.howto ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: var(--shell-dim); }
+.howto code { font-size: 14px; color: var(--shell-fg); }
+
+/* ===================== Wspólny szkielet makiety (wszystko z tokenów) ===================== */
+.mock { overflow: hidden; color: var(--ink); font-family: var(--f-ui); background: var(--sea); position: relative; }
+.mock.desk { width: 1280px; height: 800px; }
+.mock.phone { width: 360px; height: 760px; }
+.mock button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.mock svg.map { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.mock .ic { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.mock .veil, .mock .neat { position: absolute; inset: 0; pointer-events: none; }
+.mock .veil { background: var(--veil); }
+.mock.phone .veil { background: var(--veil-phone, var(--veil)); }
+.mock .s { background: var(--surf); }
+.mock .m-top { position: absolute; left: 24px; right: 24px; top: 20px; display: flex; gap: 16px; align-items: center; }
+.mock .world { display: grid; text-align: left; }
+.mock .world .game { font-size: 13px; color: var(--dim); }
+.mock .world .wname, .mock .wname { font-family: var(--f-display); }
+.mock .search { flex: 1; max-width: 520px; margin: 0 auto; display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 14px; color: var(--dim); font-size: 15px; }
+.mock .search span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mock .search kbd { font: inherit; font-size: 12px; padding: 2px 6px; border: 1px solid var(--line); border-radius: 3px; }
+.mock .acts { display: flex; gap: 4px; }
+.mock .acts button { height: 40px; min-width: 40px; display: grid; place-items: center; padding: 0 10px; color: var(--dim); }
+.mock .rail { position: absolute; left: 24px; top: 104px; display: grid; gap: 2px; }
+.mock .rail button { display: flex; align-items: center; gap: 12px; color: var(--dim); }
+.mock .rail button.on { color: var(--pick); }
+.mock .rail .sep { height: 1px; margin: 6px 0; background: var(--line); }
+.mock .mapctl { position: absolute; right: 24px; top: 104px; display: grid; gap: 2px; }
+.mock .mapctl button { width: 40px; height: 40px; display: grid; place-items: center; color: var(--dim); }
+.mock .entry { position: absolute; display: grid; gap: 16px; align-content: start; }
+.mock .entry h2, .mock .sheet h2 { margin: 0; font-family: var(--f-display); font-weight: inherit; line-height: 1; }
+.mock .sub { margin: 4px 0 0; color: var(--dim); font-size: 14px; }
+.mock .now { display: grid; gap: 2px; }
+.mock .now .k { font-size: 12px; color: var(--dim); }
+.mock .now strong { font-weight: 600; }
+.mock .now .t { font-size: 13px; color: var(--dim); font-variant-numeric: tabular-nums; }
+.mock .facts { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 0; font-size: 14px; }
+.mock .facts dt { color: var(--dim); }
+.mock .facts dd { margin: 0; font-variant-numeric: tabular-nums; }
+.mock .actions { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.mock .src { margin: 0; font-size: 12px; color: var(--dim); }
+.mock .clock { position: absolute; right: 24px; bottom: 64px; display: grid; justify-items: end; }
+.mock .clock .time { font-family: var(--f-display); font-variant-numeric: tabular-nums; }
+.mock .clock .phase { font-size: 13px; color: var(--dim); }
+.mock .status { position: absolute; left: 24px; right: 24px; bottom: 18px; display: flex; gap: 22px; align-items: center; font-size: 13px; color: var(--dim); }
+.mock .lg { display: flex; gap: 8px; align-items: center; }
+.mock .lg i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex: none; }
+.mock .lg b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.mock .status .scale { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.mock .status .scale i { width: 80px; height: 6px; border: 1.5px solid currentColor; border-top: 0; }
+.mock .marker-label { fill: var(--lbl); paint-order: stroke; stroke: var(--lbl-stroke); stroke-width: 3.5px; font-family: var(--f-label, var(--f-ui)); font-size: var(--lbl-size, 17px); font-weight: var(--lbl-weight, 600); }
+.mock.phone .p-top { position: absolute; left: 12px; right: 12px; top: 14px; display: flex; gap: 8px; align-items: center; }
+.mock.phone .search { height: 46px; margin: 0; max-width: none; }
+.mock.phone .sheet { position: absolute; left: 0; right: 0; bottom: 64px; padding: 14px 18px 18px; display: grid; gap: 12px; }
+.mock.phone .grip { width: 40px; height: 4px; border-radius: 2px; background: var(--line); justify-self: center; }
+.mock.phone .p-nav { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; display: grid; grid-template-columns: repeat(5, 1fr); }
+.mock.phone .p-nav button { display: grid; justify-items: center; align-content: center; gap: 3px; font-size: 12px; color: var(--dim); }
+.mock.phone .p-nav button.on { color: var(--pick); }
+
+/* ===================== 1. Kartograf ===================== */
+.t-kartograf {
+	--f-display: 'IM Fell English', Georgia, serif; --f-ui: 'Schibsted Grotesk', system-ui, sans-serif; --f-label: 'IM Fell English', serif; --lbl-size: 19px; --lbl-weight: 400;
+	--grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .27 0 0 0 0 .17 0 0 0 .1 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.t-kartograf.mode-light {
+	--surf: #e8dec6; --surf-2: #ddd0b2; --ink: #2a2119; --dim: #6b5a45; --line: #b7a582; --pick: #8f2e21; --on-pick: #f6eedc;
+	--sea: #9fb0a6; --sea-2: #889a90; --road: #3a2c1c; --neat-gap: rgb(42 33 25 / 0.6); --shadow: 0 6px 18px rgb(42 33 25 / 0.35);
+	--veil: radial-gradient(ellipse at 50% 45%, transparent 55%, rgb(232 222 198 / 0.5));
+	--lbl: #2a2119; --lbl-stroke: rgb(232 222 198 / 0.92); --c1: #8f2e21; --c2: #a8741c; --c3: #2f5d8a; --c4: #3f6b5d;
+}
+.t-kartograf.mode-dark {
+	--surf: #2a241c; --surf-2: #342c22; --ink: #ecdfc2; --dim: #ab9b80; --line: #54473a; --pick: #e0735c; --on-pick: #1d1712;
+	--sea: #13232a; --sea-2: #1a2f37; --road: #c9b48a; --neat-gap: rgb(0 0 0 / 0.55); --shadow: 0 6px 18px rgb(0 0 0 / 0.5);
+	--veil: radial-gradient(ellipse at 50% 45%, transparent 55%, rgb(20 14 6 / 0.6));
+	--lbl: #ecdfc2; --lbl-stroke: rgb(20 14 6 / 0.85); --c1: #e0735c; --c2: #e0b252; --c3: #7fa6d6; --c4: #7fb3a0;
+}
+.t-kartograf .neat { inset: 10px; border: 1.5px solid var(--surf); box-shadow: 0 0 0 4px var(--neat-gap), 0 0 0 5px var(--surf); }
+.t-kartograf .neat::before { content: ""; position: absolute; inset: -6px; pointer-events: none;
+	background:
+		repeating-linear-gradient(90deg, var(--surf) 0 1px, transparent 1px 64px) top / 100% 6px no-repeat,
+		repeating-linear-gradient(90deg, var(--surf) 0 1px, transparent 1px 64px) bottom / 100% 6px no-repeat,
+		repeating-linear-gradient(180deg, var(--surf) 0 1px, transparent 1px 64px) left / 6px 100% no-repeat,
+		repeating-linear-gradient(180deg, var(--surf) 0 1px, transparent 1px 64px) right / 6px 100% no-repeat; }
+.t-kartograf .s { background: var(--grain), var(--surf); box-shadow: var(--shadow); }
+.t-kartograf .m-top { top: 28px; left: 36px; right: 36px; }
+.t-kartograf .world { padding: 8px 18px 10px; }
+.t-kartograf .world .wname { font-size: 30px; line-height: 1; }
+.t-kartograf .search { border-bottom: 2px solid var(--ink); }
+.t-kartograf .search .ic, .t-kartograf .acts button, .t-kartograf .mapctl button { color: var(--ink); }
+.t-kartograf .acts, .t-kartograf .mapctl { padding: 4px; }
+.t-kartograf .rail { left: 36px; top: 118px; padding: 8px 6px; }
+.t-kartograf .rail button { width: 44px; height: 44px; justify-content: center; color: var(--ink); position: relative; }
+.t-kartograf .rail .lb { display: none; }
+.t-kartograf .rail button.on { color: var(--pick); }
+.t-kartograf .rail button.on::after { content: ""; position: absolute; left: 8px; right: 8px; bottom: 5px; height: 2px; background: var(--pick); }
+.t-kartograf .rail .sep { margin: 4px 8px; }
+.t-kartograf .mapctl { right: 36px; top: 118px; }
+.t-kartograf .entry { right: 96px; top: 118px; width: 330px; padding: 24px 26px 22px; gap: 14px; }
+.t-kartograf .entry::before { content: ""; position: absolute; left: 0; top: 24px; width: 4px; height: 40px; background: var(--pick); }
+.t-kartograf .entry h2 { font-size: 44px; }
+.t-kartograf .sub { font-family: var(--f-display); font-style: italic; font-size: 17px; }
+.t-kartograf .now { padding: 10px 0; border-block: 1px solid var(--line); }
+.t-kartograf .now strong { font-family: var(--f-display); font-size: 20px; font-weight: 400; }
+.t-kartograf .actions button { height: 38px; padding: 0 14px; font-weight: 600; font-size: 14px; border: 1.5px solid var(--ink); }
+.t-kartograf .actions li:first-child button { background: var(--ink); color: var(--surf); }
+.t-kartograf .clock { right: 36px; bottom: 74px; padding: 6px 16px 8px; }
+.t-kartograf .clock .time { font-size: 34px; line-height: 1; }
+.t-kartograf .status { left: 36px; right: 36px; bottom: 26px; padding: 8px 16px; }
+.t-kartograf .status .scale { color: var(--ink); }
+.t-kartograf.phone .p-top { top: 18px; left: 16px; right: 16px; }
+.t-kartograf.phone .search { border: 0; }
+.t-kartograf.phone .sheet { left: 10px; right: 10px; bottom: 74px; padding: 14px 20px 20px; }
+.t-kartograf.phone .sheet h2 { font-size: 38px; }
+.t-kartograf.phone .p-nav { left: 10px; right: 10px; bottom: 10px; height: 58px; }
+.t-kartograf.phone .p-nav button { color: var(--ink); }
+.t-kartograf.phone .p-nav button.on { color: var(--pick); }
+
+/* ===================== 2. Dialog ===================== */
+.t-dialog { --f-display: 'Vollkorn SC', Georgia, serif; --f-ui: 'Vollkorn', Georgia, serif; --f-label: 'Vollkorn SC', serif; --lbl-size: 19px; text-shadow: 0 1px 2px var(--halo), 0 0 12px var(--halo); }
+.t-dialog.mode-dark {
+	--ink: #efe7d4; --dim: #b4aa95; --line: rgb(239 231 212 / 0.28); --pick: #e7c46a; --halo: rgb(0 0 0 / 0.9); --shade: 6 5 3;
+	--sea: #13232a; --sea-2: #1a2f37; --road: #c9b48a;
+	--lbl: #efe7d4; --lbl-stroke: rgb(0 0 0 / 0.8); --c1: #e8d9b5; --c2: #e7c46a; --c3: #9fb7e6; --c4: #b7d08f;
+}
+.t-dialog.mode-light {
+	--ink: #1f1a12; --dim: #5b5141; --line: rgb(31 26 18 / 0.25); --pick: #8f5a00; --halo: rgb(246 240 226 / 0.95); --shade: 244 238 224;
+	--sea: #a7b6b2; --sea-2: #93a39f; --road: #4a3a22;
+	--lbl: #1f1a12; --lbl-stroke: rgb(246 240 226 / 0.9); --c1: #6b3a1e; --c2: #8f5a00; --c3: #2b4f8f; --c4: #3f6b2a;
+}
+.t-dialog {
+	--veil:
+		linear-gradient(180deg, rgb(var(--shade) / 0.85), transparent 150px),
+		linear-gradient(0deg, rgb(var(--shade) / 0.9), transparent 340px),
+		linear-gradient(90deg, rgb(var(--shade) / 0.75), transparent 260px),
+		linear-gradient(270deg, rgb(var(--shade) / 0.78), transparent 620px);
+	--veil-phone: linear-gradient(180deg, rgb(var(--shade) / 0.82), transparent 120px), linear-gradient(0deg, rgb(var(--shade) / 0.96) 0, rgb(var(--shade) / 0.86) 400px, transparent 560px);
+}
+.t-dialog .s { background: none; }
+.t-dialog .world .wname { font-size: 34px; line-height: 1; letter-spacing: 0.02em; }
+.t-dialog .world .game { font-style: italic; font-size: 15px; }
+.t-dialog .search { border-bottom: 1px solid var(--line); height: 44px; padding: 0 2px; font-style: italic; font-size: 17px; }
+.t-dialog .search kbd { border-color: var(--line); font-style: normal; }
+.t-dialog .rail { top: 132px; gap: 6px; }
+.t-dialog .rail button { font-size: 19px; height: 32px; }
+.t-dialog .rail .ic { display: none; }
+.t-dialog .rail button.on::before { content: ""; border-block: 5px solid transparent; border-left: 7px solid var(--pick); margin-left: -16px; margin-right: -3px; }
+.t-dialog .rail .sep { background: transparent; height: 8px; margin: 0; }
+.t-dialog .mapctl button { color: var(--ink); }
+.t-dialog .entry { left: 640px; bottom: 76px; width: 560px; gap: 12px; }
+.t-dialog .entry h2 { font-size: 40px; letter-spacing: 0.02em; }
+.t-dialog .sub { font-style: italic; font-size: 17px; }
+.t-dialog .entry .facts { grid-template-columns: repeat(3, auto); grid-auto-flow: column; grid-template-rows: auto auto; gap: 0 36px; justify-content: start; }
+.t-dialog .entry .facts dt { font-style: italic; }
+.t-dialog .entry .facts dd { font-size: 18px; }
+.t-dialog .now { grid-template-columns: auto auto 1fr; align-items: baseline; gap: 10px; font-size: 17px; }
+.t-dialog .now .k { font-size: 15px; font-style: italic; }
+.t-dialog .now strong { font-weight: 500; }
+.t-dialog .actions { display: grid; gap: 2px; counter-reset: opt; margin-top: 4px; }
+.t-dialog .actions button { font-size: 19px; display: flex; gap: 10px; counter-increment: opt; }
+.t-dialog .actions button::before { content: counter(opt) "."; color: var(--dim); min-width: 18px; }
+.t-dialog .actions li:first-child button { color: var(--pick); }
+.t-dialog .src { font-style: italic; font-size: 13px; }
+.t-dialog .clock { top: 22px; bottom: auto; right: 140px; }
+.t-dialog .clock .time { font-size: 46px; line-height: 1; font-family: 'Vollkorn', serif; }
+.t-dialog .clock .phase { font-style: italic; font-size: 15px; }
+.t-dialog .status { font-size: 14px; font-style: italic; }
+.t-dialog.phone .grip { display: none; }
+.t-dialog.phone .sheet h2 { font-size: 34px; }
+.t-dialog.phone .p-nav { border-top: 1px solid var(--line); }
+.t-dialog.phone .p-nav button { font-size: 15px; }
+.t-dialog.phone .p-nav .ic { display: none; }
+
+/* ===================== 3. Bariera ===================== */
+.t-bariera { --f-display: 'Cormorant SC', Georgia, serif; --f-ui: 'Familjen Grotesk', system-ui, sans-serif; --f-label: 'Cormorant SC', serif; --lbl-size: 19px; }
+.t-bariera.mode-dark {
+	--surf: rgb(16 25 43 / 0.94); --surf-2: #172238; --ink: #e4e9f3; --dim: #8e9ab3; --line: #2a3a58; --pick: #a9c1ff; --on-pick: #0e1524;
+	--now: #74d6e9; --glow: rgb(169 193 255 / 0.55); --rim: rgb(169 193 255 / 0.22);
+	--sea: #0c1a2a; --sea-2: #11233a; --road: #a9c1ff;
+	--veil: radial-gradient(ellipse 70% 60% at 50% 48%, transparent 40%, rgb(6 10 20 / 0.65)), linear-gradient(rgb(40 70 150 / 0.14), rgb(40 70 150 / 0.14));
+	--lbl: #e4e9f3; --lbl-stroke: rgb(8 12 24 / 0.85); --c1: #f0b37a; --c2: #74d6e9; --c3: #c79bff; --c4: #9fe0a6;
+}
+.t-bariera.mode-light {
+	--surf: rgb(247 249 253 / 0.95); --surf-2: #e6ecf7; --ink: #142038; --dim: #56627f; --line: #c8d2e5; --pick: #3454c4; --on-pick: #ffffff;
+	--now: #0b7286; --glow: rgb(52 84 196 / 0.35); --rim: rgb(255 255 255 / 0.95);
+	--sea: #b7c8db; --sea-2: #a6b9cf; --road: #3454c4;
+	--veil: radial-gradient(ellipse 70% 60% at 50% 48%, transparent 45%, rgb(225 233 246 / 0.6));
+	--lbl: #142038; --lbl-stroke: rgb(247 249 253 / 0.92); --c1: #b4561b; --c2: #0b7286; --c3: #6b3fc4; --c4: #2f7d3a;
+}
+.t-bariera .s { border: 1px solid var(--line); border-radius: 12px; box-shadow: inset 0 1px 0 var(--rim); }
+.t-bariera .world { padding: 6px 16px 8px; }
+.t-bariera .world .wname { font-size: 28px; line-height: 1; font-weight: 600; letter-spacing: 0.04em; }
+.t-bariera .acts, .t-bariera .mapctl { padding: 4px; }
+.t-bariera .rail { padding: 6px; }
+.t-bariera .rail button { width: 44px; height: 44px; justify-content: center; border-radius: 8px; }
+.t-bariera .rail .lb { display: none; }
+.t-bariera .rail button.on { color: var(--on-pick); background: var(--pick); box-shadow: 0 0 18px var(--glow); }
+.t-bariera .rail .sep { margin: 4px 6px; }
+.t-bariera .entry { right: 84px; top: 104px; width: 340px; padding: 20px 22px; gap: 14px; }
+.t-bariera .entry h2 { font-size: 38px; font-weight: 600; letter-spacing: 0.03em; }
+.t-bariera .now { padding: 12px 14px; border-radius: 8px; background: var(--surf-2); }
+.t-bariera .now strong { color: var(--now); }
+.t-bariera .actions button { height: 38px; padding: 0 14px; border-radius: 8px; font-weight: 500; font-size: 14px; border: 1px solid var(--line); }
+.t-bariera .actions li:first-child button { background: var(--pick); color: var(--on-pick); border-color: var(--pick); }
+.t-bariera .clock { padding: 8px 16px; }
+.t-bariera .clock .time { font-size: 32px; line-height: 1; font-family: var(--f-ui); font-weight: 500; }
+.t-bariera .status { padding: 8px 16px; border-radius: 10px; left: 50%; right: auto; transform: translateX(-50%); }
+.t-bariera .status .scale { margin-left: 8px; }
+.t-bariera.phone .sheet { left: 8px; right: 8px; bottom: 76px; }
+.t-bariera.phone .sheet h2 { font-size: 34px; font-weight: 600; }
+.t-bariera.phone .p-nav { left: 8px; right: 8px; bottom: 8px; height: 60px; }
+
+/* ===================== 4. Witraż ===================== */
+.t-witraz { --f-display: 'UnifrakturCook', 'Old English Text MT', serif; --f-ui: 'Atkinson Hyperlegible', system-ui, sans-serif; --lbl-weight: 700; --lbl-size: 16px; }
+.t-witraz.mode-dark {
+	--surf: #24211e; --surf-2: #2f2b27; --lead: #0b0a09; --ink: #efe9dd; --dim: #aca395; --line: #4a443d; --pick: #d9a33a; --on-pick: #0b0a09;
+	--sea: #13232a; --sea-2: #1a2f37; --road: #c9b48a; --veil: linear-gradient(180deg, rgb(10 9 8 / 0.55), transparent 160px);
+	--lbl: #efe9dd; --lbl-stroke: rgb(10 9 8 / 0.85); --c1: #b8343f; --c2: #d9a33a; --c3: #4466c4; --c4: #5d8c42;
+}
+.t-witraz.mode-light {
+	--surf: #e8e2d6; --surf-2: #dad2c3; --lead: #1d1a16; --ink: #1f1b17; --dim: #5d554a; --line: #b9ae9c; --pick: #c38a1f; --on-pick: #1d1a16;
+	--sea: #a9b7b5; --sea-2: #97a7a5; --road: #3a2c1c; --veil: linear-gradient(180deg, rgb(232 226 214 / 0.6), transparent 160px);
+	--lbl: #1f1b17; --lbl-stroke: rgb(232 226 214 / 0.92); --c1: #a52a35; --c2: #c38a1f; --c3: #3456b0; --c4: #4a7a34;
+}
+.t-witraz .s { border: 3px solid var(--lead); box-shadow: inset 0 0 0 1px var(--line); }
+.t-witraz .world { padding: 6px 16px 8px; }
+.t-witraz .world .wname { font-size: 34px; line-height: 1; }
+.t-witraz .search { background: var(--surf-2); }
+.t-witraz .acts, .t-witraz .mapctl { padding: 4px; }
+.t-witraz .rail { padding: 6px; gap: 4px; }
+.t-witraz .rail button { width: 44px; height: 44px; justify-content: center; }
+.t-witraz .rail .lb { display: none; }
+.t-witraz .rail button.on { color: var(--on-pick); background: var(--pick); box-shadow: inset 0 0 0 2px var(--lead), inset 0 0 12px rgb(255 230 160 / 0.6); }
+.t-witraz .rail .sep { height: 3px; background: var(--lead); margin: 2px -6px; }
+.t-witraz .entry { right: 84px; top: 96px; width: 340px; padding: 0 22px 20px; gap: 14px; clip-path: polygon(0 52px, 50% 0, 100% 52px, 100% 100%, 0 100%); border-top: 0; }
+.t-witraz .glass { height: 70px; margin: 0 -22px; background:
+	linear-gradient(90deg, var(--c1) 0 33.3%, var(--lead) 33.3% calc(33.3% + 3px), var(--c1) calc(33.3% + 3px) 66.6%, var(--lead) 66.6% calc(66.6% + 3px), var(--c1) calc(66.6% + 3px));
+	box-shadow: inset 0 -3px 0 var(--lead), inset 0 0 30px rgb(255 200 180 / 0.25); }
+.t-witraz .entry h2 { font-size: 46px; }
+.t-witraz .now { padding: 10px 12px; background: var(--surf-2); border-left: 4px solid var(--c1); }
+.t-witraz .actions button { height: 40px; padding: 0 14px; font-weight: 700; font-size: 14px; border: 2px solid var(--lead); background: var(--surf-2); }
+.t-witraz .actions li:first-child button { background: var(--pick); color: var(--on-pick); }
+.t-witraz .clock { padding: 6px 16px 8px; }
+.t-witraz .clock .time { font-size: 32px; line-height: 1; font-family: var(--f-ui); font-weight: 700; }
+.t-witraz .status { padding: 6px 14px; left: 50%; right: auto; transform: translateX(-50%); }
+.t-witraz .status .lg i { border-radius: 0; width: 12px; height: 12px; box-shadow: 0 0 0 2px var(--lead); }
+.t-witraz .status .scale { margin-left: 8px; }
+.t-witraz.phone .sheet { padding-top: 0; border-inline: 0; border-bottom: 0; }
+.t-witraz.phone .grip { display: none; }
+.t-witraz.phone .glass { height: 14px; margin: 0 -18px 4px; background: linear-gradient(90deg, var(--c1) 0 25%, var(--lead) 25% calc(25% + 3px), var(--c2) calc(25% + 3px) 50%, var(--lead) 50% calc(50% + 3px), var(--c3) calc(50% + 3px) 75%, var(--lead) 75% calc(75% + 3px), var(--c4) calc(75% + 3px)); box-shadow: inset 0 -3px 0 var(--lead); }
+.t-witraz.phone .sheet h2 { font-size: 40px; }
+.t-witraz.phone .p-nav { border-inline: 0; border-bottom: 0; }
+
+/* ===================== 5. Jarkendar ===================== */
+.t-jarkendar {
+	--f-display: 'Marcellus', Georgia, serif; --f-ui: 'Sora', system-ui, sans-serif; --f-label: 'Marcellus', serif; --lbl-size: 18px; --lbl-weight: 400;
+	--steps: polygon(12px 0, calc(100% - 12px) 0, calc(100% - 12px) 6px, calc(100% - 6px) 6px, calc(100% - 6px) 12px, 100% 12px, 100% calc(100% - 12px), calc(100% - 6px) calc(100% - 12px), calc(100% - 6px) calc(100% - 6px), calc(100% - 12px) calc(100% - 6px), calc(100% - 12px) 100%, 12px 100%, 12px calc(100% - 6px), 6px calc(100% - 6px), 6px calc(100% - 12px), 0 calc(100% - 12px), 0 12px, 6px 12px, 6px 6px, 12px 6px);
+	--fret: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='10'%3E%3Cpath d='M0 10V4h4V0h10v4h-6v2h10V0h10v2h-6v4h4v4h-8V8h4V6h-6v4z'/%3E%3C/svg%3E");
+}
+.t-jarkendar.mode-light {
+	--surf: #e3d4b3; --surf-2: #d5c39d; --ink: #2a2318; --dim: #6b5d44; --line: #b09c72; --pick: #1d7a73; --on-pick: #f4eddc;
+	--sea: #8fb3ad; --sea-2: #7ca39d; --road: #2a2318; --veil: radial-gradient(ellipse at 50% 50%, transparent 55%, rgb(227 212 179 / 0.5));
+	--lbl: #2a2318; --lbl-stroke: rgb(227 212 179 / 0.92); --c1: #9a3b22; --c2: #a8740e; --c3: #2b4c7e; --c4: #1d7a73;
+}
+.t-jarkendar.mode-dark {
+	--surf: #1f2523; --surf-2: #29302d; --ink: #e8dfc8; --dim: #9ba398; --line: #3c4743; --pick: #56c6b8; --on-pick: #0c1513;
+	--sea: #0f2226; --sea-2: #15303a; --road: #56c6b8; --veil: radial-gradient(ellipse at 50% 50%, transparent 50%, rgb(6 12 11 / 0.6));
+	--lbl: #e8dfc8; --lbl-stroke: rgb(8 14 12 / 0.85); --c1: #e08a62; --c2: #e2b75a; --c3: #7d9fd8; --c4: #56c6b8;
+}
+.t-jarkendar .s { clip-path: var(--steps); }
+.t-jarkendar .fret { height: 10px; background: var(--pick); -webkit-mask: var(--fret) repeat-x left / 28px 10px; mask: var(--fret) repeat-x left / 28px 10px; }
+.t-jarkendar .world { padding: 10px 20px 12px; }
+.t-jarkendar .world .wname { font-size: 30px; line-height: 1; letter-spacing: 0.03em; }
+.t-jarkendar .search { padding: 0 20px; }
+.t-jarkendar .acts, .t-jarkendar .mapctl { padding: 8px; }
+.t-jarkendar .rail { left: 50%; top: auto; bottom: 20px; transform: translateX(-50%); display: flex; gap: 2px; padding: 8px 16px; }
+.t-jarkendar .rail button { flex-direction: column; gap: 4px; width: 72px; height: 54px; justify-content: center; font-size: 12px; }
+.t-jarkendar .rail button.on { color: var(--on-pick); background: var(--pick); }
+.t-jarkendar .rail .sep { width: 1px; height: auto; margin: 6px 6px; }
+.t-jarkendar .entry { right: 88px; top: 104px; width: 330px; padding: 24px 26px; gap: 14px; }
+.t-jarkendar .entry .fret { margin: -24px -26px 0; }
+.t-jarkendar .entry h2 { font-size: 42px; letter-spacing: 0.02em; }
+.t-jarkendar .now { padding: 10px 14px; background: var(--surf-2); }
+.t-jarkendar .now strong { color: var(--pick); }
+.t-jarkendar .actions button { height: 38px; padding: 0 14px; font-weight: 500; font-size: 13px; border: 1.5px solid var(--ink); }
+.t-jarkendar .actions li:first-child button { background: var(--pick); color: var(--on-pick); border-color: var(--pick); }
+.t-jarkendar .clock { top: 20px; bottom: auto; right: 132px; padding: 8px 18px; }
+.t-jarkendar .clock .time { font-size: 30px; line-height: 1; }
+.t-jarkendar .status { left: 24px; right: auto; bottom: 22px; flex-direction: column; align-items: flex-start; gap: 6px; padding: 14px 18px; }
+.t-jarkendar .status .scale { margin: 4px 0 0; }
+.t-jarkendar.phone .sheet { left: 8px; right: 8px; bottom: 76px; padding-top: 0; }
+.t-jarkendar.phone .sheet .fret { margin: 0 -18px; }
+.t-jarkendar.phone .grip { display: none; }
+.t-jarkendar.phone .sheet h2 { font-size: 36px; }
+.t-jarkendar.phone .p-nav { left: 8px; right: 8px; bottom: 8px; height: 60px; }
+
+/* ===================== 6. Obwieszczenie ===================== */
+.t-obwieszczenie { --f-display: 'Pirata One', 'Old English Text MT', serif; --f-ui: 'Archivo Narrow', 'Arial Narrow', sans-serif; --f-label: 'Pirata One', serif; --lbl-size: 21px; --lbl-weight: 400; }
+.t-obwieszczenie.mode-light {
+	--surf: #efe6d0; --surf-2: #e4d8bb; --ink: #17120c; --dim: #5a4e3c; --line: #17120c; --pick: #b3261e; --on-pick: #fbf5e6; --hard: #17120c;
+	--sea: #b8c4bd; --sea-2: #39443f; --road: #17120c; --veil: none;
+	--lbl: #17120c; --lbl-stroke: rgb(239 230 208 / 0.95); --c1: #b3261e; --c2: #b9800f; --c3: #1f4196; --c4: #2f6b3a;
+}
+.t-obwieszczenie.mode-dark {
+	--surf: #16120d; --surf-2: #221c14; --ink: #f0e7d1; --dim: #b3a68c; --line: #f0e7d1; --pick: #ec5f50; --on-pick: #16120d; --hard: #ec5f50;
+	--sea: #0f191c; --sea-2: #2c3d40; --road: #f0e7d1; --veil: none;
+	--lbl: #f0e7d1; --lbl-stroke: rgb(16 12 8 / 0.9); --c1: #ec5f50; --c2: #e6b04a; --c3: #8aa6ee; --c4: #79b884;
+}
+.t-obwieszczenie .s { border: 2.5px solid var(--line); box-shadow: 4px 4px 0 var(--hard); }
+.t-obwieszczenie .world { padding: 6px 16px 8px; }
+.t-obwieszczenie .world .wname { font-size: 36px; line-height: 0.95; }
+.t-obwieszczenie .world .game { font-weight: 600; color: var(--ink); }
+.t-obwieszczenie .search { font-size: 16px; }
+.t-obwieszczenie .search .ic { color: var(--ink); }
+.t-obwieszczenie .search kbd { border-color: var(--line); color: var(--ink); }
+.t-obwieszczenie .acts button, .t-obwieszczenie .mapctl button { color: var(--ink); }
+.t-obwieszczenie .acts, .t-obwieszczenie .mapctl { padding: 3px; }
+.t-obwieszczenie .rail { top: 96px; display: flex; gap: 0; padding: 0; }
+.t-obwieszczenie .rail button { height: 40px; padding: 0 14px; font-weight: 600; font-size: 15px; gap: 8px; color: var(--ink); border-right: 1.5px solid var(--line); }
+.t-obwieszczenie .rail button:last-child { border-right: 0; }
+.t-obwieszczenie .rail .ic { width: 17px; height: 17px; }
+.t-obwieszczenie .rail button.on { background: var(--ink); color: var(--surf); }
+.t-obwieszczenie .rail .sep { display: none; }
+.t-obwieszczenie .mapctl { top: 96px; }
+.t-obwieszczenie .entry { right: 88px; top: 160px; width: 330px; padding: 22px 24px 20px; gap: 12px; transform: rotate(-1.2deg); }
+.t-obwieszczenie .entry::before, .t-obwieszczenie .entry::after { content: ""; position: absolute; top: 10px; width: 9px; height: 9px; border-radius: 50%; background: var(--ink); }
+.t-obwieszczenie .entry::before { left: 10px; }
+.t-obwieszczenie .entry::after { right: 10px; }
+.t-obwieszczenie .entry header { text-align: center; padding-bottom: 10px; border-bottom: 2.5px double var(--line); }
+.t-obwieszczenie .entry h2 { font-size: 58px; color: var(--pick); }
+.t-obwieszczenie .sub { font-weight: 600; font-size: 15px; color: var(--ink); }
+.t-obwieszczenie .now strong { font-size: 18px; }
+.t-obwieszczenie .facts { font-size: 15px; }
+.t-obwieszczenie .actions button { height: 38px; padding: 0 14px; font-weight: 700; font-size: 15px; border: 2px solid var(--line); }
+.t-obwieszczenie .actions li:first-child button { background: var(--pick); color: var(--on-pick); border-color: var(--pick); }
+.t-obwieszczenie .clock { padding: 4px 14px 6px; }
+.t-obwieszczenie .clock .time { font-size: 38px; line-height: 1; }
+.t-obwieszczenie .status { padding: 6px 14px; right: 260px; }
+.t-obwieszczenie .status .lg b { font-weight: 700; }
+.t-obwieszczenie.phone .p-top .search { box-shadow: 3px 3px 0 var(--hard); }
+.t-obwieszczenie.phone .sheet { left: 10px; right: 10px; bottom: 78px; }
+.t-obwieszczenie.phone .grip { display: none; }
+.t-obwieszczenie.phone .sheet h2 { font-size: 48px; color: var(--pick); }
+.t-obwieszczenie.phone .p-nav { left: 10px; right: 10px; bottom: 10px; height: 58px; }
+.t-obwieszczenie.phone .p-nav button { color: var(--ink); font-weight: 600; }
+.t-obwieszczenie.phone .p-nav button.on { background: var(--ink); color: var(--surf); }
+
+/* ===================== 7. Kruk ===================== */
+.t-kruk { --f-display: 'Gloock', Georgia, serif; --f-ui: 'Geist', system-ui, sans-serif; --lbl-size: 15px; --lbl-weight: 500; }
+.t-kruk.mode-dark {
+	--surf: #141218; --surf-2: #1d1a23; --ink: #ece8f2; --dim: #9b94a9; --line: #2c2735; --pick: #b9a2ff; --on-pick: #141218;
+	--iris: linear-gradient(90deg, #4fd1c5, #8b7bff 40%, #d58cff 70%, #7fdc8f);
+	--sea: #0e1620; --sea-2: #132030; --road: #b9a2ff; --veil: linear-gradient(90deg, rgb(10 8 14 / 0.5), transparent 520px);
+	--lbl: #ece8f2; --lbl-stroke: rgb(10 8 14 / 0.85); --c1: #ffb08a; --c2: #ffd77a; --c3: #b9a2ff; --c4: #7fdc8f;
+}
+.t-kruk.mode-light {
+	--surf: #f6f4f9; --surf-2: #ebe7f1; --ink: #1b1724; --dim: #625b72; --line: #dcd6e6; --pick: #5a3fc0; --on-pick: #ffffff;
+	--iris: linear-gradient(90deg, #0f8a80, #5a3fc0 40%, #a43fb8 70%, #2f8a43);
+	--sea: #b4c2cf; --sea-2: #a3b3c2; --road: #5a3fc0; --veil: linear-gradient(90deg, rgb(246 244 249 / 0.4), transparent 520px);
+	--lbl: #1b1724; --lbl-stroke: rgb(246 244 249 / 0.92); --c1: #b5531f; --c2: #a8780a; --c3: #5a3fc0; --c4: #2f8a43;
+}
+.t-kruk .side { position: absolute; left: 0; top: 0; bottom: 0; width: 390px; display: grid; grid-template-rows: auto auto auto 1fr; border-right: 1px solid var(--line); }
+.t-kruk .side .world { padding: 22px 24px 14px; grid-template-columns: 1fr auto; align-items: end; }
+.t-kruk .side .world .wname { font-size: 34px; line-height: 1; }
+.t-kruk .side .world .ic { color: var(--dim); }
+.t-kruk .side .search { margin: 0 16px; height: 44px; border-radius: 10px; background: var(--surf-2); max-width: none; }
+.t-kruk .tabs { display: flex; gap: 2px; padding: 12px 16px 0; border-bottom: 1px solid var(--line); }
+.t-kruk .tabs button { flex: 1; height: 44px; display: grid; place-items: center; color: var(--dim); position: relative; }
+.t-kruk .tabs button.on { color: var(--ink); }
+.t-kruk .tabs button.on::after { content: ""; position: absolute; left: 6px; right: 6px; bottom: -1px; height: 3px; border-radius: 3px; background: var(--iris); }
+.t-kruk .side .entry { position: static; padding: 22px 24px; gap: 16px; }
+.t-kruk .crumb { font-size: 13px; color: var(--dim); }
+.t-kruk .entry h2 { font-size: 46px; }
+.t-kruk .now { padding: 12px 0; border-block: 1px solid var(--line); }
+.t-kruk .now strong { font-size: 16px; font-weight: 500; }
+.t-kruk .actions button { height: 38px; padding: 0 14px; border-radius: 10px; font-weight: 500; font-size: 14px; background: var(--surf-2); }
+.t-kruk .actions li:first-child button { background: var(--ink); color: var(--surf); }
+.t-kruk .mapctl { padding: 4px; border-radius: 12px; border: 1px solid var(--line); }
+.t-kruk .clock { padding: 8px 16px; border-radius: 12px; border: 1px solid var(--line); }
+.t-kruk .clock .time { font-size: 30px; line-height: 1; }
+.t-kruk .status { left: 414px; right: 24px; bottom: 18px; padding: 8px 16px; border-radius: 12px; border: 1px solid var(--line); }
+.t-kruk.phone .p-top .search { border-radius: 14px; border: 1px solid var(--line); }
+.t-kruk.phone .sheet { border-radius: 20px 20px 0 0; border-top: 1px solid var(--line); }
+.t-kruk.phone .sheet h2 { font-size: 40px; }
+.t-kruk.phone .p-nav { border-top: 1px solid var(--line); }
+.t-kruk.phone .p-nav button.on { color: var(--ink); }
+.t-kruk.phone .p-nav button.on .ic { color: var(--pick); }
+
+/* ===================== 8. Krąg (koło narzędzi) ===================== */
+.t-krag { --f-display: 'Uncial Antiqua', Georgia, serif; --f-ui: 'Lexend', system-ui, sans-serif; --f-label: 'Uncial Antiqua', serif; --lbl-size: 16px; --lbl-weight: 400; }
+.t-krag.mode-light {
+	--surf: #eef0e6; --surf-2: #e0e4d4; --ink: #1e2419; --dim: #59614f; --line: #c3c9b4; --pick: #586b10; --on-pick: #f6f7ef; --shade-c: rgb(30 36 25 / 0.22);
+	--sea: #a8bdb5; --sea-2: #96aca4; --road: #1e2419; --veil: radial-gradient(circle at 50% 50%, transparent 50%, rgb(238 240 230 / 0.45));
+	--lbl: #1e2419; --lbl-stroke: rgb(238 240 230 / 0.92); --c1: #8c3b2a; --c2: #8a6b0a; --c3: #2e5a86; --c4: #586b10;
+}
+.t-krag.mode-dark {
+	--surf: #171c17; --surf-2: #20271f; --ink: #e3e8d6; --dim: #98a28c; --line: #313b2f; --pick: #cfd36b; --on-pick: #141a10; --shade-c: rgb(0 0 0 / 0.5);
+	--sea: #0f1c1d; --sea-2: #16292a; --road: #cfd36b; --veil: radial-gradient(circle at 50% 50%, transparent 45%, rgb(8 12 8 / 0.65));
+	--lbl: #e3e8d6; --lbl-stroke: rgb(8 12 8 / 0.85); --c1: #e6967a; --c2: #e6c35a; --c3: #8db4e0; --c4: #cfd36b;
+}
+.t-krag .s { border: 1px solid var(--line); box-shadow: 0 10px 28px var(--shade-c); }
+.t-krag .k-world { position: absolute; left: 24px; top: 20px; display: flex; gap: 12px; align-items: center; padding: 6px 22px 6px 6px; border-radius: 999px; }
+.t-krag .seal { width: 46px; height: 46px; border-radius: 50%; background: var(--pick); color: var(--on-pick); display: grid; place-items: center; font-family: var(--f-display); font-size: 24px; }
+.t-krag .k-world .wname { font-size: 26px; line-height: 1; display: block; }
+.t-krag .k-world .game { font-size: 12px; color: var(--dim); }
+.t-krag .k-search { position: absolute; left: 50%; top: 24px; transform: translateX(-50%); width: 460px; border-radius: 999px; padding: 0 20px; }
+.t-krag .wheel { position: absolute; left: 28px; bottom: 28px; width: 248px; height: 248px; border-radius: 50%; }
+.t-krag .wheel::before { content: ""; position: absolute; inset: 26px; border-radius: 50%; border: 1px dashed var(--line); }
+.t-krag .hub { position: absolute; left: 50%; top: 50%; width: 82px; height: 82px; margin: -41px; border-radius: 50%; background: var(--pick); color: var(--on-pick); display: grid; place-items: center; align-content: center; gap: 2px; font-size: 12px; font-weight: 500; }
+.t-krag .hub .ic { width: 24px; height: 24px; }
+.t-krag .spoke { position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; margin: -22px; border-radius: 50%; display: grid; place-items: center; color: var(--ink); background: var(--surf-2); }
+.t-krag .dial { position: absolute; right: 24px; top: 20px; width: 124px; height: 124px; border-radius: 50%; display: grid; place-items: center; }
+.t-krag .dial svg { position: absolute; inset: 0; }
+.t-krag .dial .time { font-family: var(--f-ui); font-weight: 600; font-size: 22px; font-variant-numeric: tabular-nums; line-height: 1; text-align: center; }
+.t-krag .dial .time small { display: block; font-size: 11px; font-weight: 400; color: var(--dim); margin-top: 3px; }
+.t-krag .mapctl { top: 164px; right: 64px; border-radius: 999px; padding: 4px; }
+.t-krag .entry { right: 130px; top: 200px; width: 340px; padding: 54px 26px 22px; border-radius: 24px; gap: 14px; }
+.t-krag .medal { position: absolute; left: 50%; top: -42px; width: 84px; height: 84px; margin-left: -42px; border-radius: 50%; background: var(--surf-2); border: 3px solid var(--pick); display: grid; place-items: center; color: var(--pick); }
+.t-krag .medal .ic { width: 38px; height: 38px; stroke-width: 1.4; }
+.t-krag .entry header { text-align: center; }
+.t-krag .entry h2 { font-size: 40px; }
+.t-krag .now { padding: 12px 16px; border-radius: 16px; background: var(--surf-2); }
+.t-krag .actions button { height: 40px; padding: 0 16px; border-radius: 999px; font-size: 14px; font-weight: 500; border: 1px solid var(--line); }
+.t-krag .actions li:first-child button { background: var(--pick); color: var(--on-pick); border-color: var(--pick); }
+.t-krag .status { left: 50%; right: auto; transform: translateX(-50%); bottom: 22px; padding: 8px 18px; border-radius: 999px; }
+.t-krag .status .scale { margin-left: 8px; }
+.t-krag.phone .p-top .search { border-radius: 999px; }
+.t-krag.phone .sheet { left: 8px; right: 8px; bottom: 80px; border-radius: 24px; padding-top: 18px; }
+.t-krag.phone .sheet h2 { font-size: 34px; }
+.t-krag.phone .p-nav { left: 50%; right: auto; width: 300px; margin-left: -150px; bottom: 10px; height: 60px; border-radius: 999px; }
+
+/* ===================== 9. Ekwipunek (plecak z prawej) ===================== */
+.t-ekwipunek { --f-display: 'Spectral SC', Georgia, serif; --f-ui: 'IBM Plex Sans Condensed', 'Arial Narrow', sans-serif; --f-label: 'Spectral SC', serif; --lbl-size: 17px; }
+.t-ekwipunek.mode-dark {
+	--surf: rgb(14 12 10 / 0.93); --surf-2: #1d1914; --slot: #221d17; --slot-hi: #2b251d; --ink: #ece3cf; --dim: #a3978a; --line: #3a332a; --pick: #d8b25c; --on-pick: #1a140a;
+	--sea: #12201f; --sea-2: #1a2c2c; --road: #d8b25c; --veil: linear-gradient(270deg, rgb(8 7 5 / 0.5), transparent 640px);
+	--lbl: #ece3cf; --lbl-stroke: rgb(8 7 5 / 0.85); --c1: #e59a7a; --c2: #d8b25c; --c3: #8fb0e3; --c4: #9fca8a;
+}
+.t-ekwipunek.mode-light {
+	--surf: rgb(236 229 215 / 0.97); --surf-2: #e1d7c4; --slot: #ddd2bd; --slot-hi: #d2c5ac; --ink: #241e16; --dim: #62584a; --line: #c2b49a; --pick: #8c6420; --on-pick: #fbf6ea;
+	--sea: #a6b8b0; --sea-2: #94a79f; --road: #241e16; --veil: linear-gradient(270deg, rgb(236 229 215 / 0.45), transparent 640px);
+	--lbl: #241e16; --lbl-stroke: rgb(236 229 215 / 0.92); --c1: #9a3d24; --c2: #8c6420; --c3: #2f5788; --c4: #4b7a32;
+}
+.t-ekwipunek .pack { position: absolute; right: 0; top: 0; bottom: 0; width: 440px; padding: 22px 22px 18px; display: grid; gap: 18px; align-content: start; border-left: 1px solid var(--line); }
+.t-ekwipunek .pack-head { display: flex; justify-content: space-between; align-items: end; }
+.t-ekwipunek .pack-head .wname { font-size: 30px; line-height: 1; }
+.t-ekwipunek .pack .search { margin: 0; max-width: none; height: 42px; background: var(--slot); border: 1px solid var(--line); }
+.t-ekwipunek .who { display: grid; grid-template-columns: 76px 1fr; gap: 14px; align-items: center; }
+.t-ekwipunek .portrait { width: 76px; height: 76px; background: var(--slot); border: 1px solid var(--pick); display: grid; place-items: center; color: var(--pick); box-shadow: inset 0 0 18px rgb(0 0 0 / 0.25); }
+.t-ekwipunek .portrait .ic { width: 40px; height: 40px; stroke-width: 1.3; }
+.t-ekwipunek .who h2 { margin: 0; font-family: var(--f-display); font-weight: 600; font-size: 36px; line-height: 1; }
+.t-ekwipunek .who .now { margin-top: 6px; }
+.t-ekwipunek .who .now strong { font-weight: 500; }
+.t-ekwipunek .shelf { display: grid; gap: 8px; }
+.t-ekwipunek .shelf h3 { margin: 0; font-family: var(--f-display); font-weight: 600; font-size: 16px; display: flex; justify-content: space-between; }
+.t-ekwipunek .shelf h3 small { font-family: var(--f-ui); font-weight: 400; font-size: 13px; color: var(--dim); }
+.t-ekwipunek .slots { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.t-ekwipunek .slot { aspect-ratio: 1; background: linear-gradient(160deg, var(--slot-hi), var(--slot)); border: 1px solid var(--line); display: grid; place-items: center; color: var(--ink); position: relative; }
+.t-ekwipunek .slot .ic { width: 28px; height: 28px; stroke-width: 1.4; }
+.t-ekwipunek .slot.on { border-color: var(--pick); box-shadow: inset 0 0 0 1px var(--pick), 0 0 14px rgb(216 178 92 / 0.25); color: var(--pick); }
+.t-ekwipunek .slot.empty { background: transparent; border-style: dashed; }
+.t-ekwipunek .slot em { position: absolute; right: 4px; bottom: 2px; font-style: normal; font-size: 11px; color: var(--dim); }
+.t-ekwipunek .near { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.t-ekwipunek .tile { background: linear-gradient(160deg, var(--slot-hi), var(--slot)); border: 1px solid var(--line); padding: 10px 8px 8px; display: grid; gap: 6px; justify-items: center; text-align: center; font-size: 12px; line-height: 1.2; }
+.t-ekwipunek .tile .ic { width: 26px; height: 26px; stroke-width: 1.4; color: var(--tc); }
+.t-ekwipunek .tile b { font-weight: 500; font-size: 13px; color: var(--ink); }
+.t-ekwipunek .tile span { color: var(--dim); }
+.t-ekwipunek .pack .actions button { height: 38px; padding: 0 14px; font-size: 14px; font-weight: 500; border: 1px solid var(--line); background: var(--slot); }
+.t-ekwipunek .pack .actions li:first-child button { background: var(--pick); color: var(--on-pick); border-color: var(--pick); }
+.t-ekwipunek .hotbar { position: absolute; left: 420px; bottom: 22px; transform: translateX(-50%); display: flex; gap: 6px; padding: 6px; border: 1px solid var(--line); }
+.t-ekwipunek .hotbar button { width: 54px; height: 54px; position: relative; display: grid; place-items: center; background: linear-gradient(160deg, var(--slot-hi), var(--slot)); border: 1px solid var(--line); color: var(--ink); }
+.t-ekwipunek .hotbar button i { position: absolute; left: 4px; top: 2px; font-style: normal; font-size: 11px; color: var(--dim); }
+.t-ekwipunek .hotbar button.on { border-color: var(--pick); color: var(--pick); box-shadow: inset 0 0 0 1px var(--pick); }
+.t-ekwipunek .clock { left: 24px; right: auto; top: 20px; bottom: auto; justify-items: start; padding: 8px 16px; border: 1px solid var(--line); }
+.t-ekwipunek .clock .time { font-size: 30px; line-height: 1; }
+.t-ekwipunek .mapctl { right: 464px; top: 20px; padding: 4px; border: 1px solid var(--line); }
+.t-ekwipunek .legend { position: absolute; left: 24px; top: 110px; display: grid; gap: 6px; padding: 12px 16px; font-size: 13px; color: var(--dim); border: 1px solid var(--line); }
+.t-ekwipunek.phone .sheet { border-top: 1px solid var(--line); }
+.t-ekwipunek.phone .sheet h2 { font-size: 32px; font-weight: 600; }
+.t-ekwipunek.phone .p-slots { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+
+/* ===================== 10. Dziennik (rozłożona księga) ===================== */
+.t-dziennik { --f-display: 'Libre Caslon Display', Georgia, serif; --f-ui: 'Libre Caslon Text', Georgia, serif; --f-label: 'Libre Caslon Text', serif; --lbl-size: 16px; --lbl-weight: 700; }
+.t-dziennik.mode-light {
+	--surf: #f2ead9; --surf-2: #e8dec8; --cover: #5a2a22; --ink: #2b2420; --dim: #75685a; --line: #d5c7ad; --pick: #7d2430; --on-pick: #f8f1e2;
+	--gutter: rgb(80 50 30 / 0.22); --sea: #9eb1ad; --sea-2: #8ba09b; --road: #2b2420; --veil: none;
+	--lbl: #2b2420; --lbl-stroke: rgb(242 234 217 / 0.92); --c1: #7d2430; --c2: #9a6b12; --c3: #2d4f80; --c4: #3f6b48;
+}
+.t-dziennik.mode-dark {
+	--surf: #25201b; --surf-2: #2e2821; --cover: #0f0c0a; --ink: #ebe1cd; --dim: #a69984; --line: #40382f; --pick: #df7d89; --on-pick: #1f1714;
+	--gutter: rgb(0 0 0 / 0.55); --sea: #10191c; --sea-2: #172429; --road: #ebe1cd; --veil: none;
+	--lbl: #ebe1cd; --lbl-stroke: rgb(12 9 7 / 0.85); --c1: #df7d89; --c2: #e0b35e; --c3: #8eaee2; --c4: #8fc29a;
+}
+.t-dziennik .book { position: absolute; left: 24px; top: 20px; bottom: 30px; width: 780px; display: grid; grid-template-columns: 1fr 1fr; background: var(--cover); padding: 10px; border-radius: 6px; box-shadow: 0 18px 40px rgb(0 0 0 / 0.4); }
+.t-dziennik .page { background: var(--surf); padding: 30px 32px 22px; display: grid; gap: 14px; align-content: start; position: relative; min-width: 0; }
+.t-dziennik .page.left { background: linear-gradient(270deg, var(--gutter), transparent 40px), var(--surf); border-radius: 3px 0 0 3px; }
+.t-dziennik .page.right { background: linear-gradient(90deg, var(--gutter), transparent 40px), var(--surf); border-radius: 0 3px 3px 0; }
+.t-dziennik .page h3 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 30px; line-height: 1; }
+.t-dziennik .book .search { margin: 0; max-width: none; height: 40px; padding: 0; border-bottom: 1px solid var(--ink); font-style: italic; }
+.t-dziennik .filters { display: flex; gap: 14px; font-size: 14px; color: var(--dim); }
+.t-dziennik .filters b { color: var(--pick); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.t-dziennik .toc { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: 15px; }
+.t-dziennik .toc li { display: flex; align-items: baseline; gap: 6px; padding: 4px 6px; margin: 0 -6px; }
+.t-dziennik .toc li .dots { flex: 1; border-bottom: 1.5px dotted var(--line); transform: translateY(-4px); }
+.t-dziennik .toc li small { color: var(--dim); font-style: italic; font-size: 13px; }
+.t-dziennik .toc li.on { background: var(--surf-2); color: var(--pick); font-weight: 700; }
+.t-dziennik .folio { position: absolute; bottom: 14px; left: 32px; right: 32px; font-size: 12px; color: var(--dim); font-style: italic; text-align: center; }
+.t-dziennik .page.right h2 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 64px; line-height: 0.95; }
+.t-dziennik .page.right .sub { font-style: italic; font-size: 16px; }
+.t-dziennik .page.right .now { border-left: 2px solid var(--pick); padding-left: 12px; }
+.t-dziennik .page.right .now strong { font-size: 18px; font-weight: 400; font-style: italic; }
+.t-dziennik .page.right .actions button { font-size: 15px; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--line); }
+.t-dziennik .page.right .actions li:first-child button { color: var(--pick); text-decoration-color: var(--pick); font-weight: 700; }
+.t-dziennik .page.right .actions { gap: 18px; }
+.t-dziennik .ribbon { position: absolute; right: 70px; top: -10px; width: 22px; height: 120px; background: var(--pick); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 86%, 0 100%); }
+.t-dziennik .thumbs-idx { position: absolute; left: 804px; top: 90px; display: grid; gap: 4px; }
+.t-dziennik .thumbs-idx span { writing-mode: vertical-rl; background: var(--surf); border: 1px solid var(--line); border-left: 0; padding: 12px 6px; font-size: 13px; color: var(--dim); border-radius: 0 6px 6px 0; box-shadow: inset 4px 0 0 var(--c); }
+.t-dziennik .thumbs-idx span.on { padding-right: 12px; color: var(--ink); font-weight: 700; }
+.t-dziennik .maptools { position: absolute; left: 864px; top: 20px; display: flex; gap: 2px; padding: 4px; border-radius: 6px; border: 1px solid var(--line); }
+.t-dziennik .maptools button { width: 40px; height: 40px; display: grid; place-items: center; color: var(--dim); }
+.t-dziennik .maptools button.on { color: var(--pick); }
+.t-dziennik .mapctl { padding: 4px; border-radius: 6px; border: 1px solid var(--line); top: 90px; }
+.t-dziennik .clock { padding: 6px 14px; border-radius: 6px; border: 1px solid var(--line); }
+.t-dziennik .clock .time { font-size: 32px; line-height: 1; }
+.t-dziennik .status { left: 864px; right: 24px; bottom: 18px; flex-wrap: wrap; gap: 6px 16px; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--line); }
+.t-dziennik .status .scale { display: none; }
+.t-dziennik.phone .sheet { border-top: 6px solid var(--cover); }
+.t-dziennik.phone .sheet h2 { font-size: 48px; }
+.t-dziennik.phone .sub { font-style: italic; }
+
+/* ===================== 11. Alchemik (szuflada danych) ===================== */
+.t-alchemik { --f-display: 'Young Serif', Georgia, serif; --f-ui: 'IBM Plex Sans', system-ui, sans-serif; --lbl-size: 15px; --lbl-weight: 600; }
+.t-alchemik.mode-dark {
+	--surf: #121715; --surf-2: #1a211e; --surf-3: #26302b; --ink: #e2eadf; --dim: #8fa096; --line: #2b3530; --pick: #7cc796; --on-pick: #0d1510; --copper: #d99a68;
+	--sea: #0d1a1c; --sea-2: #132528; --road: #7cc796; --veil: linear-gradient(0deg, rgb(6 10 8 / 0.55), transparent 420px);
+	--lbl: #e2eadf; --lbl-stroke: rgb(6 10 8 / 0.85); --c1: #e59f7f; --c2: #d9b45e; --c3: #8db0e0; --c4: #7cc796;
+}
+.t-alchemik.mode-light {
+	--surf: #f4f5ef; --surf-2: #e8ebe1; --surf-3: #d6dccd; --ink: #1a211d; --dim: #55625a; --line: #cfd5c6; --pick: #2c8550; --on-pick: #ffffff; --copper: #a8622f;
+	--sea: #adc0bb; --sea-2: #9cb1ab; --road: #1a211d; --veil: linear-gradient(0deg, rgb(244 245 239 / 0.5), transparent 420px);
+	--lbl: #1a211d; --lbl-stroke: rgb(244 245 239 / 0.92); --c1: #a6482a; --c2: #8f6a10; --c3: #2f5788; --c4: #2c8550;
+}
+.t-alchemik .s { border: 1px solid var(--line); border-radius: 8px; }
+.t-alchemik .bar { position: absolute; left: 24px; top: 20px; right: 24px; display: flex; gap: 12px; align-items: stretch; }
+.t-alchemik .bar .world { padding: 6px 16px; justify-content: center; }
+.t-alchemik .bar .world .wname { font-size: 24px; line-height: 1; }
+.t-alchemik .tools { display: flex; padding: 4px; gap: 2px; }
+.t-alchemik .tools button { display: flex; align-items: center; gap: 8px; padding: 0 12px; height: 42px; border-radius: 6px; color: var(--dim); font-size: 14px; }
+.t-alchemik .tools button .ic { width: 18px; height: 18px; }
+.t-alchemik .tools button.on { background: var(--surf-2); color: var(--ink); box-shadow: inset 0 -2px 0 var(--pick); }
+.t-alchemik .bar .search { max-width: 340px; margin: 0 0 0 auto; height: auto; }
+.t-alchemik .mapctl { top: 96px; padding: 4px; }
+.t-alchemik .clock { top: 96px; right: 84px; bottom: auto; padding: 8px 14px; }
+.t-alchemik .clock .time { font-size: 28px; line-height: 1; }
+.t-alchemik .legend { position: absolute; left: 24px; bottom: 322px; display: flex; gap: 18px; padding: 8px 14px; font-size: 13px; color: var(--dim); }
+.t-alchemik .drawer { position: absolute; left: 0; right: 0; bottom: 0; height: 300px; border-top: 1px solid var(--line); display: grid; grid-template-columns: 330px 1fr; }
+.t-alchemik .drawer .entry { position: static; padding: 20px 24px; border-right: 1px solid var(--line); gap: 12px; }
+.t-alchemik .drawer .entry h2 { font-size: 38px; }
+.t-alchemik .drawer .facts { font-size: 13px; }
+.t-alchemik .drawer .actions button { height: 34px; padding: 0 12px; border-radius: 6px; font-size: 13px; font-weight: 500; border: 1px solid var(--line); }
+.t-alchemik .drawer .actions li:first-child button { background: var(--pick); color: var(--on-pick); border-color: var(--pick); }
+.t-alchemik .drawer .actions li:last-child, .t-alchemik .drawer .src, .t-alchemik .drawer .now { display: none; }
+.t-alchemik .data { padding: 14px 24px 18px; display: grid; grid-template-rows: auto auto 1fr; gap: 12px; min-width: 0; }
+.t-alchemik .dtabs { display: flex; gap: 20px; font-size: 14px; color: var(--dim); border-bottom: 1px solid var(--line); }
+.t-alchemik .dtabs span { padding-bottom: 8px; }
+.t-alchemik .dtabs span.on { color: var(--ink); font-weight: 600; box-shadow: inset 0 -2px 0 var(--pick); }
+.t-alchemik .dtabs .grow { margin-left: auto; font-size: 13px; }
+.t-alchemik .axis, .t-alchemik .row { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: center; }
+.t-alchemik .axis .ticks { position: relative; height: 16px; font-size: 11px; color: var(--dim); font-variant-numeric: tabular-nums; }
+.t-alchemik .axis .ticks span { position: absolute; transform: translateX(-50%); }
+.t-alchemik .rows { display: grid; gap: 8px; position: relative; align-content: start; }
+.t-alchemik .row .who { font-size: 14px; line-height: 1.2; }
+.t-alchemik .row .who small { display: block; font-size: 12px; color: var(--dim); }
+.t-alchemik .row.on .who { font-weight: 600; }
+.t-alchemik .track { position: relative; height: 28px; border-radius: 4px; background: var(--surf-2); }
+.t-alchemik .seg { position: absolute; top: 3px; bottom: 3px; border-radius: 3px; font-size: 11px; color: var(--on-pick); padding: 0 6px; display: flex; align-items: center; overflow: hidden; white-space: nowrap; }
+.t-alchemik .seg.sleep { background: var(--surf-3); color: var(--dim); }
+.t-alchemik .row.on .track { box-shadow: inset 0 0 0 1px var(--pick); }
+.t-alchemik .needle { position: absolute; top: -6px; bottom: -4px; width: 2px; background: var(--copper); }
+.t-alchemik .needle::before { content: "12:00"; position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 600; color: var(--copper); }
+.t-alchemik.phone .sheet { border-top: 1px solid var(--line); }
+.t-alchemik.phone .sheet h2 { font-size: 34px; }
+.t-alchemik.phone .p-nav { border-top: 1px solid var(--line); }
+
+/* ===================== 12. Marvin (konsola) ===================== */
+.t-marvin { --f-display: 'Chivo', system-ui, sans-serif; --f-ui: 'Chivo', system-ui, sans-serif; --f-code: 'Chivo Mono', ui-monospace, monospace; --lbl-size: 14px; --lbl-weight: 600; }
+.t-marvin.mode-dark {
+	--surf: #1a1613; --surf-2: #241f1b; --ink: #f1e7d6; --dim: #a69a8b; --line: #3a312b; --pick: #e8b04a; --on-pick: #1a1309;
+	--sea: #10181b; --sea-2: #172327; --road: #e8b04a; --veil: rgb(10 8 6 / 0.55);
+	--lbl: #f1e7d6; --lbl-stroke: rgb(10 8 6 / 0.85); --c1: #ea8f72; --c2: #e8b04a; --c3: #91aee6; --c4: #93c98a;
+}
+.t-marvin.mode-light {
+	--surf: #fbf7f0; --surf-2: #f0e8dc; --ink: #1d1712; --dim: #6a5d50; --line: #ddd0bd; --pick: #9a6608; --on-pick: #ffffff;
+	--sea: #b2c1c3; --sea-2: #a1b2b4; --road: #1d1712; --veil: rgb(243 237 227 / 0.5);
+	--lbl: #1d1712; --lbl-stroke: rgb(251 247 240 / 0.92); --c1: #a6452a; --c2: #9a6608; --c3: #2f5788; --c4: #3f7a34;
+}
+.t-marvin .corner { position: absolute; display: grid; gap: 2px; font-size: 13px; color: var(--dim); }
+.t-marvin .corner::before { content: ""; position: absolute; width: 16px; height: 16px; border-color: var(--pick); border-style: solid; border-width: 0; }
+.t-marvin .tl { left: 28px; top: 24px; padding: 10px 0 0 12px; }
+.t-marvin .tl::before { left: 0; top: 0; border-left-width: 2px; border-top-width: 2px; }
+.t-marvin .tr { right: 28px; top: 24px; padding: 10px 12px 0 0; text-align: right; }
+.t-marvin .tr::before { right: 0; top: 0; border-right-width: 2px; border-top-width: 2px; }
+.t-marvin .bl { left: 28px; bottom: 24px; padding: 0 0 10px 12px; }
+.t-marvin .bl::before { left: 0; bottom: 0; border-left-width: 2px; border-bottom-width: 2px; }
+.t-marvin .br { right: 28px; bottom: 24px; padding: 0 12px 10px 0; }
+.t-marvin .br::before { right: 0; bottom: 0; border-right-width: 2px; border-bottom-width: 2px; }
+.t-marvin .tl .wname { font-size: 28px; font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -0.01em; }
+.t-marvin .tr .time { font-size: 28px; font-weight: 700; color: var(--ink); line-height: 1; font-variant-numeric: tabular-nums; }
+.t-marvin .bl { display: flex; gap: 16px; }
+.t-marvin .br { display: flex; gap: 2px; }
+.t-marvin .br button { width: 36px; height: 36px; display: grid; place-items: center; color: var(--ink); }
+.t-marvin .palette { position: absolute; left: 50%; top: 104px; transform: translateX(-50%); width: 820px; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 30px 80px rgb(0 0 0 / 0.45); overflow: hidden; }
+.t-marvin .prompt { display: flex; align-items: center; gap: 12px; height: 64px; padding: 0 22px; border-bottom: 1px solid var(--line); font-family: var(--f-code); font-size: 22px; }
+.t-marvin .prompt .gt { color: var(--pick); }
+.t-marvin .prompt .caret { width: 2px; height: 26px; background: var(--pick); margin-left: -8px; }
+.t-marvin .prompt small { margin-left: auto; font-family: var(--f-ui); font-size: 13px; color: var(--dim); }
+.t-marvin .pal-body { display: grid; grid-template-columns: 1fr 360px; min-height: 420px; }
+.t-marvin .results { padding: 10px; display: grid; gap: 2px; align-content: start; border-right: 1px solid var(--line); }
+.t-marvin .results h4 { margin: 10px 12px 4px; font-size: 12px; font-weight: 500; color: var(--dim); }
+.t-marvin .res { display: grid; grid-template-columns: 22px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 8px; font-size: 15px; }
+.t-marvin .res small { color: var(--dim); font-size: 13px; }
+.t-marvin .res .ic { color: var(--dim); }
+.t-marvin .res.on { background: var(--surf-2); box-shadow: inset 3px 0 0 var(--pick); }
+.t-marvin .res.on .ic { color: var(--pick); }
+.t-marvin .res kbd { font: 12px var(--f-code); color: var(--dim); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; }
+.t-marvin .preview { padding: 22px 24px; display: grid; gap: 14px; align-content: start; }
+.t-marvin .preview .entry { position: static; gap: 14px; }
+.t-marvin .preview h2 { font-size: 40px; font-weight: 700; letter-spacing: -0.02em; }
+.t-marvin .preview .now { padding: 10px 12px; border-radius: 8px; background: var(--surf-2); }
+.t-marvin .preview .actions button { height: 34px; padding: 0 12px; border-radius: 8px; font-size: 13px; font-weight: 500; border: 1px solid var(--line); }
+.t-marvin .preview .actions li:first-child button { background: var(--pick); color: var(--on-pick); border-color: var(--pick); }
+.t-marvin .preview .actions li:last-child { display: none; }
+.t-marvin .dock { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); display: flex; gap: 2px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; }
+.t-marvin .dock button { width: 42px; height: 42px; display: grid; place-items: center; color: var(--dim); border-radius: 8px; }
+.t-marvin .dock button.on { background: var(--pick); color: var(--on-pick); }
+.t-marvin.phone .palette-phone { position: absolute; left: 10px; right: 10px; top: 60px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.t-marvin.phone .prompt { height: 54px; font-size: 18px; }
+.t-marvin.phone .results { border: 0; }
+.t-marvin.phone .p-top, .t-marvin.phone .sheet { display: none; }
+
+/* ===================== 13. Bagno (dymki na mapie) ===================== */
+.t-bagno { --f-display: 'Eczar', Georgia, serif; --f-ui: 'Hanken Grotesk', system-ui, sans-serif; --f-label: 'Eczar', serif; --lbl-size: 17px; --lbl-weight: 600; }
+.t-bagno.mode-dark {
+	--surf: #1b1f19; --surf-2: #252b22; --ink: #e6ebdc; --dim: #9aa494; --line: #343b31; --pick: #c7a8f0; --on-pick: #1a1424; --smoke: rgb(199 168 240 / 0.16);
+	--sea: #0f1a17; --sea-2: #16261f; --road: #c7a8f0; --veil: radial-gradient(ellipse 80% 70% at 40% 60%, transparent 40%, rgb(8 12 8 / 0.6));
+	--lbl: #e6ebdc; --lbl-stroke: rgb(8 12 8 / 0.85); --c1: #e9a07e; --c2: #dcc06a; --c3: #c7a8f0; --c4: #9ccc7a;
+}
+.t-bagno.mode-light {
+	--surf: #f2f3ee; --surf-2: #e5e8de; --ink: #1d2219; --dim: #59614f; --line: #cfd5c8; --pick: #6e44a0; --on-pick: #ffffff; --smoke: rgb(110 68 160 / 0.1);
+	--sea: #a9bab0; --sea-2: #98aa9f; --road: #1d2219; --veil: radial-gradient(ellipse 80% 70% at 40% 60%, transparent 45%, rgb(242 243 238 / 0.5));
+	--lbl: #1d2219; --lbl-stroke: rgb(242 243 238 / 0.92); --c1: #a3472a; --c2: #8a6c10; --c3: #6e44a0; --c4: #4a7a2c;
+}
+.t-bagno .s { border-radius: 16px; box-shadow: 0 12px 32px rgb(0 0 0 / 0.28); }
+.t-bagno .pill { position: absolute; left: 24px; top: 20px; display: flex; align-items: center; height: 56px; border-radius: 999px; padding: 0 8px 0 22px; width: 560px; }
+.t-bagno .pill .wname { font-size: 24px; font-weight: 600; line-height: 1; }
+.t-bagno .pill .divider { width: 1px; height: 28px; background: var(--line); margin: 0 14px; }
+.t-bagno .pill .search { height: 44px; margin: 0; max-width: none; padding: 0 8px; }
+.t-bagno .clock { top: 20px; bottom: auto; right: 24px; flex-direction: row; display: flex; gap: 10px; align-items: baseline; padding: 0 20px; height: 56px; align-items: center; border-radius: 999px; }
+.t-bagno .clock .time { font-size: 24px; font-weight: 600; }
+.t-bagno .mapctl { top: 96px; padding: 4px; border-radius: 999px; }
+.t-bagno .mapctl button { border-radius: 50%; }
+.t-bagno .callout { position: absolute; left: 150px; top: 92px; width: 300px; padding: 20px 22px; gap: 12px; border-radius: 18px; }
+.t-bagno .callout h2 { font-size: 40px; font-weight: 700; }
+.t-bagno .callout .now { padding: 10px 12px; border-radius: 12px; background: var(--smoke); }
+.t-bagno .callout .actions button { height: 36px; padding: 0 14px; border-radius: 999px; font-size: 13px; font-weight: 500; border: 1px solid var(--line); }
+.t-bagno .callout .actions li:first-child button { background: var(--pick); color: var(--on-pick); border-color: var(--pick); }
+.t-bagno .callout .src, .t-bagno .callout .actions li:last-child { display: none; }
+.t-bagno .leaders { position: absolute; inset: 0; pointer-events: none; }
+.t-bagno .chip { position: absolute; display: flex; gap: 8px; align-items: center; padding: 8px 14px; border-radius: 999px; font-size: 13px; }
+.t-bagno .chip b { font-weight: 600; }
+.t-bagno .chip span { color: var(--dim); }
+.t-bagno .toolpill { position: absolute; left: 62%; bottom: 24px; transform: translateX(-50%); display: flex; gap: 4px; padding: 6px; border-radius: 999px; }
+.t-bagno .toolpill button { height: 44px; padding: 0 14px; display: flex; gap: 8px; align-items: center; border-radius: 999px; color: var(--dim); font-size: 14px; }
+.t-bagno .toolpill button .lb { display: none; }
+.t-bagno .toolpill button.on { background: var(--pick); color: var(--on-pick); }
+.t-bagno .toolpill button.on .lb { display: inline; }
+.t-bagno .legend { position: absolute; left: 24px; bottom: 24px; display: flex; gap: 10px; padding: 10px 14px; border-radius: 999px; font-size: 12px; color: var(--dim); }
+.t-bagno.phone .p-top .search { border-radius: 999px; }
+.t-bagno.phone .sheet { left: 10px; right: 10px; bottom: 84px; border-radius: 20px; }
+.t-bagno.phone .sheet h2 { font-size: 36px; font-weight: 700; }
+.t-bagno.phone .p-nav { left: 30px; right: 30px; bottom: 12px; height: 60px; border-radius: 999px; }
+
+/* mapa: kolory terenu wspólne (to model z gry); morze pod modelem rysuje aplikacja, więc zmienia się z trybem */
+.mock { --t0: #4a4a2c; --t1: #5a5a31; --t2: #6b6236; --t3: #6f5a3a; --t4: #7b6a52; }
+.mock.mode-light { --t0: #5c5c36; --t1: #6c6b3b; --t2: #7d7341; --t3: #826b46; --t4: #8e7c62; }
+@media (prefers-reduced-motion: no-preference) {
+	.t-bariera .arc { stroke-dasharray: 6 10; animation: crackle 6s linear infinite; }
+	.t-marvin .prompt .caret { animation: blink 1.1s steps(1) infinite; }
+	@keyframes crackle { to { stroke-dashoffset: -160; } }
+	@keyframes blink { 50% { opacity: 0; } }
+}
+</style>
+
+<div class="page">
+	<header class="intro">
+		<h1>Kierunki wyglądu dla GIS of Gothic</h1>
+		<p>Trzynaście kierunków, każdy w trybie jasnym i ciemnym. Wszystkie pokazują ten sam stan: Khorinis w południe i otwarty wpis Abuyina. Ostatnie sześć bawi się przede wszystkim układem: koło narzędzi, plecak, rozłożona księga, szuflada z danymi, konsola i dymki na mapie.</p>
+	</header>
+
+	<div class="controls">
+		<div class="picker" role="tablist" aria-label="Kierunki wyglądu" id="picker"></div>
+		<div class="modes" role="group" aria-label="Tryb" id="modes">
+			<button type="button" data-mode="light">Jasny</button>
+			<button type="button" data-mode="dark">Ciemny</button>
+		</div>
+	</div>
+
+	<section class="overview" aria-labelledby="overview-title">
+		<h2 id="overview-title">Wszystkie naraz</h2>
+		<div class="thumbs" id="thumbs"></div>
+	</section>
+
+	<h2 class="detail-title" id="detail-title">Wybrany kierunek</h2>
+	<div class="stage" id="stage">
+		<div class="frame desk-frame" id="desk-frame" data-w="1280"></div>
+		<div class="frame phone-frame" id="phone-frame" data-w="360"></div>
+	</div>
+
+	<div class="notes" id="notes"></div>
+
+	<section class="howto">
+		<h2>Jak dodać tryb jasny i ciemny do aplikacji</h2>
+		<ul>
+			<li>Tokeny w <code>src/app.css</code> dostają dwa zestawy: ciemny na <code>:root</code>, jasny pod <code>[data-theme="light"]</code> i <code>prefers-color-scheme: light</code>. Komponenty już używają ról, więc nie trzeba ich ruszać.</li>
+			<li>Przełącznik „Motyw: systemowy, jasny, ciemny” w menu „Więcej”, zapisany lokalnie jak notatnik gracza; ustawiany przed pierwszym malowaniem, żeby ekran nie mrugał.</li>
+			<li>Mapa: morze pod modelem i <code>MAP_PALETTE</code> (kropki, trasy, etykiety) mają wersję na każdy tryb. Teren z ion zostaje; w jasnym trybie można go lekko rozjaśnić w Cesium.</li>
+			<li>Test kontrastu (<code>theme-tokens.test.ts</code>) liczy pary kolorów dla obu trybów, a e2e robi zrzut każdego trybu.</li>
+		</ul>
+	</section>
+</div>
+
+<script>
+(function () {
+	const ICONS = {
+		search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+		layers: '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
+		ruler: '<path d="M3 16 16 3l5 5L8 21z"/><path d="m7 12 2 2M10 9l2 2M13 6l2 2"/>',
+		radar: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12 18.5 5.5"/>',
+		size: '<path d="M4 9V4h5M20 15v5h-5M4 4l7 7M20 20l-7-7"/>',
+		clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+		note: '<path d="M6 3h10l3 3v15H6z"/><path d="M9 9h7M9 13h7M9 17h4"/>',
+		mark: '<path d="M6 3h12v18l-6-4-6 4z"/>',
+		link: '<path d="M10 14a4 4 0 0 0 5.6 0l3-3a4 4 0 0 0-5.6-5.6L12 6.4"/><path d="M14 10a4 4 0 0 0-5.6 0l-3 3a4 4 0 0 0 5.6 5.6l1-1"/>',
+		info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
+		plus: '<path d="M12 5v14M5 12h14"/>',
+		minus: '<path d="M5 12h14"/>',
+		compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+		cube: '<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>',
+		more: '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+		caret: '<path d="m6 9 6 6 6-6"/>',
+		person: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+		dagger: '<path d="M19 3 9 13l2 2L21 5V3z"/><path d="m7 11 6 6M9 15l-5 5M4 17l3 3"/>',
+		potion: '<path d="M10 3h4M10 3v5l-4.5 7.5A3.5 3.5 0 0 0 8.5 21h7a3.5 3.5 0 0 0 3-5.5L14 8V3"/><path d="M7 15h10"/>',
+		ring: '<circle cx="12" cy="14" r="6"/><path d="m9.5 5 2.5-2 2.5 2-2.5 3z"/>',
+		key: '<circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v2"/>',
+		ore: '<path d="m12 3 6 5-2 10-4 3-4-3-2-10z"/><path d="M6 8l6 4 6-4M12 12v9"/>',
+		scroll: '<path d="M7 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6"/><path d="M10 9h7M10 13h7"/>',
+		flag: '<path d="M5 21V4h12l-2.5 4L17 12H5"/>',
+		pin: '<path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+		route: '<circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7"/>'
+	};
+	const icon = (name) => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
+
+	const TOOLS = [
+		['search', 'Szukaj', true], ['layers', 'Warstwy'], null,
+		['ruler', 'Pomiary'], ['radar', 'Analizy'], ['size', 'Rozmiary'], null,
+		['clock', 'Czas'], ['note', 'Notatnik'], ['mark', 'Zakładki']
+	];
+	const TOOL_LIST = TOOLS.filter(Boolean);
+
+	/* Wyspa: deterministyczny kształt z sumy sinusów; warstwice to kolejne pomniejszenia przesunięte ku północy. */
+	function islandPath(cx, cy, radius, scale, shiftY) {
+		const points = [];
+		for (let step = 0; step < 160; step += 1) {
+			const angle = (step / 160) * Math.PI * 2;
+			const wobble = 1 + 0.17 * Math.sin(3 * angle + 0.6) + 0.09 * Math.sin(5 * angle + 2.1) + 0.05 * Math.sin(11 * angle + 0.3) + 0.025 * Math.sin(23 * angle);
+			const bay = angle > 3.2 && angle < 3.9 ? 1 - 0.22 * Math.sin((angle - 3.2) / 0.7 * Math.PI) : 1;
+			const r = radius * scale * wobble * bay;
+			points.push([cx + Math.cos(angle) * r * 1.25, cy + shiftY * (1 - scale) + Math.sin(angle) * r * 0.82]);
+		}
+		return 'M' + points.map((p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L') + 'Z';
+	}
+
+	const PLACES = [
+		{ x: 470, y: 520, name: 'Khorinis' },
+		{ x: 820, y: 330, name: 'Klasztor Magów Ognia' },
+		{ x: 760, y: 560, name: 'Farma Onara' },
+		{ x: 560, y: 300, name: 'Latarnia' }
+	];
+	const DOTS = [
+		[430, 500, 1], [452, 540, 1], [498, 498, 2], [505, 546, 1], [470, 470, 3], [520, 520, 2], [415, 532, 4],
+		[800, 350, 1], [840, 312, 3], [780, 540, 1], [742, 582, 2], [690, 420, 3], [640, 380, 2], [610, 470, 4],
+		[880, 450, 2], [900, 520, 1], [560, 330, 4], [700, 300, 2], [940, 380, 3]
+	];
+	const SELECTED = { x: 488, y: 520 };
+	let svgCounter = 0;
+
+	function mapSvg(theme, viewBox, shift, lite) {
+		const contours = [1, 0.8, 0.6, 0.42, 0.25].map((scale, index) =>
+			`<path d="${islandPath(680 + shift, 430, 290, scale, -70)}" style="fill:var(--t${index})"/>`).join('');
+		const dots = DOTS.map(([x, y, c]) =>
+			`<circle cx="${x + shift}" cy="${y}" r="5.5" style="fill:var(--c${c});stroke:var(--lbl-stroke)" stroke-width="2"/>`).join('');
+		const labels = PLACES.map((p) => `<text class="marker-label" x="${p.x + shift}" y="${p.y - 22}" text-anchor="middle">${p.name}</text>`).join('');
+		const sx = SELECTED.x + shift;
+		const selected = `
+			<circle cx="${sx}" cy="${SELECTED.y}" r="22" fill="none" style="stroke:var(--pick)" stroke-width="2" opacity=".55"/>
+			<circle cx="${sx}" cy="${SELECTED.y}" r="12" fill="none" style="stroke:var(--pick)" stroke-width="2.5"/>
+			<circle cx="${sx}" cy="${SELECTED.y}" r="6" style="fill:var(--pick)"/>`;
+		const dome = theme === 'bariera'
+			? `<ellipse class="arc" cx="${900 + shift}" cy="340" rx="200" ry="150" style="fill:var(--glow);stroke:var(--pick)" fill-opacity=".12" stroke-width="1.6"/>`
+			: '';
+		const smoke = theme === 'bagno'
+			? `<g opacity=".9"><ellipse cx="${300 + shift + 380}" cy="610" rx="140" ry="60" style="fill:var(--smoke)"/><ellipse cx="${300 + shift + 470}" cy="630" rx="90" ry="40" style="fill:var(--smoke)"/></g>`
+			: '';
+		svgCounter += 1;
+		const id = 'm' + svgCounter;
+		const textured = lite ? `<g>${contours}</g>` : `<g filter="url(#r-${id})">${contours}</g><g filter="url(#x-${id})">${contours}</g>`;
+		return `<svg class="map" viewBox="${viewBox}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+			<defs>
+				<pattern id="w-${id}" width="34" height="14" patternUnits="userSpaceOnUse"><path d="M0 9q8.5-6 17 0t17 0" fill="none" style="stroke:var(--sea-2)" stroke-width="1.4"/></pattern>
+				${lite ? '' : `<filter id="r-${id}"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="3" seed="4"/><feDisplacementMap in="SourceGraphic" scale="14"/></filter>
+				<filter id="x-${id}"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="2"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .35 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>`}
+			</defs>
+			<rect x="-400" y="-400" width="2400" height="1800" style="fill:var(--sea)"/>
+			<rect x="-400" y="-400" width="2400" height="1800" fill="url(#w-${id})" opacity=".6"/>
+			${textured}
+			<g transform="translate(${shift} 0)"><path d="M470 520C560 500 620 470 690 430S800 360 820 330M690 430C720 480 740 520 760 560M560 300C600 360 640 400 690 430" fill="none" style="stroke:var(--road)" stroke-width="2" stroke-dasharray="5 5" opacity=".7"/></g>
+			${smoke}${dome}${dots}${selected}${labels}
+		</svg>`;
+	}
+
+	const NOW = `<div class="now"><span class="k">Teraz, 12:00</span><strong>Stoi przy wejściu do miasta</strong><span class="t">07:20–01:20</span></div>`;
+	const FACTS = `<dl class="facts"><dt>Poziom</dt><dd>40</dd><dt>Miejsca w rutynie</dt><dd>2</dd><dt>Ma przy sobie</dt><dd>Sztylet</dd></dl>`;
+	const ACTIONS = `<ol class="actions"><li><button>Pokaż na mapie</button></li><li><button>Kopiuj link</button></li><li><button>Dodaj do zakładek</button></li></ol>`;
+	const SOURCE = `<p class="src">Opis z Gothicpedii, licencja CC BY-SA</p>`;
+	const ENTRY_BODY = NOW + FACTS + ACTIONS + SOURCE;
+	const ENTRY_HEAD = `<header><h2>Abuyin</h2><p class="sub">Obywatel Khorinis</p></header>`;
+	const ORNAMENT = { witraz: '<div class="glass"></div>', jarkendar: '<div class="fret"></div>' };
+
+	const legendItems = () => `
+		<span class="lg"><i style="--c:var(--c1)"></i>Postacie <b>194</b></span>
+		<span class="lg"><i style="--c:var(--c2)"></i>Przedmioty <b>312</b></span>
+		<span class="lg"><i style="--c:var(--c3)"></i>Questy <b>165</b></span>
+		<span class="lg"><i style="--c:var(--c4)"></i>Lokacje <b>26</b></span>`;
+	const statusHtml = () => `<footer class="status s">${legendItems()}<span class="scale"><i></i>200 m</span></footer>`;
+	const mapControls = (extra = '') => `<div class="mapctl s" ${extra}><button aria-label="Północ">${icon('compass')}</button><button aria-label="Przybliż">${icon('plus')}</button><button aria-label="Oddal">${icon('minus')}</button><button aria-label="Widok 3D">${icon('cube')}</button></div>`;
+	const CLOCK = `<div class="clock s"><span class="time">12:00</span><span class="phase">Południe, dzień 3</span></div>`;
+
+	function railHtml() {
+		return TOOLS.map((tool) => tool === null ? '<div class="sep"></div>'
+			: `<button class="${tool[2] ? 'on' : ''}" aria-label="${tool[1]}">${icon(tool[0])}<span class="lb">${tool[1]}</span></button>`).join('');
+	}
+
+	/* Zegar słoneczny: 24 godziny na okręgu, południe u góry, łuk dnia i łuk rutyny wybranej postaci. */
+	function sundial() {
+		const cx = 62, cy = 62;
+		const point = (hour, radius) => {
+			const theta = (hour / 24) * Math.PI * 2 + Math.PI;
+			return [(cx + radius * Math.sin(theta)).toFixed(1), (cy - radius * Math.cos(theta)).toFixed(1)];
+		};
+		const arc = (from, to, radius) => {
+			const [x1, y1] = point(from, radius);
+			const [x2, y2] = point(to, radius);
+			const large = (to - from) > 12 ? 1 : 0;
+			return `M${x1} ${y1}A${radius} ${radius} 0 ${large} 1 ${x2} ${y2}`;
+		};
+		const ticks = [0, 6, 12, 18].map((h) => { const [a, b] = point(h, 58); const [c, d] = point(h, 52); return `<path d="M${a} ${b}L${c} ${d}" style="stroke:var(--dim)" stroke-width="1.5"/>`; }).join('');
+		const [nx, ny] = point(12, 48);
+		return `<svg viewBox="0 0 124 124" aria-hidden="true">
+			<circle cx="${cx}" cy="${cy}" r="55" fill="none" style="stroke:var(--line)" stroke-width="1"/>
+			<path d="${arc(6, 20, 55)}" fill="none" style="stroke:var(--pick)" stroke-width="3" stroke-linecap="round"/>
+			<path d="${arc(7.33, 25.33, 47)}" fill="none" style="stroke:var(--c1)" stroke-width="2" stroke-dasharray="2 3"/>
+			${ticks}
+			<circle cx="${nx}" cy="${ny}" r="4.5" style="fill:var(--pick)"/>
+		</svg>`;
+	}
+
+	const LAYOUTS = {
+		classic(theme, mode) {
+			return `${mapSvg(theme, '0 0 1280 800', 0)}
+			<div class="veil"></div>
+			${theme === 'kartograf' ? '<div class="neat"></div>' : ''}
+			<header class="m-top">
+				<button class="world s"><span class="game">Gothic II: Noc Kruka</span><span class="wname">Khorinis</span></button>
+				<div class="search s">${icon('search')}<span>Szukaj przedmiotu, postaci lub questu</span><kbd>Ctrl K</kbd></div>
+				<div class="acts s"><button aria-label="Kopiuj link">${icon('link')}</button><button aria-label="O aplikacji">${icon('info')}</button></div>
+			</header>
+			<nav class="rail s">${railHtml()}</nav>
+			${mapControls()}
+			<article class="entry s">${ORNAMENT[theme] || ''}${ENTRY_HEAD}${ENTRY_BODY}</article>
+			${CLOCK}${statusHtml()}`;
+		},
+		side(theme) {
+			const tabs = TOOL_LIST.slice(0, 7).map((t) => `<button class="${t[2] ? 'on' : ''}" aria-label="${t[1]}">${icon(t[0])}</button>`).join('');
+			return `${mapSvg(theme, '0 0 1280 800', 180)}
+			<div class="veil"></div>
+			<aside class="side s">
+				<button class="world"><span class="game">Gothic II: Noc Kruka</span>${icon('caret')}<span class="wname">Khorinis</span></button>
+				<div class="search">${icon('search')}<span>Szukaj w Khorinis</span><kbd>Ctrl K</kbd></div>
+				<nav class="tabs">${tabs}</nav>
+				<article class="entry"><span class="crumb">Księga, postacie</span>${ENTRY_HEAD}${ENTRY_BODY}</article>
+			</aside>
+			${mapControls()}${CLOCK}${statusHtml()}`;
+		},
+		wheel(theme) {
+			const spokes = TOOL_LIST.slice(1).map((t, i, all) => {
+				const angle = -90 + (360 / all.length) * i;
+				return `<button class="spoke" aria-label="${t[1]}" style="transform:rotate(${angle}deg) translate(98px) rotate(${-angle}deg)">${icon(t[0])}</button>`;
+			}).join('');
+			return `${mapSvg(theme, '0 0 1280 800', 0)}
+			<div class="veil"></div>
+			<button class="k-world s"><span class="seal">K</span><span><span class="game">Gothic II: Noc Kruka</span><span class="wname">Khorinis</span></span></button>
+			<div class="search k-search s">${icon('search')}<span>Szukaj przedmiotu, postaci lub questu</span><kbd>Ctrl K</kbd></div>
+			<div class="dial s">${sundial()}<div class="time">12:00<small>południe</small></div></div>
+			${mapControls()}
+			<article class="entry s"><div class="medal">${icon('person')}</div>${ENTRY_HEAD}${ENTRY_BODY}</article>
+			<nav class="wheel s" aria-label="Narzędzia">${spokes}<button class="hub">${icon('search')}Szukaj</button></nav>
+			${statusHtml()}`;
+		},
+		inventory(theme) {
+			const slot = (name, extra = '') => `<div class="slot ${extra}">${name ? icon(name) : ''}</div>`;
+			const near = [
+				['person', 'Akil', 'Mieszkaniec', 'var(--c1)'], ['person', 'Albrecht', 'Paladyn', 'var(--c1)'],
+				['scroll', 'Almanach Opętanych', 'Dokument', 'var(--c2)'], ['flag', 'Afera z zielem', 'Misja', 'var(--c3)'],
+				['ore', 'Akwamaryn', '3 szt.', 'var(--c2)'], ['person', 'Alvares', 'Bandyta', 'var(--c1)'],
+				['pin', 'Brama miejska', 'Lokacja', 'var(--c4)'], ['potion', 'Mikstura lecznicza', '5 szt.', 'var(--c2)']
+			].map(([i, n, t, c]) => `<div class="tile" style="--tc:${c}">${icon(i)}<b>${n}</b><span>${t}</span></div>`).join('');
+			const hot = TOOL_LIST.map((t, i) => `<button class="${t[2] ? 'on' : ''}" aria-label="${t[1]}"><i>${i + 1}</i>${icon(t[0])}</button>`).join('');
+			return `${mapSvg(theme, '0 0 1280 800', -170)}
+			<div class="veil"></div>
+			${CLOCK}
+			<div class="legend s">${legendItems()}</div>
+			${mapControls()}
+			<aside class="pack s">
+				<div class="pack-head"><div class="world"><span class="game">Gothic II: Noc Kruka</span><span class="wname">Khorinis</span></div>${icon('caret')}</div>
+				<div class="search">${icon('search')}<span>Szukaj przedmiotu, postaci lub questu</span><kbd>Ctrl K</kbd></div>
+				<div class="who"><div class="portrait">${icon('person')}</div><div><h2>Abuyin</h2><p class="sub">Obywatel Khorinis, poziom 40</p><div class="now"><strong>Teraz stoi przy wejściu do miasta</strong></div></div></div>
+				<div class="shelf"><h3>Ma przy sobie <small>1 przedmiot</small></h3><div class="slots">${slot('dagger', 'on')}${slot('', 'empty')}${slot('', 'empty')}${slot('', 'empty')}${slot('', 'empty')}${slot('', 'empty')}</div></div>
+				<div class="shelf"><h3>W pobliżu <small>do 300 m</small></h3><div class="near">${near}</div></div>
+				${ACTIONS}
+			</aside>
+			<nav class="hotbar s" aria-label="Narzędzia">${hot}</nav>`;
+		},
+		book(theme) {
+			const toc = [['Abuyin', 'Obywatel', 'poz. 40', true], ['Afera z zielem', 'Misja', ''], ['Agon', 'Nowicjusz', 'poz. 10'], ['Akil', 'Mieszkaniec', 'poz. 20'],
+				['Akwamaryn', 'Różne', '3 szt.'], ['Albrecht', 'Paladyn', 'poz. 50'], ['Almanach Opętanych', 'Dokumenty', '1 szt.'], ['Alrik', 'Bez gildii', 'poz. 10'], ['Alvares', 'Bandyta', 'poz. 20']]
+				.map(([n, t, v, on]) => `<li class="${on ? 'on' : ''}">${n} <small>${t}</small><span class="dots"></span><small>${v}</small></li>`).join('');
+			const tools = TOOL_LIST.slice(0, 8).map((t) => `<button class="${t[2] ? 'on' : ''}" aria-label="${t[1]}">${icon(t[0])}</button>`).join('');
+			return `${mapSvg(theme, '0 0 1280 800', 340)}
+			<div class="veil"></div>
+			<div class="book">
+				<section class="page left">
+					<div class="world"><span class="game">Gothic II: Noc Kruka</span></div>
+					<h3>Księga Khorinis</h3>
+					<div class="search">${icon('search')}<span>Szukaj przedmiotu, postaci lub questu</span></div>
+					<div class="filters"><b>Wszystko</b><span>Przedmioty</span><span>Postacie</span><span>Questy</span><span>Lokacje</span></div>
+					<ul class="toc">${toc}</ul>
+					<div class="folio">Wszystkie wpisy: 897</div>
+				</section>
+				<section class="page right">
+					<div class="ribbon"></div>
+					${ENTRY_HEAD}${NOW}${FACTS}${ACTIONS}${SOURCE}
+					<div class="folio">Postacie, strona 1 z 194</div>
+				</section>
+			</div>
+			<div class="thumbs-idx"><span class="on" style="--c:var(--c1)">Postacie</span><span style="--c:var(--c2)">Przedmioty</span><span style="--c:var(--c3)">Questy</span><span style="--c:var(--c4)">Lokacje</span></div>
+			<nav class="maptools s" aria-label="Narzędzia">${tools}</nav>
+			${mapControls()}${CLOCK}${statusHtml()}`;
+		},
+		drawer(theme) {
+			const tools = TOOL_LIST.slice(0, 6).map((t) => `<button class="${t[0] === 'clock' ? 'on' : ''}">${icon(t[0])}${t[1]}</button>`).join('');
+			const pct = (h) => (h / 24 * 100).toFixed(2) + '%';
+			const activityColor = { stoi: 'var(--pick)', pracuje: 'var(--copper)', je: 'var(--c2)', pilnuje: 'var(--c3)', 'modli się': 'var(--c1)' };
+			const rows = [
+				['Abuyin', 'Obywatel', true, [[0, 1.33, 'stoi'], [1.33, 7.33, 'śpi'], [7.33, 24, 'stoi przy wejściu do miasta']]],
+				['Akil', 'Mieszkaniec', false, [[0, 6, 'śpi'], [6, 19, 'pracuje'], [19, 22, 'je'], [22, 24, 'śpi']]],
+				['Albrecht', 'Paladyn', false, [[0, 8, 'śpi'], [8, 20, 'pilnuje'], [20, 24, 'modli się']]],
+				['Alvares', 'Bandyta', false, [[0, 10, 'śpi'], [10, 24, 'stoi']]]
+			].map(([name, type, on, segs]) => `<div class="row ${on ? 'on' : ''}"><div class="who">${name}<small>${type}</small></div><div class="track">${
+				segs.map(([a, b, what]) => {
+					const key = what.startsWith('stoi') ? 'stoi' : what;
+					const sleep = what === 'śpi';
+					return `<span class="seg ${sleep ? 'sleep' : ''}" style="left:${pct(a)};width:${pct(b - a)};${sleep ? '' : `background:${activityColor[key]}`}">${b - a > 2 ? what : ''}</span>`;
+				}).join('')}</div></div>`).join('');
+			const ticks = [0, 3, 6, 9, 12, 15, 18, 21, 24].map((h) => `<span style="left:${pct(h)}">${String(h).padStart(2, '0')}:00</span>`).join('');
+			return `${mapSvg(theme, '0 150 1280 800', 0)}
+			<div class="veil"></div>
+			<div class="bar">
+				<button class="world s"><span class="game">Gothic II: Noc Kruka</span><span class="wname">Khorinis</span></button>
+				<nav class="tools s">${tools}</nav>
+				<div class="search s">${icon('search')}<span>Szukaj w Khorinis</span><kbd>Ctrl K</kbd></div>
+			</div>
+			${mapControls()}${CLOCK}
+			<div class="legend s">${legendItems()}</div>
+			<section class="drawer s">
+				<article class="entry">${ENTRY_HEAD}${ENTRY_BODY}</article>
+				<div class="data">
+					<div class="dtabs"><span class="on">Rutyna dnia</span><span>Ma przy sobie</span><span>Miejsca</span><span>Questy</span><span class="grow">Postacie w pobliżu: 4</span></div>
+					<div class="axis"><span></span><div class="ticks">${ticks}</div></div>
+					<div class="rows">${rows}<div class="needle" style="left:calc(162px + (100% - 162px) * 0.5)"></div></div>
+				</div>
+			</section>`;
+		},
+		palette(theme) {
+			const res = (ic, name, sub, on, kbd) => `<div class="res ${on ? 'on' : ''}">${icon(ic)}<span>${name} ${sub ? `<small>${sub}</small>` : ''}</span>${kbd ? `<kbd>${kbd}</kbd>` : '<span></span>'}</div>`;
+			const dock = TOOL_LIST.slice(0, 7).map((t) => `<button class="${t[2] ? 'on' : ''}" aria-label="${t[1]}">${icon(t[0])}</button>`).join('');
+			return `${mapSvg(theme, '0 0 1280 800', 0)}
+			<div class="veil"></div>
+			<div class="corner tl"><span>Gothic II: Noc Kruka</span><span class="wname">Khorinis</span></div>
+			<div class="corner tr"><span class="time">12:00</span><span>Południe, dzień 3</span></div>
+			<div class="corner bl">${legendItems()}</div>
+			<div class="corner br"><button aria-label="Północ">${icon('compass')}</button><button aria-label="Przybliż">${icon('plus')}</button><button aria-label="Oddal">${icon('minus')}</button><button aria-label="Widok 3D">${icon('cube')}</button></div>
+			<div class="palette s">
+				<div class="prompt"><span class="gt">›</span>abu<span class="caret"></span><small>Enter otwiera, Esc zamyka</small></div>
+				<div class="pal-body">
+					<div class="results">
+						<h4>Postacie</h4>
+						${res('person', 'Abuyin', 'Obywatel, Khorinis', true, 'Enter')}
+						<h4>Działania</h4>
+						${res('pin', 'Pokaż Abuyina na mapie', '', false, '1')}
+						${res('route', 'Wyznacz trasę do Abuyina', '', false, '2')}
+						${res('clock', 'Przewiń czas do 01:20', 'Abuyin idzie spać', false, '3')}
+						<h4>Ostatnio otwierane</h4>
+						${res('flag', 'Afera z zielem', 'Misja', false, '')}
+						${res('person', 'Akil', 'Mieszkaniec', false, '')}
+					</div>
+					<div class="preview"><article class="entry">${ENTRY_HEAD}${NOW}${FACTS}${ACTIONS}</article></div>
+				</div>
+			</div>
+			<nav class="dock s" aria-label="Narzędzia">${dock}</nav>`;
+		},
+		callout(theme) {
+			const tools = TOOL_LIST.slice(0, 7).map((t) => `<button class="${t[2] ? 'on' : ''}" aria-label="${t[1]}">${icon(t[0])}<span class="lb">${t[1]}</span></button>`).join('');
+			return `${mapSvg(theme, '0 0 1280 800', 0)}
+			<div class="veil"></div>
+			<svg class="leaders" viewBox="0 0 1280 800" aria-hidden="true">
+				<path d="M440 392 L488 520" fill="none" style="stroke:var(--pick)" stroke-width="2"/>
+				<circle cx="440" cy="392" r="4" style="fill:var(--pick)"/>
+				<path d="M900 230 L820 330" fill="none" style="stroke:var(--ink)" stroke-width="1.5" opacity=".6"/>
+				<path d="M900 640 L760 560" fill="none" style="stroke:var(--ink)" stroke-width="1.5" opacity=".6"/>
+			</svg>
+			<div class="pill s"><span class="wname">Khorinis</span>${icon('caret')}<span class="divider"></span><div class="search">${icon('search')}<span>Szukaj przedmiotu, postaci lub questu</span><kbd>Ctrl K</kbd></div></div>
+			<div class="clock s"><span class="time">12:00</span><span class="phase">Południe</span></div>
+			${mapControls()}
+			<article class="entry callout s">${ENTRY_HEAD}${ENTRY_BODY}</article>
+			<div class="chip s" style="left:900px;top:208px"><b>Klasztor Magów Ognia</b><span>14 wpisów</span></div>
+			<div class="chip s" style="left:900px;top:624px"><b>Farma Onara</b><span>23 wpisy</span></div>
+			<nav class="toolpill s" aria-label="Narzędzia">${tools}</nav>
+			<div class="legend s">${legendItems()}</div>`;
+		}
+	};
+
+	function desktopMock(d, mode, lite) {
+		const html = LAYOUTS[d.layout](d.id, mode);
+		const body = lite ? html.replace(/<svg class="map"[\s\S]*?<\/svg>/, mapSvg(d.id, d.layout === 'drawer' ? '0 150 1280 800' : '0 0 1280 800', d.mapShift || 0, true)) : html;
+		return `<div class="mock desk t-${d.id} mode-${mode}">${body}</div>`;
+	}
+
+	function phoneMock(d, mode) {
+		const nav = [['search', 'Szukaj', true], ['layers', 'Warstwy'], ['ruler', 'Pomiary'], ['clock', 'Czas'], ['more', 'Inne']]
+			.map(([i, l, on]) => `<button class="${on ? 'on' : ''}">${icon(i)}<span>${l}</span></button>`).join('');
+		const extra = d.id === 'ekwipunek'
+			? `<div class="p-slots"><div class="slot on">${icon('dagger')}</div><div class="slot empty"></div><div class="slot empty"></div><div class="slot empty"></div><div class="slot empty"></div></div>`
+			: '';
+		const palette = d.id === 'marvin'
+			? `<div class="palette-phone s"><div class="prompt"><span class="gt">›</span>abu<span class="caret"></span></div><div class="results">
+				<h4>Postacie</h4><div class="res on">${icon('person')}<span>Abuyin <small>Obywatel</small></span><span></span></div>
+				<h4>Działania</h4><div class="res">${icon('pin')}<span>Pokaż na mapie</span><span></span></div><div class="res">${icon('route')}<span>Wyznacz trasę</span><span></span></div><div class="res">${icon('clock')}<span>Przewiń do 01:20</span><span></span></div>
+			</div></div>`
+			: '';
+		return `<div class="mock phone t-${d.id} mode-${mode}">
+			${mapSvg(d.id, '330 330 300 520', 0)}
+			<div class="veil"></div>
+			${d.id === 'kartograf' ? '<div class="neat"></div>' : ''}
+			<div class="p-top"><div class="search s">${icon('search')}<span>Szukaj w Khorinis</span></div></div>
+			${palette}
+			<section class="sheet s">
+				${ORNAMENT[d.id] || ''}<div class="grip"></div>
+				<header><h2>Abuyin</h2><p class="sub">Obywatel Khorinis, poziom 40</p></header>
+				<div class="now"><span class="k">Teraz, 12:00</span><strong>Stoi przy wejściu do miasta</strong></div>
+				${extra}
+				<ol class="actions"><li><button>Pokaż na mapie</button></li><li><button>Kopiuj link</button></li></ol>
+			</section>
+			<nav class="p-nav s">${nav}</nav>
+		</div>`;
+	}
+
+	const DIRECTIONS = [
+		{
+			id: 'kartograf', name: 'Kartograf', layout: 'classic', layoutName: 'panele na mapie',
+			lede: 'Interfejs to kartki położone na mapie, a całość obejmuje ramka z podziałką jak na dawnej mapie topograficznej. Kartki są tylko tam, gdzie leży tekst do czytania; mapa zostaje czysta.',
+			why: ['W Gothicu mapę kupuje się u kartografa i czyta jak szkic tuszem na pergaminie. To najbardziej rozpoznawalny przedmiot gry, a zarazem naturalny język dla GIS.', 'Ramka z podziałką mówi „to jest mapa” bez żadnego logo.', 'Czerwień rubrykatorska oznacza tylko wybrany obiekt i aktywne narzędzie.'],
+			modes: { light: 'Welin i tusz, morze w kolorze spłowiałej zieleni jak na rycinie.', dark: 'Ta sama mapa czytana przy świecy: przyciemniony welin, jasny tusz, rubryka rozjaśniona do koralu.' },
+			refs: ['Mapy Khorinis i Górniczej Doliny w grze', 'Pentiment', 'Kingdom Come: Deliverance, mapa', 'Mapy topograficzne z podziałką ramki'],
+			palette: { light: [['#e8dec6', 'Welin'], ['#2a2119', 'Tusz'], ['#6b5a45', 'Sepia'], ['#8f2e21', 'Rubryka'], ['#9fb0a6', 'Morze']], dark: [['#2a241c', 'Welin nocą'], ['#ecdfc2', 'Tusz'], ['#ab9b80', 'Sepia'], ['#e0735c', 'Rubryka'], ['#13232a', 'Morze']] },
+			type: [['IM Fell English', "'IM Fell English', serif", 'Nazwy, imiona, godzina'], ['Schibsted Grotesk', "'Schibsted Grotesk', sans-serif", 'Interfejs i liczby']],
+			change: ['Księga przestaje być modalem: wpis to kartka po prawej.', 'Dok narzędzi bez etykiet, aktywne narzędzie podkreślone rubryką.'],
+			risk: 'Jasne kartki nad ciemną mapą mocno przyciągają oko; kartek musi być mało i muszą być wąskie.'
+		},
+		{
+			id: 'dialog', name: 'Dialog', layout: 'classic', layoutName: 'bez paneli',
+			lede: 'Bez ramek i paneli. Tekst leży wprost na mapie, a czytelność daje winietowanie brzegów, jak w samej grze. Działania we wpisie wyglądają jak kwestie do wyboru w rozmowie.',
+			why: ['Gothic prawie nie ma HUD-u: rozmowa to tekst na przyciemnionym dole ekranu, wybrana kwestia świeci na złoto.', 'Numerowane działania to prawdziwe skróty klawiszowe 1–3.', 'Najwięcej mapy, najmniej chromu.'],
+			modes: { light: 'Winieta z mgły zamiast cienia: brzegi ekranu bieleją, tekst jest ciemny z jasną poświatą.', dark: 'Jak w grze: czarna winieta, jasny tekst, złota wybrana kwestia.' },
+			refs: ['Okno dialogowe i menu Gothica', 'Death Stranding, Elden Ring', 'Apple Maps: typografia na mapie'],
+			palette: { light: [['#f4eee0', 'Mgła'], ['#1f1a12', 'Tekst'], ['#5b5141', 'Kurz'], ['#8f5a00', 'Wybrana kwestia'], ['#a7b6b2', 'Morze']], dark: [['#060503', 'Cień'], ['#efe7d4', 'Tekst'], ['#b4aa95', 'Kurz'], ['#e7c46a', 'Wybrana kwestia'], ['#13232a', 'Morze']] },
+			type: [['Vollkorn SC', "'Vollkorn SC', serif", 'Nazwy światów i postaci'], ['Vollkorn', "'Vollkorn', serif", 'Cały interfejs']],
+			change: ['Dok narzędzi to lista słów zamiast ikon.', 'Wpis leży po stronie przeciwnej do zaznaczonego punktu, więc nie zasłania celu.'],
+			risk: 'Nad jasnym terenem tekst bez tła traci kontrast; w trybie jasnym problem przenosi się na ciemne lasy i bagna.'
+		},
+		{
+			id: 'bariera', name: 'Bariera', layout: 'classic', layoutName: 'panele na mapie',
+			lede: 'Chłodne szklane panele. Kolor bariery oznacza wybór, kolor magicznej rudy oznacza teraźniejszość. Zasięg pomiaru albo analizy rysuje się jako kopuła.',
+			why: ['Bariera nad Kolonią i niebieska ruda to wizualny znak Gothica 1.', 'Szklane panele najlepiej znoszą gęste narzędzia GIS.', 'Kapitaliki szeryfowe w nazwach nie pozwalają uciec w science fiction.'],
+			modes: { light: 'Dzień nad Kolonią: mleczne szkło, kobaltowa bariera, ruda w kolorze morskiej zieleni.', dark: 'Noc: granatowe szkło i świecąca bariera.' },
+			refs: ['Bariera i Stara Kopalnia w Gothic 1', 'Destiny 2: mapa kierunków', 'Linear: precyzja paneli'],
+			palette: { light: [['#f7f9fd', 'Szkło'], ['#142038', 'Tekst'], ['#3454c4', 'Bariera'], ['#0b7286', 'Ruda'], ['#b7c8db', 'Morze']], dark: [['#10192b', 'Szkło'], ['#e4e9f3', 'Tekst'], ['#a9c1ff', 'Bariera'], ['#74d6e9', 'Ruda'], ['#0c1a2a', 'Morze']] },
+			type: [['Cormorant SC', "'Cormorant SC', serif", 'Nazwy świata i wpisów'], ['Familjen Grotesk', "'Familjen Grotesk', sans-serif", 'Interfejs i liczby']],
+			change: ['Zaokrąglone panele zamiast ściętych rogów.', 'Aktywne narzędzie świeci barierą.'],
+			risk: 'Najbliżej typowego wyglądu aplikacji; bez kopuły i kapitalików robi się z niego zwykły dashboard.'
+		},
+		{
+			id: 'witraz', name: 'Witraż', layout: 'classic', layoutName: 'panele na mapie',
+			lede: 'Ołowiane kontury i kolorowe szkło jak w świątyni Innosa. Każdy rodzaj danych ma swoje szkło: postacie karmin, przedmioty bursztyn, questy kobalt, lokacje mech.',
+			why: ['Klasztor i kaplice Innosa to najbardziej sakralna część świata gry.', 'Kolor rodzaju danych staje się systemem: ten sam na kropce, w legendzie i w łuku karty.', 'Fraktura tylko w nazwie świata i imieniu wpisu.'],
+			modes: { light: 'Wapień klasztoru w słońcu; ołów i szkło zostają, szkło jest ciemniejsze dla kontrastu.', dark: 'Wnętrze kaplicy: ciemny kamień, szkło świeci.' },
+			refs: ['Klasztor Magów Ognia', 'Hades: grube kontury', 'Witraże gotyckie'],
+			palette: { light: [['#e8e2d6', 'Wapień'], ['#1d1a16', 'Ołów'], ['#a52a35', 'Karmin'], ['#c38a1f', 'Bursztyn'], ['#3456b0', 'Kobalt'], ['#4a7a34', 'Mech']], dark: [['#24211e', 'Kamień'], ['#0b0a09', 'Ołów'], ['#b8343f', 'Karmin'], ['#d9a33a', 'Bursztyn'], ['#4466c4', 'Kobalt'], ['#5d8c42', 'Mech']] },
+			type: [['UnifrakturCook', "'UnifrakturCook', serif", 'Nazwa świata, imię wpisu'], ['Atkinson Hyperlegible', "'Atkinson Hyperlegible', sans-serif", 'Interfejs']],
+			change: ['Karta wpisu z łukiem ostrym w kolorze rodzaju danych.', 'Legenda warstw to cztery szybki.'],
+			risk: 'Najbardziej dekoracyjny; grube kontury zjadają miejsce na telefonie.'
+		},
+		{
+			id: 'jarkendar', name: 'Jarkendar', layout: 'classic', layoutName: 'dok na dole',
+			lede: 'Kamień Budowniczych z Jarkendaru: schodkowe narożniki, meander z kamiennych stopni i jadeit Adanosa. Narzędzia schodzą na dół ekranu jako rząd glifów.',
+			why: ['Jarkendar ma własną, geometryczną architekturę, niepodobną do reszty średniowiecznego Khorinis.', 'Schodkowy narożnik od razu mówi „kamień”, bez tekstur.', 'Jadeit to woda i Magowie Wody, więc pasuje do morza pod mapą.'],
+			modes: { light: 'Piaskowiec w słońcu, jadeitowe akcenty, morze turkusowe.', dark: 'Wnętrze świątyni: zielonkawy kamień, jadeit świeci.' },
+			refs: ['Jarkendar, portal i świątynie Budowniczych', 'Kamienne tablice z glifami', 'Monument Valley'],
+			palette: { light: [['#e3d4b3', 'Piaskowiec'], ['#2a2318', 'Glif'], ['#6b5d44', 'Pył'], ['#1d7a73', 'Jadeit'], ['#2b4c7e', 'Lapis']], dark: [['#1f2523', 'Kamień świątyni'], ['#e8dfc8', 'Glif'], ['#9ba398', 'Pył'], ['#56c6b8', 'Jadeit'], ['#7d9fd8', 'Lapis']] },
+			type: [['Marcellus', "'Marcellus', serif", 'Nazwy jak wykute w kamieniu'], ['Sora', "'Sora', sans-serif", 'Interfejs, geometryczny jak glify']],
+			change: ['Dok narzędzi poziomo na dole, z podpisami.', 'Legenda i podziałka w lewym dolnym rogu, zegar przy wyszukiwarce.'],
+			risk: 'Poziomy dok konkuruje z arkuszem wpisu na tabletach.'
+		},
+		{
+			id: 'obwieszczenie', name: 'Obwieszczenie', layout: 'classic', layoutName: 'zakładki u góry',
+			lede: 'Drzeworyt i obwieszczenia przybite na tablicy w Khorinis. Twarde kontury, cienie bez rozmycia, fraktura w imieniu jak na liście gończym.',
+			why: ['List gończy z twarzą bohatera to jeden z najbardziej pamiętnych przedmiotów Gothica 2.', 'Druk dwubarwny daje kontrast czytelny nad każdą częścią mapy.', 'Twarde cienie są tanie w renderowaniu nad WebGL.'],
+			modes: { light: 'Papier i czerń drukarska, cynober jako druga farba.', dark: 'Odwrócony drzeworyt: jasne linie na czerni, cienie w cynobrze.' },
+			refs: ['Listy gończe i obwieszczenia w Khorinis', 'Drzeworyty XV–XVI wieku', 'Neobrutalizm w UI'],
+			palette: { light: [['#efe6d0', 'Papier'], ['#17120c', 'Czerń drukarska'], ['#b3261e', 'Cynober'], ['#1f4196', 'Lazur'], ['#b8c4bd', 'Morze']], dark: [['#16120d', 'Klocek'], ['#f0e7d1', 'Linia'], ['#ec5f50', 'Cynober'], ['#8aa6ee', 'Lazur'], ['#0f191c', 'Morze']] },
+			type: [['Pirata One', "'Pirata One', serif", 'Imię wpisu, nazwa świata, godzina'], ['Archivo Narrow', "'Archivo Narrow', sans-serif", 'Interfejs']],
+			change: ['Karta wpisu przekrzywiona i przybita dwoma ćwiekami.', 'Narzędzia jako poziome zakładki z podpisami.'],
+			risk: 'Przechylona karta to żart, który może się znudzić.'
+		},
+		{
+			id: 'kruk', name: 'Kruk', layout: 'side', layoutName: 'kolumna boczna', mapShift: 180,
+			lede: 'Jedna stała kolumna po lewej z wyszukiwarką, narzędziami i wpisem, jak w mapach Google. Gothic jest w szczegółach: opalizujące pióro kruka pod aktywną zakładką i ostry szeryf w nazwach.',
+			why: ['„Noc Kruka” to nazwa dodatku, a kruk jest czarny z połyskiem fioletu i zieleni.', 'Stała kolumna eliminuje nakładanie się paneli na mapę.', 'Ostry szeryf daje charakter bez dekoracji.'],
+			modes: { light: 'Świt: chłodna biel z fioletowym odcieniem.', dark: 'Noc: czerń z fioletem, pióro opalizuje.' },
+			refs: ['Kruk i Beliar w Nocy Kruka', 'Google Maps i Apple Maps', 'Arc i Raycast'],
+			palette: { light: [['#f6f4f9', 'Świt'], ['#1b1724', 'Atrament'], ['#625b72', 'Popiół'], ['#5a3fc0', 'Pióro'], ['#b4c2cf', 'Morze']], dark: [['#141218', 'Noc'], ['#ece8f2', 'Światło'], ['#9b94a9', 'Popiół'], ['#b9a2ff', 'Pióro'], ['#0e1620', 'Morze']] },
+			type: [['Gloock', "'Gloock', serif", 'Nazwa świata i imię wpisu'], ['Geist', "'Geist', sans-serif", 'Interfejs']],
+			change: ['Nagłówek, dok i Księga w jednej kolumnie 390 px.', 'Narzędzia jako zakładki nad treścią kolumny.'],
+			risk: 'Kolumna zabiera stałe 390 px na laptopie; musi się zwijać.'
+		},
+		{
+			id: 'krag', name: 'Krąg', fresh: true, layout: 'wheel', layoutName: 'koło narzędzi',
+			lede: 'Kamienny krąg zamiast prostokątów. Narzędzia leżą na kole w lewym dolnym rogu jak runy wokół ołtarza, zegar to tarcza słoneczna z łukiem rutyny wybranej postaci, a wpis ma okrągłą pieczęć. Pismo uncjalne, jak na kamieniach.',
+			why: ['Kamienne kręgi i ołtarze stoją w wielu miejscach Khorinis i Górniczej Doliny; w Gothicu to miejsca magii i teleportu.', 'Koło narzędzi daje równą odległość kciuka do każdego narzędzia, więc ten sam wzorzec dobrze przenosi się na tablet.', 'Tarcza zegara pokazuje coś, czego cyfry nie pokażą: kiedy postać zaczyna i kończy dzień (przerywany łuk).'],
+			modes: { light: 'Porosty w słońcu: szarozielony kamień, oliwkowy akcent.', dark: 'Krąg nocą: ciemny mech i blask świetlików.' },
+			refs: ['Kamienne kręgi i ołtarze w Gothicu', 'Koła wyboru w grach na pady (Zelda, Horizon)', 'Mapy Apple: zegar i słońce'],
+			palette: { light: [['#eef0e6', 'Porost'], ['#1e2419', 'Kamień'], ['#59614f', 'Mech'], ['#586b10', 'Oliwka'], ['#a8bdb5', 'Morze']], dark: [['#171c17', 'Mech nocą'], ['#e3e8d6', 'Księżyc'], ['#98a28c', 'Mgła'], ['#cfd36b', 'Świetlik'], ['#0f1c1d', 'Morze']] },
+			type: [['Uncial Antiqua', "'Uncial Antiqua', serif", 'Nazwa świata i imię wpisu'], ['Lexend', "'Lexend', sans-serif", 'Interfejs, okrągły i czytelny']],
+			change: ['Pionowy dok znika; narzędzia na kole z aktywnym w środku.', 'Zegar staje się tarczą 24 h z łukiem dnia i łukiem rutyny wybranego wpisu.', 'Karta wpisu ma pieczęć z ikoną rodzaju danych.'],
+			risk: 'Koło jest wolniejsze myszką niż prosty dok i trudniej je opisać czytnikowi ekranu; potrzebne etykiety i obsługa strzałkami.'
+		},
+		{
+			id: 'ekwipunek', name: 'Ekwipunek', fresh: true, layout: 'inventory', layoutName: 'plecak z prawej', mapShift: -170,
+			lede: 'Prawa strona ekranu to plecak: postać z portretem, sloty z tym, co nosi, i siatka rzeczy w pobliżu. Narzędzia to pasek szybkiego wyboru z numerami 1–8 pod mapą.',
+			why: ['Ekwipunek z siatką slotów to ekran, w którym gracz Gothica spędza najwięcej czasu poza światem.', 'Siatka „W pobliżu” robi z wpisu punkt wyjścia do eksploracji: kliknięcie kafelka przenosi na kolejny wpis.', 'Numery na pasku to prawdziwe skróty klawiszowe narzędzi.'],
+			modes: { light: 'Lniany worek: płótno, jasne sloty, mosiądz.', dark: 'Skrzynia w nocy: czarne sloty z mosiężną obwódką wybranego.' },
+			refs: ['Ekwipunek Gothica 1 i 2', 'Diablo IV i Baldur’s Gate 3: siatka przedmiotów', 'Pasek szybkiego wyboru w grach'],
+			palette: { light: [['#ece5d7', 'Płótno'], ['#ddd2bd', 'Slot'], ['#241e16', 'Tekst'], ['#8c6420', 'Mosiądz'], ['#a6b8b0', 'Morze']], dark: [['#0e0c0a', 'Skrzynia'], ['#221d17', 'Slot'], ['#ece3cf', 'Tekst'], ['#d8b25c', 'Mosiądz'], ['#12201f', 'Morze']] },
+			type: [['Spectral SC', "'Spectral SC', serif", 'Imię, nazwa świata, nagłówki półek'], ['IBM Plex Sans Condensed', "'IBM Plex Sans Condensed', sans-serif", 'Interfejs, wąski jak w tabelach']],
+			change: ['Księga i wpis zamieniają się w stały panel 440 px po prawej.', 'Pole „Ma przy sobie” jako sloty, a nie tekst; podgląd 3D przedmiotu otwiera się ze slotu.', 'Narzędzia jako pasek 1–8 na dole mapy.'],
+			risk: 'Kafelki kuszą, żeby pokazać wszystko naraz; siatka musi mieć limit i jasne „Pokaż więcej”.'
+		},
+		{
+			id: 'dziennik', name: 'Dziennik', fresh: true, layout: 'book', layoutName: 'rozłożona księga', mapShift: 340,
+			lede: 'Księga w aplikacji staje się prawdziwą rozłożoną księgą: lewa strona to spis treści z kropkami prowadzącymi, prawa to wpis. Rodzaje danych to indeks palcowy na krawędzi kart, a zakładka to wstążka.',
+			why: ['Dziennik w Gothicu to rozłożona księga z misjami; aplikacja i tak nazywa wyszukiwarkę „Księgą”.', 'Spis treści z kropkami prowadzącymi to znany wzorzec listy z wartością po prawej (poziom, liczba sztuk).', 'Indeks palcowy z kolorami rodzajów zastępuje filtry‑pigułki, które teraz wyglądają jak z panelu administracyjnego.'],
+			modes: { light: 'Kremowy papier w skórzanej oprawie, wstążka w kolorze wina.', dark: 'Czytanie nocą: ciemne karty, różowa wstążka, czarna oprawa.' },
+			refs: ['Dziennik misji w Gothicu 2', 'Słowniki z indeksem palcowym', 'Pentiment i Disco Elysium: tekst jako główny ekran'],
+			palette: { light: [['#f2ead9', 'Karta'], ['#5a2a22', 'Oprawa'], ['#2b2420', 'Tusz'], ['#7d2430', 'Wstążka'], ['#9eb1ad', 'Morze']], dark: [['#25201b', 'Karta nocą'], ['#0f0c0a', 'Oprawa'], ['#ebe1cd', 'Tusz'], ['#df7d89', 'Wstążka'], ['#10191c', 'Morze']] },
+			type: [['Libre Caslon Display', "'Libre Caslon Display', serif", 'Tytuły stron i imię wpisu'], ['Libre Caslon Text', "'Libre Caslon Text', serif", 'Spis treści i opis']],
+			change: ['Księga zajmuje lewe 60% ekranu, mapa przesuwa środek w prawo i zostaje widoczna.', 'Filtry rodzajów jako indeks palcowy na krawędzi.', 'Działania jako podkreślone słowa, nie przyciski.'],
+			risk: 'Na telefonie z rozkładówki zostaje jedna strona; trzeba ustalić, która strona jest „ważniejsza” (lista czy wpis).'
+		},
+		{
+			id: 'alchemik', name: 'Alchemik', fresh: true, layout: 'drawer', layoutName: 'szuflada danych',
+			lede: 'Pracownia zamiast panelu: mapa u góry, a na dole wysuwana szuflada z danymi. Dla postaci szuflada pokazuje rutynę dnia jako wykres pasmowy z igłą „teraz”, porównany z postaciami w pobliżu.',
+			why: ['Rutyny dnia to jedna z najbardziej gotyckich rzeczy w Gothicu: każda postać ma swój plan. Aplikacja już je animuje, ale nigdzie ich nie pokazuje w całości.', 'Szuflada to klasyczny układ GIS (mapa nad tabelą atrybutów), więc pomiary i analizy też się w niej zmieszczą.', 'Miedziana igła czasu łączy się z narzędziem Czas: przesunięcie igły przesuwa zegar świata.'],
+			modes: { light: 'Jasna pracownia: kreda, butelkowa zieleń, miedź.', dark: 'Laboratorium nocą: zielonkawy cień, eliksir i miedziana igła.' },
+			refs: ['Stół alchemiczny w Gothicu', 'QGIS i ArcGIS: tabela atrybutów pod mapą', 'Linear i GitHub Projects: widok osi czasu'],
+			palette: { light: [['#f4f5ef', 'Kreda'], ['#1a211d', 'Tekst'], ['#55625a', 'Szkło'], ['#2c8550', 'Eliksir'], ['#a8622f', 'Miedź']], dark: [['#121715', 'Pracownia'], ['#e2eadf', 'Tekst'], ['#8fa096', 'Szkło'], ['#7cc796', 'Eliksir'], ['#d99a68', 'Miedź']] },
+			type: [['Young Serif', "'Young Serif', serif", 'Nazwa świata i imię wpisu'], ['IBM Plex Sans', "'IBM Plex Sans', sans-serif", 'Interfejs, tabele, oś czasu']],
+			change: ['Narzędzia z podpisami w górnym pasku obok nazwy świata.', 'Szuflada 300 px z kartami: rutyna, ekwipunek, miejsca, questy.', 'Wykres rutyn sprzężony z zegarem świata.'],
+			risk: 'Szuflada zabiera 40% wysokości na laptopach 13"; musi dać się zwinąć do paska z jedną linijką.'
+		},
+		{
+			id: 'marvin', name: 'Marvin', fresh: true, layout: 'palette', layoutName: 'konsola',
+			lede: 'Konsola jest głównym sposobem poruszania się: Ctrl K otwiera paletę z wynikami po lewej i podglądem wpisu po prawej, z działaniami pod numerami. Reszta ekranu to cztery narożniki z najważniejszymi informacjami.',
+			why: ['W Gothicu wpisanie MARVIN odblokowywało konsolę deweloperską; to żart, który zna każdy fan serii.', 'Paleta poleceń łączy wyszukiwanie, działania i przełączanie narzędzi w jednym miejscu, więc mapa zostaje pusta.', 'Narożniki w kształcie celownika porządkują informacje stałe bez żadnych paneli.'],
+			modes: { light: 'Dzienna konsola: ciepła biel, bursztynowy kursor.', dark: 'Nocna konsola: węgiel, kość i bursztyn.' },
+			refs: ['Tryb Marvina w Gothicu', 'Raycast, Linear i VS Code: paleta poleceń', 'HUD z narożnikami w grach taktycznych'],
+			palette: { light: [['#fbf7f0', 'Kość'], ['#1d1712', 'Węgiel'], ['#6a5d50', 'Popiół'], ['#9a6608', 'Bursztyn'], ['#b2c1c3', 'Morze']], dark: [['#1a1613', 'Węgiel'], ['#f1e7d6', 'Kość'], ['#a69a8b', 'Popiół'], ['#e8b04a', 'Bursztyn'], ['#10181b', 'Morze']] },
+			type: [['Chivo', "'Chivo', sans-serif", 'Cały interfejs, mocne nagłówki'], ['Chivo Mono', "'Chivo Mono', monospace", 'Tylko pole wpisywania']],
+			change: ['Pionowy dok znika; narzędzia w małym doku na dole i w palecie.', 'Księga staje się paletą z podglądem wpisu.', 'Działania mają numery i skróty klawiszowe.'],
+			risk: 'Najmniej odkrywalny dla nowych osób; potrzebna podpowiedź „Ctrl K” na starcie i duży przycisk wyszukiwania na telefonie.'
+		},
+		{
+			id: 'bagno', name: 'Bagno', fresh: true, layout: 'callout', layoutName: 'dymki na mapie',
+			lede: 'Bez paneli przyklejonych do brzegów. Wpis to dymek połączony linią z punktem na mapie, a miejsca pokazują liczbę wpisów w małych etykietach. Narzędzia to jedna pigułka na dole. Fiolet dymu z ziela i zieleń bagna.',
+			why: ['Obóz na bagnie i Bractwo Śniącego to najbardziej charakterystyczne miejsce Gothica 1; fioletowy dym wraca też w Gothicu 2.', 'Dymek z linią mówi, do czego odnosi się wpis, bez szukania wzrokiem kropki na mapie.', 'Pigułka narzędzi z jedną podpisaną pozycją to najlżejszy wzorzec z nowoczesnych map (Felt, Figma).'],
+			modes: { light: 'Poranna mgła nad bagnem, fiolet jako akcent.', dark: 'Bagno nocą: ciemny mech, fioletowy dym nad mapą.' },
+			refs: ['Obóz na bagnie i Bractwo Śniącego', 'Felt i Figma: pigułka narzędzi, dymki', 'Mapy Google: etykiety z liczbą wyników'],
+			palette: { light: [['#f2f3ee', 'Mgła'], ['#1d2219', 'Bagno'], ['#59614f', 'Trzcina'], ['#6e44a0', 'Dym'], ['#a9bab0', 'Morze']], dark: [['#1b1f19', 'Mech nocą'], ['#e6ebdc', 'Mgła'], ['#9aa494', 'Trzcina'], ['#c7a8f0', 'Dym'], ['#0f1a17', 'Morze']] },
+			type: [['Eczar', "'Eczar', serif", 'Nazwy i imiona'], ['Hanken Grotesk', "'Hanken Grotesk', sans-serif", 'Interfejs']],
+			change: ['Wpis podąża za punktem na mapie zamiast stać w rogu ekranu.', 'Nazwa świata i wyszukiwarka w jednej pigułce.', 'Etykiety miejsc z liczbą wpisów zastępują część warstw.'],
+			risk: 'Dymek przy obrocie kamery 3D musi się przesuwać płynnie i nie wychodzić poza ekran; to więcej pracy niż stały panel.'
+		}
+	];
+
+	const picker = document.getElementById('picker');
+	const modes = document.getElementById('modes');
+	const thumbs = document.getElementById('thumbs');
+	const deskFrame = document.getElementById('desk-frame');
+	const phoneFrame = document.getElementById('phone-frame');
+	const notes = document.getElementById('notes');
+	const stage = document.getElementById('stage');
+
+	let currentId = DIRECTIONS[0].id;
+	let currentMode = 'dark';
+	try {
+		const saved = localStorage.getItem('kierunki-tryb');
+		if (saved === 'light' || saved === 'dark') currentMode = saved;
+		else if (window.matchMedia('(prefers-color-scheme: light)').matches) currentMode = 'light';
+	} catch (error) { /* bez zapisu tryb zostaje ciemny */ }
+
+	function renderNotes(d) {
+		const swatches = d.palette[currentMode].map(([hex, name]) => `<div class="sw"><i style="background:${hex}"></i><b>${name}</b>${hex}</div>`).join('');
+		const type = d.type.map(([name, stack, role]) => `<div class="typespec"><span style="font-family:${stack}">${name}</span><p>${role}</p></div>`).join('');
+		notes.innerHTML = `
+			<div class="lede"><h2>${d.name}</h2><span class="layout-tag">Układ: ${d.layoutName}</span><p>${d.lede}</p></div>
+			<section><h3>Dlaczego pasuje do Gothica</h3><ul>${d.why.map((w) => `<li>${w}</li>`).join('')}</ul></section>
+			<section><h3>Tryb jasny i ciemny</h3><ul><li>Jasny: ${d.modes.light}</li><li>Ciemny: ${d.modes.dark}</li></ul></section>
+			<section><h3>Co zmienia w aplikacji</h3><ul>${d.change.map((w) => `<li>${w}</li>`).join('')}</ul></section>
+			<section><h3>Paleta, tryb ${currentMode === 'light' ? 'jasny' : 'ciemny'}</h3><div class="swatches">${swatches}</div></section>
+			<section><h3>Pismo</h3>${type}</section>
+			<section><h3>Inspiracje</h3><ul>${d.refs.map((w) => `<li>${w}</li>`).join('')}</ul></section>
+			<section><h3>Ryzyko</h3><p>${d.risk}</p></section>`;
+	}
+
+	function fitFrame(frame) {
+		frame.style.setProperty('--s', String(frame.clientWidth / Number(frame.dataset.w)));
+	}
+	const resizer = new ResizeObserver((entries) => entries.forEach((e) => fitFrame(e.target)));
+
+	function renderThumbs() {
+		thumbs.innerHTML = '';
+		DIRECTIONS.forEach((d) => {
+			const b = document.createElement('button');
+			b.type = 'button'; b.className = 'thumb'; b.dataset.id = d.id;
+			b.innerHTML = `<div class="frame" data-w="1280">${desktopMock(d, currentMode, true)}</div><span><b>${d.name}</b><small>${d.layoutName}</small></span>`;
+			b.addEventListener('click', () => { select(d.id); stage.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+			thumbs.appendChild(b);
+			const frame = b.querySelector('.frame');
+			resizer.observe(frame);
+			fitFrame(frame);
+		});
+		markCurrent();
+	}
+
+	function markCurrent() {
+		for (const b of picker.children) b.setAttribute('aria-selected', String(b.dataset.id === currentId));
+		for (const b of thumbs.children) b.setAttribute('aria-current', String(b.dataset.id === currentId));
+		for (const b of modes.children) b.setAttribute('aria-pressed', String(b.dataset.mode === currentMode));
+	}
+
+	function renderDetail() {
+		const d = DIRECTIONS.find((x) => x.id === currentId) || DIRECTIONS[0];
+		currentId = d.id;
+		deskFrame.innerHTML = desktopMock(d, currentMode, false);
+		phoneFrame.innerHTML = phoneMock(d, currentMode);
+		renderNotes(d);
+		markCurrent();
+		fitFrame(deskFrame); fitFrame(phoneFrame);
+	}
+
+	function select(id) {
+		currentId = id;
+		try { history.replaceState(null, '', '#' + id); } catch (error) { /* adres bez kotwicy */ }
+		renderDetail();
+	}
+
+	DIRECTIONS.forEach((d) => {
+		const b = document.createElement('button');
+		b.type = 'button'; b.role = 'tab'; b.dataset.id = d.id; b.textContent = d.name;
+		if (d.fresh) b.className = 'new';
+		b.addEventListener('click', () => select(d.id));
+		picker.appendChild(b);
+	});
+	for (const b of modes.children) {
+		b.addEventListener('click', () => {
+			currentMode = b.dataset.mode;
+			try { localStorage.setItem('kierunki-tryb', currentMode); } catch (error) { /* tryb tylko na tę wizytę */ }
+			renderThumbs();
+			renderDetail();
+		});
+	}
+
+	resizer.observe(deskFrame);
+	resizer.observe(phoneFrame);
+	window.addEventListener('hashchange', () => { currentId = location.hash.slice(1); renderDetail(); });
+	if (location.hash.length > 1) currentId = location.hash.slice(1);
+	renderThumbs();
+	renderDetail();
+})();
+</script>
