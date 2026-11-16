@@ -10,6 +10,7 @@
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import Columns2Icon from '@lucide/svelte/icons/columns-2';
 	import CameraSettingsPopover from '#lib/components/shell/CameraSettingsPopover.svelte';
+	import TakeScreenshotButton from '#lib/components/shell/TakeScreenshotButton.svelte';
 	import WorldComparisonPopover from '#lib/components/shell/WorldComparisonPopover.svelte';
 	import { appState, flightControls, geoportal } from '#lib/composition-root.js';
 
@@ -146,6 +147,7 @@
 		>
 			<HouseIcon class="size-5" />
 		</button>
+		<TakeScreenshotButton class={controlButton} />
 		<button
 			class="{controlButton} aria-pressed:bg-active-surface aria-pressed:text-active"
 			aria-label="Widok"

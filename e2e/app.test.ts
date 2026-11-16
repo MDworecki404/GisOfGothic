@@ -269,6 +269,15 @@ test('cyfry otwierają narzędzia, a Ctrl K i / otwierają Księgę', async ({ p
 	await expect(page.getByRole('searchbox')).toBeVisible();
 });
 
+test('przycisk zdjęcia pobiera obraz PNG z podpisem w nazwie pliku', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 800 });
+	await page.goto('/g2nk/khorinis');
+	const downloadPromise = page.waitForEvent('download');
+	await page.getByRole('button', { name: 'Zrób zdjęcie widoku' }).click();
+	const download = await downloadPromise;
+	expect(download.suggestedFilename()).toMatch(/^gis-of-gothic-.*\.png$/);
+});
+
 test('legenda włączonej warstwy otwiera panel Warstwy jednym kliknięciem', async ({ page }) => {
 	await page.goto('/g2nk/khorinis?narzedzie=layers');
 	await page.getByRole('checkbox', { name: /Unikatowe postacie/ }).check();

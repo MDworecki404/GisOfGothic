@@ -677,6 +677,17 @@ znikaniu postaci. Filtr dotyczy warstw „Unikatowe postacie” i „Wszyscy NPC
 (z `npcs.geojson`, pobieranego razem z rutynami) daje im najwcześniejszy rozdział wstawienia postaci o tym
 `npc_code`. Rozdział trafia do adresu (`rozdzial=1…6`) i do zakładek (`SavedView.chapter`).
 
+## Zdjęcie widoku
+
+Przycisk aparatu w `MapControls` (`TakeScreenshotButton`) pobiera PNG kadru mapy z paskiem podpisu (tytuł, świat, adres
+strony, wersja). Przepływ: `takeViewScreenshot` w `composition-root.ts` woła `ViewScreenshotTaker` (`services/screenshot/`),
+który prosi fasadę o klatkę (`captureViewImage` → `MapService.captureViewImage`: `scene.render()` tuż przed odczytem,
+bo bufor płótna Cesium jest czyszczony po wyświetleniu), a `ScreenshotComposer` dokłada tło, pasek i zapisuje PNG.
+Kolory i kroje pisma paska czyta `ScreenshotPaletteReader` ze zmiennych CSS motywu (więc zdjęcie ma tryb jasny albo
+ciemny jak aplikacja), układ paska liczy `ScreenshotBandLayoutCalculator`, nazwę pliku `ScreenshotFileNameBuilder`.
+W kadrze są markery, trasy i pomiary (to elementy Cesium), ale nie interfejs HTML. Plik powstaje w przeglądarce użytkownika
+i nigdzie nie jest wysyłany.
+
 ## Zgłoszenia i skróty klawiszowe
 
 Okno „O projekcie” (`AboutDialog`) ma trzy odnośniki do zgłoszeń: błąd, błąd w danych i pomysł. Adres buduje

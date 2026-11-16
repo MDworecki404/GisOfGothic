@@ -13,6 +13,13 @@ import {
 } from '#lib/services/feedback/issue-report-link-builder.js';
 import { PerformancePreferenceStore } from '#lib/services/performance/performance-preference-store.js';
 import { QUALITY_LEVEL_LABELS } from '#lib/services/performance/performance-profiles.js';
+import { ScreenshotComposer } from '#lib/services/screenshot/screenshot-composer.js';
+import { ScreenshotFileNameBuilder } from '#lib/services/screenshot/screenshot-file-name-builder.js';
+import { ScreenshotPaletteReader } from '#lib/services/screenshot/screenshot-palette-reader.js';
+import {
+	ViewScreenshotTaker,
+	type ViewScreenshot
+} from '#lib/services/screenshot/view-screenshot-taker.js';
 import { AppInstallation } from '#lib/services/pwa/app-installation.js';
 import { ThemeCoordinator } from '#lib/services/theme/theme-coordinator.js';
 import { BrowserThemeDocument, NO_THEME_DOCUMENT } from '#lib/services/theme/theme-document.js';
@@ -69,6 +76,30 @@ export function buildIssueReportLink(kind: IssueReportKind): string {
 		userAgent: navigator.userAgent,
 		viewportSize: `${window.innerWidth}×${window.innerHeight}`,
 		graphicsQualityLabel: QUALITY_LEVEL_LABELS[appState.performanceLevel]
+	});
+}
+
+const viewScreenshotTaker = new ViewScreenshotTaker(
+	() => geoportal.captureViewImage(),
+	new ScreenshotComposer((width, height) => {
+		const canvas = document.createElement('canvas');
+		canvas.width = width;
+		canvas.height = height;
+		return canvas;
+	}),
+	new ScreenshotFileNameBuilder(),
+	() =>
+		new ScreenshotPaletteReader((name) =>
+			getComputedStyle(document.documentElement).getPropertyValue(name)
+		).read(),
+	() => new Date()
+);
+
+export function takeViewScreenshot(): Promise<ViewScreenshot | null> {
+	return viewScreenshotTaker.take({
+		worldName: appState.openedWorldName,
+		appVersion: __APP_VERSION__,
+		siteAddress: window.location.host
 	});
 }
 

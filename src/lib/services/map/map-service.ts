@@ -316,6 +316,16 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 		});
 	}
 
+	/**
+	 * Rysuje klatkę od razu przed odczytem, bo bufor płótna Cesium jest czyszczony po wyświetleniu,
+	 * i zwraca obraz mapy wraz z markerami i trasami; interfejs HTML nie wchodzi w kadr.
+	 */
+	async captureViewImage(): Promise<ImageBitmap | null> {
+		const { scene } = this.viewer;
+		scene.render();
+		return createImageBitmap(scene.canvas);
+	}
+
 	/** Ustawia bieżący zamiar lotu kamerą (klawiatura, joysticki); lot trwa, dopóki zamiar nie jest zerowy. */
 	setFlightInput(input: FlightInput): void {
 		this.flightController.replaceInput(input);

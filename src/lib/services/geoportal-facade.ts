@@ -714,6 +714,11 @@ export class GeoportalFacade {
 		this.mapService?.showCameraPreset(preset);
 	}
 
+	/** Zwraca obraz bieżącego kadru mapy albo `null`, gdy mapa nie jest podłączona. */
+	captureViewImage(): Promise<ImageBitmap | null> {
+		return this.mapService?.captureViewImage() ?? Promise.resolve(null);
+	}
+
 	turnMapToNorth(): void {
 		this.mapService?.turnToNorth();
 	}
