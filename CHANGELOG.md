@@ -2,6 +2,14 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [1.2.0](https://github.com/MDworecki404/GisOfGothic/compare/v1.1.0...v1.2.0) (2026-11-16)
+
+### Nowe funkcje
+
+* spacer pierwszoosobowy po modelu świata ([309670d](https://github.com/MDworecki404/GisOfGothic/commit/309670d52329151f76c1259f52606aa96011879c))
+* spacer zaczyna się od wskazania miejsca na mapie ([41c5cb6](https://github.com/MDworecki404/GisOfGothic/commit/41c5cb6c4979830c4313cdfcb16aa864de2782b9))
+* zdjęcie widoku z paskiem podpisu ([b9abc33](https://github.com/MDworecki404/GisOfGothic/commit/b9abc33a01e0129a4cfd56809e12f13d6a15724e))
+
 ## [1.1.0](https://github.com/MDworecki404/GisOfGothic/compare/v1.0.0...v1.1.0) (2026-11-16)
 
 ### Nowe funkcje
