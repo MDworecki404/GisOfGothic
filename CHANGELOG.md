@@ -2,6 +2,12 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [1.3.1](https://github.com/MDworecki404/GisOfGothic/compare/v1.3.0...v1.3.1) (2026-11-16)
+
+### Testy
+
+* skrót / w teście narzędzi czeka na zamknięcie Księgi po Esc ([9bebdae](https://github.com/MDworecki404/GisOfGothic/commit/9bebdae3f6fcd549ff11630006261319444308a4))
+
 ## [1.3.0](https://github.com/MDworecki404/GisOfGothic/compare/v1.2.1...v1.3.0) (2026-11-16)
 
 ### Nowe funkcje
