@@ -144,3 +144,34 @@ test('na telefonie karta wpisu nie zasłania przycisków kontrolek mapy', async 
 		expect(box.y + box.height, name).toBeLessThanOrEqual(cardBox.y + 1);
 	}
 });
+
+test('podgląd 3D w karcie wpisu ma pasek sterowania z polskimi podpisami', async ({ page }) => {
+	await page.goto(BOOK_URL);
+	await page.getByRole('searchbox').fill('szczaw krolewski');
+	await page.getByRole('button', { name: /Szczaw królewski/ }).click();
+
+	const toolbar = page.getByRole('toolbar', { name: 'Sterowanie podglądem 3D' });
+	await expect(toolbar).toBeVisible();
+	for (const name of [
+		'Przechyl model w górę',
+		'Przechyl model w dół',
+		'Przybliż model',
+		'Oddal model',
+		'Przywróć domyślny widok'
+	]) {
+		await expect(toolbar.getByRole('button', { name })).toBeVisible();
+	}
+
+	const autoRotation = toolbar.getByRole('button', { name: 'Obracaj model automatycznie' });
+	await expect(autoRotation).toHaveAttribute('aria-pressed', 'false');
+	await autoRotation.click();
+	await expect(autoRotation).toHaveAttribute('aria-pressed', 'true');
+	await autoRotation.click();
+	await expect(autoRotation).toHaveAttribute('aria-pressed', 'false');
+
+	await toolbar.getByRole('button', { name: 'Pokaż na pełnym ekranie' }).click();
+	const closeFullscreen = toolbar.getByRole('button', { name: 'Zamknij pełny ekran' });
+	await expect(closeFullscreen).toBeVisible();
+	await closeFullscreen.click();
+	await expect(toolbar.getByRole('button', { name: 'Pokaż na pełnym ekranie' })).toBeVisible();
+});

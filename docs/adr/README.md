@@ -48,3 +48,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0042](0042-podglad-postaci-skladany-z-czesci.md)              | Podgląd 3D postaci składany z części                 | przyjęta          |
 | [0043](0043-motyw-krag-i-tryb-jasny.md)                        | Motyw „Krąg” i tryb jasny                            | przyjęta          |
 | [0044](0044-uklad-krag-kolo-narzedzi-i-tarcza-zegara.md)       | Układ „Krąg”: koło narzędzi i tarcza zegara          | przyjęta          |
+| [0045](0045-sterowanie-podgladem-3d-przez-sesje.md)            | Sterowanie podglądem 3D przez sesję, nie event bus   | przyjęta          |

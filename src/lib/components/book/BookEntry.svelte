@@ -2,11 +2,10 @@
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
 	import RouteIcon from '@lucide/svelte/icons/route';
-	import type { Attachment } from 'svelte/attachments';
 	import { appState, geoportal } from '#lib/composition-root.js';
+	import ModelPreviewFrame from '#lib/components/controls/ModelPreviewFrame.svelte';
 	import CopyViewLinkButton from '#lib/components/shell/CopyViewLinkButton.svelte';
 	import PassageTravelButton from '#lib/components/shell/PassageTravelButton.svelte';
-	import type { CharacterModelParts } from '#lib/data/types.js';
 	import type { QuestLinkView } from '#lib/services/search/quest-presenter.js';
 
 	const questDetails = $derived(
@@ -38,14 +37,6 @@
 	);
 
 	const hasQuery = $derived(appState.searchQuery.trim().length > 0);
-
-	function showPreview(modelPath: string): Attachment<HTMLElement> {
-		return (container) => geoportal.showModelPreview(container, modelPath);
-	}
-
-	function showCharacterPreview(parts: CharacterModelParts): Attachment<HTMLElement> {
-		return (container) => geoportal.showCharacterPreview(container, parts);
-	}
 </script>
 
 {#snippet linkList(heading: string, links: readonly QuestLinkView[], hiddenCount = 0)}
@@ -126,21 +117,23 @@
 			</div>
 
 			{#if entry.modelPath}
-				<div
-					class="my-3 h-48 overflow-hidden rounded-md border border-edge bg-background shadow-well"
-					aria-label="Podgląd 3D: {entry.name}"
-					role="img"
-					{@attach showPreview(entry.modelPath)}
-				></div>
+				{@const modelPath = entry.modelPath}
+				<ModelPreviewFrame
+					class="my-3"
+					heightClass="h-48"
+					label="Podgląd 3D: {entry.name}"
+					openPreview={(container) => geoportal.showModelPreview(container, modelPath)}
+				/>
 			{/if}
 
 			{#if entry.characterModel}
-				<div
-					class="my-3 h-64 overflow-hidden rounded-md border border-edge bg-background shadow-well"
-					aria-label="Podgląd 3D: {entry.name}"
-					role="img"
-					{@attach showCharacterPreview(entry.characterModel)}
-				></div>
+				{@const parts = entry.characterModel}
+				<ModelPreviewFrame
+					class="my-3"
+					heightClass="h-64"
+					label="Podgląd 3D: {entry.name}"
+					openPreview={(container) => geoportal.showCharacterPreview(container, parts)}
+				/>
 			{/if}
 
 			{#if appState.selectedCharacterNow}

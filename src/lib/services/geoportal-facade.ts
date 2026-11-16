@@ -22,7 +22,8 @@ import type { NotebookStore } from './notebook/notebook-store.js';
 import type { CameraView } from './bookmarks/camera-view-codec.js';
 import { ViewLinkCodec, type SharedViewState } from './bookmarks/view-link-codec.js';
 import type { MapViewInsets } from './map/free-area-calculator.js';
-import { ModelPreview, type PreviewView } from './map/model-preview.js';
+import type { PreviewView } from './map/model-preview.js';
+import { ModelPreviewSession } from './map/model-preview-session.js';
 import { CharacterModelAssembler } from './models/character-model-assembler.js';
 import type { ProtectedModelLoader } from './models/protected-model-loader.js';
 import { PreviewOrientationChooser } from './models/preview-orientation.js';
@@ -758,12 +759,12 @@ export class GeoportalFacade {
 	}
 
 	/**
-	 * Pokazuje podgląd 3D jednego przedmiotu w podanym kontenerze; zwraca funkcję sprzątającą.
+	 * Pokazuje podgląd 3D jednego przedmiotu w podanym kontenerze; zwraca sesję podglądu (polecenia kamery i `destroy`).
 	 * Model przychodzi zaszyfrowany z bramki modeli i jest odszyfrowywany tylko w pamięci;
 	 * płaskie przedmioty (broń, pancerze) są układane według wymiarów zapisanych w modelu.
 	 */
-	showModelPreview(container: HTMLElement, modelPath: string): () => void {
-		const preview = new ModelPreview(container);
+	showModelPreview(container: HTMLElement, modelPath: string): ModelPreviewSession {
+		const preview = new ModelPreviewSession(container);
 		const world = this.currentWorld;
 		const loader = this.protectedModelLoader;
 		if (world && loader) {
@@ -778,15 +779,15 @@ export class GeoportalFacade {
 				)
 				.catch((error: unknown) => console.error(error));
 		}
-		return () => preview.destroy();
+		return preview;
 	}
 
 	/**
 	 * Podgląd 3D postaci złożonej z części (ciało albo pancerz, głowa, broń) w podanym kontenerze;
-	 * zwraca funkcję sprzątającą. Części przychodzą z bramki tak jak modele przedmiotów.
+	 * zwraca sesję podglądu (polecenia kamery i `destroy`). Części przychodzą z bramki tak jak modele przedmiotów.
 	 */
-	showCharacterPreview(container: HTMLElement, parts: CharacterModelParts): () => void {
-		const preview = new ModelPreview(container);
+	showCharacterPreview(container: HTMLElement, parts: CharacterModelParts): ModelPreviewSession {
+		const preview = new ModelPreviewSession(container);
 		const world = this.currentWorld;
 		const loader = this.protectedModelLoader;
 		if (world && loader) {
@@ -801,13 +802,13 @@ export class GeoportalFacade {
 				)
 				.catch((error: unknown) => console.error(error));
 		}
-		return () => preview.destroy();
+		return preview;
 	}
 
 	/** Podgląd 3D modelu z paczki świata (np. skrzyni); `modelFile` jest względem adresu modeli świata. */
-	showWorldModelPreview(container: HTMLElement, modelFile: string): () => void {
+	showWorldModelPreview(container: HTMLElement, modelFile: string): ModelPreviewSession {
 		const world = this.currentWorld;
-		if (!world) return () => {};
+		if (!world) return new ModelPreviewSession(container);
 		return this.showModelPreview(container, `${world.modelNamespace}/${modelFile}`);
 	}
 

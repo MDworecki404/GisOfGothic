@@ -1,13 +1,9 @@
 <script lang="ts">
 	import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
 	import XIcon from '@lucide/svelte/icons/x';
-	import type { Attachment } from 'svelte/attachments';
+	import ModelPreviewFrame from '#lib/components/controls/ModelPreviewFrame.svelte';
 	import { appState, geoportal } from '#lib/composition-root.js';
 	import PassageTravelButton from './PassageTravelButton.svelte';
-
-	function showPreview(modelFile: string): Attachment<HTMLElement> {
-		return (container) => geoportal.showWorldModelPreview(container, modelFile);
-	}
 
 	function searchForIdentifiedFeature(query: string): void {
 		geoportal.search(query);
@@ -41,12 +37,14 @@
 			</div>
 
 			{#if feature.modelFile}
-				<div
-					class="my-3 h-36 overflow-hidden rounded-sm border border-border"
-					aria-label="Podgląd 3D: {feature.title}"
-					role="img"
-					{@attach showPreview(feature.modelFile)}
-				></div>
+				{@const modelFile = feature.modelFile}
+				<ModelPreviewFrame
+					isCompact
+					class="my-3"
+					heightClass="h-36"
+					label="Podgląd 3D: {feature.title}"
+					openPreview={(container) => geoportal.showWorldModelPreview(container, modelFile)}
+				/>
 			{/if}
 
 			{#if feature.facts.length > 0}

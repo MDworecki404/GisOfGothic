@@ -594,7 +594,17 @@ Decyzja: [ADR 0020](adr/0020-pergamin-pod-plotnem-i-widoczne-atrybucje.md).
 Karta wpisu przedmiotu z modelem pokazuje mały podgląd 3D. Komponent tylko oznacza kontener (`{@attach}`)
 i wywołuje `GeoportalFacade.showModelPreview`, a `ModelPreview` (`services/map/`) tworzy osobny
 `CesiumWidget` bez globusa i nieba, ładuje model w osiach modeli świata i ustawia kamerę wokół
-jego `boundingSphere`. Obracanie i zoom myszą lub palcem; zamknięcie karty niszczy widget.
+jego `boundingSphere`. Zamknięcie karty niszczy widget.
+
+Sterowanie kamerą podglądu (ADR 0045): komponent `ModelPreviewFrame` (`components/controls/`) dostaje od fasady
+`ModelPreviewSession` — uchwyt z poleceniami (`tiltUp`, `tiltDown`, `zoomIn`, `zoomOut`, `resetView`,
+`toggleAutoRotation`, `setFullscreen`, `destroy`) i reaktywnym `ModelPreviewControlsState` (`isAutoRotating`,
+`isFullscreen`). `ModelPreview` wyłącza kontroler kamery Cesium i sam obsługuje gesty (przeciągnięcie — obrót i
+przechył, kółko i szczypanie — zoom), a kąty i odległości liczy `PreviewCameraMath` (przechył −85°…+10°,
+obrót automatyczny 24°/s, domyślnie wyłączony i zatrzymywany dotknięciem). Widok domyślny zapisany przy kadrowaniu
+przywraca `resetView`. Pełny ekran to Fullscreen API na ramce, a bez niego (iOS) nakładka `fixed inset-0`; Esc
+zamyka. Pasek (`role="toolbar"`, strzałki przesuwają fokus) nie daje żadnej drogi pobrania modelu. W małej karcie
+identyfikacji (`isCompact`) są tylko obrót automatyczny, reset i pełny ekran.
 
 Modele są chronione przed pobraniem ([ADR 0012](adr/0012-ochrona-modeli-przedmiotow.md)). Karta zna
 tylko logiczną ścieżkę modelu (`modelPath`, np. `g2nk/khorinis/previews/x.glb`). `ProtectedModelLoader`
