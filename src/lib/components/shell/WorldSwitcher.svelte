@@ -76,21 +76,29 @@
 <div class="relative shrink-0" bind:this={switcher}>
 	{#if hasChoice}
 		<button
-			class="flex min-h-11 items-center gap-1.5 rounded-sm px-2 font-medium whitespace-nowrap hover:bg-hover-surface md:border md:border-border md:px-3 md:hover:border-torch/60"
+			class="flex min-h-11 items-center gap-1.5 rounded-sm px-2 font-medium whitespace-nowrap hover:bg-hover-surface md:border-l md:border-border md:pr-3 md:pl-4"
 			aria-haspopup="true"
 			aria-expanded={isOpen}
 			title="Zmień świat"
 			onclick={toggleMenu}
 			onkeydown={closeOnEscape}
 		>
-			<span class="hidden text-muted-foreground md:inline">{currentGame?.name} ›</span>
-			<span>{currentWorld?.name}</span>
+			<span class="flex flex-col text-left leading-tight">
+				<span class="hidden text-caption font-normal text-muted-foreground md:inline"
+					>{currentGame?.name}</span
+				>
+				<span class="font-heading text-lead md:text-title">{currentWorld?.name}</span>
+			</span>
 			<ChevronDownIcon class="size-4 text-muted-foreground" />
 		</button>
 	{:else}
 		<div class="flex min-h-11 items-center gap-1.5 px-2 font-medium whitespace-nowrap md:px-3">
-			<span class="hidden text-muted-foreground md:inline">{currentGame?.name} ›</span>
-			<span>{currentWorld?.name}</span>
+			<span class="flex flex-col leading-tight">
+				<span class="hidden text-caption font-normal text-muted-foreground md:inline"
+					>{currentGame?.name}</span
+				>
+				<span class="font-heading text-title">{currentWorld?.name}</span>
+			</span>
 		</div>
 	{/if}
 
