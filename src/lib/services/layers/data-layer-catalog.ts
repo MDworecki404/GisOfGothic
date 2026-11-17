@@ -73,6 +73,8 @@ export interface IdentifiableFeature {
 export interface DataLayerDefinition {
 	id: DataLayerId;
 	name: string;
+	/** Krótka nazwa do ciasnych miejsc, np. chipów w pasku górnym. */
+	shortName: string;
 	description: string;
 	fileName: string;
 	/** Klucz liczności w `metadata.json`; `null`, gdy liczby punktów nie da się z niego odczytać. */
@@ -316,6 +318,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 	{
 		id: 'items',
 		name: 'Przedmioty w świecie',
+		shortName: 'Przedmioty',
 		description: 'leżące na ziemi i wstawiane skryptem',
 		fileName: 'items.geojson',
 		companionFileName: null,
@@ -336,6 +339,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 	{
 		id: 'containers',
 		name: 'Skrzynie',
+		shortName: 'Skrzynie',
 		description: 'z zawartością i zamkiem',
 		fileName: 'containers.geojson',
 		companionFileName: null,
@@ -355,6 +359,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 	{
 		id: 'characters',
 		name: 'Unikatowe postacie',
+		shortName: 'Postacie',
 		description: 'miejsce pojawienia się',
 		fileName: 'characters.geojson',
 		companionFileName: null,
@@ -376,6 +381,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 	{
 		id: 'npcs',
 		name: 'Wszyscy NPC i potwory',
+		shortName: 'NPC i potwory',
 		description: 'każde wstawienie do świata',
 		fileName: 'npcs.geojson',
 		companionFileName: null,
@@ -397,6 +403,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 	{
 		id: 'quests',
 		name: 'Questy',
+		shortName: 'Questy',
 		description: 'pewni zleceniodawcy, cele i miejsca etapów',
 		fileName: 'search_index.json',
 		companionFileName: 'character_places.geojson',
@@ -413,6 +420,7 @@ export const DATA_LAYERS: readonly DataLayerDefinition[] = [
 	{
 		id: 'locations',
 		name: 'Lokacje',
+		shortName: 'Lokacje',
 		description: 'obozy, miasta, budynki i przejścia do innych światów',
 		fileName: 'locations.json',
 		companionFileName: null,

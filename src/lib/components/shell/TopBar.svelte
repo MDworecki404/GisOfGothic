@@ -74,19 +74,20 @@
 	</div>
 
 	<div
-		class="hidden shrink-0 items-center gap-1.5 2xl:flex"
+		class="hidden shrink-0 items-center gap-1 2xl:flex"
 		role="group"
 		aria-label="Warstwy danych na mapie"
 	>
 		{#each appState.dataLayers as layer (layer.id)}
 			<button
-				class="chip min-h-9 gap-1.5 px-3 text-caption"
+				class="chip min-h-8 gap-1 px-2.5 text-xs"
+				title={layer.name}
 				aria-pressed={layer.status === 'visible' || layer.status === 'loading'}
 				disabled={layer.status === 'loading'}
 				onclick={() => geoportal.toggleDataLayer(layer.id)}
 			>
-				<span class="size-2 rounded-full" style:background-color={layer.color}></span>
-				{layer.name}
+				<span class="size-1.5 rounded-full" style:background-color={layer.color}></span>
+				{layer.shortName}
 				{#if layer.featureCount !== null && layer.featureCount !== undefined}
 					<span class="text-muted-foreground tabular-nums">{layer.featureCount}</span>
 				{/if}

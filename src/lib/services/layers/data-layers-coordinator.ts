@@ -32,6 +32,7 @@ export interface LayerLegendEntryView {
 export interface DataLayerView {
 	id: DataLayerId;
 	name: string;
+	shortName: string;
 	description: string;
 	color: string;
 	legend: LayerLegendEntryView[];
@@ -244,6 +245,7 @@ export class DataLayersCoordinator {
 			layers: DATA_LAYERS.map((layer) => ({
 				id: layer.id,
 				name: layer.name,
+				shortName: layer.shortName,
 				description: layer.description,
 				color: layer.color,
 				legend: layer.legend.map(({ label, iconId, color }) => ({
