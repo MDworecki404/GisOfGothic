@@ -116,9 +116,9 @@
 				x="27"
 				y="16"
 				text-anchor="middle"
-				font-family="Uncial Antiqua, serif"
-				font-size="9"
-				font-weight="600"
+				font-family="Cormorant Variable, serif"
+				font-size="11"
+				font-weight="700"
 				fill="var(--woda)">N</text
 			>
 		</svg>
@@ -140,6 +140,8 @@
 		>
 			<MinusIcon class="size-5" />
 		</button>
+	</div>
+	<div class="material-leather flex flex-col overflow-hidden rounded-md">
 		<button
 			class={controlButton}
 			aria-label="Pokaż cały świat"

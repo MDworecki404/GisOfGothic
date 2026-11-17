@@ -50,7 +50,10 @@
 	data-testid="header-bar"
 >
 	<div class="flex shrink-0 items-center gap-1.5 md:gap-3" data-testid="header-title">
-		<span class="hidden md:inline-flex"><BrandMark /></span>
+		<span class="hidden items-center gap-2.5 md:inline-flex">
+			<BrandMark />
+			<span class="hidden font-heading text-display leading-none xl:inline">GIS of Gothic</span>
+		</span>
 		<WorldSwitcher {games} {currentGameId} {currentWorldId} />
 	</div>
 

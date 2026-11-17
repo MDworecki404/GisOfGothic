@@ -6,6 +6,10 @@
 
 {#if rulers}
 	<div
+		class="coordinate-ruler pointer-events-none fixed top-(--top-bar-height) left-(--rail-width) z-11 hidden h-(--ruler-size) w-(--ruler-size) border-r border-b md:block"
+		aria-hidden="true"
+	></div>
+	<div
 		class="coordinate-ruler pointer-events-none fixed inset-x-0 top-(--top-bar-height) z-10 hidden h-(--ruler-size) overflow-hidden border-b md:block"
 		data-testid="coordinate-ruler-east"
 		role="img"
