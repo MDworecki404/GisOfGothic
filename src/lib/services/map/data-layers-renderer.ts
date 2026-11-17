@@ -28,7 +28,8 @@ export interface FeaturePick {
 const POINT_PIXEL_SIZE = 8;
 const POINT_OUTLINE_COLOR = Color.fromCssColorString(MAP_PALETTE.edge);
 const SCALE_BY_DISTANCE = new NearFarScalar(50, 1.4, 3000, 0.75);
-const ICON_SIZE_PIXELS = 26;
+const ICON_SIZE_PIXELS = 28;
+const DIAMOND_ICON_IDS: readonly MapIconId[] = ['location', 'passage'];
 const ICON_OUTLINE_COLOR = MAP_PALETTE.edge;
 const OCCLUDED_ICON_CSS_COLOR = '#8a8f94';
 const OCCLUDED_ALPHA = 0.4;
@@ -190,10 +191,15 @@ export class DataLayersRenderer {
 		const cached = this.iconImages.get(key);
 		if (cached) return cached;
 		const shape = this.renderNodes(MAP_ICON_NODES[iconId]);
+		const isDiamond = DIAMOND_ICON_IDS.includes(iconId);
+		const glyphScale = isDiamond ? 0.52 : 0.6;
+		const badge = isDiamond
+			? `<rect x="5" y="5" width="14" height="14" rx="1.5" transform="rotate(45 12 12)" fill="${ICON_OUTLINE_COLOR}" fill-opacity="0.92" stroke="${cssColor}" stroke-width="1.5"/>`
+			: `<circle cx="12" cy="12" r="10.2" fill="${ICON_OUTLINE_COLOR}" fill-opacity="0.92" stroke="${cssColor}" stroke-width="1.6"/>`;
 		const svg =
 			`<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">` +
-			`<g stroke="${ICON_OUTLINE_COLOR}" stroke-width="5">${shape}</g>` +
-			`<g stroke="${cssColor}" stroke-width="2.4">${shape}</g></svg>`;
+			badge +
+			`<g transform="translate(12 12) scale(${glyphScale}) translate(-12 -12)" stroke="${cssColor}" stroke-width="2.4">${shape}</g></svg>`;
 		const image = `data:image/svg+xml;base64,${btoa(svg)}`;
 		this.iconImages.set(key, image);
 		return image;

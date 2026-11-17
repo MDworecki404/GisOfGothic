@@ -58,3 +58,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0052](0052-znaczniki-miejsc-jako-ikony-z-ksztaltem-rodzaju.md) | Znaczniki miejsc jako ikony z kształtem rodzaju        | przyjęta          |
 | [0053](0053-wyszukiwarka-jako-paleta.md)                        | Wyszukiwarka jako paleta, Księga po „Otwórz w Księdze” | przyjęta          |
 | [0054](0054-karta-wpisu-jako-panel-przy-prawej-krawedzi.md)     | Karta wpisu jako panel przy prawej krawędzi            | przyjęta          |
+| [0055](0055-znaczniki-warstw-danych-w-odznakach.md)             | Znaczniki warstw danych w odznakach                    | przyjęta          |
