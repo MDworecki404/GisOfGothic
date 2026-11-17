@@ -73,6 +73,27 @@
 		</button>
 	</div>
 
+	<div
+		class="hidden shrink-0 items-center gap-1.5 2xl:flex"
+		role="group"
+		aria-label="Warstwy danych na mapie"
+	>
+		{#each appState.dataLayers as layer (layer.id)}
+			<button
+				class="chip min-h-9 gap-1.5 px-3 text-caption"
+				aria-pressed={layer.status === 'visible' || layer.status === 'loading'}
+				disabled={layer.status === 'loading'}
+				onclick={() => geoportal.toggleDataLayer(layer.id)}
+			>
+				<span class="size-2 rounded-full" style:background-color={layer.color}></span>
+				{layer.name}
+				{#if layer.featureCount !== null && layer.featureCount !== undefined}
+					<span class="text-muted-foreground tabular-nums">{layer.featureCount}</span>
+				{/if}
+			</button>
+		{/each}
+	</div>
+
 	<div class="flex shrink-0 items-center gap-0.5 md:gap-1" data-testid="header-actions">
 		<div class="hidden shrink-0 lg:block">
 			<CopyViewLinkButton

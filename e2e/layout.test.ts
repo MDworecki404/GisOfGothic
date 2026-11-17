@@ -72,11 +72,17 @@ test('na telefonie menu „Inne” otwiera narzędzie spoza paska', async ({ pag
 	await expect(tools.getByRole('button', { name: 'Inne' })).toHaveAttribute('aria-pressed', 'true');
 });
 
-test('szyna narzędzi na desktopie ma osiem narzędzi i znacznik aktywnego', async ({ page }) => {
+test('szyna narzędzi na desktopie ma pozycję Mapa, osiem narzędzi i znacznik aktywnego', async ({
+	page
+}) => {
 	await page.setViewportSize({ width: 1280, height: 720 });
 	await page.goto('/g2nk/khorinis?narzedzie=time');
 	const rail = page.getByRole('navigation', { name: 'Narzędzia' });
-	await expect(rail.getByRole('button')).toHaveCount(8);
+	await expect(rail.getByRole('button')).toHaveCount(9);
+	await expect(rail.getByRole('button', { name: 'Mapa', exact: true })).toHaveAttribute(
+		'aria-pressed',
+		'false'
+	);
 	await expect(rail.getByRole('button', { name: 'Czas', exact: true })).toHaveAttribute(
 		'aria-pressed',
 		'true'
@@ -87,6 +93,23 @@ test('szyna narzędzi na desktopie ma osiem narzędzi i znacznik aktywnego', asy
 		'false'
 	);
 	await expect(page.getByRole('region', { name: 'Czas' })).toBeHidden();
+	await expect(rail.getByRole('button', { name: 'Mapa', exact: true })).toHaveAttribute(
+		'aria-pressed',
+		'true'
+	);
+});
+
+test('na szerokim ekranie pasek ma przełączniki warstw danych zgodne z panelem Warstwy', async ({
+	page
+}) => {
+	await page.setViewportSize({ width: 1600, height: 800 });
+	await page.goto('/g2nk/khorinis?narzedzie=zamkniete');
+	const chip = page
+		.getByRole('group', { name: 'Warstwy danych na mapie' })
+		.getByRole('button', { name: /^Questy/ });
+	await expect(chip).toHaveAttribute('aria-pressed', 'false');
+	await chip.click();
+	await expect(chip).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('otwarty panel narzędzia nie zasłania doku ani nagłówka', async ({ page }) => {

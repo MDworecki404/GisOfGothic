@@ -1,5 +1,6 @@
 <script lang="ts">
 	import EllipsisIcon from '@lucide/svelte/icons/ellipsis';
+	import MapIcon from '@lucide/svelte/icons/map';
 	import { MediaQuery } from 'svelte/reactivity';
 	import { appState, geoportal } from '#lib/composition-root.js';
 	import { TOOL_DEFINITIONS, type ToolDefinition } from './tool-definitions.js';
@@ -88,6 +89,17 @@
 		aria-label="Narzędzia"
 		data-map-obstacle
 	>
+		<button
+			class="tool-rail-button relative flex min-h-13.5 w-15 flex-col items-center justify-center gap-0.5 rounded-md text-xs text-muted-foreground"
+			aria-pressed={appState.activeToolId === null}
+			aria-label="Mapa"
+			title="Zamknij panel i pokaż samą mapę"
+			onclick={() => geoportal.closeActiveTool()}
+		>
+			<MapIcon class="size-5" />
+			<span aria-hidden="true">Mapa</span>
+		</button>
+		<hr class="my-1.5 w-8 border-0 border-t border-divider" />
 		{#each TOOL_DEFINITIONS as tool, index (tool.id)}
 			{#if index > 0 && TOOL_DEFINITIONS[index - 1].group !== tool.group}
 				<hr class="my-1.5 w-8 border-0 border-t border-divider" />
