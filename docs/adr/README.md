@@ -53,3 +53,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0047](0047-makiety-atlas-gothic-w-design-mockups.md)          | Makiety „Atlas Gothic” w osobnej aplikacji           | przyjęta          |
 | [0048](0048-motyw-atlas.md)                                    | Motyw „Atlas”: grafit, mosiądz, Cormorant i Inter    | przyjęta          |
 | [0049](0049-uklad-atlas-pasek-gorny-i-szyna-narzedzi.md)       | Układ „Atlas”: pasek górny i szyna narzędzi          | przyjęta          |
+| [0050](0050-ksiega-z-wierszami-w-stylu-palety.md)              | Księga: wiersze wyników w stylu palety               | przyjęta          |

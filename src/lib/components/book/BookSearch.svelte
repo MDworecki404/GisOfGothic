@@ -1,5 +1,17 @@
 <script lang="ts">
+	import FlagIcon from '@lucide/svelte/icons/flag';
+	import GemIcon from '@lucide/svelte/icons/gem';
+	import MapPinIcon from '@lucide/svelte/icons/map-pin';
+	import SearchIcon from '@lucide/svelte/icons/search';
+	import UserIcon from '@lucide/svelte/icons/user';
 	import { appState, geoportal } from '#lib/composition-root.js';
+
+	const RESULT_ICONS = {
+		character: UserIcon,
+		item: GemIcon,
+		quest: FlagIcon,
+		location: MapPinIcon
+	};
 
 	const TYPE_FILTERS = [
 		{ value: 'all', label: 'Wszystko' },
@@ -38,9 +50,28 @@
 		visibleResultsCount = RESULTS_PAGE_SIZE;
 	});
 
+	let resultsList = $state<HTMLUListElement | null>(null);
+
 	function selectFirstResultOnEnter(event: KeyboardEvent): void {
 		const firstResult = appState.searchResults.at(0);
 		if (event.key === 'Enter' && firstResult) geoportal.selectSearchEntry(firstResult.id);
+		else if (event.key === 'ArrowDown') {
+			event.preventDefault();
+			resultsList?.querySelector('button')?.focus();
+		}
+	}
+
+	/** Strzałki przenoszą fokus między wierszami wyników; strzałka w górę z pierwszego wiersza wraca do pola. */
+	function moveFocusBetweenResults(event: KeyboardEvent): void {
+		if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+		const rows = [...(resultsList?.querySelectorAll('button') ?? [])];
+		const index = rows.findIndex((row) => row === document.activeElement);
+		if (index < 0) return;
+		event.preventDefault();
+		const next = rows.at(index + (event.key === 'ArrowDown' ? 1 : -1));
+		if (next) next.focus();
+		else if (event.key === 'ArrowUp')
+			document.querySelector<HTMLInputElement>('input[type=search]')?.focus();
 	}
 </script>
 
@@ -49,10 +80,13 @@
 		? 'max-md:hidden'
 		: ''}"
 >
-	<label class="block">
+	<label class="relative block">
 		<span class="sr-only">Szukaj przedmiotu lub postaci</span>
+		<SearchIcon
+			class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+		/>
 		<input
-			class="field"
+			class="field pl-9 max-md:pr-12"
 			type="search"
 			placeholder="Szukaj przedmiotu lub postaci…"
 			aria-label="Szukaj przedmiotu lub postaci"
@@ -190,15 +224,23 @@
 			<p class="mt-3 mb-1 text-sm text-muted-foreground">
 				{hasQuery ? 'Wyniki' : 'Wszystko'}: {appState.searchResults.length}
 			</p>
-			<ul>
+			<ul bind:this={resultsList}>
 				{#each visibleResults as result (result.id)}
+					{@const ResultIcon = RESULT_ICONS[result.type]}
 					<li>
 						<button
-							class="list-row grid w-full grid-cols-[12px_1fr_auto] items-center gap-2.5 px-2 py-1.5 text-left"
+							class="list-row grid w-full grid-cols-[2rem_1fr_auto] items-center gap-2.5 px-2 py-1.5 text-left"
 							onclick={() => geoportal.selectSearchEntry(result.id)}
+							onkeydown={moveFocusBetweenResults}
 						>
-							<span class="size-2.5 rounded-full" style:background-color={result.markerColor}
-							></span>
+							<span
+								class="grid size-8 place-items-center rounded-full border"
+								style:border-color={result.markerColor}
+								style:color={result.markerColor}
+								aria-hidden="true"
+							>
+								<ResultIcon class="size-4" />
+							</span>
 							<span class="min-w-0">
 								<span class="block truncate font-medium">{result.name}</span>
 								<span class="block text-caption text-muted-foreground">{result.categoryLabel}</span>

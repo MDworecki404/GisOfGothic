@@ -597,8 +597,10 @@
 		border-radius: var(--radius-sm);
 	}
 
-	.list-row:hover {
+	.list-row:hover,
+	.list-row:focus-visible {
 		background: var(--hover-surface);
+		box-shadow: inset 2px 0 0 var(--zar);
 	}
 
 	/* Zarys treści w trakcie wczytywania */
