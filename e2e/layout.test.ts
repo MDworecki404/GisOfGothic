@@ -72,22 +72,21 @@ test('na telefonie menu „Inne” otwiera narzędzie spoza paska', async ({ pag
 	await expect(tools.getByRole('button', { name: 'Inne' })).toHaveAttribute('aria-pressed', 'true');
 });
 
-test('koło narzędzi na desktopie ma osiem narzędzi i znacznik aktywnego', async ({ page }) => {
+test('szyna narzędzi na desktopie ma osiem narzędzi i znacznik aktywnego', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 720 });
 	await page.goto('/g2nk/khorinis?narzedzie=time');
-	const wheel = page.getByRole('navigation', { name: 'Narzędzia' });
-	const hub = wheel.getByRole('button', { name: 'Narzędzia, aktywne: Czas' });
-	await expect(hub).toHaveAttribute('aria-expanded', 'false');
-	await expect(wheel.getByRole('button')).toHaveCount(1);
-	await hub.click();
-	await expect(wheel.getByRole('button')).toHaveCount(9);
-	await expect(wheel.getByRole('button', { name: 'Czas', exact: true })).toHaveAttribute(
+	const rail = page.getByRole('navigation', { name: 'Narzędzia' });
+	await expect(rail.getByRole('button')).toHaveCount(8);
+	await expect(rail.getByRole('button', { name: 'Czas', exact: true })).toHaveAttribute(
 		'aria-pressed',
 		'true'
 	);
 	await page.keyboard.press('Escape');
-	await expect(hub).toHaveAttribute('aria-expanded', 'false');
-	await expect(page.getByRole('region', { name: 'Czas' })).toBeVisible();
+	await expect(rail.getByRole('button', { name: 'Czas', exact: true })).toHaveAttribute(
+		'aria-pressed',
+		'false'
+	);
+	await expect(page.getByRole('region', { name: 'Czas' })).toBeHidden();
 });
 
 test('otwarty panel narzędzia nie zasłania doku ani nagłówka', async ({ page }) => {
@@ -144,19 +143,19 @@ for (const viewport of [
 		expect(readout.x + readout.width, 'odczyt wychodzi poza ekran').toBeLessThanOrEqual(
 			viewport.width
 		);
-		expect(dock.height, 'zamknięte koło to sama piasta').toBeLessThanOrEqual(80);
 	});
 }
 
-test('dok i panel narzędzia zachowują odstęp od płyty tytułu', async ({ page }) => {
+test('panel narzędzia zachowuje odstęp od paska górnego i leży obok szyny', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 720 });
 	await page.goto('/g2nk/khorinis?narzedzie=measure');
-	const title = await page.getByTestId('header-title').boundingBox();
-	const dock = await page.getByRole('navigation', { name: 'Narzędzia' }).boundingBox();
+	const bar = await page.getByTestId('header-bar').boundingBox();
+	const rail = await page.getByRole('navigation', { name: 'Narzędzia' }).boundingBox();
 	const panel = await page.getByRole('region', { name: 'Pomiary' }).boundingBox();
-	if (!title || !dock || !panel) throw new Error('Brak płyty tytułu, doku albo panelu');
-	expect(dock.y - (title.y + title.height), 'odstęp doku od tytułu').toBeGreaterThanOrEqual(12);
-	expect(panel.y - (title.y + title.height), 'odstęp panelu od tytułu').toBeGreaterThanOrEqual(12);
+	if (!bar || !rail || !panel) throw new Error('Brak paska, szyny albo panelu');
+	expect(rail.y, 'szyna zaczyna się pod paskiem').toBeGreaterThanOrEqual(bar.y + bar.height - 1);
+	expect(panel.y - (bar.y + bar.height), 'odstęp panelu od paska').toBeGreaterThanOrEqual(8);
+	expect(panel.x, 'panel obok szyny').toBeGreaterThanOrEqual(rail.x + rail.width);
 });
 
 test('atrybucja Cesium nie jest przykryta przez płytę odczytu', async ({ page }) => {
@@ -186,7 +185,7 @@ test('płyta odczytu ma stałą szerokość, więc nie przesuwa się pod kursore
 	}
 });
 
-test('joysticki lotu nie nachodzą na odczyt, atrybucję, zegar, koło ani kolumnę przycisków mapy', async ({
+test('joysticki lotu nie nachodzą na odczyt, atrybucję, zegar, szynę ani kolumnę przycisków mapy', async ({
 	page
 }) => {
 	await page.setViewportSize({ width: 1440, height: 800 });
@@ -201,7 +200,7 @@ test('joysticki lotu nie nachodzą na odczyt, atrybucję, zegar, koło ani kolum
 		odczyt: page.locator('footer[aria-label="Pozycja kursora, skala i stan"]'),
 		atrybucja: page.locator('.map-attribution'),
 		zegar: page.getByRole('region', { name: 'Zegar doby' }),
-		koło: page.getByRole('navigation', { name: 'Narzędzia' }),
+		szyna: page.getByRole('navigation', { name: 'Narzędzia' }),
 		'kolumna przycisków mapy': page.getByRole('button', { name: 'Przybliż' })
 	};
 	for (const stick of sticks) {

@@ -33,7 +33,10 @@ test('szyna narzędzi przełącza i zamyka panele', async ({ page }) => {
 	const tools = page.getByRole('navigation', { name: 'Narzędzia' });
 	await selectTool(page, 'Pomiary');
 	await expect(page.getByRole('heading', { name: 'Pomiary' })).toBeVisible();
-	await expect(tools.getByRole('button', { name: 'Narzędzia, aktywne: Pomiary' })).toBeVisible();
+	await expect(tools.getByRole('button', { name: 'Pomiary', exact: true })).toHaveAttribute(
+		'aria-pressed',
+		'true'
+	);
 	await page.keyboard.press('Escape');
 	await expect(page.getByRole('heading', { name: 'Pomiary' })).toBeHidden();
 	await page.keyboard.press('Control+k');

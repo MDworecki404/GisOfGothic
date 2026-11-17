@@ -2,7 +2,6 @@
 	import EllipsisIcon from '@lucide/svelte/icons/ellipsis';
 	import { MediaQuery } from 'svelte/reactivity';
 	import { appState, geoportal } from '#lib/composition-root.js';
-	import ToolWheel from './ToolWheel.svelte';
 	import { TOOL_DEFINITIONS, type ToolDefinition } from './tool-definitions.js';
 
 	const isPhone = new MediaQuery('max-width: 767px');
@@ -84,5 +83,24 @@
 		</div>
 	</nav>
 {:else}
-	<ToolWheel />
+	<nav
+		class="tool-rail fixed top-(--top-bar-height) bottom-0 left-0 z-30 flex w-(--rail-width) flex-col items-center gap-0.5 py-3"
+		aria-label="Narzędzia"
+		data-map-obstacle
+	>
+		{#each TOOL_DEFINITIONS as tool, index (tool.id)}
+			{#if index > 0 && TOOL_DEFINITIONS[index - 1].group !== tool.group}
+				<hr class="my-1.5 w-8 border-0 border-t border-divider" />
+			{/if}
+			<button
+				class="tool-rail-button relative flex min-h-13.5 w-15 flex-col items-center justify-center gap-0.5 rounded-md text-xs text-muted-foreground"
+				aria-pressed={appState.activeToolId === tool.id}
+				aria-label={tool.label}
+				onclick={() => geoportal.selectTool(tool.id)}
+			>
+				<tool.icon class="size-5" />
+				<span aria-hidden="true">{tool.label}</span>
+			</button>
+		{/each}
+	</nav>
 {/if}

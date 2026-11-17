@@ -47,11 +47,11 @@ Anty-cele (porażka, nawet gdy „działa”):
 
 ## Podejścia
 
-| | Opis | Za | Przeciw |
-|---|---|---|---|
-| **A. Trasa A→B** (wybrane) | Dwa punkty, najkrótsza ścieżka po sieci, wynik jak w Pomiarach | Uczciwe, działa dla każdego wpisu, mały koszt dzięki istniejącym klockom | Wymaga dołożenia sieci do paczki |
-| B. Wycieczka po celach questa | Jednym przyciskiem trasa przez wszystkie cele | Efektowne | Kolejność nasza, nie z gry; do 198 miejsc; odłożone do czasu, gdy ekstraktor poda kolejność etapów |
-| C. Linia prosta | Jak dziś w Pomiarach | Zero kosztu | Nie mówi, którędy iść |
+|                               | Opis                                                           | Za                                                                       | Przeciw                                                                                            |
+| ----------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| **A. Trasa A→B** (wybrane)    | Dwa punkty, najkrótsza ścieżka po sieci, wynik jak w Pomiarach | Uczciwe, działa dla każdego wpisu, mały koszt dzięki istniejącym klockom | Wymaga dołożenia sieci do paczki                                                                   |
+| B. Wycieczka po celach questa | Jednym przyciskiem trasa przez wszystkie cele                  | Efektowne                                                                | Kolejność nasza, nie z gry; do 198 miejsc; odłożone do czasu, gdy ekstraktor poda kolejność etapów |
+| C. Linia prosta               | Jak dziś w Pomiarach                                           | Zero kosztu                                                              | Nie mówi, którędy iść                                                                              |
 
 Wybór (użytkownik): A. Decyzja o miejscu w interfejsie jest moja (do skorygowania): trasa to **czwarty tryb Pomiarów**,
 nie nowe narzędzie, bo pasek ma już osiem przycisków, a trasa korzysta z tego samego profilu i czasu przejścia.

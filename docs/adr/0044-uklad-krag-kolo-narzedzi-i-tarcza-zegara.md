@@ -1,6 +1,6 @@
 # 0044. Układ „Krąg”: koło narzędzi, tarcza zegara i pieczęć wpisu
 
-Status: przyjęta (zastępuje układ pionowego doku z ADR 0019 i ADR 0036 na komputerze; telefon bez zmian)
+Status: częściowo zastąpiona przez ADR 0049 (koło narzędzi ustąpiło szynie; tarcza zegara i pieczęć wpisu obowiązują dalej)
 
 ## Kontekst
 

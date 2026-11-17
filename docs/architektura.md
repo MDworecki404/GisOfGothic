@@ -567,17 +567,18 @@ Stany interfejsu:
   we wszystkich rodzajach.
 - Na telefonie odczyt położenia kursora jest w lewym górnym rogu mapy, bo dół zajmują legenda i atrybucja.
 
-Układ ekranu ([ADR 0036](adr/0036-motyw-latarnia-w-kopalni.md)): mapa wypełnia cały ekran, a interfejs pływa nad nią
-w płytach. Nagłówek to trzy płyty (`TopBar`): tytuł świata z `WorldSwitcher` (`data-testid="header-title"`),
-wyszukiwarka (`header-search`) i akcje (`header-actions`: kopiuj link, wydajność, „O projekcie”, instalacja). Narzędzia
-tworzą na komputerze koło (`ToolWheel`, wybierane w `ToolRail`; [ADR 0044](adr/0044-uklad-krag-kolo-narzedzi-i-tarcza-zegara.md)):
-piasta w lewym dolnym rogu pokazuje aktywne narzędzie, a po kliknięciu rozkłada osiem narzędzi na dwóch łukach
-(`ToolDefinition.group` nadal dzieli je na `find`, `measure`, `time`); na telefonie dolna nawigacja ma cztery narzędzia
-(`ToolDefinition.isOnPhoneBar`) i menu „Inne” z resztą. Pasek stanu zastępuje narożna płyta odczytu (`InstrumentBar`:
-układ współrzędnych, tekst stanu `data-testid="status-bar"`, skala, odczyt kursora), której szerokość liczy się z
-tokenów, żeby nie nachodziła na panel narzędzia. `data-map-obstacle` mają tylko elementy, które zasłaniają lewy albo dolny brzeg mapy (piasta koła, panel, arkusz i nawigacja telefonu), bo `MapInsetsReporter` liczy z nich wolny obszar kadrowania; płyty nagłówka i narożny odczyt go nie mają (płyta wyszukiwarki sięgająca prawej strony ekranu uznana za zasłonięty brzeg zepsułaby kadrowanie i dawała błąd NaN). Wymiary układu są tokenami: `--edge-inset` (margines pływających elementów), `--top-bar-height`
-(strefa nagłówka), `--bottom-nav-height`, `--rail-width` (margines i kolumna piasty koła), `--status-bar-height` (dolny odstęp), `--panel-width`
-i `--map-controls-width` zmieniają się z szerokością ekranu.
+Układ ekranu ([ADR 0049](adr/0049-uklad-atlas-pasek-gorny-i-szyna-narzedzi.md)): mapa wypełnia cały ekran, a interfejs
+leży nad nią. Pasek górny (`TopBar`) to jedna płaska belka z mosiężną linią: tytuł świata z `WorldSwitcher`
+(`data-testid="header-title"`), wyszukiwarka (`header-search`) i akcje (`header-actions`: kopiuj link, motyw,
+wydajność, „O projekcie”, instalacja). Narzędzia tworzą na komputerze pionową szynę pod paskiem (`ToolRail`, ikona i
+podpis, `ToolDefinition.group` dzieli je kreskami na `find`, `measure`, `time`); na telefonie dolna nawigacja ma cztery
+narzędzia (`ToolDefinition.isOnPhoneBar`) i menu „Inne” z resztą. Pasek stanu zastępuje narożna płyta odczytu
+(`InstrumentBar`: układ współrzędnych, tekst stanu `data-testid="status-bar"`, skala, odczyt kursora), której szerokość
+liczy się z tokenów, żeby nie nachodziła na panel narzędzia. `data-map-obstacle` mają tylko elementy, które zasłaniają
+lewy albo dolny brzeg mapy (szyna, panel, arkusz i nawigacja telefonu), bo `MapInsetsReporter` liczy z nich wolny
+obszar kadrowania; pasek górny i narożny odczyt go nie mają. Wymiary układu są tokenami: `--edge-inset` (margines
+pływających elementów), `--top-bar-height` (wysokość paska), `--bottom-nav-height`, `--rail-width` (szerokość szyny),
+`--status-bar-height` (dolny odstęp), `--panel-width` i `--map-controls-width` zmieniają się z szerokością ekranu.
 `ToolPanel` ustawia w biegu na `:root` `--sheet-occupied-height` (wysokość arkusza na telefonie) oraz
 `--panel-occupied-width` (szerokość panelu na większych ekranach). Płyta odczytu, joysticki i plakietka
 ładowania liczą z nich położenie zamiast stałych. Decyzja: [ADR 0019](adr/0019-motyw-mapa-z-sakwy-i-tokeny-ukladu.md).

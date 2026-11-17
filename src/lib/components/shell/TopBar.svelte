@@ -46,22 +46,17 @@
 <svelte:window onkeydown={openShortcutsOnQuestionMark} />
 
 <header
-	class="pointer-events-none fixed inset-x-0 top-0 z-40 flex items-start gap-2 p-(--edge-inset) md:gap-4"
+	class="top-bar pointer-events-auto fixed inset-x-0 top-0 z-40 flex items-center gap-2 px-(--gutter) md:gap-4 md:px-4"
+	data-testid="header-bar"
 >
-	<div
-		class="material-leather pointer-events-auto flex h-14 shrink-0 items-center gap-1.5 pr-1 pl-3 md:h-16 md:gap-3 md:pr-3 md:pl-4"
-		data-testid="header-title"
-	>
+	<div class="flex shrink-0 items-center gap-1.5 md:gap-3" data-testid="header-title">
 		<span class="hidden md:inline-flex"><BrandMark /></span>
 		<WorldSwitcher {games} {currentGameId} {currentWorldId} />
 	</div>
 
-	<div
-		class="material-leather pointer-events-auto mx-auto flex h-14 max-w-xl min-w-0 flex-1 items-center [--cut:9px] md:h-16"
-		data-testid="header-search"
-	>
+	<div class="mx-auto flex max-w-xl min-w-0 flex-1 items-center" data-testid="header-search">
 		<button
-			class="flex h-full min-w-0 flex-1 items-center gap-2 px-3 text-left text-muted-foreground hover:text-foreground md:px-4"
+			class="field flex min-w-0 flex-1 items-center gap-2 text-left text-muted-foreground hover:text-foreground"
 			aria-label="Szukaj przedmiotu lub postaci"
 			onclick={openBook}
 		>
@@ -75,10 +70,7 @@
 		</button>
 	</div>
 
-	<div
-		class="material-leather pointer-events-auto flex h-14 shrink-0 items-center gap-0.5 px-1.5 [--cut:9px] md:h-16 md:gap-1 md:px-2"
-		data-testid="header-actions"
-	>
+	<div class="flex shrink-0 items-center gap-0.5 md:gap-1" data-testid="header-actions">
 		<div class="hidden shrink-0 lg:block">
 			<CopyViewLinkButton
 				class="min-h-11 rounded-sm px-3 text-label text-muted-foreground hover:bg-hover-surface hover:text-hover"

@@ -33,12 +33,12 @@ export const test = base.extend<{ stubbedTilesetGate: void }>({
 
 export { expect };
 
-/** Otwiera koło narzędzi (jeśli jest zamknięte) i wybiera narzędzie po nazwie. */
+/** Wybiera narzędzie z szyny narzędzi po nazwie. */
 export async function selectTool(page: Page, label: string): Promise<void> {
-	const wheel = page.getByRole('navigation', { name: 'Narzędzia' });
-	const hub = wheel.getByRole('button', { name: /^Narzędzia/ });
-	if ((await hub.getAttribute('aria-expanded')) !== 'true') await hub.click();
-	await wheel.getByRole('button', { name: label, exact: true }).click();
+	await page
+		.getByRole('navigation', { name: 'Narzędzia' })
+		.getByRole('button', { name: label, exact: true })
+		.click();
 }
 
 /** Adres Khorinis z otwartą Księgą (okno wyszukiwania). */

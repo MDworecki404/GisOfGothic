@@ -107,7 +107,7 @@
 
 	/* 3. Układ ekranu (telefon; większe ekrany niżej) */
 	--edge-inset: 0.75rem;
-	--top-bar-height: 4.5rem;
+	--top-bar-height: 3.5rem;
 	--bottom-nav-height: 4rem;
 	--rail-width: 0px;
 	--status-bar-height: 0px;
@@ -166,9 +166,9 @@
 @media (min-width: 48rem) {
 	:root {
 		--edge-inset: 1.5rem;
-		--top-bar-height: 6rem;
+		--top-bar-height: 3.5rem;
 		--bottom-nav-height: 0px;
-		--rail-width: 5.5rem;
+		--rail-width: 4.5rem;
 		--status-bar-height: 0.875rem;
 		--panel-width: 20rem;
 		--map-controls-width: 6.25rem;
@@ -756,95 +756,6 @@
 		box-shadow: inset 0 0 0 2px var(--lupek);
 	}
 
-	/* Koło narzędzi (ADR 0044): piasta w rogu, narzędzia rozchodzą się po jej otwarciu na dwa łuki */
-	.tool-wheel-spokes {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		width: 0;
-		height: 0;
-	}
-
-	.tool-wheel-spoke {
-		position: absolute;
-		display: grid;
-		place-items: center;
-		width: 2.75rem;
-		height: 2.75rem;
-		margin: -1.375rem;
-		border-radius: 999px;
-		color: var(--popiol);
-		background: var(--lupek-wysoki);
-		border: 1px solid var(--plyta-krawedz);
-		box-shadow: var(--cien-plyty);
-		opacity: 0;
-		visibility: hidden;
-		transform: translate(0, 0) scale(0.4);
-		transition:
-			transform 160ms ease-out,
-			opacity 160ms ease-out,
-			visibility 0s linear 160ms;
-	}
-
-	[data-open='true'] > .tool-wheel-spoke {
-		opacity: 1;
-		visibility: visible;
-		transform: translate(var(--spoke-x), var(--spoke-y)) scale(1);
-		transition-delay: 0s;
-	}
-
-	.tool-wheel-spoke:hover,
-	.tool-wheel-spoke:focus-visible {
-		z-index: 2;
-		color: var(--hover);
-		background: var(--lupek-podniesiony);
-	}
-
-	.tool-wheel-spoke[aria-pressed='true'] {
-		color: var(--active);
-		border-color: var(--active);
-		background: var(--active-surface);
-		box-shadow:
-			var(--cien-plyty),
-			var(--glow-ore);
-	}
-
-	.tool-wheel-label {
-		position: absolute;
-		top: 50%;
-		left: calc(100% + 0.5rem);
-		padding: 0.125rem 0.625rem;
-		border-radius: 999px;
-		color: var(--foreground);
-		background: var(--lupek);
-		border: 1px solid var(--plyta-krawedz);
-		font-size: var(--text-label);
-		white-space: nowrap;
-		pointer-events: none;
-		opacity: 0;
-		transform: translateY(-50%);
-	}
-
-	.tool-wheel-spoke:hover > .tool-wheel-label,
-	.tool-wheel-spoke:focus-visible > .tool-wheel-label {
-		opacity: 1;
-	}
-
-	.tool-wheel-hub:hover {
-		color: var(--hover);
-	}
-
-	.tool-wheel-hub[aria-expanded='true'] {
-		border-color: var(--active);
-		color: var(--active);
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.tool-wheel-spoke {
-			transition: none;
-		}
-	}
-
 	.tool-rail-button:hover {
 		color: var(--foreground);
 		background: var(--hover-surface);
@@ -852,28 +763,39 @@
 
 	.tool-rail-button[aria-pressed='true'] {
 		color: var(--active);
-		background: linear-gradient(0deg, var(--active-surface), transparent);
+		background: var(--active-surface);
 	}
 
 	.tool-rail-button[aria-pressed='true']::before {
 		content: '';
 		position: absolute;
-		inset: -1px 25% auto 25%;
-		height: 3px;
+		inset: 0.75rem auto 0.75rem -0.3rem;
+		width: 3px;
+		border-radius: 0 2px 2px 0;
 		background: var(--active);
-		box-shadow: var(--glow-ore);
 	}
 
-	@media (min-width: 48rem) {
-		.tool-rail-button[aria-pressed='true'] {
-			background: linear-gradient(90deg, var(--active-surface), transparent);
-		}
-
+	@media (max-width: 47.99rem) {
 		.tool-rail-button[aria-pressed='true']::before {
-			inset: 10px auto 10px -6px;
-			width: 3px;
-			height: auto;
+			inset: 0 25% auto 25%;
+			width: auto;
+			height: 3px;
+			border-radius: 0 0 2px 2px;
 		}
+	}
+
+	/* Pasek górny: jedna płaska belka z mosiężną linią pod spodem; płyty i panele pływają pod nią */
+	.top-bar {
+		height: var(--top-bar-height);
+		color: var(--popiol);
+		background: var(--lupek);
+		border-bottom: 1px solid var(--zar-ciemny);
+	}
+
+	/* Szyna narzędzi na komputerze: pionowa belka pod paskiem górnym */
+	.tool-rail {
+		background: var(--lupek);
+		border-right: 1px solid var(--linia);
 	}
 }
 

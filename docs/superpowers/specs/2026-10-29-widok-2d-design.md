@@ -34,11 +34,11 @@ mapie z góry trzeba móc „ściąć” model na wybranej wysokości i zobaczy�
 
 ## Podejścia i wybór
 
-| Podejście                                                    | Za                                                                 | Przeciw                                                             |
-| ------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| **A. Zablokowany widok 3D z góry + płaszczyzna cięcia (wybrane)** | Brak nowych danych; znaczniki, pick, pomiary, linki działają bez zmian | Nadal ładuje ciężki model 3D, więc na telefonie nie jest lżej       |
-| B. Kafelki 2D renderowane offline per poziom jako warstwa obrazu | Lekkie, szybkie, wygląda jak mapa                                  | Nowy potok w ekstraktorze, duże dane per poziom i świat, poziomy z góry |
-| C. `SceneMode.SCENE2D` Cesium                                | Prawdziwy tryb 2D                                                  | Nie współgra z 3D Tiles i kotwicą świata, osobne projekcje          |
+| Podejście                                                         | Za                                                                     | Przeciw                                                                 |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **A. Zablokowany widok 3D z góry + płaszczyzna cięcia (wybrane)** | Brak nowych danych; znaczniki, pick, pomiary, linki działają bez zmian | Nadal ładuje ciężki model 3D, więc na telefonie nie jest lżej           |
+| B. Kafelki 2D renderowane offline per poziom jako warstwa obrazu  | Lekkie, szybkie, wygląda jak mapa                                      | Nowy potok w ekstraktorze, duże dane per poziom i świat, poziomy z góry |
+| C. `SceneMode.SCENE2D` Cesium                                     | Prawdziwy tryb 2D                                                      | Nie współgra z 3D Tiles i kotwicą świata, osobne projekcje              |
 
 Wybór użytkownika: **A**, bez abstrakcji pod B. Ortofotomapy odrzucone jako zbyt ciężkie.
 
