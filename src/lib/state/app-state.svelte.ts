@@ -34,6 +34,11 @@ import {
 	type CoordinateSystem,
 	type CoordinateSystemId
 } from '#lib/services/geodesy/coordinate-formatter.js';
+import {
+	CoordinateRulerTickBuilder,
+	type CoordinateRulers
+} from '#lib/services/geodesy/coordinate-ruler-tick-builder.js';
+import type { ViewExtent } from '#lib/services/geodesy/view-extent.js';
 import { ScaleBarCalculator, type ScaleBar } from '#lib/services/geodesy/scale-bar-calculator.js';
 import type { WorldPosition } from '#lib/services/geodesy/world-frame.js';
 import type { QuestDetailsView, QuestLinkView } from '#lib/services/search/quest-presenter.js';
@@ -80,6 +85,7 @@ export interface MeasurementReading {
 	value: string;
 }
 const scaleBarCalculator = new ScaleBarCalculator();
+const rulerTickBuilder = new CoordinateRulerTickBuilder();
 const viewLinkCodec = new ViewLinkCodec();
 
 export type LoadStatus = 'loading' | 'ready' | 'error';
@@ -98,6 +104,7 @@ export class AppState {
 	cursorPosition = $state<WorldPosition | null>(null);
 	headingDegrees = $state(0);
 	metresPerPixel = $state<number | null>(null);
+	viewExtent = $state<ViewExtent | null>(null);
 	coordinateSystemId = $state<CoordinateSystemId>('khorinis-1992');
 	searchQuery = $state('');
 	searchTypeFilter = $state<SearchTypeFilter>('all');
@@ -294,6 +301,9 @@ export class AppState {
 		});
 		eventBus.subscribe('map-scale-changed', ({ metresPerPixel }) => {
 			this.metresPerPixel = metresPerPixel;
+		});
+		eventBus.subscribe('view-extent-changed', ({ extent }) => {
+			this.viewExtent = extent;
 		});
 		eventBus.subscribe('coordinate-system-changed', ({ systemId }) => {
 			this.coordinateSystemId = systemId;
@@ -496,6 +506,10 @@ export class AppState {
 
 	get timeOfDayLabel(): string {
 		return formatMinuteOfDay(this.minuteOfDay);
+	}
+
+	get coordinateRulers(): CoordinateRulers | null {
+		return this.viewExtent === null ? null : rulerTickBuilder.build(this.viewExtent);
 	}
 
 	get scaleBar(): ScaleBar | null {

@@ -142,7 +142,8 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 			this.viewer,
 			listeners,
 			() => this.worldFrame,
-			() => this.projectionController.readOrthographicMetresPerPixel()
+			() => this.projectionController.readOrthographicMetresPerPixel(),
+			() => this.viewMode === 'view-2d'
 		);
 		this.dataLayers = new DataLayersRenderer(this.viewer);
 		this.measurement = new MeasurementRenderer(this.viewer);
@@ -284,6 +285,7 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 	 */
 	showViewMode(mode: ViewMode, flightSeconds: number): void {
 		this.viewMode = mode;
+		this.viewObserver.requestRefresh();
 		const isFlatMap = mode === 'view-2d';
 		const cameraController = this.viewer.scene.screenSpaceCameraController;
 		cameraController.enableTilt = !isFlatMap;

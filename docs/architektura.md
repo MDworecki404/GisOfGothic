@@ -92,6 +92,7 @@ więc `subscribe('world-load-failed', ({ message }) => …)` ma pełne typy bez 
 | `cursor-moved`               | `position` (E, N, H, lon, lat) lub `null`                                                            | kursor nad terenem (najwyżej raz na klatkę)                                                       |
 | `camera-heading-changed`     | `headingDegrees`                                                                                     | obrót kamery — kompas                                                                             |
 | `map-scale-changed`          | `metresPerPixel` lub `null`                                                                          | zmiana skali w środku ekranu — podziałka                                                          |
+| `view-extent-changed`        | `ViewExtent` lub `null`                                                                              | środek ekranu, skala i rozmiar płótna w widoku 2D (poza 2D `null`) — linijki współrzędnych        |
 | `coordinate-system-changed`  | `systemId`                                                                                           | zmiana układu współrzędnych w pasku przyrządu                                                     |
 | `search-results-changed`     | `query`, `typeFilter`, `categoryFilter`, `attributeFilter`, `results`                                | zmiana zapytania, filtra albo wczytanie indeksu                                                   |
 | `related-entries-changed`    | `entryId`, `groups` (nagłówek, linki, liczba pominiętych)                                            | wybrano przedmiot lub postać: kto go ma przy sobie, co ma przy sobie                              |
@@ -582,6 +583,12 @@ pływających elementów), `--top-bar-height` (wysokość paska), `--bottom-nav-
 `ToolPanel` ustawia w biegu na `:root` `--sheet-occupied-height` (wysokość arkusza na telefonie) oraz
 `--panel-occupied-width` (szerokość panelu na większych ekranach). Płyta odczytu, joysticki i plakietka
 ładowania liczą z nich położenie zamiast stałych. Decyzja: [ADR 0019](adr/0019-motyw-mapa-z-sakwy-i-tokeny-ukladu.md).
+
+Linijki współrzędnych ([ADR 0051](adr/0051-linijki-wspolrzednych-w-widoku-2d.md)): w widoku 2D `MapViewObserver`
+wylicza z środka ekranu i skali `ViewExtent` (metry od kotwicy świata) i zgłasza go przez `onViewExtentChanged`; fasada
+publikuje `view-extent-changed`, `AppState.coordinateRulers` buduje znaczniki klasą `CoordinateRulerTickBuilder`
+(`services/geodesy/`), a `CoordinateRulers` rysuje dwa paski (`coordinate-ruler-east` u góry, `coordinate-ruler-north`
+przy szynie). Poza 2D oraz na telefonie linijek nie ma.
 
 Płótno Cesium ma przezroczyste tło (`withTransparentBackground`), a pod nim `MapView` rysuje ciemną wodę z delikatnymi
 falami (`.map-parchment`, kolor `--woda`) i nad nim chłodne winietowanie brzegów (`.map-parchment-frame`, bez

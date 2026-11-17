@@ -294,3 +294,21 @@ for (const viewportWidth of [360, 768, 1024, 1440]) {
 		expect(scrollWidth).toBeLessThanOrEqual(viewportWidth);
 	});
 }
+
+test('linijki współrzędnych są tylko w widoku 2D i podpisują osie Wschód i Północ', async ({
+	page
+}) => {
+	await page.goto('/g2nk/khorinis?widok=72.7_13.3_800_0_-45&narzedzie=zamkniete');
+	await waitForMapToSettle(page);
+	await expect(page.getByTestId('coordinate-ruler-east')).toHaveCount(0);
+
+	await page.getByRole('button', { name: FLAT_MAP_BUTTON }).click();
+	const eastRuler = page.getByTestId('coordinate-ruler-east');
+	const northRuler = page.getByTestId('coordinate-ruler-north');
+	await expect(eastRuler).toBeVisible();
+	await expect(northRuler).toBeVisible();
+	await expect(eastRuler.locator('span').first()).toHaveText(/\d+ (m|km)$/);
+
+	await page.getByRole('button', { name: FLAT_MAP_BUTTON }).click();
+	await expect(eastRuler).toHaveCount(0);
+});

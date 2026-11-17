@@ -3,6 +3,7 @@ import type { AttributeFilter } from '#lib/services/search/attribute-filter.js';
 import type { RelatedGroupView } from '#lib/services/search/entry-relation-finder.js';
 import type { IndexCounts } from '#lib/data/types.js';
 import type { ChapterNumber } from '#lib/services/chapters/chapter-filter.js';
+import type { ViewExtent } from '#lib/services/geodesy/view-extent.js';
 import type { CoordinateSystemId } from '#lib/services/geodesy/coordinate-formatter.js';
 import type { WorldPosition } from '#lib/services/geodesy/world-frame.js';
 import type {
@@ -55,6 +56,7 @@ export type AppEvent =
 	| { type: 'camera-heading-changed'; headingDegrees: number }
 	| { type: 'walking-changed'; stage: WalkingStage }
 	| { type: 'map-scale-changed'; metresPerPixel: number | null }
+	| { type: 'view-extent-changed'; extent: ViewExtent | null }
 	| { type: 'tool-selected'; toolId: ToolId | null }
 	| { type: 'coordinate-system-changed'; systemId: CoordinateSystemId }
 	| {

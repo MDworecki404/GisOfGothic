@@ -54,3 +54,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0048](0048-motyw-atlas.md)                                    | Motyw „Atlas”: grafit, mosiądz, Cormorant i Inter    | przyjęta          |
 | [0049](0049-uklad-atlas-pasek-gorny-i-szyna-narzedzi.md)       | Układ „Atlas”: pasek górny i szyna narzędzi          | przyjęta          |
 | [0050](0050-ksiega-z-wierszami-w-stylu-palety.md)              | Księga: wiersze wyników w stylu palety               | przyjęta          |
+| [0051](0051-linijki-wspolrzednych-w-widoku-2d.md)              | Linijki współrzędnych w widoku 2D                    | przyjęta          |

@@ -115,6 +115,7 @@
 	--gutter: 0.625rem;
 	--touch-target: 2.75rem;
 	--map-controls-width: 0px;
+	--ruler-size: 1.5rem;
 
 	/* Wartości ustawiane w biegu przez ToolPanel: ile miejsca zajmuje otwarty panel lub arkusz */
 	--sheet-occupied-height: 0px;
@@ -792,6 +793,30 @@
 		color: var(--popiol);
 		background: var(--lupek);
 		border-bottom: 1px solid var(--zar-ciemny);
+	}
+
+	/* Linijki współrzędnych na brzegach mapy w widoku 2D (tylko komputer); pływają pod panelami */
+	.coordinate-ruler {
+		color: var(--mgla);
+		background: var(--atrybucja-tlo);
+		border-color: var(--zar-ciemny);
+		font-size: 0.6875rem;
+		line-height: 1.5rem;
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+	}
+
+	.coordinate-ruler-tick {
+		border-color: var(--zar);
+	}
+
+	.coordinate-ruler-vertical-label {
+		position: absolute;
+		top: 0.25rem;
+		left: 50%;
+		writing-mode: vertical-rl;
+		transform: translateX(-50%) rotate(180deg);
+		line-height: 1;
 	}
 
 	/* Szyna narzędzi na komputerze: pionowa belka pod paskiem górnym */

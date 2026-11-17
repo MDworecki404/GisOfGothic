@@ -6,6 +6,7 @@ import {
 	ScreenSpaceEventType,
 	type Viewer
 } from 'cesium';
+import type { ViewExtent } from '#lib/services/geodesy/view-extent.js';
 import type { WorldFrame, WorldPosition } from '#lib/services/geodesy/world-frame.js';
 import { isFeaturePick, type FeaturePick } from './data-layers-renderer.js';
 
@@ -21,6 +22,7 @@ export interface MapViewListeners {
 	onMapClicked(click: MapClick): void;
 	onHeadingChanged(headingDegrees: number): void;
 	onScaleChanged(metresPerPixel: number | null): void;
+	onViewExtentChanged(extent: ViewExtent | null): void;
 	onCameraSettled(): void;
 	onTilesLoadProgress(layer: TileLayerId, pendingTiles: number): void;
 	onFrameRendered(timestampMilliseconds: number): void;
@@ -49,7 +51,8 @@ export class MapViewObserver {
 		private readonly viewer: Viewer,
 		private readonly listeners: MapViewListeners,
 		private readonly getWorldFrame: () => WorldFrame | null,
-		private readonly readExactMetresPerPixel: () => number | null
+		private readonly readExactMetresPerPixel: () => number | null,
+		private readonly isFlatMapView: () => boolean
 	) {
 		this.inputHandler = new ScreenSpaceEventHandler(viewer.scene.canvas);
 		this.inputHandler.setInputAction((movement: ScreenSpaceEventHandler.MotionEvent) => {
@@ -128,7 +131,27 @@ export class MapViewObserver {
 			const metresPerPixel = this.readExactMetresPerPixel() ?? this.measureMetresPerPixelAtCentre();
 			this.isScaleKnown = metresPerPixel !== null;
 			this.listeners.onScaleChanged(metresPerPixel);
+			this.listeners.onViewExtentChanged(this.readViewExtent(metresPerPixel));
 		}
+	}
+
+	/** W widoku 2D (północ u góry, rzut ortogonalny) środek ekranu i skala wystarczą do wyliczenia całego zasięgu. */
+	private readViewExtent(metresPerPixel: number | null): ViewExtent | null {
+		const frame = this.getWorldFrame();
+		if (!frame || metresPerPixel === null || !this.isFlatMapView()) return null;
+		const canvas = this.viewer.scene.canvas;
+		const centreOnGlobe = this.viewer.camera.pickEllipsoid(
+			new Cartesian2(canvas.clientWidth / 2, canvas.clientHeight / 2)
+		);
+		if (!centreOnGlobe) return null;
+		const centre = frame.toWorldPosition(centreOnGlobe);
+		return {
+			centreEastMetres: centre.east,
+			centreNorthMetres: centre.north,
+			metresPerPixel,
+			widthPixels: canvas.clientWidth,
+			heightPixels: canvas.clientHeight
+		};
 	}
 
 	private measureMetresPerPixelAtCentre(): number | null {

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import MapView from '#lib/components/MapView.svelte';
 	import Book from '#lib/components/book/Book.svelte';
+	import CoordinateRulers from '#lib/components/shell/CoordinateRulers.svelte';
 	import ActiveLayersLegend from '#lib/components/shell/ActiveLayersLegend.svelte';
 	import DayClock from '#lib/components/shell/DayClock.svelte';
 	import EntrySummaryCard from '#lib/components/shell/EntrySummaryCard.svelte';
@@ -52,6 +53,7 @@
 	<MapView />
 	<TopBar games={data.games} currentGameId={data.game.id} currentWorldId={data.world.id} />
 	<ToolRail />
+	<CoordinateRulers />
 	<ToolPanel />
 	<MapInsetsReporter />
 	<MapControls currentGameId={data.game.id} currentWorldId={data.world.id} />
