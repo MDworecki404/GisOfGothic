@@ -16,6 +16,8 @@ export interface ToolDefinition {
 	id: ToolId;
 	label: string;
 	panelTitle: string;
+	/** Jedno zdanie pod tytułem panelu, mówiące do czego służy narzędzie. */
+	panelSubtitle: string;
 	icon: Component;
 	group: ToolGroup;
 	/** Narzędzia spoza paska telefonu są w menu „Inne”. */
@@ -29,6 +31,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		id: 'search',
 		label: 'Szukaj',
 		panelTitle: 'Wyszukiwarka',
+		panelSubtitle: 'Znajdź wpis i pokaż go na mapie',
 		icon: SearchIcon,
 		group: 'find',
 		isOnPhoneBar: true,
@@ -38,6 +41,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		id: 'layers',
 		label: 'Warstwy',
 		panelTitle: 'Warstwy',
+		panelSubtitle: 'Wybierz, co widać na mapie',
 		icon: LayersIcon,
 		group: 'find',
 		isOnPhoneBar: true,
@@ -47,6 +51,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		id: 'measure',
 		label: 'Pomiary',
 		panelTitle: 'Pomiary',
+		panelSubtitle: 'Odległość, powierzchnia i profil',
 		icon: RulerIcon,
 		group: 'measure',
 		isOnPhoneBar: true,
@@ -56,6 +61,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		id: 'analysis',
 		label: 'Analizy',
 		panelTitle: 'Analizy',
+		panelSubtitle: 'Widoczność, zasięg i gęstość miejsc',
 		icon: RadarIcon,
 		group: 'measure',
 		isOnPhoneBar: false,
@@ -65,6 +71,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		id: 'sizes',
 		label: 'Rozmiary',
 		panelTitle: 'Rozmiary światów',
+		panelSubtitle: 'Porównaj światy w jednej skali',
 		icon: ScalingIcon,
 		group: 'measure',
 		isOnPhoneBar: false,
@@ -74,6 +81,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		id: 'time',
 		label: 'Czas',
 		panelTitle: 'Czas i rozdział',
+		panelSubtitle: 'Pora dnia i etap fabuły',
 		icon: ClockIcon,
 		group: 'time',
 		isOnPhoneBar: true,
@@ -83,6 +91,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		id: 'notebook',
 		label: 'Notatnik',
 		panelTitle: 'Notatnik',
+		panelSubtitle: 'Twoje pinezki i postępy',
 		icon: NotebookPenIcon,
 		group: 'time',
 		isOnPhoneBar: false,
@@ -92,6 +101,7 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
 		id: 'bookmarks',
 		label: 'Zakładki',
 		panelTitle: 'Zakładki',
+		panelSubtitle: 'Zapisane widoki mapy',
 		icon: BookmarkIcon,
 		group: 'time',
 		isOnPhoneBar: false,

@@ -638,9 +638,54 @@
 
 	/* Nagłówek grupy w panelu */
 	.group-label {
-		font-size: var(--text-label);
-		font-weight: 500;
-		color: var(--muted-foreground);
+		font-family: var(--font-heading);
+		font-size: 1.1875rem;
+		font-weight: 600;
+		color: var(--zar-jasny);
+	}
+
+	/* Przełącznik włącz/wyłącz (warstwy): pigułka z gałką, stan z checked */
+	.switch-forged {
+		appearance: none;
+		position: relative;
+		flex-shrink: 0;
+		width: 2.5rem;
+		height: 1.375rem;
+		margin: 0;
+		border-radius: 999px;
+		border: 1px solid var(--zelazo);
+		background: var(--krawedz);
+		cursor: pointer;
+		transition: background-color 140ms;
+	}
+
+	.switch-forged::after {
+		content: '';
+		position: absolute;
+		top: 0.1875rem;
+		left: 0.1875rem;
+		width: 0.875rem;
+		height: 0.875rem;
+		border-radius: 999px;
+		background: var(--mgla);
+		transition:
+			translate 140ms,
+			background-color 140ms;
+	}
+
+	.switch-forged:checked {
+		border-color: var(--zar);
+		background: var(--zar-tlo);
+	}
+
+	.switch-forged:checked::after {
+		translate: 1.125rem 0;
+		background: var(--zar-jasny);
+	}
+
+	.switch-forged:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 
 	/* Karta obiektu: płyta jak reszta interfejsu (dawna notatka na pergaminie); kształt z reguł wyżej */

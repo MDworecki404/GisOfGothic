@@ -4,10 +4,12 @@
 </script>
 
 <h3 class="group-label mb-1">Świat</h3>
-<label class="list-row grid cursor-pointer grid-cols-[22px_1fr_auto] items-start gap-3 px-1 py-2.5">
+<label
+	class="list-row grid cursor-pointer grid-cols-[2.5rem_1fr_auto] items-start gap-3 px-1 py-2.5"
+>
 	<input
 		type="checkbox"
-		class="check-forged mt-px"
+		class="switch-forged mt-0.5"
 		checked={appState.staticObjectsStatus === 'visible' ||
 			appState.staticObjectsStatus === 'loading'}
 		disabled={appState.staticObjectsStatus === 'loading'}
@@ -45,11 +47,11 @@
 	{#each appState.dataLayers as layer (layer.id)}
 		<li class="border-t border-divider shadow-[inset_0_1px_0_var(--divider-highlight)]">
 			<label
-				class="list-row grid cursor-pointer grid-cols-[22px_1fr_auto] items-start gap-3 px-1 py-2.5"
+				class="list-row grid cursor-pointer grid-cols-[2.5rem_1fr_auto] items-start gap-3 px-1 py-2.5"
 			>
 				<input
 					type="checkbox"
-					class="check-forged mt-px"
+					class="switch-forged mt-0.5"
 					checked={layer.status === 'visible' || layer.status === 'loading'}
 					disabled={layer.status === 'loading'}
 					onchange={() => geoportal.toggleDataLayer(layer.id)}
@@ -107,10 +109,10 @@
 {/if}
 
 <h3 class="group-label mt-5 mb-1">Nakładki na teren</h3>
-<label class="list-row grid cursor-pointer grid-cols-[22px_1fr] items-start gap-3 px-1 py-2.5">
+<label class="list-row grid cursor-pointer grid-cols-[2.5rem_1fr] items-start gap-3 px-1 py-2.5">
 	<input
 		type="checkbox"
-		class="check-forged mt-px"
+		class="switch-forged mt-0.5"
 		checked={appState.mapOverlays.areContoursVisible}
 		onchange={() => geoportal.toggleMapOverlay('areContoursVisible')}
 	/>
@@ -121,10 +123,10 @@
 		</span>
 	</span>
 </label>
-<label class="list-row grid cursor-pointer grid-cols-[22px_1fr] items-start gap-3 px-1 py-2.5">
+<label class="list-row grid cursor-pointer grid-cols-[2.5rem_1fr] items-start gap-3 px-1 py-2.5">
 	<input
 		type="checkbox"
-		class="check-forged mt-px"
+		class="switch-forged mt-0.5"
 		checked={appState.mapOverlays.isGridVisible}
 		onchange={() => geoportal.toggleMapOverlay('isGridVisible')}
 	/>

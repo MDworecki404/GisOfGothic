@@ -170,7 +170,10 @@
 			<div
 				class="flex items-center justify-between border-b border-divider py-1 pr-1.5 pl-4 shadow-[0_1px_0_var(--divider-highlight)] md:pt-2"
 			>
-				<h2 class="text-title text-primary">{activeTool.panelTitle}</h2>
+				<div class="min-w-0">
+					<h2 class="text-display leading-tight text-foreground">{activeTool.panelTitle}</h2>
+					<p class="text-caption text-muted-foreground">{activeTool.panelSubtitle}</p>
+				</div>
 				<button
 					class="grid size-11 place-items-center rounded-sm text-muted-foreground hover:bg-hover-surface hover:text-foreground"
 					aria-label="Zamknij panel"
