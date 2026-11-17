@@ -116,6 +116,8 @@
 	--touch-target: 2.75rem;
 	--map-controls-width: 0px;
 	--ruler-size: 1.5rem;
+	--detail-panel-width: 26rem;
+	--detail-occupied-width: 0px;
 
 	/* Wartości ustawiane w biegu przez ToolPanel: ile miejsca zajmuje otwarty panel lub arkusz */
 	--sheet-occupied-height: 0px;
@@ -172,7 +174,7 @@
 		--rail-width: 4.5rem;
 		--status-bar-height: 0.875rem;
 		--panel-width: 20rem;
-		--map-controls-width: 6.25rem;
+		--map-controls-width: calc(6.25rem + var(--detail-occupied-width));
 	}
 }
 
@@ -831,6 +833,14 @@
 		writing-mode: vertical-rl;
 		transform: translateX(-50%) rotate(180deg);
 		line-height: 1;
+	}
+
+	/* Panel wybranego wpisu przy prawej krawędzi na szerokich ekranach; przyciski mapy odsuwają się o jego szerokość */
+	.detail-panel {
+		color: var(--popiol);
+		background: var(--lupek);
+		border-left: 1px solid var(--zar-ciemny);
+		box-shadow: var(--cien-plyty);
 	}
 
 	/* Szyna narzędzi na komputerze: pionowa belka pod paskiem górnym */
