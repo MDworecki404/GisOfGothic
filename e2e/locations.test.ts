@@ -76,6 +76,7 @@ test('przejście z karty wpisu otwiera świat docelowy z widokiem na punkt przyb
 	await page.goto(BOOK_URL);
 	await page.getByRole('button', { name: 'Lokacje', exact: true }).click();
 	await page.getByRole('button', { name: /Przejście do: Górnicza Dolina/ }).click();
+	await page.getByRole('button', { name: 'Otwórz w Księdze' }).click();
 	await page.getByRole('button', { name: 'Przejdź do tego świata' }).click();
 	await expect(page).toHaveURL(/\/g2nk\/gornicza-dolina\?.*widok=/);
 });
@@ -84,6 +85,7 @@ test('lokacja bez przejścia nie ma przycisku przejścia', async ({ page }) => {
 	await page.goto(BOOK_URL);
 	await page.getByRole('button', { name: 'Lokacje', exact: true }).click();
 	await page.getByRole('button', { name: /^Khorinis/ }).click();
+	await page.getByRole('button', { name: 'Otwórz w Księdze' }).click();
 	await expect(page.getByRole('button', { name: 'Pokaż na mapie' })).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Przejdź do tego świata' })).toHaveCount(0);
 });

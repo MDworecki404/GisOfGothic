@@ -49,6 +49,7 @@ test('wyszukiwarka znajduje przedmiot bez polskich znaków i zapisuje wpis w adr
 	await page.goto(BOOK_URL);
 	await page.getByRole('searchbox').fill('szczaw krolewski');
 	await page.getByRole('button', { name: /Szczaw królewski/ }).click();
+	await page.getByRole('button', { name: 'Otwórz w Księdze' }).click();
 	await expect(page.getByRole('heading', { name: 'Szczaw królewski' })).toBeVisible();
 	await expect(page).toHaveURL(/wpis=item%3AITPL_PERM_HERB/);
 	await expect(page.getByText('Sztuki w świecie')).toBeVisible();

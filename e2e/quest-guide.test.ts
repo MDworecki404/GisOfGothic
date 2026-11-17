@@ -35,6 +35,7 @@ test('przewodnik po queście pokazuje trasę i przechodzi po przystankach', asyn
 	await page.goto(BOOK_URL);
 	await page.getByRole('searchbox', { name: /Szukaj/ }).fill('Piracki handel');
 	await page.getByRole('button', { name: /^Piracki handel/ }).click();
+	await page.getByRole('button', { name: 'Otwórz w Księdze' }).click();
 	await expect(page.getByRole('heading', { name: 'Przewodnik' })).toBeVisible();
 	await expect(page.getByText('jedna z możliwych dróg').first()).toBeVisible();
 

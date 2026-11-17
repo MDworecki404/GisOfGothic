@@ -6,6 +6,13 @@
 	import UserIcon from '@lucide/svelte/icons/user';
 	import { appState, geoportal } from '#lib/composition-root.js';
 
+	interface Props {
+		/** `palette` zamyka okno po wyborze wpisu (karta zostaje przy mapie), `book` zostawia wpis w Księdze. */
+		mode?: 'book' | 'palette';
+	}
+
+	let { mode = 'book' }: Props = $props();
+
 	const RESULT_ICONS = {
 		character: UserIcon,
 		item: GemIcon,
@@ -50,11 +57,26 @@
 		visibleResultsCount = RESULTS_PAGE_SIZE;
 	});
 
-	let resultsList = $state<HTMLUListElement | null>(null);
+	let resultsList = $state<HTMLDivElement | null>(null);
+
+	const resultGroups = $derived(
+		TYPE_FILTERS.filter((filter) => filter.value !== 'all').flatMap((filter) => {
+			const results = visibleResults.filter((result) => result.type === filter.value);
+			return results.length > 0 ? [{ label: filter.label, results }] : [];
+		})
+	);
+	const isGrouped = $derived(mode === 'palette' && appState.searchTypeFilter === 'all');
+
+	function chooseResult(entryId: string): void {
+		geoportal.selectSearchEntry(entryId);
+		if (mode === 'palette') geoportal.closeActiveTool();
+	}
 
 	function selectFirstResultOnEnter(event: KeyboardEvent): void {
-		const firstResult = appState.searchResults.at(0);
-		if (event.key === 'Enter' && firstResult) geoportal.selectSearchEntry(firstResult.id);
+		const firstResult = isGrouped
+			? resultGroups.at(0)?.results.at(0)
+			: appState.searchResults.at(0);
+		if (event.key === 'Enter' && firstResult) chooseResult(firstResult.id);
 		else if (event.key === 'ArrowDown') {
 			event.preventDefault();
 			resultsList?.querySelector('button')?.focus();
@@ -75,10 +97,35 @@
 	}
 </script>
 
+{#snippet resultRow(result: (typeof visibleResults)[number])}
+	{@const ResultIcon = RESULT_ICONS[result.type]}
+	<li>
+		<button
+			class="list-row grid w-full grid-cols-[2rem_1fr_auto] items-center gap-2.5 px-2 py-1.5 text-left"
+			onclick={() => chooseResult(result.id)}
+			onkeydown={moveFocusBetweenResults}
+		>
+			<span
+				class="grid size-8 place-items-center rounded-full border"
+				style:border-color={result.markerColor}
+				style:color={result.markerColor}
+				aria-hidden="true"
+			>
+				<ResultIcon class="size-4" />
+			</span>
+			<span class="min-w-0">
+				<span class="block truncate font-medium">{result.name}</span>
+				<span class="block text-caption text-muted-foreground">{result.categoryLabel}</span>
+			</span>
+			<span class="text-caption text-muted-foreground tabular-nums">{result.summary}</span>
+		</button>
+	</li>
+{/snippet}
+
 <div
-	class="flex h-full min-h-0 flex-col border-border px-5 pt-6 pb-4 max-md:px-4 md:border-r {appState.selectedEntry
-		? 'max-md:hidden'
-		: ''}"
+	class="flex h-full min-h-0 flex-col border-border px-5 pt-6 pb-4 max-md:px-4 {mode === 'book'
+		? 'md:border-r'
+		: ''} {mode === 'book' && appState.selectedEntry ? 'max-md:hidden' : ''}"
 >
 	<label class="relative block">
 		<span class="sr-only">Szukaj przedmiotu lub postaci</span>
@@ -224,32 +271,29 @@
 			<p class="mt-3 mb-1 text-sm text-muted-foreground">
 				{hasQuery ? 'Wyniki' : 'Wszystko'}: {appState.searchResults.length}
 			</p>
-			<ul bind:this={resultsList}>
-				{#each visibleResults as result (result.id)}
-					{@const ResultIcon = RESULT_ICONS[result.type]}
-					<li>
-						<button
-							class="list-row grid w-full grid-cols-[2rem_1fr_auto] items-center gap-2.5 px-2 py-1.5 text-left"
-							onclick={() => geoportal.selectSearchEntry(result.id)}
-							onkeydown={moveFocusBetweenResults}
-						>
-							<span
-								class="grid size-8 place-items-center rounded-full border"
-								style:border-color={result.markerColor}
-								style:color={result.markerColor}
-								aria-hidden="true"
+			<div bind:this={resultsList}>
+				{#if isGrouped}
+					{#each resultGroups as group (group.label)}
+						<h3 class="mt-3 mb-0.5 flex justify-between px-2 font-heading text-lead text-primary">
+							{group.label}
+							<span class="font-sans text-caption font-normal text-muted-foreground tabular-nums"
+								>{group.results.length}</span
 							>
-								<ResultIcon class="size-4" />
-							</span>
-							<span class="min-w-0">
-								<span class="block truncate font-medium">{result.name}</span>
-								<span class="block text-caption text-muted-foreground">{result.categoryLabel}</span>
-							</span>
-							<span class="text-caption text-muted-foreground tabular-nums">{result.summary}</span>
-						</button>
-					</li>
-				{/each}
-			</ul>
+						</h3>
+						<ul>
+							{#each group.results as result (result.id)}
+								{@render resultRow(result)}
+							{/each}
+						</ul>
+					{/each}
+				{:else}
+					<ul>
+						{#each visibleResults as result (result.id)}
+							{@render resultRow(result)}
+						{/each}
+					</ul>
+				{/if}
+			</div>
 			{#if appState.searchResults.length > visibleResultsCount}
 				<button
 					class="button-quiet mt-2 w-full"

@@ -51,6 +51,7 @@ test('Księga na telefonie ma jedną kolumnę i przycisk Wróć do wyników po w
 	await page.goto(BOOK_URL);
 	await page.getByRole('searchbox').fill('szczaw krolewski');
 	await page.getByRole('button', { name: /Szczaw królewski/ }).click();
+	await page.getByRole('button', { name: 'Otwórz w Księdze' }).click();
 	await expect(page.getByRole('button', { name: 'Wróć do wyników' })).toBeVisible();
 	await expect(page.getByRole('searchbox')).toBeHidden();
 	const hasHorizontalScroll = await page.evaluate(
@@ -67,6 +68,7 @@ async function selectHerbInBook(page: import('@playwright/test').Page): Promise<
 	await page.goto(BOOK_URL);
 	await page.getByRole('searchbox').fill('szczaw krolewski');
 	await page.getByRole('button', { name: /Szczaw królewski/ }).click();
+	await page.getByRole('button', { name: 'Otwórz w Księdze' }).click();
 	await expect(page.getByRole('region', { name: 'Karta wpisu' })).toBeVisible();
 }
 
@@ -149,6 +151,7 @@ test('podgląd 3D w karcie wpisu ma pasek sterowania z polskimi podpisami', asyn
 	await page.goto(BOOK_URL);
 	await page.getByRole('searchbox').fill('szczaw krolewski');
 	await page.getByRole('button', { name: /Szczaw królewski/ }).click();
+	await page.getByRole('button', { name: 'Otwórz w Księdze' }).click();
 
 	const toolbar = page.getByRole('toolbar', { name: 'Sterowanie podglądem 3D' });
 	await expect(toolbar).toBeVisible();
