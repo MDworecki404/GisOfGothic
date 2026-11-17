@@ -1,6 +1,10 @@
 import type { QuestCatalog, SearchEntry, SearchEntryType, SearchIndex } from '#lib/data/types.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
-import type { PlaceMarker, PlaceRoute } from '#lib/services/map/place-markers-layer.js';
+import type {
+	MarkerShape,
+	PlaceMarker,
+	PlaceRoute
+} from '#lib/services/map/place-markers-layer.js';
 import type { RoadPathFinder } from '#lib/services/routing/road-path-finder.js';
 import { QuestGuideLegPlanner } from './quest-guide-leg-planner.js';
 import { QuestPresenter, type QuestLinkView } from './quest-presenter.js';
@@ -223,6 +227,7 @@ export class SearchCoordinator {
 			return;
 		}
 		const collectedKeys = this.getCollectedPlaceKeys(this.selectedEntry.id);
+		const shape: MarkerShape = this.selectedEntry.type === 'location' ? 'diamond' : 'circle';
 		const markers = this.selectedEntry.places.map((place) => ({
 			lon: place.lon,
 			lat: place.lat,
@@ -230,6 +235,7 @@ export class SearchCoordinator {
 			color: collectedKeys.has(buildPlaceKey(place))
 				? COLLECTED_PLACE_COLOR
 				: pickPlaceColor(place),
+			shape,
 			extent: place.extent
 		}));
 		this.getMarkersDisplay()?.showPlaceMarkers(markers, shouldFlyToMarkers);

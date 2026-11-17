@@ -4,22 +4,27 @@ import type { GeodeticPoint } from '#lib/services/analysis/local-projector.js';
 import {
 	BoundingSphere,
 	Cartesian3,
+	BillboardCollection,
 	Color,
+	HeightReference,
 	Math as CesiumMath,
 	Material,
 	Matrix4,
-	PointPrimitiveCollection,
 	PolylineCollection,
 	Transforms,
 	type Viewer
 } from 'cesium';
 import type { CameraFramer } from './camera-framer.js';
 
+export type MarkerShape = 'circle' | 'diamond';
+
 export interface PlaceMarker {
 	lon: number;
 	lat: number;
 	h: number;
 	color: string;
+	/** Romb oznacza lokację, koło pozostałe rodzaje wpisów; bez wartości rysowane jest koło. */
+	shape?: MarkerShape;
 	/** Zasięg rysowany jako obrys wokół znacznika (lokacje). */
 	extent?: PlaceExtent;
 }
@@ -30,10 +35,9 @@ export interface PlaceRoute {
 	isAlternative: boolean;
 }
 
-const MARKER_PIXEL_SIZE = 11;
-const HIGHLIGHT_PIXEL_SIZE = 18;
-const MARKER_OUTLINE_COLOR = Color.fromCssColorString(MAP_PALETTE.edge);
-const HIGHLIGHT_COLOR = Color.fromCssColorString(MAP_PALETTE.emberLight);
+const MARKER_ICON_PIXELS = 30;
+const MARKER_ICON_RADIUS = 11;
+const MARKER_HIGHLIGHT_SCALE = 1.5;
 const OVERVIEW_PITCH_DEGREES = -55;
 const MINIMUM_OVERVIEW_RANGE_METRES = 120;
 const PLACE_CLOSE_UP_RANGE_METRES = 45;
@@ -45,7 +49,10 @@ const EXTENT_LINE_WIDTH = 3;
  * wywołanie rysowania), widoczna także przez dachy — miejsca bywają wewnątrz budynków.
  */
 export class PlaceMarkersLayer {
-	private readonly points = new PointPrimitiveCollection();
+	private readonly points = new BillboardCollection();
+	private readonly iconCache = new Map<string, string>();
+	private markerShapes: MarkerShape[] = [];
+	private markerColors: string[] = [];
 	private positions: Cartesian3[] = [];
 	private readonly outlines = new PolylineCollection();
 	private readonly routeLines = new PolylineCollection();
@@ -64,13 +71,13 @@ export class PlaceMarkersLayer {
 		this.positions = markers.map((marker) =>
 			Cartesian3.fromDegrees(marker.lon, marker.lat, marker.h)
 		);
+		this.markerShapes = markers.map((marker) => marker.shape ?? 'circle');
+		this.markerColors = markers.map((marker) => marker.color);
 		markers.forEach((marker, index) => {
 			this.points.add({
 				position: this.positions[index],
-				color: Color.fromCssColorString(marker.color),
-				pixelSize: MARKER_PIXEL_SIZE,
-				outlineColor: MARKER_OUTLINE_COLOR,
-				outlineWidth: 2,
+				image: this.readIcon(this.markerShapes[index], marker.color, false),
+				heightReference: HeightReference.NONE,
 				disableDepthTestDistance: Number.POSITIVE_INFINITY
 			});
 			if (marker.extent) this.addExtentOutline(marker, marker.extent);
@@ -99,8 +106,12 @@ export class PlaceMarkersLayer {
 		for (let pointIndex = 0; pointIndex < this.points.length; pointIndex++) {
 			const point = this.points.get(pointIndex);
 			const isHighlighted = pointIndex === index;
-			point.pixelSize = isHighlighted ? HIGHLIGHT_PIXEL_SIZE : MARKER_PIXEL_SIZE;
-			point.outlineColor = isHighlighted ? HIGHLIGHT_COLOR : MARKER_OUTLINE_COLOR;
+			point.image = this.readIcon(
+				this.markerShapes[pointIndex],
+				this.markerColors[pointIndex],
+				isHighlighted
+			);
+			point.scale = isHighlighted ? MARKER_HIGHLIGHT_SCALE : 1;
 		}
 	}
 
@@ -132,8 +143,51 @@ export class PlaceMarkersLayer {
 	clearMarkers(): void {
 		this.points.removeAll();
 		this.positions = [];
+		this.markerShapes = [];
+		this.markerColors = [];
 		this.outlines.removeAll();
 		this.routeLines.removeAll();
+	}
+
+	/** Rysuje ikonę znacznika raz na kombinację kształtu, koloru i wyróżnienia i zwraca ją jako adres danych dla Cesium. */
+	private readIcon(shape: MarkerShape, color: string, isHighlighted: boolean): string {
+		const key = `${shape}|${color}|${isHighlighted}`;
+		const cached = this.iconCache.get(key);
+		if (cached) return cached;
+		const canvas = document.createElement('canvas');
+		canvas.width = MARKER_ICON_PIXELS;
+		canvas.height = MARKER_ICON_PIXELS;
+		const context = canvas.getContext('2d');
+		if (context) this.drawIcon(context, shape, color, isHighlighted);
+		const dataUrl = canvas.toDataURL('image/png');
+		this.iconCache.set(key, dataUrl);
+		return dataUrl;
+	}
+
+	private drawIcon(
+		context: CanvasRenderingContext2D,
+		shape: MarkerShape,
+		color: string,
+		isHighlighted: boolean
+	): void {
+		const centre = MARKER_ICON_PIXELS / 2;
+		const radius = shape === 'diamond' ? MARKER_ICON_RADIUS : MARKER_ICON_RADIUS * 0.8;
+		context.beginPath();
+		if (shape === 'diamond') {
+			context.moveTo(centre, centre - radius);
+			context.lineTo(centre + radius, centre);
+			context.lineTo(centre, centre + radius);
+			context.lineTo(centre - radius, centre);
+			context.closePath();
+		} else {
+			context.arc(centre, centre, radius, 0, 2 * Math.PI);
+		}
+		context.fillStyle = color;
+		context.fill();
+		context.lineJoin = 'round';
+		context.lineWidth = 3;
+		context.strokeStyle = isHighlighted ? MAP_PALETTE.emberLight : MAP_PALETTE.edge;
+		context.stroke();
 	}
 
 	private addExtentOutline(marker: PlaceMarker, extent: PlaceExtent): void {

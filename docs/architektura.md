@@ -147,7 +147,7 @@ aplikacji w `AppState`.
 `SearchService` to indeks MiniSearch: pola nazwa, kategoria (z nazwą gildii zamiast kodu, np. VLK →
 Mieszczanin) i kod; wyszukiwanie po początku słowa, z tolerancją literówek w dłuższych słowach i bez
 polskich znaków (`normalizeSearchTerm`). `SearchEntryPresenter` zamienia wpisy na teksty dla UI,
-a `PlaceMarkersLayer` rysuje miejsca wybranego wpisu jako jedną kolekcję punktów Cesium.
+a `PlaceMarkersLayer` rysuje miejsca wybranego wpisu jako jedną kolekcję bilbordów Cesium (ikony z canvasu: romb dla lokacji, koło dla reszty, [ADR 0052](adr/0052-znaczniki-miejsc-jako-ikony-z-ksztaltem-rodzaju.md)).
 Wyszukiwanie to Księga: okno otwierane narzędziem Szukaj albo Ctrl K (`Book`: `BookSearch` z listą i filtrami po lewej, `BookEntry` z kartą wpisu po prawej; narzędzie ma `presentation: 'book'`, reszta `'panel'`). „Pokaż na mapie” zamyka Księgę i zostawia wpis wybrany, a `EntrySummaryCard` pokazuje go zwarto przy mapie (akcje, „Otwórz w Księdze”, zamknięcie czyści wpis). Zamknięcie Księgi nie czyści wyboru.
 Bez wpisanej frazy Księga pokazuje wszystkie wpisy świata alfabetycznie (`SearchService.listAll`, z filtrem rodzaju), po 60 na stronę
 z przyciskiem „Pokaż więcej”; fraza zawęża listę do trafień wyszukiwarki.
