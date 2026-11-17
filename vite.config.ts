@@ -17,7 +17,23 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 			adapter: adapter({ fallback: 'index.html' }),
-			paths: { relative: false }
+			paths: { relative: false },
+			csp: {
+				mode: 'hash',
+				directives: {
+					'default-src': ['none'],
+					'script-src': ['self', 'wasm-unsafe-eval', 'unsafe-eval'],
+					'style-src': ['self', 'unsafe-inline'],
+					'img-src': ['self', 'data:', 'blob:'],
+					'font-src': ['self'],
+					'connect-src': ['self', 'https://gis-of-gothic-model-gate.marek-dworecki01.workers.dev'],
+					'worker-src': ['self', 'blob:'],
+					'manifest-src': ['self'],
+					'object-src': ['none'],
+					'base-uri': ['self'],
+					'form-action': ['none']
+				}
+			}
 		}),
 		viteStaticCopy({
 			targets: ['Workers', 'Assets', 'ThirdParty', 'Widgets'].map((dir) => ({
