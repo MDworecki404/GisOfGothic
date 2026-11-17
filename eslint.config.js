@@ -8,6 +8,7 @@ export default ts.config(
 	{
 		ignores: [
 			'build/',
+			'design-mockups/dist/',
 			'.svelte-kit/',
 			'node_modules/',
 			'static/',
@@ -33,6 +34,10 @@ export default ts.config(
 			'@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'never' }],
 			'svelte/no-navigation-without-resolve': ['error', { ignoreReplaceState: true }]
 		}
+	},
+	{
+		files: ['design-mockups/**/*.svelte'],
+		rules: { 'svelte/no-navigation-without-resolve': 'off' }
 	},
 	{
 		files: ['src/lib/components/**/*.svelte', 'src/routes/**/*.svelte'],

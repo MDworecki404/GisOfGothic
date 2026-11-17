@@ -1,0 +1,80 @@
+/*
+ * Atlas Gothic: tokeny makiet. Jedyne miejsce z surowymi kolorami; komponenty używają ról.
+ * Paleta: grafit i antracyt (tło), ciemny kamień (panele), mosiądz (akcent), oliwka (akcent dodatkowy).
+ */
+:root {
+	color-scheme: dark;
+
+	--grafit: #121416;
+	--antracyt: #181b1e;
+	--kamien-1: #1f2327;
+	--kamien-2: #272c30;
+	--kamien-3: #313740;
+	--linia: #3a4147;
+	--linia-mocna: #566068;
+	--tekst: #ece6d6;
+	--tekst-2: #b0b3aa;
+	--tekst-3: #8c9088;
+	--mosiadz: #c4a15f;
+	--mosiadz-jasny: #dbbd7c;
+	--mosiadz-ciemny: #8d7240;
+	--oliwka: #98a468;
+	--oliwka-ciemna: #5b6540;
+	--rdza: #d0806a;
+	--morze: #121a1d;
+	--ziemia: #262a24;
+	--ziemia-jasna: #30352b;
+
+	--na-mosiadzu: #17130a;
+	--mosiadz-tlo: rgb(196 161 95 / 0.12);
+	--oliwka-tlo: rgb(152 164 104 / 0.14);
+	--rdza-tlo: rgb(208 128 106 / 0.14);
+	--scrim: rgb(8 10 11 / 0.62);
+	--cien-panelu: 0 14px 36px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.4);
+	--cien-pinezki: 0 2px 6px rgb(0 0 0 / 0.6);
+
+	--kat-lokacja: var(--mosiadz);
+	--kat-postac: var(--oliwka);
+	--kat-przedmiot: #d9cfb8;
+	--kat-potwor: var(--rdza);
+	--kat-quest: #8fb0c9;
+
+	--font-display: 'Cormorant Variable', 'Cormorant Garamond', Georgia, serif;
+	--font-ui: 'Inter Variable', system-ui, sans-serif;
+
+	--tx-xs: 0.75rem;
+	--tx-sm: 0.8125rem;
+	--tx-md: 0.9375rem;
+	--tx-lg: 1.0625rem;
+	--tx-xl: 1.375rem;
+	--tx-2xl: 1.875rem;
+	--tx-3xl: 2.75rem;
+
+	--s-1: 4px;
+	--s-2: 8px;
+	--s-3: 12px;
+	--s-4: 16px;
+	--s-5: 24px;
+	--s-6: 32px;
+	--s-7: 48px;
+
+	--r-ostry: 3px;
+	--r-panel: 8px;
+	--r-duzy: 14px;
+
+	--cel-dotyku: 44px;
+	--czas-krotki: 140ms;
+	--czas-sredni: 240ms;
+	--ruch: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+	--pasek-gorny: 56px;
+	--szyna: 68px;
+	--panel-szczegolow: 400px;
+}
+
+@media (max-width: 47.99rem) {
+	:root {
+		--pasek-gorny: 52px;
+		--szyna: 0px;
+	}
+}

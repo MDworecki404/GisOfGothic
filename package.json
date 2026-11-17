@@ -19,12 +19,16 @@
 		"publish-release": "node scripts/publish-release.mjs",
 		"deploy": "node scripts/deploy-release.mjs",
 		"deploy:preview": "node scripts/check-deploy-environment.mjs && npm run build && node scripts/remove-private-files-from-build.mjs && wrangler pages deploy build --project-name gis-of-gothic --branch podglad",
-		"deploy:gate": "cd workers/model-gate && wrangler deploy"
+		"deploy:gate": "cd workers/model-gate && wrangler deploy",
+		"mockups": "vite --config design-mockups/vite.config.ts --open",
+		"mockups:build": "vite build --config design-mockups/vite.config.ts",
+		"mockups:preview": "vite preview --config design-mockups/vite.config.ts"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^21.2.3",
 		"@commitlint/config-conventional": "^21.2.3",
 		"@eslint/js": "^10.0.1",
+		"@fontsource-variable/cormorant": "^5.3.0",
 		"@fontsource-variable/inter": "^5.3.0",
 		"@gltf-transform/core": "^4.5.1",
 		"@internationalized/date": "^3.12.4",

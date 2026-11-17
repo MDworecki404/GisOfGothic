@@ -30,6 +30,8 @@ pracy lokalnej. Token Cesium ion nie trafia do strony — jest sekretem Workera
 | `npm run test`                        | testy jednostkowe Vitest (`src/**/*.test.ts`)                                                                     |
 | `npm run test:e2e`                    | Playwright: buduje, serwuje i testuje w przeglądarce (wymaga danych i tokenu)                                     |
 | `npm run build`                       | statyczna strona w `build/`                                                                                       |
+| `npm run mockups`                     | makiety interfejsu „Atlas Gothic” na `http://localhost:5180` (`design-mockups/`, ADR 0047)                        |
+| `npm run mockups:build`               | statyczna wersja makiet w `design-mockups/dist/`                                                                  |
 | `node scripts/generate-pwa-icons.mjs` | ikony PWA w `static/icons/` z `static/favicon.svg` (po zmianie ikony)                                             |
 | `npm run deploy`                      | **produkcja, tylko z wydania**: sprawdza tag i czyste repo, uruchamia wszystkie testy, buduje i wysyła (ADR 0014) |
 | `npm run deploy:preview`              | bieżący build na podgląd `https://podglad.gis-of-gothic.pages.dev` (produkcja bez zmian)                          |

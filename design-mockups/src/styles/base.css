@@ -1,0 +1,274 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+	height: 100%;
+	margin: 0;
+}
+
+body {
+	background: var(--grafit);
+	color: var(--tekst);
+	font-family: var(--font-ui);
+	font-size: var(--tx-md);
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+	overflow: hidden;
+	overscroll-behavior: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+	margin: 0;
+}
+
+h1,
+h2,
+h3 {
+	font-family: var(--font-display);
+	font-weight: 600;
+	line-height: 1.12;
+	letter-spacing: 0.005em;
+	text-wrap: balance;
+}
+
+button,
+input,
+select,
+textarea {
+	font: inherit;
+	color: inherit;
+}
+
+button {
+	cursor: pointer;
+}
+
+button:disabled {
+	cursor: not-allowed;
+}
+
+ul,
+ol {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+a {
+	color: var(--mosiadz-jasny);
+}
+
+:focus-visible {
+	outline: 2px solid var(--mosiadz-jasny);
+	outline-offset: 2px;
+}
+
+::selection {
+	background: var(--mosiadz-ciemny);
+	color: var(--tekst);
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.tabular {
+	font-variant-numeric: tabular-nums;
+}
+
+.scroll {
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: var(--linia-mocna) transparent;
+}
+
+/* Przyciski: jedna rodzina, trzy ciężary (główny, drugoplanowy, cichy). */
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--s-2);
+	min-height: 40px;
+	padding: 0 var(--s-4);
+	border: 1px solid var(--linia-mocna);
+	border-radius: var(--r-ostry);
+	background: var(--kamien-2);
+	font-size: var(--tx-sm);
+	font-weight: 500;
+	transition:
+		background var(--czas-krotki) ease,
+		border-color var(--czas-krotki) ease,
+		color var(--czas-krotki) ease;
+}
+
+.btn:hover {
+	background: var(--kamien-3);
+	border-color: var(--mosiadz-ciemny);
+}
+
+.btn:active {
+	background: var(--kamien-1);
+}
+
+.btn:disabled {
+	opacity: 0.45;
+	background: var(--kamien-1);
+	border-color: var(--linia);
+}
+
+.btn.primary {
+	background: var(--mosiadz);
+	border-color: var(--mosiadz-jasny);
+	color: var(--na-mosiadzu);
+	font-weight: 600;
+}
+
+.btn.primary:hover {
+	background: var(--mosiadz-jasny);
+}
+
+.btn.ghost {
+	background: transparent;
+	border-color: transparent;
+	color: var(--tekst-2);
+}
+
+.btn.ghost:hover {
+	background: var(--kamien-2);
+	color: var(--tekst);
+}
+
+.btn.icon {
+	width: var(--cel-dotyku);
+	min-height: var(--cel-dotyku);
+	padding: 0;
+}
+
+.btn.loading {
+	pointer-events: none;
+}
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 32px;
+	padding: 0 var(--s-3);
+	border: 1px solid var(--linia);
+	border-radius: 999px;
+	background: var(--kamien-1);
+	color: var(--tekst-2);
+	font-size: var(--tx-sm);
+	white-space: nowrap;
+	transition:
+		background var(--czas-krotki) ease,
+		border-color var(--czas-krotki) ease,
+		color var(--czas-krotki) ease;
+}
+
+.chip:hover {
+	border-color: var(--linia-mocna);
+	color: var(--tekst);
+}
+
+.chip[aria-pressed='true'] {
+	background: var(--mosiadz-tlo);
+	border-color: var(--mosiadz-ciemny);
+	color: var(--mosiadz-jasny);
+}
+
+.field {
+	display: flex;
+	align-items: center;
+	gap: var(--s-2);
+	min-height: 40px;
+	padding: 0 var(--s-3);
+	border: 1px solid var(--linia-mocna);
+	border-radius: var(--r-ostry);
+	background: var(--antracyt);
+	transition: border-color var(--czas-krotki) ease;
+}
+
+.field:hover {
+	border-color: var(--tekst-3);
+}
+
+.field:focus-within {
+	border-color: var(--mosiadz-jasny);
+	outline: 1px solid var(--mosiadz-jasny);
+}
+
+.field input {
+	flex: 1;
+	min-width: 0;
+	border: 0;
+	outline: 0;
+	background: transparent;
+}
+
+.field input::placeholder {
+	color: var(--tekst-3);
+}
+
+.kbd {
+	display: inline-flex;
+	align-items: center;
+	min-width: 22px;
+	height: 22px;
+	justify-content: center;
+	padding: 0 6px;
+	border: 1px solid var(--linia-mocna);
+	border-bottom-width: 2px;
+	border-radius: var(--r-ostry);
+	background: var(--kamien-1);
+	color: var(--tekst-2);
+	font-size: var(--tx-xs);
+}
+
+.cartouche {
+	background: var(--kamien-1);
+	border: 1px solid var(--linia);
+	border-radius: var(--r-panel);
+	box-shadow: var(--cien-panelu);
+	position: relative;
+}
+
+/* Podwójna linia wewnątrz płyty: znak rozpoznawczy kartuszy atlasu. */
+.cartouche::after {
+	content: '';
+	position: absolute;
+	inset: 3px;
+	border: 1px solid var(--mosiadz-tlo);
+	border-radius: 5px;
+	pointer-events: none;
+}
+
+.page-title {
+	font-size: var(--tx-2xl);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}

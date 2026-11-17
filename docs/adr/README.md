@@ -50,3 +50,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0044](0044-uklad-krag-kolo-narzedzi-i-tarcza-zegara.md)       | Układ „Krąg”: koło narzędzi i tarcza zegara          | przyjęta          |
 | [0045](0045-sterowanie-podgladem-3d-przez-sesje.md)            | Sterowanie podglądem 3D przez sesję, nie event bus   | przyjęta          |
 | [0046](0046-naglowki-bezpieczenstwa-i-csp.md)                  | Nagłówki bezpieczeństwa i polityka CSP               | przyjęta          |
+| [0047](0047-makiety-atlas-gothic-w-design-mockups.md)          | Makiety „Atlas Gothic” w osobnej aplikacji           | przyjęta          |

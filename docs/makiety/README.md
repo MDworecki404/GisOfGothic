@@ -10,3 +10,5 @@ zmianach motywu.
 
 Makiety nie zawierają zasobów gry: wyspa, kropki i ikony są rysowane kodem.
 Plik jest wyłączony z Prettiera, żeby zostawał w opublikowanej postaci.
+
+Interaktywne makiety kierunku „Atlas Gothic” (osobna aplikacja Svelte) są w `design-mockups/`, opis w ADR 0047.
