@@ -1,6 +1,6 @@
 import type { ScreenshotPalette } from './screenshot-composer.js';
 
-const FALLBACK_COLOR = '#171c17';
+const FALLBACK_COLOR = '#1f2327';
 
 /** Czyta kolory i kroje pisma motywu (zmienne CSS), żeby oprawa zdjęcia pasowała do bieżącego trybu jasnego lub ciemnego. */
 export class ScreenshotPaletteReader {

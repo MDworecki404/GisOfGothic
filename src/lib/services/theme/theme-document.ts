@@ -15,8 +15,8 @@ export const NO_THEME_DOCUMENT: ThemeDocument = {
 };
 
 const THEME_COLOR_BY_THEME: Record<ResolvedTheme, string> = {
-	dark: '#0f1c1d',
-	light: '#a8bdb5'
+	dark: '#121a1d',
+	light: '#b6c4c2'
 };
 
 export class BrowserThemeDocument implements ThemeDocument {

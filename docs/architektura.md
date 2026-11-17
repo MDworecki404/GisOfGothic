@@ -526,15 +526,15 @@ widzi aktualny zasłonięty dół. Decyzje: [ADR 0009](adr/0009-wlasny-arkusz-mo
 
 ## Motyw i układ ekranu
 
-Wszystkie tokeny wyglądu są w `src/app.css` ([ADR 0043](adr/0043-motyw-krag-i-tryb-jasny.md), motyw „Krąg”): paleta
+Wszystkie tokeny wyglądu są w `src/app.css` ([ADR 0048](adr/0048-motyw-atlas.md), motyw „Atlas”; tryby i mechanizm wyboru z [ADR 0043](adr/0043-motyw-krag-i-tryb-jasny.md)): paleta
 (łupek, łupek wysoki, woda, krawędź, linia, popiół, mgła, żar, bariera, krew) w dwóch zestawach, ciemnym na `:root` i
 jasnym pod `:root[data-theme='light']`, role (zmienne shadcn oraz `--hover` i `--active`), skala pisma
-(`text-caption` … `text-hero`) i promienie. Żar oznacza działanie, najechanie i ładowanie, bariera wybór, aktywne
-narzędzie i fokus. Do żelaznych ramek służą `--zelazo` i `--lupek-podniesiony`. Przy `prefers-reduced-motion: reduce`
+(`text-caption` … `text-hero`) i promienie. Żar (mosiądz) oznacza działanie, najechanie, aktywne narzędzie, fokus i ładowanie, bariera (przygaszony błękit) wybór
+obiektów i pomiary na mapie. Do żelaznych ramek służą `--zelazo` i `--lupek-podniesiony`. Przy `prefers-reduced-motion: reduce`
 ogólna reguła na końcu `app.css` skraca animacje i przejścia (okna, panele, przyciski), a przeloty kamery są
 natychmiastowe. Materiały to klasy `material-leather` (zaokrąglona tafla z cieniem, bez `clip-path` i bez rozmywania
-tła), `material-iron` i `material-parchment` (płaska płyta). Krój Uncial Antiqua jest w nazwach i nagłówkach, a Lexend
-w reszcie interfejsu (oba z `@fontsource`). Kontrast kolorów obu trybów pilnuje `ColorContrastCalculator`
+tła), `material-iron` i `material-parchment` (płaska płyta). Krój Cormorant jest w nazwach i nagłówkach, a Inter
+w reszcie interfejsu (oba z `@fontsource-variable`). Kontrast kolorów obu trybów pilnuje `ColorContrastCalculator`
 (`services/theme/`), a kolory warstw mapy trzyma `MAP_PALETTE` (`services/map/map-palette.ts`, na razie wartości
 trybu ciemnego).
 

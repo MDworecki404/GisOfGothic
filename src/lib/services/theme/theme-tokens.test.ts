@@ -31,7 +31,7 @@ function readContrast(foregroundToken: string, backgroundToken: string, mode: Th
 	);
 }
 
-describe.each<ThemeMode>(['dark', 'light'])('tokeny motywu „Krąg”, tryb %s', (mode) => {
+describe.each<ThemeMode>(['dark', 'light'])('tokeny motywu „Atlas”, tryb %s', (mode) => {
 	it('popiół na łupku i na wodzie ma kontrast co najmniej 7', () => {
 		expect(readContrast('popiol', 'lupek', mode)).toBeGreaterThanOrEqual(7);
 		expect(readContrast('popiol', 'woda', mode)).toBeGreaterThanOrEqual(7);
@@ -72,8 +72,9 @@ describe.each<ThemeMode>(['dark', 'light'])('tokeny motywu „Krąg”, tryb %s'
 describe('pismo i tryby', () => {
 	it('app.css nie importuje starych paczek pisma', () => {
 		expect(appCss).not.toMatch(/grenze|alegreya|barlow/i);
-		expect(appCss).toMatch(/@fontsource\/uncial-antiqua\//);
-		expect(appCss).toMatch(/@fontsource\/lexend\//);
+		expect(appCss).not.toMatch(/uncial-antiqua|lexend/i);
+		expect(appCss).toMatch(/@fontsource-variable\/cormorant\//);
+		expect(appCss).toMatch(/@fontsource-variable\/inter\//);
 	});
 
 	it('jasny tryb jest pod atrybutem data-theme, a ciemny jest domyślny', () => {

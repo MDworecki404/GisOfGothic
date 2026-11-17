@@ -2,14 +2,9 @@
 @import "tw-animate-css";
 @import "shadcn-svelte/tailwind.css";
 @import "cesium/Build/Cesium/Widgets/widgets.css";
-@import "@fontsource/uncial-antiqua/latin-ext-400.css";
-@import "@fontsource/uncial-antiqua/latin-400.css";
-@import "@fontsource/lexend/latin-ext-400.css";
-@import "@fontsource/lexend/latin-400.css";
-@import "@fontsource/lexend/latin-ext-500.css";
-@import "@fontsource/lexend/latin-500.css";
-@import "@fontsource/lexend/latin-ext-600.css";
-@import "@fontsource/lexend/latin-600.css";
+@import "@fontsource-variable/cormorant/wght.css";
+@import "@fontsource-variable/cormorant/wght-italic.css";
+@import "@fontsource-variable/inter/wght.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -24,41 +19,41 @@
 :root {
 	color-scheme: dark;
 
-	/* 1. Paleta, tryb ciemny: mech nocą, księżyc i świetlik */
-	--lupek: #171c17;
-	--lupek-wysoki: #20271f;
-	--lupek-podniesiony: #2a3328;
-	--woda: #0f1c1d;
-	--krawedz: #0b100b;
-	--linia: #313b2f;
-	--popiol: #e3e8d6;
-	--mgla: #98a28c;
-	--zar: #cfd36b;
-	--zar-ciemny: #8e9338;
-	--zar-jasny: #e0e47d;
-	--bariera: #8db4e0;
-	--bariera-ciemna: #4f6f96;
-	--krew: #e6967a;
-	--zelazo: #66776a;
-	--na-zarze: #141a10;
+	/* 1. Paleta, tryb ciemny: grafit i ciemny kamień, mosiądz (ADR 0048) */
+	--lupek: #1f2327;
+	--lupek-wysoki: #272c30;
+	--lupek-podniesiony: #313740;
+	--woda: #121a1d;
+	--krawedz: #121416;
+	--linia: #3a4147;
+	--popiol: #ece6d6;
+	--mgla: #b0b3aa;
+	--zar: #c4a15f;
+	--zar-ciemny: #8d7240;
+	--zar-jasny: #dbbd7c;
+	--bariera: #8fb0c9;
+	--bariera-ciemna: #4f6f86;
+	--krew: #d0806a;
+	--zelazo: #6f7880;
+	--na-zarze: #17130a;
 
-	--zar-ramka: rgb(207 211 107 / 0.35);
-	--zar-tlo: rgb(207 211 107 / 0.1);
-	--bariera-tlo: rgb(141 180 224 / 0.14);
-	--chip-wypelnienie: rgb(255 255 255 / 0.04);
-	--chip-linia: #3b4739;
-	--plyta-krawedz: #3d4a3b;
-	--plyta-poswiata: rgb(207 211 107 / 0.1);
-	--cien-plyty: 0 10px 28px rgb(0 0 0 / 0.5);
-	--cien-wnetrza: rgb(0 0 0 / 0.6);
+	--zar-ramka: rgb(196 161 95 / 0.4);
+	--zar-tlo: rgb(196 161 95 / 0.12);
+	--bariera-tlo: rgb(143 176 201 / 0.14);
+	--chip-wypelnienie: rgb(255 255 255 / 0.03);
+	--chip-linia: #3a4147;
+	--plyta-krawedz: #3a4147;
+	--plyta-poswiata: rgb(196 161 95 / 0.06);
+	--cien-plyty: 0 14px 36px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.4);
+	--cien-wnetrza: rgb(0 0 0 / 0.5);
 	--cien-karty: rgb(0 0 0 / 0.55);
-	--fale-mapy: rgb(163 212 224 / 0.05);
+	--fale-mapy: rgb(120 160 170 / 0.05);
 	--cien-mapy: rgb(6 10 12 / 0.6);
-	--atrybucja-tlo: rgb(15 28 29 / 0.88);
-	--glow-zar: 0 0 14px rgb(207 211 107 / 0.35);
-	--glow-bariera: 0 0 10px rgb(141 180 224 / 0.35);
+	--atrybucja-tlo: rgb(18 20 22 / 0.88);
+	--glow-zar: 0 0 0 1px rgb(196 161 95 / 0.5);
+	--glow-bariera: 0 0 0 1px rgb(143 176 201 / 0.6);
 	--podzial: rgb(0 0 0 / 0.45);
-	--podzial-swiatlo: rgb(207 211 107 / 0.1);
+	--podzial-swiatlo: rgb(196 161 95 / 0.08);
 
 	/* 2. Role: zmienne shadcn */
 	--background: var(--woda);
@@ -79,13 +74,13 @@
 	--border: var(--linia);
 	--edge: var(--krawedz);
 	--input: var(--zelazo);
-	--ring: var(--bariera);
+	--ring: var(--zar-jasny);
 	--chart-1: var(--zar);
 	--chart-2: var(--zar-ciemny);
 	--chart-3: var(--bariera);
 	--chart-4: var(--mgla);
 	--chart-5: var(--linia);
-	--radius: 12px;
+	--radius: 8px;
 	--sidebar: var(--lupek);
 	--sidebar-foreground: var(--popiol);
 	--sidebar-primary: var(--zar);
@@ -93,13 +88,13 @@
 	--sidebar-accent: var(--lupek-wysoki);
 	--sidebar-accent-foreground: var(--popiol);
 	--sidebar-border: var(--linia);
-	--sidebar-ring: var(--bariera);
+	--sidebar-ring: var(--zar-jasny);
 
 	/* Role: własne */
-	--hover: var(--zar);
+	--hover: var(--zar-jasny);
 	--hover-surface: var(--zar-tlo);
-	--active: var(--bariera);
-	--active-surface: var(--bariera-tlo);
+	--active: var(--zar);
+	--active-surface: var(--zar-tlo);
 	--divider: var(--podzial);
 	--divider-highlight: var(--podzial-swiatlo);
 
@@ -108,7 +103,7 @@
 	--shadow-raised: inset 0 1px 0 rgb(255 255 255 / 0.08), inset 0 -1px 0 rgb(0 0 0 / 0.4);
 	--shadow-well: inset 0 1px 3px var(--cien-wnetrza);
 	--glow-torch: var(--glow-zar);
-	--glow-ore: var(--glow-bariera);
+	--glow-ore: var(--glow-zar);
 
 	/* 3. Układ ekranu (telefon; większe ekrany niżej) */
 	--edge-inset: 0.75rem;
@@ -126,43 +121,43 @@
 	--panel-occupied-width: 0px;
 }
 
-/* Paleta, tryb jasny: porosty w słońcu, kamień i oliwka. Role z :root zostają bez zmian. */
+/* Paleta, tryb jasny: pergaminowy kamień i ciemny mosiądz. Role z :root zostają bez zmian. */
 :root[data-theme='light'] {
 	color-scheme: light;
 
-	--lupek: #eef0e6;
-	--lupek-wysoki: #e0e4d4;
-	--lupek-podniesiony: #d5dac6;
-	--woda: #a8bdb5;
-	--krawedz: #f8f9f3;
-	--linia: #c3c9b4;
-	--popiol: #1e2419;
-	--mgla: #59614f;
-	--zar: #586b10;
-	--zar-ciemny: #3f4e0a;
-	--zar-jasny: #6d8416;
-	--bariera: #2e5a86;
+	--lupek: #f1ede2;
+	--lupek-wysoki: #e6e1d3;
+	--lupek-podniesiony: #dad4c3;
+	--woda: #b6c4c2;
+	--krawedz: #faf8f2;
+	--linia: #cfc8b6;
+	--popiol: #1b1d1a;
+	--mgla: #585a52;
+	--zar: #7a5c1c;
+	--zar-ciemny: #5a4310;
+	--zar-jasny: #8f6e22;
+	--bariera: #2f5f7a;
 	--bariera-ciemna: #9bb8d6;
 	--krew: #a6482a;
-	--zelazo: #727b66;
-	--na-zarze: #f6f7ef;
+	--zelazo: #767b6e;
+	--na-zarze: #fbf6e8;
 
-	--zar-ramka: rgb(88 107 16 / 0.45);
-	--zar-tlo: rgb(88 107 16 / 0.1);
-	--bariera-tlo: rgb(46 90 134 / 0.1);
-	--chip-wypelnienie: rgb(30 36 25 / 0.04);
-	--chip-linia: #b3baa2;
-	--plyta-krawedz: #c3c9b4;
-	--plyta-poswiata: rgb(88 107 16 / 0.08);
-	--cien-plyty: 0 8px 24px rgb(30 36 25 / 0.22);
-	--cien-wnetrza: rgb(30 36 25 / 0.18);
-	--cien-karty: rgb(30 36 25 / 0.3);
+	--zar-ramka: rgb(122 92 28 / 0.5);
+	--zar-tlo: rgb(122 92 28 / 0.1);
+	--bariera-tlo: rgb(47 95 122 / 0.1);
+	--chip-wypelnienie: rgb(27 29 26 / 0.04);
+	--chip-linia: #bdb59f;
+	--plyta-krawedz: #cfc8b6;
+	--plyta-poswiata: rgb(122 92 28 / 0.05);
+	--cien-plyty: 0 10px 28px rgb(27 29 26 / 0.22), 0 2px 5px rgb(27 29 26 / 0.15);
+	--cien-wnetrza: rgb(27 29 26 / 0.16);
+	--cien-karty: rgb(27 29 26 / 0.3);
 	--fale-mapy: rgb(30 60 60 / 0.05);
-	--cien-mapy: rgb(238 240 230 / 0.5);
-	--atrybucja-tlo: rgb(238 240 230 / 0.9);
-	--glow-zar: 0 0 10px rgb(88 107 16 / 0.3);
-	--glow-bariera: 0 0 8px rgb(46 90 134 / 0.3);
-	--podzial: rgb(30 36 25 / 0.15);
+	--cien-mapy: rgb(241 237 226 / 0.5);
+	--atrybucja-tlo: rgb(241 237 226 / 0.9);
+	--glow-zar: 0 0 0 1px rgb(122 92 28 / 0.5);
+	--glow-bariera: 0 0 0 1px rgb(47 95 122 / 0.55);
+	--podzial: rgb(27 29 26 / 0.15);
 	--podzial-swiatlo: rgb(255 255 255 / 0.6);
 
 	--shadow-raised: inset 0 1px 0 rgb(255 255 255 / 0.6), inset 0 -1px 0 rgb(30 36 25 / 0.12);
@@ -187,9 +182,9 @@
 }
 
 @theme inline {
-	--font-sans: 'Lexend', ui-sans-serif, sans-serif;
-	--font-serif: 'Uncial Antiqua', Georgia, serif;
-	--font-heading: 'Uncial Antiqua', Georgia, serif;
+	--font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+	--font-serif: 'Cormorant Variable', Georgia, serif;
+	--font-heading: 'Cormorant Variable', Georgia, serif;
 
 	--text-caption: 0.8125rem;
 	--text-caption--line-height: 1.4;
@@ -253,7 +248,7 @@
 	--color-foreground: var(--foreground);
 	--color-background: var(--background);
 
-	--radius-sm: 2px;
+	--radius-sm: 4px;
 	--radius-md: var(--radius);
 	--radius-lg: var(--radius);
 	--radius-xl: 6px;
@@ -283,8 +278,8 @@
 	h1,
 	h2 {
 		font-family: var(--font-heading);
-		font-weight: 400;
-		letter-spacing: 0.01em;
+		font-weight: 600;
+		letter-spacing: 0.005em;
 	}
 	:focus-visible {
 		outline: 2px solid var(--ring);
@@ -298,14 +293,16 @@
 	   Sam element nie jest przycinany, więc rozwijane menu i podpowiedzi mogą wystawać poza płytę. */
 	.material-leather,
 	.parchment-note {
-		--cut: 14px;
+		--cut: 6px;
 		position: relative;
 		color: var(--popiol);
-		background:
-			radial-gradient(120% 80% at 0 0, var(--plyta-poswiata), transparent 58%), var(--lupek);
+		background: var(--lupek);
 		border: 1px solid var(--plyta-krawedz);
 		border-radius: calc(var(--cut) * 1.5);
-		box-shadow: var(--cien-plyty);
+		box-shadow:
+			var(--cien-plyty),
+			inset 0 0 0 3px var(--lupek),
+			inset 0 0 0 4px var(--zar-tlo);
 	}
 
 	/* Wybrana płyta: krawędź w kolorze bariery */
@@ -343,7 +340,7 @@
 		font-size: var(--text-body);
 		font-weight: 500;
 		white-space: nowrap;
-		border-radius: 999px;
+		border-radius: var(--radius-sm);
 		transition:
 			color 120ms,
 			background-color 120ms,
@@ -664,7 +661,7 @@
 		font-weight: 500;
 		background: var(--lupek-wysoki);
 		box-shadow: inset 0 0 0 1px var(--linia);
-		border-radius: 999px;
+		border-radius: var(--radius-sm);
 	}
 
 	.button-ink:hover {

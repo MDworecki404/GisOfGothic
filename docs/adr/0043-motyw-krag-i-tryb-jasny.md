@@ -1,6 +1,6 @@
 # 0043. Motyw „Krąg” i tryb jasny
 
-Status: przyjęta (zastępuje ADR 0036 w części palety, pisma i kształtu płyt; tokeny układu z ADR 0019 zostają)
+Status: przyjęta (zastępuje ADR 0036 w części palety, pisma i kształtu płyt; tokeny układu z ADR 0019 zostają); paleta, pismo i kształt płyt zastąpione przez ADR 0048, mechanizm trybów obowiązuje dalej
 
 ## Kontekst
 

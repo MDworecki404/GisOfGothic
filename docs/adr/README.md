@@ -51,3 +51,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0045](0045-sterowanie-podgladem-3d-przez-sesje.md)            | Sterowanie podglądem 3D przez sesję, nie event bus   | przyjęta          |
 | [0046](0046-naglowki-bezpieczenstwa-i-csp.md)                  | Nagłówki bezpieczeństwa i polityka CSP               | przyjęta          |
 | [0047](0047-makiety-atlas-gothic-w-design-mockups.md)          | Makiety „Atlas Gothic” w osobnej aplikacji           | przyjęta          |
+| [0048](0048-motyw-atlas.md)                                    | Motyw „Atlas”: grafit, mosiądz, Cormorant i Inter    | przyjęta          |
