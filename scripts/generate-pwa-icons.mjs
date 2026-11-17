@@ -5,7 +5,7 @@
 import { mkdir, readFile } from 'node:fs/promises';
 import { chromium } from '@playwright/test';
 
-const BACKGROUND = '#121b1e';
+const BACKGROUND = '#121a1d';
 const OUTPUT_DIRECTORY = 'static/icons';
 
 const ICONS = [
