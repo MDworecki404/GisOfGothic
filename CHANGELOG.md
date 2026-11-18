@@ -2,6 +2,12 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [1.5.0](https://github.com/MDworecki404/GisOfGothic/compare/v1.4.2...v1.5.0) (2026-11-18)
+
+### Nowe funkcje
+
+* Rozmiary światów z prawdziwymi kolorami, ukrywaniem światów i gotowymi układami ([d1fed35](https://github.com/MDworecki404/GisOfGothic/commit/d1fed356ef15810bd3c8550cc2f4dee4ff6c7f93))
+
 ## [1.4.2](https://github.com/MDworecki404/GisOfGothic/compare/v1.4.1...v1.4.2) (2026-11-18)
 
 ### Poprawki błędów
