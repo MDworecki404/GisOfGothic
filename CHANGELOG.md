@@ -2,6 +2,12 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [1.4.2](https://github.com/MDworecki404/GisOfGothic/compare/v1.4.1...v1.4.2) (2026-11-18)
+
+### Poprawki błędów
+
+* instalacja service workera nie utyka na złym pliku i pomija pamięć HTTP ([950860a](https://github.com/MDworecki404/GisOfGothic/commit/950860aa81974a7098a972e73213d4e82f090a78))
+
 ## [1.4.1](https://github.com/MDworecki404/GisOfGothic/compare/v1.4.0...v1.4.1) (2026-11-18)
 
 ### Poprawki błędów
