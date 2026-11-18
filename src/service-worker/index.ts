@@ -45,15 +45,23 @@ class AppServiceWorker {
 		const cache = await caches.open(SHELL_CACHE);
 		await Promise.all(
 			shellFiles.map(async (path) => {
-				const request = new Request(path);
-				const response = await fetch(request);
 				const mode = path === APP_SHELL_PATH ? 'navigate' : 'cors';
-				if (!this.policy.canStore({ mode }, this.describeResponse(response))) {
-					throw new Error(`Nie można zapisać ${path} w powłoce (kod ${response.status}, nie plik)`);
-				}
-				await cache.put(request, response);
+				const response = await this.fetchStorable(new Request(path), mode);
+				if (response) await cache.put(path, response);
 			})
 		);
+	}
+
+	/**
+	 * Pobiera plik z sieci; jeśli dostaje coś, czego nie wolno zapisać (np. HTML zamiast skryptu, także z pamięci
+	 * HTTP przeglądarki), ponawia pobranie z pominięciem pamięci HTTP. Zwraca `null`, gdy i wtedy odpowiedź jest zła,
+	 * żeby instalacja nowej wersji nie utknęła przez jeden brakujący plik.
+	 */
+	private async fetchStorable(request: Request, mode: string): Promise<Response | null> {
+		const first = await fetch(request);
+		if (this.policy.canStore({ mode }, this.describeResponse(first))) return first;
+		const second = await fetch(new Request(request, { cache: 'reload' }));
+		return this.policy.canStore({ mode }, this.describeResponse(second)) ? second : null;
 	}
 
 	private describeResponse(response: Response): { ok: boolean; contentType: string | null } {
@@ -92,7 +100,8 @@ class AppServiceWorker {
 	private async respondFromCacheFirst(request: Request): Promise<Response> {
 		const cached = await caches.match(request, { ignoreVary: true });
 		if (cached && this.policy.canStore(request, this.describeResponse(cached))) return cached;
-		const response = await fetch(request);
+		const response =
+			(await this.fetchStorable(request.clone(), request.mode)) ?? (await fetch(request));
 		if (this.policy.canStore(request, this.describeResponse(response))) {
 			const cacheName = new URL(request.url).pathname.startsWith('/cesiumStatic/')
 				? CESIUM_CACHE
