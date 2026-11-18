@@ -1,6 +1,10 @@
 <script lang="ts">
+	import EyeIcon from '@lucide/svelte/icons/eye';
+	import EyeOffIcon from '@lucide/svelte/icons/eye-off';
 	import { page } from '$app/state';
 	import { appState, geoportal, worldCatalog } from '#lib/composition-root.js';
+	import ForgedRange from '#lib/components/controls/ForgedRange.svelte';
+	import type { WorldArrangement } from '#lib/services/comparison/world-arrangement-calculator.js';
 	import type { SizeWorldView } from '#lib/services/comparison/world-size-coordinator.js';
 	import type { SizeWorldPlacement } from '#lib/services/map/world-placement-calculator.js';
 
@@ -45,6 +49,32 @@
 		return Math.round(value * 10) / 10;
 	}
 
+	const arrangements: readonly { value: WorldArrangement; label: string; hint: string }[] = [
+		{ value: 'concentric', label: 'Współśrodkowo', hint: 'środki obrysów w jednym miejscu' },
+		{
+			value: 'southwest-corner',
+			label: 'Od narożnika',
+			hint: 'wspólny południowo-zachodni narożnik, widać, który świat wystaje'
+		},
+		{ value: 'row', label: 'W rzędzie', hint: 'światy obok siebie na wschód od otwartego' }
+	];
+
+	const readyWorldCount = $derived(sizes.worlds.filter((world) => world.status === 'ready').length);
+	const areAllVisible = $derived(
+		(sizes.reference?.isVisible ?? true) && sizes.worlds.every((world) => world.isVisible)
+	);
+
+	const ratioFormat = new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 1 });
+
+	function describeRatio(world: SizeWorldView): string | null {
+		const reference = sizes.reference;
+		if (!reference || world.widthMetres === null || world.depthMetres === null) return null;
+		const areaRatio =
+			(world.widthMetres * world.depthMetres) / (reference.widthMetres * reference.depthMetres);
+		if (areaRatio >= 1) return `${ratioFormat.format(areaRatio)}× większy obszar niż otwarty świat`;
+		return `${ratioFormat.format(1 / areaRatio)}× mniejszy obszar niż otwarty świat`;
+	}
+
 	const centreFields: readonly {
 		axis: keyof Pick<SizeWorldPlacement, 'east' | 'north' | 'up'>;
 		label: string;
@@ -56,19 +86,58 @@
 </script>
 
 <p class="text-sm text-muted-foreground">
-	Zaznacz światy, które mają się pokazać obok otwartego. Wszystkie są półprzezroczystymi widmami, a
-	świat pod kursorem robi się wyraźny. Każdy świat staje środkiem na środku otwartego.
-</p>
-<p class="mt-2 text-sm text-muted-foreground">
-	Wybrany świat (kliknij jego nazwę albo sam świat na mapie) ma gizmo: przeciągnij
-	<span class="text-[#ff4545]">czerwoną</span> strzałkę, żeby przesunąć na wschód,
+	Zaznacz światy, które mają się pokazać obok otwartego, i porównaj ich wielkość. Wybrany świat ma
+	na mapie gizmo: przeciągnij <span class="text-[#ff4545]">czerwoną</span> strzałkę na wschód,
 	<span class="text-[#45ff70]">zieloną</span> na północ,
 	<span class="text-[#4596ff]">niebieską</span>
-	w górę, a biały pierścień, żeby obrócić. Można też przeciągnąć sam świat albo wpisać liczby.
+	w górę, a biały pierścień, żeby obrócić. Kamerę ruszasz, przeciągając tło.
 </p>
-<p class="mt-2 text-caption text-muted-foreground">
-	Kamerę ruszasz, przeciągając tło poza światami.
-</p>
+
+<h3 class="group-label mt-4 mb-1">Wygląd</h3>
+<label class="list-row grid cursor-pointer grid-cols-[2.5rem_1fr] items-start gap-3 px-1 py-2.5">
+	<input
+		type="checkbox"
+		class="switch-forged mt-0.5"
+		checked={sizes.areColorsNatural}
+		onchange={(event) => geoportal.setSizeWorldsNaturalColors(event.currentTarget.checked)}
+	/>
+	<span class="min-w-0">
+		Prawdziwe kolory
+		<span class="block text-caption text-muted-foreground">
+			modele w kolorach z gry zamiast barw rozróżniających światy; światy odróżnia wtedy kolejność i
+			ukrywanie
+		</span>
+	</span>
+</label>
+<div class="px-1 py-2">
+	<div class="mb-1 flex justify-between text-sm">
+		<span>Nieprzezroczystość</span>
+		<span class="text-muted-foreground tabular-nums">{Math.round(sizes.opacity * 100)}%</span>
+	</div>
+	<ForgedRange
+		value={sizes.opacity}
+		min={0.1}
+		max={1}
+		step={0.05}
+		label="Nieprzezroczystość światów"
+		valueText="{Math.round(sizes.opacity * 100)}%"
+		onValueChange={(value) => geoportal.setSizeWorldsOpacity(value)}
+	/>
+</div>
+
+<h3 class="group-label mt-4 mb-1">Układ</h3>
+<div class="flex flex-wrap gap-1.5" role="group" aria-label="Ułóż wczytane światy">
+	{#each arrangements as arrangement (arrangement.value)}
+		<button
+			class="chip"
+			title={arrangement.hint}
+			disabled={readyWorldCount === 0}
+			onclick={() => geoportal.arrangeSizeWorlds(arrangement.value)}
+		>
+			{arrangement.label}
+		</button>
+	{/each}
+</div>
 
 {#if sizes.reference}
 	{@const reference = sizes.reference}
@@ -92,7 +161,25 @@
 		<span class="block text-sm tabular-nums">
 			{describeSize(reference.widthMetres, reference.depthMetres)}
 		</span>
+		<button
+			class="button-quiet mt-1.5 min-h-9 px-3 text-sm"
+			aria-pressed={reference.isVisible}
+			onclick={() => geoportal.toggleSizeWorldVisibility(REFERENCE_KEY)}
+		>
+			{#if reference.isVisible}<EyeIcon class="size-4" />Ukryj otwarty świat{:else}<EyeOffIcon
+					class="size-4"
+				/>Pokaż otwarty świat{/if}
+		</button>
 	</div>
+{/if}
+
+{#if sizes.worlds.length > 0}
+	<button
+		class="button-quiet mt-3 w-full"
+		onclick={() => geoportal.toggleAllSizeWorldsVisibility()}
+	>
+		{areAllVisible ? 'Pokaż tylko otwarty świat' : 'Pokaż wszystkie światy'}
+	</button>
 {/if}
 
 {#if sizes.isLimitReached}
@@ -144,6 +231,18 @@
 						{:else}
 							<span class="min-w-0 flex-1 truncate">{world.name}</span>
 						{/if}
+						{#if selected?.status === 'ready'}
+							<button
+								class="grid size-9 shrink-0 place-items-center rounded-sm text-muted-foreground hover:bg-hover-surface hover:text-hover"
+								aria-pressed={selected.isVisible}
+								aria-label="{selected.isVisible ? 'Ukryj' : 'Pokaż'} świat {world.name}"
+								onclick={() => geoportal.toggleSizeWorldVisibility(key)}
+							>
+								{#if selected.isVisible}<EyeIcon class="size-4" />{:else}<EyeOffIcon
+										class="size-4"
+									/>{/if}
+							</button>
+						{/if}
 						{#if selected?.status === 'loading'}
 							<span class="text-caption text-muted-foreground">wczytywanie…</span>
 						{:else if selected?.status === 'error'}
@@ -159,8 +258,12 @@
 						<p class="px-1 pb-2 text-sm text-destructive" role="alert">
 							Nie udało się wczytać świata: {selected.errorMessage}
 						</p>
-					{:else if selected?.status === 'ready' && selected.nativeCenter}
+					{:else if selected?.status === 'ready' && selected.nativeCenter && isChosen}
 						{@const nativeCenter = selected.nativeCenter}
+						{@const ratio = describeRatio(selected)}
+						{#if ratio}
+							<p class="px-1 pb-1.5 text-caption text-muted-foreground">{ratio}</p>
+						{/if}
 						<div class="mb-2 grid grid-cols-2 gap-2 px-1">
 							{#each centreFields as field (field.axis)}
 								<label class="text-sm">

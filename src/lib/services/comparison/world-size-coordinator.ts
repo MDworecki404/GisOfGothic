@@ -2,6 +2,10 @@ import type { Anchor } from '#lib/data/types.js';
 import type { WorldDefinition } from '#lib/data/world-catalog.js';
 import type { AppEventBus } from '#lib/events/app-events.js';
 import { REFERENCE_WORLD_KEY } from '#lib/services/map/size-world-keys.js';
+import {
+	WorldArrangementCalculator,
+	type WorldArrangement
+} from './world-arrangement-calculator.js';
 import type { WorldExtent } from '#lib/services/map/world-extent-reader.js';
 import type { SizeWorldPlacement } from '#lib/services/map/world-placement-calculator.js';
 
@@ -17,6 +21,9 @@ export interface WorldSizeDisplay {
 	highlightSizeWorld(key: string | null): void;
 	selectSizeWorld(key: string | null): void;
 	setPrimaryWorldGhost(tintCssColor: string | null): void;
+	setSizeWorldVisible(key: string, isVisible: boolean): void;
+	setSizeWorldsNaturalColors(areNatural: boolean): void;
+	setSizeWorldsOpacity(opacity: number): void;
 	clearSizeWorlds(): void;
 	readPrimaryWorldExtent(): WorldExtent | null;
 }
@@ -35,12 +42,14 @@ export interface SizeWorldView {
 	nativeCenter: { east: number; north: number; up: number } | null;
 	placement: SizeWorldPlacement;
 	isHighlighted: boolean;
+	isVisible: boolean;
 }
 
 export interface SizeReferenceView {
 	label: string;
 	color: string;
 	isHighlighted: boolean;
+	isVisible: boolean;
 	widthMetres: number;
 	depthMetres: number;
 }
@@ -52,14 +61,23 @@ export interface WorldSizeView {
 	reference: SizeReferenceView | null;
 	worlds: SizeWorldView[];
 	isLimitReached: boolean;
+	/** Prawdziwe kolory modeli zamiast barw rozróżniających światy. */
+	areColorsNatural: boolean;
+	/** Podstawowa nieprzezroczystość widm (0,1–1). */
+	opacity: number;
 }
+
+const DEFAULT_OPACITY = 0.5;
+const NATURAL_COLORS_OPACITY = 0.85;
 
 export const NO_WORLD_SIZE_COMPARISON: WorldSizeView = {
 	isActive: false,
 	selectedKey: null,
 	reference: null,
 	worlds: [],
-	isLimitReached: false
+	isLimitReached: false,
+	areColorsNatural: false,
+	opacity: DEFAULT_OPACITY
 };
 
 interface SizeWorldState {
@@ -72,6 +90,7 @@ interface SizeWorldState {
 	extent: WorldExtent | null;
 	placement: SizeWorldPlacement;
 	defaultPlacement: SizeWorldPlacement;
+	isVisible: boolean;
 }
 
 /** Barwy światów: nasycone, daleko od siebie na kole barw i jasne na ciemnym tle mapy. */
@@ -113,6 +132,11 @@ export class WorldSizeCoordinator {
 	private selectedKey: string | null = null;
 	private listHighlightedKey: string | null = null;
 	private mapHoveredKey: string | null = null;
+	private isReferenceVisible = true;
+	private areColorsNatural = false;
+	private opacity = DEFAULT_OPACITY;
+	private isOpacityChosenByUser = false;
+	private readonly arrangementCalculator = new WorldArrangementCalculator();
 
 	constructor(
 		private readonly eventBus: AppEventBus,
@@ -179,7 +203,8 @@ export class WorldSizeCoordinator {
 			errorMessage: null,
 			extent: null,
 			placement: NATIVE,
-			defaultPlacement: NATIVE
+			defaultPlacement: NATIVE,
+			isVisible: true
 		};
 		this.worlds = [...this.worlds, state];
 		this.selectedKey = key;
@@ -193,6 +218,69 @@ export class WorldSizeCoordinator {
 
 	resetPlacement(key: string): void {
 		this.updateState(key, (state) => ({ ...state, placement: state.defaultPlacement }));
+	}
+
+	/** Chowa albo pokazuje świat (klucz `reference` to otwarty świat) bez rozładowywania go. */
+	toggleVisibility(key: string): void {
+		if (key === REFERENCE_WORLD_KEY) {
+			this.isReferenceVisible = !this.isReferenceVisible;
+			this.getDisplay()?.setSizeWorldVisible(key, this.isReferenceVisible);
+			this.publish();
+			return;
+		}
+		const state = this.worlds.find((candidate) => candidate.key === key);
+		if (!state) return;
+		const isVisible = !state.isVisible;
+		this.worlds = this.worlds.map((candidate) =>
+			candidate.key === key ? { ...candidate, isVisible } : candidate
+		);
+		this.getDisplay()?.setSizeWorldVisible(key, isVisible);
+		this.publish();
+	}
+
+	/** Pokazuje wszystkie światy (otwarty też) albo, gdy wszystkie już widać, zostawia tylko otwarty. */
+	toggleAllVisibility(): void {
+		const areAllVisible = this.isReferenceVisible && this.worlds.every((state) => state.isVisible);
+		this.isReferenceVisible = true;
+		this.worlds = this.worlds.map((state) => ({ ...state, isVisible: !areAllVisible }));
+		const display = this.getDisplay();
+		display?.setSizeWorldVisible(REFERENCE_WORLD_KEY, true);
+		for (const state of this.worlds) display?.setSizeWorldVisible(state.key, state.isVisible);
+		this.publish();
+	}
+
+	/** Prawdziwe kolory modeli; przy pierwszym włączeniu nieprzezroczystość rośnie, żeby kolory były czytelne. */
+	setNaturalColors(areNatural: boolean): void {
+		this.areColorsNatural = areNatural;
+		this.getDisplay()?.setSizeWorldsNaturalColors(areNatural);
+		if (areNatural && !this.isOpacityChosenByUser) this.applyOpacity(NATURAL_COLORS_OPACITY);
+		else if (!areNatural && !this.isOpacityChosenByUser) this.applyOpacity(DEFAULT_OPACITY);
+		this.publish();
+	}
+
+	setOpacity(opacity: number): void {
+		this.isOpacityChosenByUser = true;
+		this.applyOpacity(opacity);
+		this.publish();
+	}
+
+	/** Ustawia wszystkie wczytane światy według wybranego układu (np. w rzędzie albo od wspólnego narożnika). */
+	arrangeWorlds(arrangement: WorldArrangement): void {
+		const reference = this.referenceExtent;
+		const readyWorlds = this.worlds.filter(
+			(state): state is SizeWorldState & { extent: WorldExtent } =>
+				state.status === 'ready' && state.extent !== null
+		);
+		if (!reference || readyWorlds.length === 0) return;
+		const placements = this.arrangementCalculator.arrange(
+			arrangement,
+			reference,
+			readyWorlds.map((state) => state.extent)
+		);
+		readyWorlds.forEach((state, index) => {
+			const placement = placements[index];
+			this.updateState(state.key, (current) => ({ ...current, placement }));
+		});
 	}
 
 	/** Wybiera świat, który ma mieć gizmo (z listy albo kliknięciem na mapie). */
@@ -218,6 +306,18 @@ export class WorldSizeCoordinator {
 	/** Przeciągnięcie świata albo uchwytu gizma: warstwa mapy już go ustawiła, więc zapisujemy tylko nową pozycję. */
 	reactToMapPlacement(key: string, placement: SizeWorldPlacement): void {
 		this.updateState(key, (state) => ({ ...state, placement }), false);
+	}
+
+	private applyOpacity(opacity: number): void {
+		this.opacity = opacity;
+		this.getDisplay()?.setSizeWorldsOpacity(opacity);
+	}
+
+	private resetAppearance(): void {
+		this.isReferenceVisible = true;
+		this.areColorsNatural = false;
+		this.opacity = DEFAULT_OPACITY;
+		this.isOpacityChosenByUser = false;
 	}
 
 	private isSamePrimaryWorld(world: WorldDefinition): boolean {
@@ -293,6 +393,7 @@ export class WorldSizeCoordinator {
 	}
 
 	private clearWorlds(): void {
+		this.resetAppearance();
 		this.worlds = [];
 		this.selectedKey = null;
 		this.listHighlightedKey = null;
@@ -322,7 +423,8 @@ export class WorldSizeCoordinator {
 					? {
 							...this.reference,
 							color: REFERENCE_WORLD_COLOR,
-							isHighlighted: emphasizedKey === REFERENCE_WORLD_KEY
+							isHighlighted: emphasizedKey === REFERENCE_WORLD_KEY,
+							isVisible: this.isReferenceVisible
 						}
 					: null,
 				worlds: this.worlds.map((state) => ({
@@ -341,9 +443,12 @@ export class WorldSizeCoordinator {
 							}
 						: null,
 					placement: state.placement,
-					isHighlighted: state.key === emphasizedKey
+					isHighlighted: state.key === emphasizedKey,
+					isVisible: state.isVisible
 				})),
-				isLimitReached: this.worlds.length >= SIZE_WORLD_COLORS.length
+				isLimitReached: this.worlds.length >= SIZE_WORLD_COLORS.length,
+				areColorsNatural: this.areColorsNatural,
+				opacity: this.opacity
 			}
 		});
 	}

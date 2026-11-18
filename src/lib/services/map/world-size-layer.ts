@@ -18,7 +18,7 @@ import {
 	measureClockwiseAngleDegrees,
 	wrapToShortestTurnDegrees
 } from './gizmo-math.js';
-import { GhostWorldShaderBuilder } from './ghost-world-shader-builder.js';
+import { DEFAULT_TINT_STRENGTH, GhostWorldShaderBuilder } from './ghost-world-shader-builder.js';
 import { REFERENCE_WORLD_KEY } from './size-world-keys.js';
 import { WorldExtentReader, type WorldExtent } from './world-extent-reader.js';
 import { WorldPlacementCalculator, type SizeWorldPlacement } from './world-placement-calculator.js';
@@ -74,7 +74,7 @@ interface HeadingDrag {
 
 type Drag = PlaneDrag | AxisDrag | HeadingDrag;
 
-const BASE_ALPHA = 0.5;
+const DEFAULT_BASE_ALPHA = 0.5;
 const HIGHLIGHT_ALPHA = 0.92;
 const MAXIMUM_PICKED_OBJECTS = 8;
 
@@ -92,6 +92,9 @@ export class WorldSizeLayer {
 	private readonly placementCalculator = new WorldPlacementCalculator();
 	private readonly gizmo: WorldSizeGizmo;
 	private readonly requests = new Map<string, number>();
+	private readonly hiddenKeys = new Set<string>();
+	private baseAlpha = DEFAULT_BASE_ALPHA;
+	private areColorsNatural = false;
 	private requestCounter = 0;
 	private listener: SizeWorldListener | null = null;
 	private isListeningToInput = false;
@@ -129,7 +132,11 @@ export class WorldSizeLayer {
 			tileset.destroy();
 			return null;
 		}
-		const shader = this.shaderBuilder.createShader(tintCssColor, BASE_ALPHA);
+		const shader = this.shaderBuilder.createShader(
+			tintCssColor,
+			this.baseAlpha,
+			this.readTintStrength()
+		);
 		tileset.customShader = shader;
 		const extent = this.extentReader.readExtent(tileset, frame);
 		this.viewer.scene.primitives.add(tileset);
@@ -152,6 +159,7 @@ export class WorldSizeLayer {
 		this.viewer.scene.primitives.remove(entry.tileset);
 		this.worlds.delete(key);
 		if (this.hoveredKey === key) this.hoveredKey = null;
+		this.hiddenKeys.delete(key);
 		if (this.drag?.key === key) this.finishDrag();
 		if (this.selectedKey === key) this.selectedKey = null;
 		this.refreshGizmo();
@@ -162,6 +170,9 @@ export class WorldSizeLayer {
 	clear(): void {
 		for (const key of [...this.worlds.keys()]) this.removeWorld(key);
 		this.requests.clear();
+		this.hiddenKeys.clear();
+		this.baseAlpha = DEFAULT_BASE_ALPHA;
+		this.areColorsNatural = false;
 		this.selectedKey = null;
 		this.refreshGizmo();
 		if (this.reference.length === 0) this.stopListeningToInput();
@@ -183,8 +194,13 @@ export class WorldSizeLayer {
 	ghostReference(tilesets: readonly Cesium3DTileset[], tintCssColor: string): void {
 		this.releaseReference();
 		this.reference = tilesets.map((tileset) => {
-			const shader = this.shaderBuilder.createShader(tintCssColor, BASE_ALPHA);
+			const shader = this.shaderBuilder.createShader(
+				tintCssColor,
+				this.baseAlpha,
+				this.readTintStrength()
+			);
 			tileset.customShader = shader;
+			tileset.show = !this.hiddenKeys.has(REFERENCE_WORLD_KEY);
 			return { tileset, shader };
 		});
 		this.startListeningToInput();
@@ -193,6 +209,7 @@ export class WorldSizeLayer {
 	/** Przestaje traktować tilesety odniesienia jako widma i zwraca je, żeby właściciel przywrócił im shadery. */
 	releaseReference(): Cesium3DTileset[] {
 		const tilesets = this.reference.map((entry) => entry.tileset);
+		for (const tileset of tilesets) if (!tileset.isDestroyed()) tileset.show = true;
 		this.reference = [];
 		if (this.worlds.size === 0) this.stopListeningToInput();
 		return tilesets;
@@ -226,6 +243,38 @@ export class WorldSizeLayer {
 		this.applyAlphas();
 	}
 
+	/** Chowa albo pokazuje świat (klucz `REFERENCE_WORLD_KEY` oznacza otwarty świat) bez rozładowywania go. */
+	setWorldVisible(key: string, isVisible: boolean): void {
+		if (isVisible) this.hiddenKeys.delete(key);
+		else this.hiddenKeys.add(key);
+		const entry = this.worlds.get(key);
+		if (entry) entry.tileset.show = isVisible;
+		if (key === REFERENCE_WORLD_KEY) {
+			for (const reference of this.reference) reference.tileset.show = isVisible;
+		}
+		if (!isVisible && this.hoveredKey === key) {
+			this.hoveredKey = null;
+			this.listener?.onHovered(null);
+		}
+		this.refreshGizmo();
+		this.applyAlphas();
+	}
+
+	/** Prawdziwe kolory modeli zamiast barwy świata; przezroczystość zostaje do osobnego ustawienia. */
+	setNaturalColors(areNatural: boolean): void {
+		this.areColorsNatural = areNatural;
+		const strength = this.readTintStrength();
+		for (const entry of [...this.worlds.values(), ...this.reference]) {
+			this.shaderBuilder.setTintStrength(entry.shader, strength);
+		}
+	}
+
+	/** Podstawowa nieprzezroczystość widm (0–1); światy wyróżnione zostają co najmniej tak wyraźne jak zwykle. */
+	setBaseOpacity(opacity: number): void {
+		this.baseAlpha = Math.min(1, Math.max(0.1, opacity));
+		this.applyAlphas();
+	}
+
 	destroy(): void {
 		this.clear();
 		this.forgetReference();
@@ -233,25 +282,30 @@ export class WorldSizeLayer {
 		this.removePostRenderListener();
 	}
 
+	private readTintStrength(): number {
+		return this.areColorsNatural ? 0 : DEFAULT_TINT_STRENGTH;
+	}
+
 	private applyAlphas(): void {
 		const emphasizedKey = this.highlightedKey ?? this.hoveredKey;
+		const emphasizedAlpha = Math.max(HIGHLIGHT_ALPHA, this.baseAlpha);
 		for (const [key, entry] of this.worlds) {
 			this.shaderBuilder.setAlpha(
 				entry.shader,
-				key === emphasizedKey ? HIGHLIGHT_ALPHA : BASE_ALPHA
+				key === emphasizedKey ? emphasizedAlpha : this.baseAlpha
 			);
 		}
 		for (const entry of this.reference) {
 			this.shaderBuilder.setAlpha(
 				entry.shader,
-				emphasizedKey === REFERENCE_WORLD_KEY ? HIGHLIGHT_ALPHA : BASE_ALPHA
+				emphasizedKey === REFERENCE_WORLD_KEY ? emphasizedAlpha : this.baseAlpha
 			);
 		}
 	}
 
 	private refreshGizmo(): void {
 		const entry = this.selectedKey === null ? undefined : this.worlds.get(this.selectedKey);
-		if (!entry) {
+		if (!entry || (this.selectedKey !== null && this.hiddenKeys.has(this.selectedKey))) {
 			this.gizmo.hide();
 			return;
 		}

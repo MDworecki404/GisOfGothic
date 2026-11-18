@@ -85,6 +85,22 @@ class FakeDisplay implements WorldSizeDisplay {
 		this.ghostColor = tintCssColor;
 	}
 
+	visibility = new Map<string, boolean>();
+	naturalColors: boolean | null = null;
+	opacity: number | null = null;
+
+	setSizeWorldVisible(key: string, isVisible: boolean): void {
+		this.visibility.set(key, isVisible);
+	}
+
+	setSizeWorldsNaturalColors(areNatural: boolean): void {
+		this.naturalColors = areNatural;
+	}
+
+	setSizeWorldsOpacity(opacity: number): void {
+		this.opacity = opacity;
+	}
+
 	clearSizeWorlds(): void {
 		this.cleared++;
 	}
@@ -130,6 +146,7 @@ describe('WorldSizeCoordinator', () => {
 			label: 'Gothic 2 — Khorinis',
 			color: REFERENCE_WORLD_COLOR,
 			isHighlighted: false,
+			isVisible: true,
 			widthMetres: 1500,
 			depthMetres: 1700
 		});
@@ -290,5 +307,61 @@ describe('WorldSizeCoordinator', () => {
 		coordinator.deactivate();
 		await coordinator.toggleWorld(createWorld('g3', 'myrtana'));
 		expect(latest().worlds).toEqual([]);
+	});
+
+	it('chowa i pokazuje świat oraz odniesienie bez rozładowywania', async () => {
+		const { coordinator, display, latest } = createCoordinator();
+		await coordinator.toggleWorld(createWorld('g3', 'myrtana'));
+		coordinator.toggleVisibility('g3/myrtana');
+		expect(latest().worlds[0].isVisible).toBe(false);
+		expect(display.visibility.get('g3/myrtana')).toBe(false);
+		expect(display.removed).not.toContain('g3/myrtana');
+		coordinator.toggleVisibility('reference');
+		expect(latest().reference?.isVisible).toBe(false);
+		coordinator.toggleVisibility('g3/myrtana');
+		expect(latest().worlds[0].isVisible).toBe(true);
+	});
+
+	it('przełącznik wszystkich zostawia widoczny tylko otwarty świat, a drugie wciśnięcie pokazuje wszystkie', async () => {
+		const { coordinator, latest } = createCoordinator();
+		await coordinator.toggleWorld(createWorld('g3', 'myrtana'));
+		coordinator.toggleAllVisibility();
+		expect(latest().worlds.every((world) => !world.isVisible)).toBe(true);
+		expect(latest().reference?.isVisible).toBe(true);
+		coordinator.toggleAllVisibility();
+		expect(latest().worlds.every((world) => world.isVisible)).toBe(true);
+	});
+
+	it('prawdziwe kolory zwiększają nieprzezroczystość, o ile użytkownik jej nie ustawił', () => {
+		const { coordinator, display, latest } = createCoordinator();
+		coordinator.setNaturalColors(true);
+		expect(display.naturalColors).toBe(true);
+		expect(latest().areColorsNatural).toBe(true);
+		expect(latest().opacity).toBeGreaterThan(0.5);
+		coordinator.setNaturalColors(false);
+		expect(latest().opacity).toBe(0.5);
+		coordinator.setOpacity(0.3);
+		coordinator.setNaturalColors(true);
+		expect(latest().opacity).toBe(0.3);
+		expect(display.opacity).toBe(0.3);
+	});
+
+	it('układ w rzędzie ustawia wczytane światy na wschód od otwartego', async () => {
+		const { coordinator, display } = createCoordinator();
+		await coordinator.toggleWorld(createWorld('g3', 'myrtana'));
+		coordinator.arrangeWorlds('row');
+		const placement = display.placements.get('g3/myrtana');
+		expect(placement).toBeDefined();
+		expect(placement?.east).toBeGreaterThan(referenceExtent.centerEast);
+	});
+
+	it('dezaktywacja przywraca wygląd domyślny', () => {
+		const { coordinator, latest } = createCoordinator();
+		coordinator.setNaturalColors(true);
+		coordinator.toggleVisibility('reference');
+		coordinator.deactivate();
+		coordinator.activate();
+		expect(latest().areColorsNatural).toBe(false);
+		expect(latest().reference?.isVisible ?? true).toBe(true);
 	});
 });

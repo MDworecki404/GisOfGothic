@@ -653,6 +653,38 @@ test('narzędzie Rozmiary: otwarty świat ma swój wiersz, a nowy świat jest wy
 	await expect(irdorath).toHaveAttribute('aria-pressed', 'true');
 });
 
+test('narzędzie Rozmiary: ukrywanie światów, prawdziwe kolory, nieprzezroczystość i układ', async ({
+	page
+}) => {
+	await page.goto('/g2nk/khorinis?narzedzie=sizes');
+	await expect(page.getByText('Otwarty świat (odniesienie)')).toBeVisible({ timeout: 30_000 });
+	await page.getByRole('checkbox', { name: 'Pokaż świat Jarkendar (Gothic 2: Noc Kruka)' }).check();
+
+	const hide = page.getByRole('button', { name: 'Ukryj świat Jarkendar' });
+	await expect(hide).toBeVisible({ timeout: 30_000 });
+	await hide.click();
+	await expect(page.getByRole('button', { name: 'Pokaż świat Jarkendar' })).toHaveAttribute(
+		'aria-pressed',
+		'false'
+	);
+
+	await page.getByRole('button', { name: 'Ukryj otwarty świat' }).click();
+	await expect(page.getByRole('button', { name: 'Pokaż otwarty świat' })).toBeVisible();
+	await page.getByRole('button', { name: 'Pokaż wszystkie światy' }).click();
+	await expect(page.getByRole('button', { name: 'Ukryj świat Jarkendar' })).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Ukryj otwarty świat' })).toBeVisible();
+
+	const naturalColors = page.getByRole('checkbox', { name: /Prawdziwe kolory/ });
+	await naturalColors.check();
+	await expect(naturalColors).toBeChecked();
+	await expect(page.getByRole('slider', { name: 'Nieprzezroczystość światów' })).toHaveValue(
+		'0.85'
+	);
+
+	await page.getByRole('button', { name: 'W rzędzie' }).click();
+	await expect(page.getByLabel('Środek: wschód (m)')).toBeVisible();
+});
+
 test('motyw jasny i ciemny: przełącznik przechodzi system, jasny, ciemny, a wybór przetrwa odświeżenie', async ({
 	page
 }) => {

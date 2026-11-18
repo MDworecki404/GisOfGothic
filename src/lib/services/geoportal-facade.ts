@@ -17,6 +17,7 @@ import {
 import { NotebookCoordinator } from './notebook/notebook-coordinator.js';
 import { WorldComparisonCoordinator } from './comparison/world-comparison-coordinator.js';
 import { WorldSizeCoordinator } from './comparison/world-size-coordinator.js';
+import type { WorldArrangement } from './comparison/world-arrangement-calculator.js';
 import type { SizeWorldPlacement } from './map/world-placement-calculator.js';
 import type { NotebookStore } from './notebook/notebook-store.js';
 import type { CameraView } from './bookmarks/camera-view-codec.js';
@@ -354,6 +355,27 @@ export class GeoportalFacade {
 
 	resetSizeWorldPlacement(key: string): void {
 		this.worldSizeCoordinator.resetPlacement(key);
+	}
+
+	/** Chowa albo pokazuje świat w narzędziu Rozmiary (`reference` to otwarty świat) bez rozładowywania. */
+	toggleSizeWorldVisibility(key: string): void {
+		this.worldSizeCoordinator.toggleVisibility(key);
+	}
+
+	toggleAllSizeWorldsVisibility(): void {
+		this.worldSizeCoordinator.toggleAllVisibility();
+	}
+
+	setSizeWorldsNaturalColors(areNatural: boolean): void {
+		this.worldSizeCoordinator.setNaturalColors(areNatural);
+	}
+
+	setSizeWorldsOpacity(opacity: number): void {
+		this.worldSizeCoordinator.setOpacity(opacity);
+	}
+
+	arrangeSizeWorlds(arrangement: WorldArrangement): void {
+		this.worldSizeCoordinator.arrangeWorlds(arrangement);
 	}
 
 	/** Podświetla świat z listy narzędzia Rozmiary; `null` zdejmuje podświetlenie. */

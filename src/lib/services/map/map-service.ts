@@ -516,6 +516,18 @@ export class MapService implements ViewModeDisplay, MapOverlaysDisplay {
 		if (tilesets.length > 0) this.worldSizes.ghostReference(tilesets, this.primaryGhostColor);
 	}
 
+	setSizeWorldVisible(key: string, isVisible: boolean): void {
+		this.worldSizes.setWorldVisible(key, isVisible);
+	}
+
+	setSizeWorldsNaturalColors(areNatural: boolean): void {
+		this.worldSizes.setNaturalColors(areNatural);
+	}
+
+	setSizeWorldsOpacity(opacity: number): void {
+		this.worldSizes.setBaseOpacity(opacity);
+	}
+
 	selectSizeWorld(key: string | null): void {
 		this.worldSizes.selectWorld(key);
 	}
