@@ -2,6 +2,27 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [1.4.0](https://github.com/MDworecki404/GisOfGothic/compare/v1.3.1...v1.4.0) (2026-11-18)
+
+### Nowe funkcje
+
+* ikony aplikacji i znak marki z kompasem w mosiądzu ([36c6edb](https://github.com/MDworecki404/GisOfGothic/commit/36c6edb393492e02e8f0d8ff4f224f27aa0bba9f))
+* karta wpisu jako panel przy prawej krawędzi z powiązaniami ([725fa59](https://github.com/MDworecki404/GisOfGothic/commit/725fa590fcd4ba98628c8374aaaf4225b87b523b))
+* Księga z wierszami wyników w stylu palety i nawigacją strzałkami ([91660dc](https://github.com/MDworecki404/GisOfGothic/commit/91660dc6f56b590a959a8cd59397802e36b8dbf1))
+* linijki współrzędnych na brzegach mapy w widoku 2D ([78ddca4](https://github.com/MDworecki404/GisOfGothic/commit/78ddca47354ebbfcd9f0dbc3d12cd79847dc3c46))
+* makiety interfejsu Atlas Gothic w design-mockups ([246505b](https://github.com/MDworecki404/GisOfGothic/commit/246505bf53dec4f90b0072c3794415d8ade7228d))
+* motyw Atlas, grafitowa paleta z mosiądzem oraz pismo Cormorant i Inter ([ed630a2](https://github.com/MDworecki404/GisOfGothic/commit/ed630a20cb4987f6a8bfa7d63e6e70b97a92e91e))
+* nagłówki bezpieczeństwa i polityka CSP ([29befdf](https://github.com/MDworecki404/GisOfGothic/commit/29befdfb03a9808ee9c98da9518d7823e0145e6e))
+* pozycja Mapa w szynie i przełączniki warstw danych w pasku górnym ([ad5aa4a](https://github.com/MDworecki404/GisOfGothic/commit/ad5aa4a4e4d98ffffe67d3b02b6fb7e01262f6a6))
+* układ Atlas z płaskim paskiem górnym i pionową szyną narzędzi ([d24efd8](https://github.com/MDworecki404/GisOfGothic/commit/d24efd88eefd5ba62c17da1bd38ba42d49953e7f))
+* wyszukiwarka jako paleta z grupami wyników, Księga po Otwórz w Księdze ([3d50db3](https://github.com/MDworecki404/GisOfGothic/commit/3d50db3c1848b15cc50885fefdcb76e55f523b48))
+* znaczniki miejsc jako ikony, romb dla lokacji i koło dla reszty wpisów ([3ff2f36](https://github.com/MDworecki404/GisOfGothic/commit/3ff2f36191857ceb1023afafcb363beae540ed4f))
+* znaczniki warstw danych w odznakach, romb dla lokacji i koło dla reszty ([0ebbcaf](https://github.com/MDworecki404/GisOfGothic/commit/0ebbcaf6860c379165da2336c9fc0ab6a31f4991))
+
+### Budowanie
+
+* aktualizacja zależności w obrębie zakresów ([0ceafa9](https://github.com/MDworecki404/GisOfGothic/commit/0ceafa9fc8ba9f1c13b17f2b013b85d357a5962b))
+
 ## [1.3.1](https://github.com/MDworecki404/GisOfGothic/compare/v1.3.0...v1.3.1) (2026-11-16)
 
 ### Testy
