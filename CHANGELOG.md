@@ -2,6 +2,12 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [1.4.1](https://github.com/MDworecki404/GisOfGothic/compare/v1.4.0...v1.4.1) (2026-11-18)
+
+### Poprawki błędów
+
+* service worker nie zapisuje HTML-a podanego zamiast brakującego pliku ([81000de](https://github.com/MDworecki404/GisOfGothic/commit/81000de1a2f64d4f4368433849b119e12181725b))
+
 ## [1.4.0](https://github.com/MDworecki404/GisOfGothic/compare/v1.3.1...v1.4.0) (2026-11-18)
 
 ### Nowe funkcje
