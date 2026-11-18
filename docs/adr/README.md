@@ -59,3 +59,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0053](0053-wyszukiwarka-jako-paleta.md)                        | Wyszukiwarka jako paleta, Księga po „Otwórz w Księdze” | przyjęta          |
 | [0054](0054-karta-wpisu-jako-panel-przy-prawej-krawedzi.md)     | Karta wpisu jako panel przy prawej krawędzi            | przyjęta          |
 | [0055](0055-znaczniki-warstw-danych-w-odznakach.md)             | Znaczniki warstw danych w odznakach                    | przyjęta          |
+| [0056](0056-service-worker-nie-zapisuje-html-zamiast-plikow.md) | Service worker nie zapisuje HTML-a zamiast plików      | przyjęta          |

@@ -38,3 +38,26 @@ describe('CachingPolicy', () => {
 		expect(strategyFor('/data/g2nk/khorinis/metadata.json', 'cors', 'POST')).toBe('network-only');
 	});
 });
+
+describe('CachingPolicy.canStore', () => {
+	it('zapisuje poprawne pliki i strony', () => {
+		expect(policy.canStore({ mode: 'cors' }, { ok: true, contentType: 'text/javascript' })).toBe(
+			true
+		);
+		expect(
+			policy.canStore({ mode: 'navigate' }, { ok: true, contentType: 'text/html; charset=utf-8' })
+		).toBe(true);
+	});
+
+	it('nie zapisuje HTML-a podanego zamiast brakującego pliku', () => {
+		expect(
+			policy.canStore({ mode: 'cors' }, { ok: true, contentType: 'text/html; charset=utf-8' })
+		).toBe(false);
+	});
+
+	it('nie zapisuje błędów', () => {
+		expect(policy.canStore({ mode: 'cors' }, { ok: false, contentType: 'text/javascript' })).toBe(
+			false
+		);
+	});
+});

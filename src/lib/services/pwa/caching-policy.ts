@@ -7,6 +7,11 @@ export interface RequestDescription {
 	mode: string;
 }
 
+export interface ResponseDescription {
+	ok: boolean;
+	contentType: string | null;
+}
+
 const IMMUTABLE_APP_PREFIX = '/_app/immutable/';
 const CESIUM_ASSETS_PREFIX = '/cesiumStatic/';
 const VERSION_CHECK_PATH = '/_app/version.json';
@@ -30,5 +35,16 @@ export class CachingPolicy {
 		if (url.pathname.startsWith(IMMUTABLE_APP_PREFIX)) return 'cache-first';
 		if (url.pathname.startsWith(CESIUM_ASSETS_PREFIX)) return 'cache-first';
 		return 'stale-while-revalidate';
+	}
+
+	/**
+	 * Czy odpowiedź nadaje się do zapisania (albo do podania z pamięci). Hosting z zapasową stroną SPA odpowiada
+	 * na brakujący plik kodem 200 i HTML-em; zapisany taki „plik” psułby aplikację aż do następnej wersji,
+	 * bo przeglądarka odrzuca skrypt o typie `text/html`. Tylko nawigacja może dostać HTML.
+	 */
+	canStore(request: Pick<RequestDescription, 'mode'>, response: ResponseDescription): boolean {
+		if (!response.ok) return false;
+		const isHtml = response.contentType?.toLowerCase().includes('text/html') ?? false;
+		return request.mode === 'navigate' || !isHtml;
 	}
 }

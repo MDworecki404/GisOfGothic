@@ -43,7 +43,21 @@ class AppServiceWorker {
 				.filter((path) => !path.replace(/^\//, '').startsWith(WORLD_DATA_DIRECTORY))
 		];
 		const cache = await caches.open(SHELL_CACHE);
-		await cache.addAll(shellFiles);
+		await Promise.all(
+			shellFiles.map(async (path) => {
+				const request = new Request(path);
+				const response = await fetch(request);
+				const mode = path === APP_SHELL_PATH ? 'navigate' : 'cors';
+				if (!this.policy.canStore({ mode }, this.describeResponse(response))) {
+					throw new Error(`Nie można zapisać ${path} w powłoce (kod ${response.status}, nie plik)`);
+				}
+				await cache.put(request, response);
+			})
+		);
+	}
+
+	private describeResponse(response: Response): { ok: boolean; contentType: string | null } {
+		return { ok: response.ok, contentType: response.headers.get('content-type') };
 	}
 
 	private async removeOutdatedCaches(): Promise<void> {
@@ -77,9 +91,9 @@ class AppServiceWorker {
 
 	private async respondFromCacheFirst(request: Request): Promise<Response> {
 		const cached = await caches.match(request, { ignoreVary: true });
-		if (cached) return cached;
+		if (cached && this.policy.canStore(request, this.describeResponse(cached))) return cached;
 		const response = await fetch(request);
-		if (response.ok) {
+		if (this.policy.canStore(request, this.describeResponse(response))) {
 			const cacheName = new URL(request.url).pathname.startsWith('/cesiumStatic/')
 				? CESIUM_CACHE
 				: SHELL_CACHE;
@@ -90,9 +104,15 @@ class AppServiceWorker {
 
 	private async respondStaleWhileRevalidate(request: Request): Promise<Response> {
 		const cache = await caches.open(DATA_CACHE);
-		const cached = await cache.match(request, { ignoreVary: true });
+		const cachedResponse = await cache.match(request, { ignoreVary: true });
+		const cached =
+			cachedResponse && this.policy.canStore(request, this.describeResponse(cachedResponse))
+				? cachedResponse
+				: undefined;
 		const refreshed = fetch(request).then(async (response) => {
-			if (response.ok) await cache.put(request, response.clone());
+			if (this.policy.canStore(request, this.describeResponse(response))) {
+				await cache.put(request, response.clone());
+			}
 			return response;
 		});
 		if (cached) {
