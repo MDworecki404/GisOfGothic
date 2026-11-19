@@ -2,6 +2,12 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [1.5.1](https://github.com/MDworecki404/GisOfGothic/compare/v1.5.0...v1.5.1) (2026-11-19)
+
+### Dokumentacja
+
+* ADR 0059 bez wymogu domeny w tokenie ion ([dde6f8c](https://github.com/MDworecki404/GisOfGothic/commit/dde6f8c17a36cae16d211f62b42ae0726ca98a80))
+
 ## [1.5.0](https://github.com/MDworecki404/GisOfGothic/compare/v1.4.2...v1.5.0) (2026-11-18)
 
 ### Nowe funkcje
