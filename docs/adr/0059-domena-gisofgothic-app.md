@@ -15,6 +15,5 @@ Aplikacja działała pod `gisofgothic.dworecki.dev`, czyli pod subdomeną strony
 
 ## Konsekwencje
 
-- Domena w ustawieniach tokenu Cesium ion musi dopuszczać `gisofgothic.app`.
 - Zapisane w przeglądarce dane użytkowników (zakładki, ustawienia) są przypisane do origin, więc pod nowym
   adresem zaczynają od zera — pomaga eksport i import kopii zapasowej.
