@@ -62,3 +62,4 @@ Krótkie zapisy ważnych decyzji: kontekst, decyzja, konsekwencje. Zasady prowad
 | [0056](0056-service-worker-nie-zapisuje-html-zamiast-plikow.md)    | Service worker nie zapisuje HTML-a zamiast plików      | przyjęta          |
 | [0057](0057-instalacja-service-workera-nie-utyka-na-zlym-pliku.md) | Instalacja service workera nie utyka na złym pliku     | przyjęta          |
 | [0058](0058-rozmiary-swiatow-kolory-widocznosc-uklad.md)           | Rozmiary światów: kolory, widoczność i układ           | przyjęta          |
+| [0059](0059-domena-gisofgothic-app.md)                             | Domena gisofgothic.app                                 | przyjęta          |

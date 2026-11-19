@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { CachingPolicy } from './caching-policy.js';
 
-const policy = new CachingPolicy('https://gisofgothic.dworecki.dev');
+const policy = new CachingPolicy('https://gisofgothic.app');
 
 function strategyFor(path: string, mode = 'cors', method = 'GET') {
-	const url = path.startsWith('http') ? path : `https://gisofgothic.dworecki.dev${path}`;
+	const url = path.startsWith('http') ? path : `https://gisofgothic.app${path}`;
 	return policy.chooseStrategy({ url, method, mode });
 }
 

@@ -13,7 +13,7 @@ zobacz [wizję projektu](docs/wizja.md).
 > terenem widać jako szare, przezroczyste duchy), pomiary, analizy GIS, pora dnia z rutynami postaci,
 > zakładki oraz instalacja jako aplikacja (PWA) z pracą bez sieci.
 
-**Wersja na żywo: https://gisofgothic.dworecki.dev**
+**Wersja na żywo: https://gisofgothic.app**
 
 ## Szybki start
 

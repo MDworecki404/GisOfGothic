@@ -82,7 +82,7 @@ Pełne zasady: [`CLAUDE.md`](../CLAUDE.md). Najważniejsze:
 
 ## Wdrożenie
 
-Strona działa na Cloudflare Pages: **https://gisofgothic.dworecki.dev** (także
+Strona działa na Cloudflare Pages: **https://gisofgothic.app** (także
 https://gis-of-gothic.pages.dev). Szczegóły decyzji: [ADR 0010](adr/0010-hosting-cloudflare-pages-z-wgrywaniem-lokalnym.md).
 
 **Na produkcję trafiają tylko wydania, po testach** ([ADR 0014](adr/0014-produkcja-tylko-z-wydan.md)).
