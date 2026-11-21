@@ -202,6 +202,9 @@ zmiany w ekstraktorze danych (zob. `docs/dane.md`).
 `DATA_LAYERS` (`services/layers/data-layer-catalog.ts`) opisuje warstwy: przedmioty w świecie, skrzynie,
 unikatowe postacie, wszyscy NPC — plik GeoJSON, kolor, parser właściwości i opis obiektu do karty.
 `DataLayersCoordinator` pobiera plik dopiero przy pierwszym włączeniu warstwy i go zapamiętuje.
+Włączoną warstwę można zawęzić polem w panelu Warstwy (`filterDataLayerByText`): zostają obiekty, których nazwa
+zawiera wpisany tekst (`normalizeSearchTerm`, więc bez względu na wielkość liter i polskie znaki); licznik warstwy
+pokazuje liczbę po zawężeniu.
 Każdy obiekt ma `iconId` (`services/layers/map-icons.ts`): ikona przedmiotu wynika z jego kategorii
 (rośliny, jedzenie, broń…), skrzynia i postać mają własne. Warstwa z ikonami jest rysowana jako
 `BillboardCollection` z SVG (kształty z Lucide, licencja ISC, w `services/layers/map-icon-shapes.ts`,

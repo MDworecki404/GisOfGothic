@@ -532,6 +532,10 @@ export class GeoportalFacade {
 		void this.dataLayersCoordinator.toggleLayer(layerId);
 	}
 
+	filterDataLayerByText(layerId: DataLayerId, text: string): void {
+		this.dataLayersCoordinator.filterLayerByText(layerId, text);
+	}
+
 	/** Wyznacza świat i widok, do których prowadzi przejście; `null`, gdy świata nie ma w katalogu. */
 	planPassageTravel(destination: PassageDestination): Promise<PassageTravelTarget | null> {
 		const planner = new PassageTravelPlanner(worldCatalog, async (gameId, worldId) => {

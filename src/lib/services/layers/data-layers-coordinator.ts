@@ -3,6 +3,7 @@ import type { AppEventBus } from '#lib/events/app-events.js';
 import { ChapterFilter } from '#lib/services/chapters/chapter-filter.js';
 import { LootPresenter } from '#lib/services/loot/loot-presenter.js';
 import type { TreasureSetBook } from '#lib/services/loot/treasure-set-book.js';
+import { normalizeSearchTerm } from '#lib/services/search/search-service.js';
 import { MAP_ICON_NODES } from './map-icon-shapes.js';
 import type { MapIconNode } from './map-icons.js';
 import type { DataLayerPoint, FeaturePick } from '#lib/services/map/data-layers-renderer.js';
@@ -38,6 +39,8 @@ export interface DataLayerView {
 	legend: LayerLegendEntryView[];
 	featureCount: number | null;
 	status: DataLayerStatus;
+	/** Tekst, po którym warstwa jest zawężona do obiektów o pasującej nazwie; pusty = bez zawężenia. */
+	textFilter: string;
 }
 
 function describeError(error: unknown): string {
@@ -55,6 +58,7 @@ export class DataLayersCoordinator {
 	private readonly shownFeatures = new Map<DataLayerId, IdentifiableFeature[]>();
 	private featureCounts: Record<string, number> = {};
 	private chapterFilter = new ChapterFilter(null);
+	private readonly textFilters = new Map<DataLayerId, string>();
 	private dataLoader: GeoportalDataLoader | null = null;
 	private latestIdentification = 0;
 	private readonly lootPresenter = new LootPresenter();
@@ -73,7 +77,16 @@ export class DataLayersCoordinator {
 		this.shownFeatures.clear();
 		this.pendingLoads.clear();
 		this.statuses.clear();
+		this.textFilters.clear();
 		this.cancelPendingIdentification();
+		this.publishLayers();
+	}
+
+	/** Zawęża warstwę do obiektów, których nazwa zawiera podany tekst (bez względu na wielkość liter i polskie znaki). */
+	filterLayerByText(layerId: DataLayerId, text: string): void {
+		this.textFilters.set(layerId, text);
+		this.cancelPendingIdentification();
+		this.showVisibleLayersOnMap();
 		this.publishLayers();
 	}
 
@@ -182,17 +195,21 @@ export class DataLayersCoordinator {
 	}
 
 	private showFeaturesOnMap(layer: DataLayerDefinition, features: IdentifiableFeature[]): void {
-		const featuresToShow = this.filterByChapter(layer, features);
+		const featuresToShow = this.filterFeatures(layer, features);
 		this.shownFeatures.set(layer.id, featuresToShow);
 		this.getDisplay()?.showDataLayer(layer.id, featuresToShow, layer.color);
 	}
 
-	private filterByChapter(
+	private filterFeatures(
 		layer: DataLayerDefinition,
 		features: IdentifiableFeature[]
 	): IdentifiableFeature[] {
-		if (!layer.isFilteredByChapter) return features;
-		return features.filter((feature) => this.chapterFilter.isSpawnVisible(feature.spawnChapter));
+		const text = normalizeSearchTerm(this.textFilters.get(layer.id) ?? '').trim();
+		return features.filter(
+			(feature) =>
+				(!layer.isFilteredByChapter || this.chapterFilter.isSpawnVisible(feature.spawnChapter)) &&
+				(text === '' || normalizeSearchTerm(feature.identification.title).includes(text))
+		);
 	}
 
 	private async fetchFeatures(layer: DataLayerDefinition): Promise<IdentifiableFeature[] | null> {
@@ -254,14 +271,15 @@ export class DataLayersCoordinator {
 					color: color ?? null
 				})),
 				featureCount: this.countFeatures(layer),
-				status: this.statuses.get(layer.id) ?? 'hidden'
+				status: this.statuses.get(layer.id) ?? 'hidden',
+				textFilter: this.textFilters.get(layer.id) ?? ''
 			}))
 		});
 	}
 
 	private countFeatures(layer: DataLayerDefinition): number | null {
 		const loaded = this.loadedFeatures.get(layer.id);
-		if (loaded) return this.filterByChapter(layer, loaded).length;
+		if (loaded) return this.filterFeatures(layer, loaded).length;
 		if (layer.metadataCountKey === null) return null;
 		return this.featureCounts[layer.metadataCountKey] ?? null;
 	}

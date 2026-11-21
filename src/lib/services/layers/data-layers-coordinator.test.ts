@@ -85,6 +85,16 @@ describe('DataLayersCoordinator — rozdział', () => {
 		coordinator.identifyFeature({ layerId: 'characters', featureIndex: 1 });
 		expect(identifiedTitles).toEqual(['Talbin']);
 	});
+
+	it('filtr tekstowy zostawia obiekty o pasującej nazwie, bez względu na wielkość liter i polskie znaki', async () => {
+		const { coordinator, display, identifiedTitles } = await createCoordinatorWithCharactersShown();
+		coordinator.filterLayerByText('characters', 'TALB');
+		expect(display.shownPoints.get('characters')).toHaveLength(1);
+		coordinator.identifyFeature({ layerId: 'characters', featureIndex: 0 });
+		expect(identifiedTitles).toEqual(['Talbin']);
+		coordinator.filterLayerByText('characters', '');
+		expect(display.shownPoints.get('characters')).toHaveLength(3);
+	});
 });
 
 const CONTAINERS_JSON = {

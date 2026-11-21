@@ -100,6 +100,16 @@
 					{/if}
 				</span>
 			</label>
+			{#if layer.status === 'visible'}
+				<input
+					type="search"
+					class="field mb-2.5"
+					placeholder="Pokaż tylko… (np. szczaw królewski)"
+					aria-label="Filtruj warstwę: {layer.name}"
+					value={layer.textFilter}
+					oninput={(event) => geoportal.filterDataLayerByText(layer.id, event.currentTarget.value)}
+				/>
+			{/if}
 		</li>
 	{/each}
 </ul>
