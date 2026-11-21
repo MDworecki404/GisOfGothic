@@ -54,6 +54,8 @@ export interface FeatureIdentification {
 	modelFile: string | null;
 	/** Lokacje: przejście do innego świata, gdy cel leży w paczce; w pozostałych warstwach brak pola. */
 	passage?: PassageDestination;
+	/** Przedmioty leżące w świecie: wpis przedmiotu i klucz miejsca, pod którym zapisuje się odhaczenie. */
+	collectiblePlace?: { entry: { id: string; name: string }; placeKey: string };
 }
 
 export interface IdentifiableFeature {
@@ -116,7 +118,11 @@ function presentItem(properties: ItemProperties): FeatureIdentification {
 		encyclopediaUrl: null,
 		treasureSetCodes: [],
 		possibleItems: [],
-		modelFile: null
+		modelFile: null,
+		collectiblePlace: {
+			entry: { id: `item:${properties.code}`, name: properties.name },
+			placeKey: `${properties.isInsertedByScript ? 'script' : 'ground'}:${properties.id}`
+		}
 	};
 }
 

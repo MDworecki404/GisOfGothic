@@ -31,6 +31,17 @@ describe('warstwy danych', () => {
 		});
 	});
 
+	it('podaje wpis i klucz miejsca, pod którymi odhacza się leżący przedmiot', () => {
+		const properties = { id: 'item-7', code: 'ITPL_BLUEPLANT', name: 'Niebieski bez' };
+		const [onGround] = readLayer('items', { ...properties, source: 'zen' });
+		const [inserted] = readLayer('items', { ...properties, source: 'script' });
+		expect(onGround.identification.collectiblePlace).toEqual({
+			entry: { id: 'item:ITPL_BLUEPLANT', name: 'Niebieski bez' },
+			placeKey: 'ground:item-7'
+		});
+		expect(inserted.identification.collectiblePlace?.placeKey).toBe('script:item-7');
+	});
+
 	it('pomija obiekt przedmiotu bez instancji (pusty kod i brak nazwy) zamiast psuć warstwę', () => {
 		const layer = DATA_LAYERS.find((definition) => definition.id === 'items');
 		const point = { type: 'Point', coordinates: [0.001, 0.002, 33] };

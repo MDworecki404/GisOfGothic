@@ -83,6 +83,22 @@
 				<PassageTravelButton passage={feature.passage} />
 			{/if}
 
+			{#if feature.collectiblePlace}
+				{@const collectiblePlace = feature.collectiblePlace}
+				<hr class="note-rule my-3" />
+				<button
+					class={appState.isIdentifiedFeatureCollected ? 'button-ochre' : 'button-quiet'}
+					aria-pressed={appState.isIdentifiedFeatureCollected}
+					onclick={() =>
+						geoportal.toggleCollectedStateOfIdentifiedItemPlace(
+							collectiblePlace.entry,
+							collectiblePlace.placeKey
+						)}
+				>
+					{appState.isIdentifiedFeatureCollected ? 'Zebrane' : 'Oznacz jako zebrane'}
+				</button>
+			{/if}
+
 			{#if feature.searchQuery || feature.encyclopediaUrl}
 				<hr class="note-rule my-3" />
 			{/if}

@@ -472,6 +472,15 @@ export class AppState {
 		return entryId !== undefined && (this.notebook?.collectedQuestIds.includes(entryId) ?? false);
 	}
 
+	get isIdentifiedFeatureCollected(): boolean {
+		const collectiblePlace = this.identifiedFeature?.collectiblePlace;
+		if (!collectiblePlace) return false;
+		return (this.notebook?.collectedPlaces ?? []).some(
+			(place) =>
+				place.entryId === collectiblePlace.entry.id && place.placeKey === collectiblePlace.placeKey
+		);
+	}
+
 	/** Klucze odhaczonych miejsc wybranego przedmiotu (`PlaceSummary.key`). */
 	get collectedPlaceKeysOfSelectedEntry(): ReadonlySet<string> {
 		const entryId = this.selectedEntry?.id;

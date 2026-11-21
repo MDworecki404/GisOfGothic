@@ -437,6 +437,15 @@ export class GeoportalFacade {
 		this.searchCoordinator.showSelectedEntryOnMap(false);
 	}
 
+	/** Odhacza albo cofa odhaczenie przedmiotu, którego kartę z mapy właśnie widać. */
+	toggleCollectedStateOfIdentifiedItemPlace(
+		entry: { id: string; name: string },
+		placeKey: string
+	): void {
+		this.notebookCoordinator.toggleCollectedPlace(entry, placeKey);
+		this.searchCoordinator.showSelectedEntryOnMap(false);
+	}
+
 	/** Odhacza wszystkie miejsca wybranego przedmiotu albo cofa odhaczenie wszystkich. */
 	setCollectedStateOfAllPlacesOfSelectedItem(isCollected: boolean): void {
 		const item = this.searchCoordinator.selectedItemCollectiblePlaces;

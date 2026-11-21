@@ -335,7 +335,9 @@ zgłasza polem `hasStorageError`.
 - **Co zebrałem.** Odhacza się dwie rzeczy. Quest jest jeden, więc karta questa ma przycisk „Oznacz jako wykonany”
   (`toggleCollectedStateOfSelectedQuest`). Przedmiot występuje w wielu miejscach (bełtów w Myrtanie bywa tysiąc), więc
   odhacza się każde miejsce osobno: karta przedmiotu ma pole przy miejscu (`toggleCollectedStateOfPlaceOfSelectedItem`)
-  oraz „Zbierz wszystkie” / „Odznacz wszystkie”. Miejsce rozpoznaje stały klucz z `buildPlaceKey`
+  oraz „Zbierz wszystkie” / „Odznacz wszystkie”. Przedmiot kliknięty na mapie (warstwa „Przedmioty w świecie”) odhacza
+  się też w jego karcie obiektu (`IdentifyCard`): `FeatureIdentification.collectiblePlace` niesie wpis i klucz miejsca
+  (`ground:<id>` albo `script:<id>`), przycisk woła `toggleCollectedStateOfIdentifiedItemPlace`. Miejsce rozpoznaje stały klucz z `buildPlaceKey`
   (`data/place-key.ts`: rodzaj miejsca i `ref` obiektu z GeoJSON, a bez niego współrzędne), nie numer na liście,
   więc odhaczenia przeżywają ponowny eksport danych. Losowy łup Gothica 3 (`set`) nie jest odhaczalny.
   `SearchCoordinator` dostaje funkcję `getCollectedPlaceKeys` i maluje zebrane znaczniki przygaszonym kolorem,
