@@ -48,7 +48,9 @@
 			</div>
 		{/if}
 		<button
-			class="absolute top-3 right-3 z-10 grid size-11 place-items-center rounded-sm text-muted-foreground hover:bg-hover-surface hover:text-hover"
+			class="absolute right-3 z-10 {isPalette
+				? 'top-6'
+				: 'top-3'} grid size-11 place-items-center rounded-sm text-muted-foreground hover:bg-hover-surface hover:text-hover"
 			aria-label="Zamknij Księgę"
 			onclick={() => geoportal.selectTool('search')}
 		>

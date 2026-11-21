@@ -125,7 +125,7 @@
 <div
 	class="flex h-full min-h-0 flex-col border-border px-5 pt-6 pb-4 max-md:px-4 {mode === 'book'
 		? 'md:border-r'
-		: ''} {mode === 'book' && appState.selectedEntry ? 'max-md:hidden' : ''}"
+		: 'pr-18 max-md:pr-18'} {mode === 'book' && appState.selectedEntry ? 'max-md:hidden' : ''}"
 >
 	<label class="relative block">
 		<span class="sr-only">Szukaj przedmiotu lub postaci</span>
