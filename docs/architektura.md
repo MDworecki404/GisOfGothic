@@ -340,7 +340,8 @@ zgłasza polem `hasStorageError`.
   odhacza się każde miejsce osobno: karta przedmiotu ma pole przy miejscu (`toggleCollectedStateOfPlaceOfSelectedItem`)
   oraz „Zbierz wszystkie” / „Odznacz wszystkie”. Przedmiot kliknięty na mapie (warstwa „Przedmioty w świecie”) odhacza
   się też w jego karcie obiektu (`IdentifyCard`): `FeatureIdentification.collectiblePlace` niesie wpis i klucz miejsca
-  (`ground:<id>` albo `script:<id>`), przycisk woła `toggleCollectedStateOfIdentifiedItemPlace`. Miejsce rozpoznaje stały klucz z `buildPlaceKey`
+  (`ground:<id>` albo `script:<id>`), przycisk woła `toggleCollectedStateOfIdentifiedItemPlace`. `DataLayersCoordinator` słucha `notebook-changed` i
+  oznacza odhaczone punkty (`DataLayerPoint.isCollected`), a `DataLayersRenderer` dorysowuje na ich ikonie zielony ptaszek. Miejsce rozpoznaje stały klucz z `buildPlaceKey`
   (`data/place-key.ts`: rodzaj miejsca i `ref` obiektu z GeoJSON, a bez niego współrzędne), nie numer na liście,
   więc odhaczenia przeżywają ponowny eksport danych. Losowy łup Gothica 3 (`set`) nie jest odhaczalny.
   `SearchCoordinator` dostaje funkcję `getCollectedPlaceKeys` i maluje zebrane znaczniki przygaszonym kolorem,
