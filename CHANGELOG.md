@@ -2,6 +2,22 @@
 
 Wszystkie istotne zmiany w aplikacji. Plik generowany z commitów (`npm run release`).
 
+## [1.6.0](https://github.com/MDworecki404/GisOfGothic/compare/v1.5.1...v1.6.0) (2026-11-21)
+
+### Nowe funkcje
+
+* Filtr po nazwie dla włączonych warstw danych ([d3b692e](https://github.com/MDworecki404/GisOfGothic/commit/d3b692e4327ff01345932a8e54dcdfb6ca13c701))
+* Odznaczanie zebranych przedmiotów w karcie obiektu z mapy ([62cd8c8](https://github.com/MDworecki404/GisOfGothic/commit/62cd8c88c16bfa47b702b82440316d4a7c637f64))
+* Zebrane przedmioty mają na mapie ikonę z zielonym ptaszkiem ([a3460ef](https://github.com/MDworecki404/GisOfGothic/commit/a3460efcc29d24ad4bfaea16c27bc94513722072))
+
+### Poprawki błędów
+
+* Przycisk zamknięcia wyszukiwarki nie zasłania już pola wpisywania ([bc2cbf4](https://github.com/MDworecki404/GisOfGothic/commit/bc2cbf42ea382f3f60fb09d0eefdeabd549fadbc))
+
+### Dokumentacja
+
+* Opis ikony zebranego przedmiotu na mapie ([0d5e50f](https://github.com/MDworecki404/GisOfGothic/commit/0d5e50fc1872b8787887f2d34218ea0b5109ae7b))
+
 ## [1.5.1](https://github.com/MDworecki404/GisOfGothic/compare/v1.5.0...v1.5.1) (2026-11-19)
 
 ### Dokumentacja
