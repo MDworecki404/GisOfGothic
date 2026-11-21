@@ -59,6 +59,7 @@ export class DataLayersCoordinator {
 	private featureCounts: Record<string, number> = {};
 	private chapterFilter = new ChapterFilter(null);
 	private readonly textFilters = new Map<DataLayerId, string>();
+	private collectedPlaceKeys: ReadonlySet<string> = new Set();
 	private dataLoader: GeoportalDataLoader | null = null;
 	private latestIdentification = 0;
 	private readonly lootPresenter = new LootPresenter();
@@ -67,7 +68,21 @@ export class DataLayersCoordinator {
 		private readonly eventBus: AppEventBus,
 		private readonly getDisplay: () => DataLayersDisplay | null,
 		private readonly treasureSetBook: TreasureSetBook
-	) {}
+	) {
+		eventBus.subscribe('notebook-changed', ({ notebook }) =>
+			this.useCollectedPlaces(notebook.collectedPlaces)
+		);
+	}
+
+	/** Zapamiętuje odhaczone miejsca i odmalowuje włączone warstwy tylko wtedy, gdy zbiór się zmienił. */
+	private useCollectedPlaces(places: readonly { entryId: string; placeKey: string }[]): void {
+		const keys = new Set(places.map((place) => `${place.entryId}|${place.placeKey}`));
+		const isChanged =
+			keys.size !== this.collectedPlaceKeys.size ||
+			[...keys].some((key) => !this.collectedPlaceKeys.has(key));
+		this.collectedPlaceKeys = keys;
+		if (isChanged) this.showVisibleLayersOnMap();
+	}
 
 	useWorld(dataLoader: GeoportalDataLoader | null, featureCounts: Record<string, number>): void {
 		for (const layer of DATA_LAYERS) this.getDisplay()?.hideDataLayer(layer.id);
@@ -197,7 +212,13 @@ export class DataLayersCoordinator {
 	private showFeaturesOnMap(layer: DataLayerDefinition, features: IdentifiableFeature[]): void {
 		const featuresToShow = this.filterFeatures(layer, features);
 		this.shownFeatures.set(layer.id, featuresToShow);
-		this.getDisplay()?.showDataLayer(layer.id, featuresToShow, layer.color);
+		const points = featuresToShow.map((feature) => {
+			const place = feature.identification.collectiblePlace;
+			const isCollected =
+				place !== undefined && this.collectedPlaceKeys.has(`${place.entry.id}|${place.placeKey}`);
+			return isCollected ? { ...feature, isCollected } : feature;
+		});
+		this.getDisplay()?.showDataLayer(layer.id, points, layer.color);
 	}
 
 	private filterFeatures(

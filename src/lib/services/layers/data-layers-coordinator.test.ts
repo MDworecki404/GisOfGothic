@@ -97,6 +97,51 @@ describe('DataLayersCoordinator — rozdział', () => {
 	});
 });
 
+describe('DataLayersCoordinator — zebrane przedmioty', () => {
+	it('oznacza na mapie tylko odhaczone miejsca przedmiotów', async () => {
+		const itemsJson = {
+			type: 'FeatureCollection',
+			features: ['item-1', 'item-2'].map((id) => ({
+				type: 'Feature',
+				geometry: { type: 'Point', coordinates: [0, 0, 0] },
+				properties: { id, code: 'ITPL_HERB', name: 'Zioło', source: 'zen' }
+			}))
+		};
+		const eventBus = new EventBus<AppEvent>();
+		const display = new RecordingDisplay();
+		const coordinator = new DataLayersCoordinator(eventBus, () => display, new TreasureSetBook());
+		coordinator.useWorld(
+			new GeoportalDataLoader(
+				'/dane',
+				async () => new Response(JSON.stringify(itemsJson), { status: 200 })
+			),
+			{}
+		);
+		await coordinator.toggleLayer('items');
+		expect(display.shownPoints.get('items')?.map((point) => point.isCollected)).toEqual([
+			undefined,
+			undefined
+		]);
+		eventBus.publish({
+			type: 'notebook-changed',
+			notebook: {
+				pins: [],
+				collectedQuests: [],
+				collectedQuestIds: [],
+				collectedItems: [],
+				collectedPlaces: [{ entryId: 'item:ITPL_HERB', placeKey: 'ground:item-2' }],
+				progress: [],
+				isPlacingPin: false,
+				hasStorageError: false
+			}
+		});
+		expect(display.shownPoints.get('items')?.map((point) => point.isCollected)).toEqual([
+			undefined,
+			true
+		]);
+	});
+});
+
 const CONTAINERS_JSON = {
 	type: 'FeatureCollection',
 	features: [

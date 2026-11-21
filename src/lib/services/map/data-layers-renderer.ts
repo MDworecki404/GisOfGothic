@@ -18,6 +18,8 @@ export interface DataLayerPoint {
 	iconId?: MapIconId;
 	/** Kolor tego punktu zamiast koloru warstwy (ikony). */
 	cssColor?: string;
+	/** Punkt jest odhaczony jako zebrany: ikona dostaje w rogu znaczek ptaszka. */
+	isCollected?: boolean;
 }
 
 export interface FeaturePick {
@@ -31,6 +33,10 @@ const SCALE_BY_DISTANCE = new NearFarScalar(50, 1.4, 3000, 0.75);
 const ICON_SIZE_PIXELS = 28;
 const DIAMOND_ICON_IDS: readonly MapIconId[] = ['location', 'passage'];
 const ICON_OUTLINE_COLOR = MAP_PALETTE.edge;
+const COLLECTED_BADGE_COLOR = '#6fae6a';
+const COLLECTED_BADGE_SVG =
+	`<circle cx="18" cy="6" r="5.6" fill="${COLLECTED_BADGE_COLOR}" stroke="${ICON_OUTLINE_COLOR}" stroke-width="1.2"/>` +
+	`<path d="M15.4 6.1l1.9 1.9 3.3-3.7" stroke="${ICON_OUTLINE_COLOR}" stroke-width="1.8"/>`;
 const OCCLUDED_ICON_CSS_COLOR = '#8a8f94';
 const OCCLUDED_ALPHA = 0.4;
 const OCCLUDED_POINT_COLOR =
@@ -166,7 +172,7 @@ export class DataLayersRenderer {
 			collection.add({
 				id,
 				position,
-				image: this.buildIconImage(iconId, point.cssColor ?? cssColor),
+				image: this.buildIconImage(iconId, point.cssColor ?? cssColor, point.isCollected === true),
 				width: ICON_SIZE_PIXELS,
 				height: ICON_SIZE_PIXELS,
 				scaleByDistance: SCALE_BY_DISTANCE
@@ -186,8 +192,8 @@ export class DataLayersRenderer {
 			.join('');
 	}
 
-	private buildIconImage(iconId: MapIconId, cssColor: string): string {
-		const key = `${iconId}:${cssColor}`;
+	private buildIconImage(iconId: MapIconId, cssColor: string, isCollected = false): string {
+		const key = `${iconId}:${cssColor}:${isCollected}`;
 		const cached = this.iconImages.get(key);
 		if (cached) return cached;
 		const shape = this.renderNodes(MAP_ICON_NODES[iconId]);
@@ -199,7 +205,7 @@ export class DataLayersRenderer {
 		const svg =
 			`<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">` +
 			badge +
-			`<g transform="translate(12 12) scale(${glyphScale}) translate(-12 -12)" stroke="${cssColor}" stroke-width="2.4">${shape}</g></svg>`;
+			`<g transform="translate(12 12) scale(${glyphScale}) translate(-12 -12)" stroke="${cssColor}" stroke-width="2.4">${shape}</g>${isCollected ? COLLECTED_BADGE_SVG : ''}</svg>`;
 		const image = `data:image/svg+xml;base64,${btoa(svg)}`;
 		this.iconImages.set(key, image);
 		return image;
